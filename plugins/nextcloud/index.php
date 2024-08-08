@@ -90,8 +90,24 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 	public function beforeLogin(\RainLoop\Model\Account $oAccount, \MailSo\Net\NetClient $oClient, \MailSo\Net\ConnectSettings $oSettings) : void
 	{
 		// https://apps.nextcloud.com/apps/oidc_login
+		$config = \OC::$server->getConfig();
+		$oUser = \OC::$server->getUserSession()->getUser();
+		$sUID = $oUser->getUID();
+
+		$sEmail = $config->getUserValue($sUID, 'snappymail', 'snappymail-email');
+		$sPassword = $config->getUserValue($sUID, 'snappymail', 'passphrase')
+			?: $config->getUserValue($sUID, 'snappymail', 'snappymail-password');
+		$bAccountDefinedExplicitly = ($sEmail && $sPassword) && $sEmail === $oSettings->username;
+
+		$sNcEmail = $oUser->getEMailAddress() ?: $oUser->getPrimaryEMailAddress();
+
+		// Only login with OIDC access token if
+		// it is enabled in config, the user is currently logged in with OIDC,
+		// the current snappymail account is the OIDC account and no account defined explicitly
 		if (\OC::$server->getConfig()->getAppValue('snappymail', 'snappymail-autologin-oidc', false)
 		 && \OC::$server->getSession()->get('is_oidc')
+		 && $sNcEmail === $oSettings->username
+		 && !$bAccountDefinedExplicitly
 //		 && $oClient->supportsAuthType('OAUTHBEARER') // v2.28
 		) {
 			$sAccessToken = \OC::$server->getSession()->get('oidc_access_token');

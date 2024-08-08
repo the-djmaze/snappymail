@@ -119,12 +119,21 @@ class FetchController extends Controller {
 				]);
 			}
 
+			// Logout as the credentials have changed
+			SnappyMailHelper::loadApp();
+			\RainLoop\Api::Actions()->DoLogout();
+
 			return new JSONResponse([
 				'status' => 'success',
 				'Message' => $this->l->t('Saved successfully'),
 				'Email' => $sEmail
 			]);
 		} catch (Exception $e) {
+			// Logout as the credentials might have changed, as exception could be in one attribute
+			// TODO: Handle both exceptions separately?
+			SnappyMailHelper::loadApp();
+			\RainLoop\Api::Actions()->DoLogout();
+			
 			return new JSONResponse([
 				'status' => 'error',
 				'Message' => $e->getMessage()
