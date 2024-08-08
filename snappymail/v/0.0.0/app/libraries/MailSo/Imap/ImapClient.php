@@ -307,7 +307,7 @@ class ImapClient extends \MailSo\Net\NetClient
 			// Set active capabilities
 			$aList = \array_diff($aList, $this->Settings->disabled_capabilities);
 			if (\in_array('THREAD', $this->Settings->disabled_capabilities)) {
-				$aList = \array_filter($aList, function ($item) { \str_starts_with($item, 'THREAD='); });
+				$aList = \array_filter($aList, function ($item) { return !\str_starts_with($item, 'THREAD='); });
 			}
 		}
 		$this->aCapa = $aList;
