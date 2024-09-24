@@ -35,12 +35,13 @@ ko.bindingProvider = new class
                     // Build the source for a function that evaluates "expression"
                     // For each scope variable, add an extra level of "with" nesting
                     // Example result: with(sc1) { with(sc0) { return (expression) } }
+                    // Deprecated: with is no longer recommended
                     var rewrittenBindings = ko.expressionRewriting.preProcessBindings(bindingsString),
-                        functionBody = "with($context){with($data||{}){return{" + rewrittenBindings + "}}}";
-                    bindingFunction = new Function("$context", "$element", functionBody);
+                        functionBody = "with($data){return{" + rewrittenBindings + "}}";
+                    bindingFunction = new Function("$root", "$parent", "$data", "$element", functionBody);
                     bindingCache.set(cacheKey, bindingFunction);
                 }
-                return bindingFunction(bindingContext, node);
+                return bindingFunction(bindingContext["$root"], bindingContext["$parent"], bindingContext["$data"] || {}, node);
             } catch (ex) {
                 ex.message = "Unable to parse bindings.\nBindings value: " + bindingsString
                     + "\nMessage: " + ex.message;

@@ -1622,12 +1622,13 @@ ko.bindingProvider = new class
                     // Build the source for a function that evaluates "expression"
                     // For each scope variable, add an extra level of "with" nesting
                     // Example result: with(sc1) { with(sc0) { return (expression) } }
+                    // Deprecated: with is no longer recommended
                     var rewrittenBindings = ko.expressionRewriting.preProcessBindings(bindingsString),
-                        functionBody = "with($context){with($data||{}){return{" + rewrittenBindings + "}}}";
-                    bindingFunction = new Function("$context", "$element", functionBody);
+                        functionBody = "with($data){return{" + rewrittenBindings + "}}";
+                    bindingFunction = new Function("$root", "$parent", "$data", "$element", functionBody);
                     bindingCache.set(cacheKey, bindingFunction);
                 }
-                return bindingFunction(bindingContext, node);
+                return bindingFunction(bindingContext["$root"], bindingContext["$parent"], bindingContext["$data"] || {}, node);
             } catch (ex) {
                 ex.message = "Unable to parse bindings.\nBindings value: " + bindingsString
                     + "\nMessage: " + ex.message;
@@ -1682,11 +1683,6 @@ ko.bindingContext = class {
                 }
             } else {
                 self['$root'] = dataItem;
-
-                // Export 'ko' in the binding context so it will be available in bindings and templates
-                // even if 'ko' isn't exported as a global, such as when using an AMD loader.
-                // See https://github.com/SteveSanderson/knockout/issues/490
-                self['ko'] = ko;
             }
 
             self[contextSubscribable] = subscribable;
