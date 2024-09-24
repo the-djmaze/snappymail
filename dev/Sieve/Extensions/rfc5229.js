@@ -57,8 +57,9 @@ export class StringTest extends TestCommand
 	toString()
 	{
 		return 'string'
-			+ ' ' + this.match_type
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this.source
 			+ ' ' + this.key_list;
 	}

@@ -68,9 +68,10 @@ export class AddressTest extends TestCommand
 		}
 		return result
 			+ (this.last ? ' :last' : (this.index.value ? ' :index ' + this.index : ''))
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this.address_part
-			+ ' ' + this.match_type
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + this.header_list
 			+ ' ' + this.key_list;
 	}
@@ -147,9 +148,10 @@ export class EnvelopeTest extends TestCommand
 	toString()
 	{
 		return 'envelope'
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this.address_part
-			+ ' ' + this.match_type
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + this.envelope_part
 			+ ' ' + this.key_list;
 	}
@@ -230,7 +232,6 @@ export class HeaderTest extends TestCommand
 	constructor()
 	{
 		super();
-		this.match_type = ':is';
 		this.address_part = ':all';
 		this.header_names = new GrammarStringList;
 		this.key_list     = new GrammarStringList;
@@ -280,8 +281,9 @@ export class HeaderTest extends TestCommand
 		}
 		return result
 			+ (this.last ? ' :last' : (this.index.value ? ' :index ' + this.index : ''))
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ ' ' + this.match_type
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + this.header_names
 			+ ' ' + this.key_list;
 	}

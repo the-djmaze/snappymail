@@ -79,8 +79,9 @@ export class HasFlagTest extends TestCommand
 	toString()
 	{
 		return 'hasflag'
-			+ ' ' + this.match_type
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this.variable_list
 			+ ' ' + this.list_of_flags;
 	}

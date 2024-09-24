@@ -58,8 +58,9 @@ export class MetadataTest extends TestCommand
 	toString()
 	{
 		return 'metadata '
-			+ ' ' + this.match_type
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ ' ' + this._match_type
+			+ (this.relational_match ? ' ' + this.relational_match : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this._mailbox
 			+ ' ' + this._annotation_name
 			+ ' ' + this.key_list;
@@ -124,8 +125,9 @@ export class ServerMetadataTest extends TestCommand
 	toString()
 	{
 		return 'servermetadata '
-			+ ' ' + this.match_type
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ ' ' + this._match_type
+			+ (this.relational_match ? ' ' + this.relational_match : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this._annotation_name
 			+ ' ' + this.key_list;
 	}

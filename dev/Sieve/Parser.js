@@ -119,18 +119,20 @@ export const parseScript = (script, name = 'script.sieve') => {
 			let prev_arg = args[args.length-1];
 			if (getMatchTypes(0).includes(arg)) {
 				command.match_type = arg;
-			} else if (':value' === prev_arg || ':count' === prev_arg) {
-				// Sieve relational [RFC5231] match types
-				/^(gt|ge|lt|le|eq|ne)$/.test(arg.value) || error('Invalid relational match-type ' + arg);
-				command.match_type = prev_arg + ' ' + arg;
+			} else if (getMatchTypes(0).includes(prev_arg)) {
 				--args.length;
-//				requires.push('relational');
+				if (':value' === prev_arg || ':count' === prev_arg) {
+					// Sieve relational [RFC5231] match types
+					/^"(gt|ge|lt|le|eq|ne)"$/.test(arg) || error('Invalid relational match-type ' + arg);
+					command.relational_match = arg;
+//					requires.push('relational');
+					return;
+				}
 			} else if (':comparator' === prev_arg) {
 				command.comparator = arg;
 				--args.length;
-			} else {
-				args.push(arg);
 			}
+			args.push(arg);
 		},
 		pushArgs = () => {
 			if (args.length) {

@@ -116,8 +116,9 @@ export class NotifyMethodCapabilityTest extends TestCommand
 	toString()
 	{
 		return 'valid_notify_method '
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ (this.match_type ? ' ' + this.match_type : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ this._notification_uri
 			+ this._notification_capability
 			+ this.key_list;

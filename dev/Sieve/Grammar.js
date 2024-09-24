@@ -9,7 +9,7 @@ import {
 	MULTILINE_DOTSTART
 } from 'Sieve/RegEx';
 
-import { arrayToString, getMatchTypes } from 'Sieve/Utils';
+import { arrayToString, getMatchTypes, getComparators } from 'Sieve/Utils';
 
 /**
  * abstract
@@ -151,19 +151,64 @@ export /*abstract*/ class TestCommand extends GrammarCommand
 */
 		super(identifier);
 		// Almost every test has a comparator and match_type, so define them here
-		this.comparator = '';
-		this.match_type = ':is';
+		this._comparator = '';
+		this._match_type = '';
+		this.relational_match = ''; // GrammarQuotedString DQUOTE ( "gt" / "ge" / "lt" / "le" / "eq" / "ne" ) DQUOTE
+	}
+
+	get require() { return /:value|:count/.test(this._match_type) ? 'relational' : ''; }
+
+	get match_type()
+	{
+		return this._match_type;
+	}
+	set match_type(value)
+	{
+		// default?
+		if (':is' == value) {
+			value = '';
+		}
+		if (value.length && !getMatchTypes(0).includes(value)) {
+			throw 'Unsupported match-type ' + value;
+		}
+		if (':list' == value) {
+			this._comparator = '';
+		}
+		if (':count' != value && ':value' != value) {
+			this.relational_match = '';
+		}
+		this._match_type = value;
+	}
+
+	get comparator()
+	{
+		return this._comparator;
+	}
+	set comparator(value)
+	{
+		if (!(value instanceof GrammarQuotedString)) {
+			value = new GrammarQuotedString(value);
+		}
+		// default?
+		if (value.length && 'i;ascii-casemap' != value.value) {
+			if (':list' == this._match_type) {
+				throw 'Comparator not allowed when using :list';
+			}
+			if (!getComparators().includes(value.value)) {
+				throw 'Unsupported comparator ' + value;
+			}
+			this._comparator = value;
+		} else {
+			this._comparator = '';
+		}
 	}
 
 	toString()
 	{
-		// https://datatracker.ietf.org/doc/html/rfc6134#section-2.3
-		if (!getMatchTypes().includes(this.match_type)) {
-			throw 'Unsupported match-type ' + this.match_type;
-		}
 		return (this.identifier
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ (this.match_type ? ' ' + this.match_type : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + arrayToString(this.arguments, ' ')).trim();
 	}
 }

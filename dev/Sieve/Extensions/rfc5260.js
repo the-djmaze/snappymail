@@ -41,8 +41,9 @@ export class DateTest extends TestCommand
 		return 'date'
 			+ (this.last ? ' :last' : (this.index.value ? ' :index ' + this.index : ''))
 			+ (this.originalzone ? ' :originalzone' : (this._zone.length ? ' :zone ' + this._zone : ''))
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ ' ' + this.match_type
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + this._header_name
 			+ ' ' + this._date_part
 			+ ' ' + this.key_list;
@@ -89,8 +90,9 @@ export class CurrentDateTest extends TestCommand
 	{
 		return 'currentdate'
 			+ (this._zone.length ? ' :zone ' + this._zone : '')
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ ' ' + this.match_type
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + this._date_part
 			+ ' ' + this.key_list;
 	}
