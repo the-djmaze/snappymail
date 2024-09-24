@@ -21,7 +21,10 @@ class MainAccount extends Account
 			if (!$sKey) {
 				throw new ClientException(Notifications::CryptKeyError);
 			}
-			$sKey = \SnappyMail\Crypt::EncryptToJSON($sKey, $this->IncPassword());
+			$sPass = \RainLoop\Api::Config()->Get('security', 'insecure_cryptkey', false)
+				? $this->Email()
+				: $this->ImapPass();
+			$sKey = \SnappyMail\Crypt::EncryptToJSON($sKey, $sPass);
 			if ($sKey) {
 				$this->sCryptKey = null;
 				if (\RainLoop\Api::Actions()->StorageProvider()->Put($this, StorageType::ROOT, '.cryptkey', $sKey)) {
@@ -39,14 +42,17 @@ class MainAccount extends Account
 			// can use the old password to re-seal the cryptkey
 			$oStorage = \RainLoop\Api::Actions()->StorageProvider();
 			$sKey = $oStorage->Get($this, StorageType::ROOT, '.cryptkey');
+			$sPass = \RainLoop\Api::Config()->Get('security', 'insecure_cryptkey', false)
+				? $this->Email()
+				: $this->ImapPass();
 			if (!$sKey) {
 				$sKey = \SnappyMail\Crypt::EncryptToJSON(
-					\sha1($this->IncPassword() . APP_SALT),
-					$this->IncPassword()
+					\sha1($this->ImapPass() . APP_SALT),
+					$sPass
 				);
 				$oStorage->Put($this, StorageType::ROOT, '.cryptkey', $sKey);
 			}
-			$sKey = \SnappyMail\Crypt::DecryptFromJSON($sKey, $this->IncPassword());
+			$sKey = \SnappyMail\Crypt::DecryptFromJSON($sKey, $sPass);
 			if (!$sKey) {
 				throw new ClientException(Notifications::CryptKeyError);
 			}
