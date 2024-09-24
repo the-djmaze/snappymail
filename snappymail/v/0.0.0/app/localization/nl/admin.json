@@ -8,7 +8,9 @@
 		"USERNAME": "Gebruikersnaam",
 		"PASSWORD": "Wachtwoord",
 		"CANCEL": "Annuleer",
-		"SEARCH": "Zoeken"
+		"SEARCH": "Zoeken",
+		"YES": "Ja",
+		"NO": "Nee"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Inlognaam",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Niets om te configureren"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Ja",
-		"BUTTON_NO": "Nee",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Weet u zeker dat u dit venster wilt stuiten?"
 	},
 	"POPUPS_LANGUAGES": {

@@ -8,7 +8,9 @@
 		"USERNAME": "使用者名稱",
 		"PASSWORD": "密碼",
 		"CANCEL": "取消",
-		"SEARCH": "搜尋"
+		"SEARCH": "搜尋",
+		"YES": "是",
+		"NO": "否"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "登入",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "無可用配置"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "是",
-		"BUTTON_NO": "否",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "您確定要關閉此視窗嗎？"
 	},
 	"POPUPS_LANGUAGES": {

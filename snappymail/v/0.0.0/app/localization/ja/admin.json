@@ -8,7 +8,9 @@
 		"USERNAME": "ユーザー名",
 		"PASSWORD": "パスワード",
 		"CANCEL": "キャンセル",
-		"SEARCH": "検索"
+		"SEARCH": "検索",
+		"YES": "はい",
+		"NO": "いいえ"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "ログイン",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "何も設定されていません"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "はい",
-		"BUTTON_NO": "いいえ",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "このウィンドウを閉じてもよろしいですか？"
 	},
 	"POPUPS_LANGUAGES": {

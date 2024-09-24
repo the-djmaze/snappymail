@@ -8,7 +8,9 @@
 		"USERNAME": "Nome utente",
 		"PASSWORD": "Passphrase",
 		"CANCEL": "Annulla",
-		"SEARCH": "Cerca"
+		"SEARCH": "Cerca",
+		"YES": "Si",
+		"NO": "No"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Niente da configurare"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Si",
-		"BUTTON_NO": "No",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Sei sicuro di voler chiudere questa finestra?"
 	},
 	"POPUPS_LANGUAGES": {

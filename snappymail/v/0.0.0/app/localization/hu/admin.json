@@ -8,7 +8,9 @@
 		"USERNAME": "Felhasználónév",
 		"PASSWORD": "Jelszó",
 		"CANCEL": "Mégse",
-		"SEARCH": "Nem találtam névjegyeket"
+		"SEARCH": "Nem találtam névjegyeket",
+		"YES": "Igen",
+		"NO": "Nem"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Belépés",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Nincs mit beállítani"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Igen",
-		"BUTTON_NO": "Nem",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Biztos, hogy be akarod zárni ezt az ablakot?"
 	},
 	"POPUPS_LANGUAGES": {

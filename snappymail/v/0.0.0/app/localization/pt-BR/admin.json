@@ -8,7 +8,9 @@
 		"USERNAME": "Nome de usuário",
 		"PASSWORD": "Senha",
 		"CANCEL": "Cancelar",
-		"SEARCH": "Nenhum contato encontrado"
+		"SEARCH": "Nenhum contato encontrado",
+		"YES": "Yes",
+		"NO": "No"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Usuário",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Nada para configurar"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Yes",
-		"BUTTON_NO": "No",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Você tem certeza que deseja fechar esta janela?"
 	},
 	"POPUPS_LANGUAGES": {

@@ -8,7 +8,9 @@
 		"USERNAME": "Erabiltzailea",
 		"PASSWORD": "Pasahitza",
 		"CANCEL": "Ezeztatu",
-		"SEARCH": "Bilatu"
+		"SEARCH": "Bilatu",
+		"YES": "Bai",
+		"NO": "Ez"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Ez dago kongiguratzeko ezer"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Bai",
-		"BUTTON_NO": "Ez",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Ziur zaude leiho hau itxi nahi duzula?"
 	},
 	"POPUPS_LANGUAGES": {

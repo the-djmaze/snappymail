@@ -8,7 +8,9 @@
 		"USERNAME": "Uživatelské jméno",
 		"PASSWORD": "Heslo",
 		"CANCEL": "Zrušit",
-		"SEARCH": "Nebyly nalezeny žádné kontakty"
+		"SEARCH": "Nebyly nalezeny žádné kontakty",
+		"YES": "Yes",
+		"NO": "No"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Není zde nic ke konfiguraci"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Yes",
-		"BUTTON_NO": "No",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Jste si jistí, že opravdu chcete zavřít toto okno?"
 	},
 	"POPUPS_LANGUAGES": {

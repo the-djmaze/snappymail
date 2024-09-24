@@ -8,7 +8,9 @@
 		"USERNAME": "Brukernavn",
 		"PASSWORD": "Passord",
 		"CANCEL": "Avbryt",
-		"SEARCH": "Fant ingen kontakter"
+		"SEARCH": "Fant ingen kontakter",
+		"YES": "Ja",
+		"NO": "Nei"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Brukernavn",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Ingenting å sette opp"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Ja",
-		"BUTTON_NO": "Nei",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Er du sikker på at du vil lukke dette vinduet?"
 	},
 	"POPUPS_LANGUAGES": {

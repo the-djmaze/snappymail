@@ -8,7 +8,9 @@
 		"USERNAME": "Tên tài khoản",
 		"PASSWORD": "Mật khẩu",
 		"CANCEL": "Hủy",
-		"SEARCH": "Tìm kiếm"
+		"SEARCH": "Tìm kiếm",
+		"YES": "Ok",
+		"NO": "Không"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Đăng nhập",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Không có gì để thiết lập"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Ok",
-		"BUTTON_NO": "Không",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Bạn có chắc chắn muốn đóng cửa sổ này?"
 	},
 	"POPUPS_LANGUAGES": {

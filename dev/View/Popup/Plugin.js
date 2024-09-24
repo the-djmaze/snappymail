@@ -18,7 +18,11 @@ export class PluginPopupView extends AbstractViewPopup {
 			saveError: '',
 			id: '',
 			name: '',
-			readme: ''
+			readme: '',
+			author: '',
+			url: '',
+			version: '',
+			released: ''
 		});
 
 		this.config = ko.observableArray();
@@ -73,12 +77,20 @@ export class PluginPopupView extends AbstractViewPopup {
 		this.id('');
 		this.name('');
 		this.readme('');
+		this.author('');
+		this.url('');
+		this.version('');
+		this.released('');
 		this.config([]);
 
 		if (oPlugin) {
 			this.id(oPlugin.id);
 			this.name(oPlugin.name);
 			this.readme(oPlugin.readme);
+			this.author(oPlugin.author);
+			this.url(oPlugin.url);
+			this.version(oPlugin.version);
+			this.released(oPlugin.released);
 
 			const config = oPlugin.config;
 			if (arrayLength(config)) {

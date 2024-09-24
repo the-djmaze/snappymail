@@ -8,7 +8,9 @@
 		"USERNAME": "Имя пользователя",
 		"PASSWORD": "Пароль",
 		"CANCEL": "Отменить",
-		"SEARCH": "Поиск"
+		"SEARCH": "Поиск",
+		"YES": "Да",
+		"NO": "Нет"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Логин",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Без настроек"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Да",
-		"BUTTON_NO": "Нет",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Вы уверены, что хотите закрыть это окно?"
 	},
 	"POPUPS_LANGUAGES": {

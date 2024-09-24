@@ -8,7 +8,9 @@
 		"USERNAME": "Používateľské men",
 		"PASSWORD": "Heslo",
 		"CANCEL": "Zrušiť",
-		"SEARCH": "Nenašli sa žiadne kontakty"
+		"SEARCH": "Nenašli sa žiadne kontakty",
+		"YES": "Yes",
+		"NO": "No"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Prihlasovanie",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Nothing to configure"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Yes",
-		"BUTTON_NO": "No",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Are you sure you want to close this window?"
 	},
 	"POPUPS_LANGUAGES": {
