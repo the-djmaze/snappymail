@@ -102,7 +102,7 @@ class Utils
 	public static function ClearHtmlOutput(string $sHtml) : string
 	{
 //		return $sHtml;
-		return \preg_replace('/>\\s+</', '><', \preg_replace(
+		return \preg_replace('/>\\s+</', '> <', \preg_replace(
 			['@\\s*/>@', '/\\s*&nbsp;/i', '/&nbsp;\\s*/i', '/[\\r\\n\\t]+/'],
 			['>', "\xC2\xA0", "\xC2\xA0", ' '],
 			\trim($sHtml)
