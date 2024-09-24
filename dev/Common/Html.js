@@ -32,7 +32,7 @@ const
 		'span','strong','sub','sup','time','u','var',
 		// Deprecated by HTML Standard
 		'acronym','big','center','dir','font','marquee',
-		'nobr','noembed','noframes','plaintext','rb','rtc','strike','tt',
+		'nobr','plaintext','rb','rtc','strike','tt',
 		// Media Elements
 		'img',//'picture','source',
 		// Table Elements
@@ -169,8 +169,9 @@ const
 				// strip comments
 				.replace(/\/\*[\s\S]*?\*\//gi, '')
 				// strip MS Word comments
-				.replace(/<!--[\s\S]*?-->/gi, '');
-				// strip HTML
+				.replace(/<!--[\s\S]*?-->/gi, '')
+				// strip HTML, as < is no CSS combinator anyway
+				.replace(/<[\s\S]*/gi, '');
 //				.replace(/<\/?[a-z][\s\S]*?>/gi, '');
 
 			// unified regex to match css & media queries together
