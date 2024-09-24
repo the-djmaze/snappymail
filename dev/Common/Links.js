@@ -45,6 +45,7 @@ export const
 
 	proxy = url =>
 		BASE + '?/ProxyExternal/'
+//			+ btoa(JSON.stringify([token,url]).replace(/ /g, '%20')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
 			+ btoa(url.replace(/ /g, '%20')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
 //			+ b64EncodeJSONSafe(url.replace(/ /g, '%20')),
 

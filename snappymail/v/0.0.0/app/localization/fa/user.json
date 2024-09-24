@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "پاک‌کردن جستجو",
 		"CONTACT_VIEW_DESC": "تماس مورد نظر در لیست را جهت مشاهده، انتخاب کنید.",
 		"LABEL_BIRTHDAY": "تاریخ تولد",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "ورود نام",
-		"PLACEHOLDER_ENTER_LAST_NAME": "ورود نام خانوادگی",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "ورود نام",
-		"PLACEHOLDER_ENTER_NICK_NAME": "ورود نام مستعار",
+		"DISPLAY_NAME": "نام",
+		"LAST_NAME": "نام خانوادگی",
+		"FIRST_NAME": "نام",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "نام مستعار",
 		"LABEL_READ_ONLY": "فقط خواندنی",
 		"ADD_MENU_LABEL": "اضافه‌کردن",
 		"ADD_MENU_NICKNAME": "نام مستعار",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "اطلاعات تماس گیرندگان را بصورت خودکار در آدرس‌بوک ذخیره کن",

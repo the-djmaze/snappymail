@@ -47,7 +47,10 @@ class Memcache implements \MailSo\Cache\DriverInterface
 
 	public function Set(string $sKey, string $sValue) : bool
 	{
-		return $this->oMem ? $this->oMem->set($this->generateCachedKey($sKey), $sValue, 0, $this->iExpire) : false;
+		if ($this->oMem instanceof \Memcache) {
+			return $this->oMem->set($this->generateCachedKey($sKey), $sValue, 0, $this->iExpire);
+		}
+		return $this->oMem ? $this->oMem->set($this->generateCachedKey($sKey), $sValue, $this->iExpire) : false;
 	}
 
 	public function Exists(string $sKey) : bool

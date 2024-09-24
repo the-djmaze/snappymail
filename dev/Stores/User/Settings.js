@@ -50,6 +50,7 @@ export const SettingsUserStore = new class {
 			layout: 1,
 			editorDefaultType: 'Html',
 			editorWysiwyg: 'Squire',
+			markdown: 0,
 			msgDefaultAction: 1
 		});
 
@@ -113,7 +114,8 @@ export const SettingsUserStore = new class {
 			'requireTLS',
 			'pgpSign',
 			'pgpEncrypt',
-			'allowSpellcheck'
+			'allowSpellcheck',
+			'markdown'
 /*
 			'MessagesPerPage',
 			'MessageReadDelay',

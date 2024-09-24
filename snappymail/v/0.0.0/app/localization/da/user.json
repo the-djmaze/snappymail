@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Fjern søgning",
 		"CONTACT_VIEW_DESC": "Vælg kontakt i oversigten for visning.",
 		"LABEL_BIRTHDAY": "Fødselsdag",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Indtast kaldenavn",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Indtast efternavn",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Indtast fornavn(e)",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Indtast kaldenavn",
+		"DISPLAY_NAME": "Kaldenavn",
+		"LAST_NAME": "Efternavn",
+		"FIRST_NAME": "Fornavn(e)",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Kaldenavn",
 		"LABEL_READ_ONLY": "Skrivebeskyttet",
 		"ADD_MENU_LABEL": "Tilføj",
 		"ADD_MENU_NICKNAME": "Kaldenavn",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Tilføj automatisk modtager til adressebog",

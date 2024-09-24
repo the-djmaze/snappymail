@@ -4,8 +4,8 @@ class CacheMemcachePlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Cache Memcache',
-		VERSION = '2.36',
-		RELEASE = '2024-03-22',
+		VERSION = '2.37',
+		RELEASE = '2024-09-15',
 		REQUIRED = '2.36.0',
 		CATEGORY = 'Cache',
 		DESCRIPTION = 'Cache handler using PHP Memcache or PHP Memcached';

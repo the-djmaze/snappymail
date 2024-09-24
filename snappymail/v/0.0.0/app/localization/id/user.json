@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Bersihkan pencarian",
 		"CONTACT_VIEW_DESC": "Pilih kontak pada daftar untuk ditampilkan di sini.",
 		"LABEL_BIRTHDAY": "Tanggal lahir",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Isi nama tampilan",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Isi nama belakang ",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Isi nama depan",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Isi nama panggilan",
+		"DISPLAY_NAME": "Tampilan",
+		"LAST_NAME": "Belakang ",
+		"FIRST_NAME": "Depan",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Panggilan",
 		"LABEL_READ_ONLY": "Hanya bisa dibaca",
 		"ADD_MENU_LABEL": "Tambah",
 		"ADD_MENU_NICKNAME": "Nama panggilan",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Tambah penerima ke daftar alamat secara otomatis",

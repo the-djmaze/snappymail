@@ -21,6 +21,10 @@ export class FileIntoCommand extends ActionCommand
 		super();
 		// QuotedString / MultiLine
 		this._mailbox = new GrammarQuotedString();
+		// https://datatracker.ietf.org/doc/html/rfc3894
+		this.copy = false;
+		// https://datatracker.ietf.org/doc/html/rfc5490#section-3.2
+		this.create = false;
 	}
 
 	get require() { return 'fileinto'; }
@@ -28,9 +32,7 @@ export class FileIntoCommand extends ActionCommand
 	toString()
 	{
 		return 'fileinto'
-			// https://datatracker.ietf.org/doc/html/rfc3894
 			+ ((this.copy && capa.includes('copy')) ? ' :copy' : '')
-			// https://datatracker.ietf.org/doc/html/rfc5490#section-3.2
 			+ ((this.create && capa.includes('mailbox')) ? ' :create' : '')
 			+ ' ' + this._mailbox
 			+ ';';
@@ -64,15 +66,17 @@ export class RedirectCommand extends ActionCommand
 		super();
 		// QuotedString / MultiLine
 		this._address = new GrammarQuotedString();
+		// https://datatracker.ietf.org/doc/html/rfc3894
+		this.copy = false;
+		// https://datatracker.ietf.org/doc/html/rfc6134#section-2.3
+		this.list = null;
 	}
 
 	toString()
 	{
 
 		return 'redirect'
-			// https://datatracker.ietf.org/doc/html/rfc6134#section-2.3
 //			+ ((this.list && capa.includes('extlists')) ? ' :list ' + this.list : '')
-			// https://datatracker.ietf.org/doc/html/rfc3894
 			+ ((this.copy && capa.includes('copy')) ? ' :copy' : '')
 			+ ' ' + this._address
 			+ ';';

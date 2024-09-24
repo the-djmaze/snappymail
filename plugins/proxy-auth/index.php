@@ -6,8 +6,8 @@ class ProxyAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME     = 'Proxy Auth',
 		AUTHOR   = 'Philipp',
 		URL      = 'https://www.mundhenk.org/',
-		VERSION  = '0.4',
-		RELEASE  = '2024-05-26',
+		VERSION  = '0.5',
+		RELEASE  = '2024-09-20',
 		REQUIRED = '2.36.1',
 		CATEGORY = 'Login',
 		LICENSE  = 'MIT',
@@ -41,7 +41,7 @@ class ProxyAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 		return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
 	}
 
-	public function MapEmailAddress(string &$sEmail, string &$sLogin, string &$sPassword)
+	public function MapEmailAddress(string &$sEmail, string &$sImapUser, string &$sPassword, string &$sSmtpUser)
 	{
 		$oActions = \RainLoop\Api::Actions();
 		$oLogger = $oActions->Logger();

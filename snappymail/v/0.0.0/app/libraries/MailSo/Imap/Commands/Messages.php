@@ -163,7 +163,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageAppendStream(string $sFolderName, $rMessageStream, int $iStreamSize, array $aFlagsList = null, int $iDateTime = 0) : ?int
+	public function MessageAppendStream(string $sFolderName, $rMessageStream, int $iStreamSize, ?array $aFlagsList = null, int $iDateTime = 0) : ?int
 	{
 		if (!\is_resource($rMessageStream)) {
 			throw new \InvalidArgumentException('$rMessageStream must be a resource');
@@ -225,7 +225,7 @@ trait Messages
 
 	/**
 	 * RFC 3502 MULTIAPPEND
-	public function MessageAppendStreams(string $sFolderName, $rMessageAppendStream, int $iStreamSize, array $aFlagsList = null, int &$iUid = null, int $iDateTime = 0) : ?int
+	public function MessageAppendStreams(string $sFolderName, $rMessageAppendStream, int $iStreamSize, ?array $aFlagsList = null, ?int &$iUid = null, int $iDateTime = 0) : ?int
 	*/
 
 	/**
@@ -311,7 +311,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageReplaceStream(string $sFolderName, int $iUid, $rMessageStream, int $iStreamSize, array $aFlagsList = null, int $iDateTime = 0) : ?int
+	public function MessageReplaceStream(string $sFolderName, int $iUid, $rMessageStream, int $iStreamSize, ?array $aFlagsList = null, int $iDateTime = 0) : ?int
 	{
 		if (1 > $iUid || !$this->hasCapability('REPLACE')) {
 			$this->FolderSelect($sFolderName);
@@ -412,7 +412,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageESearch(string $sSearchCriterias, array $aSearchReturn = null, bool $bReturnUid = true, string $sLimit = '') : array
+	public function MessageESearch(string $sSearchCriterias, ?array $aSearchReturn = null, bool $bReturnUid = true, string $sLimit = '') : array
 	{
 		$oESearch = new \MailSo\Imap\Requests\ESEARCH($this);
 		$oESearch->sCriterias = $sSearchCriterias ?: 'ALL';

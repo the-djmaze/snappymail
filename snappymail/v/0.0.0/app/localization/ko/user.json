@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "검색 초기화",
 		"CONTACT_VIEW_DESC": "목록에서 연락처를 선택하여 이 곳에 표시하세요.",
 		"LABEL_BIRTHDAY": "생일",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "표시명을 입력하세요",
-		"PLACEHOLDER_ENTER_LAST_NAME": "성을 입력하세요",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "이름을 입력하세요",
-		"PLACEHOLDER_ENTER_NICK_NAME": "별칭을 입력하세요",
+		"DISPLAY_NAME": "표시명을 입력하세요",
+		"LAST_NAME": "성을 입력하세요",
+		"FIRST_NAME": "이름을 입력하세요",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "별칭을 입력하세요",
 		"LABEL_READ_ONLY": "읽기 전용",
 		"ADD_MENU_LABEL": "추가",
 		"ADD_MENU_NICKNAME": "별칭",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "수신인을 주소록에 자동으로 추가",

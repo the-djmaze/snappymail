@@ -8,10 +8,10 @@ class LDAPLoginMappingPlugin extends AbstractPlugin
 {
 	const
 		NAME     = 'LDAP login mapping',
-		VERSION  = '2.2',
+		VERSION  = '2.3',
 		AUTHOR   = 'RainLoop Team, Ludovic Pouzenc<ludovic@pouzenc.fr>, ZephOne<zephone@protonmail.com>',
-		RELEASE  = '2024-03-12',
-		REQUIRED = '2.35.3',
+		RELEASE  = '2024-09-20',
+		REQUIRED = '2.36.1',
 		CATEGORY = 'Login',
 		DESCRIPTION = 'Enable custom mapping using ldap field';
 	/**
@@ -79,12 +79,13 @@ class LDAPLoginMappingPlugin extends AbstractPlugin
 
 	/**
 	 * @param string $sEmail
-	 * @param string $sLogin
+	 * @param string $sImapUser
 	 * @param string $sPassword
+	 * @param string $sSmtpUser
 	 *
 	 * @throws \RainLoop\Exceptions\ClientException
 	 */
-	public function FilterLoginСredentials(&$sEmail, &$sLogin, &$sPassword)
+	public function FilterLoginСredentials(string &$sEmail, string &$sImapUser, string &$sPassword, string &$sSmtpUser)
 	{
 		$this->oLogger = \RainLoop\Api::Logger();
 
@@ -102,10 +103,10 @@ class LDAPLoginMappingPlugin extends AbstractPlugin
 			$sIP = $_SERVER['REMOTE_ADDR'];
 			$sResult = $this->ldapSearch($sEmail);
 			if ( is_array($sResult) ) {
-				$sLogin = $sResult['login'];
+				$sImapUser = $sResult['login'];
 				$sEmail = $sResult['email'];
 			}
-			syslog(LOG_WARNING, "plugins/ldap-login-mapping/index.php:FilterLoginСredentials() auth try: $sIP/$sEmail, resolved as $sLogin/$sEmail");
+			syslog(LOG_WARNING, "plugins/ldap-login-mapping/index.php:FilterLoginСredentials() auth try: $sIP/$sEmail, resolved as $sImapUser/$sEmail");
 		}
 	}
 

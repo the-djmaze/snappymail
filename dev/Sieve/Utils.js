@@ -22,7 +22,7 @@ export const
 	koComputable = fn => ko.computed(fn, {'pure':true}),
 
 	arrayToString = (arr, separator) =>
-		arr.map(item => item.toString?.() || item).join(separator),
+		(arr || []).map(item => item.toString?.() || item).join(separator),
 /*
 	getNotificationMessage = code => {
 		let key = getKeyByValue(Notifications, code);
@@ -58,11 +58,33 @@ export const
 		serverErrorDesc(text);
 	},
 
+	getComparators = (validOnly = 0) => {
+		let result = [
+			// Default
+			'i;ascii-casemap',
+		];
+		if (capa.includes('relational') || !validOnly) {
+			result.push('i;octet');
+		}
+		if (capa.includes('comparator-i;ascii-numeric') || !validOnly) {
+			result.push('i;ascii-numeric');
+		}
+		if (capa.includes('comparator-i;unicode-casemap') || !validOnly) {
+			result.push('i;unicode-casemap');
+		}
+		return result;
+	},
+
 	getMatchTypes = (validOnly = 1) => {
 		let result = [':is',':contains',':matches'];
 		// https://datatracker.ietf.org/doc/html/rfc6134#section-2.3
+		// Only available for tests with a key_list property
 		if (capa.includes('extlists') || !validOnly) {
 			result.push(':list');
+		}
+		if (capa.includes('relational') || !validOnly) {
+			result.push(':value');
+			result.push(':count');
 		}
 		return result;
 	};

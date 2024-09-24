@@ -13,24 +13,28 @@ export class EnvironmentTest extends TestCommand
 	constructor()
 	{
 		super();
-		this.name     = new GrammarQuotedString;
+		this._name    = new GrammarQuotedString;
 		this.key_list = new GrammarStringList;
 	}
+
+	get name() { return this._name.value; }
+	set name(v) { this._name.value = v; }
 
 	get require() { return 'environment'; }
 
 	toString()
 	{
 		return 'environment'
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ ' ' + this.match_type
-			+ ' ' + this.name
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
+			+ ' ' + this._name
 			+ ' ' + this.key_list;
 	}
 
 	pushArguments(args)
 	{
 		this.key_list = args.pop();
-		this.name     = args.pop();
+		this._name    = args.pop();
 	}
 }

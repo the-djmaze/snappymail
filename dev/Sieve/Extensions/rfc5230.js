@@ -30,33 +30,6 @@ export class VacationCommand extends ActionCommand
 //	get require() { return ['vacation','vacation-seconds']; }
 	get require() { return 'vacation'; }
 
-	toString()
-	{
-		let result = 'vacation';
-		if (0 < this._seconds.value && capa.includes('vacation-seconds')) {
-			result += ' :seconds ' + this._seconds;
-		} else if (0 < this._days.value) {
-			result += ' :days ' + this._days;
-		}
-		if (this._subject.length) {
-			result += ' :subject ' + this._subject;
-		}
-		if (this._from.length) {
-			result += ' :from ' + this._from;
-//			result += ' :from ' + this.arguments[':from'];
-		}
-		if (this.addresses.length) {
-			result += ' :addresses ' + this.addresses;
-		}
-		if (this.mime) {
-			result += ' :mime';
-		}
-		if (this._handle.length) {
-			result += ' :handle ' + this._handle;
-		}
-		return result + ' ' + this._reason;
-	}
-
 	get days()      { return this._days.value; }
 	get seconds()   { return this._seconds.value; }
 	get subject()   { return this._subject.value; }
@@ -71,6 +44,32 @@ export class VacationCommand extends ActionCommand
 	set handle(str)  { this._handle.value = str; }
 	set reason(str)  { this._reason.value = str; }
 
+	toString()
+	{
+		let result = 'vacation';
+		if (0 < this._seconds.value && capa.includes('vacation-seconds')) {
+			result += ' :seconds ' + this._seconds;
+		} else if (0 < this._days.value) {
+			result += ' :days ' + this._days;
+		}
+		if (this._subject.length) {
+			result += ' :subject ' + this._subject;
+		}
+		if (this._from.length) {
+			result += ' :from ' + this._from;
+		}
+		if (this.addresses.length) {
+			result += ' :addresses ' + this.addresses;
+		}
+		if (this.mime) {
+			result += ' :mime';
+		}
+		if (this._handle.length) {
+			result += ' :handle ' + this._handle;
+		}
+		return result + ' ' + this._reason;
+	}
+
 	pushArguments(args)
 	{
 		this._reason.value = args.pop().value; // GrammarQuotedString
@@ -81,7 +80,8 @@ export class VacationCommand extends ActionCommand
 				this.addresses = arg; // GrammarStringList
 			} else if (i && ':' === args[i-1][0]) {
 				// :days, :seconds, :subject, :from, :handle
-				this[args[i-1].replace(':','_')].value = arg.value;
+				let p = args[i-1].replace(':','_');
+				this[p] ? (this[p].value = arg.value) : console.log('Unknown VacationCommand :' + p);
 			}
 		});
 	}

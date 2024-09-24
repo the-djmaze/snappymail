@@ -4,6 +4,9 @@ import { SettingsUserStore } from 'Stores/User/Settings';
 
 const
 	tmpl = createElement('template'),
+
+	turndown = new TurndownService(),
+
 	htmlre = /[&<>"']/g,
 	httpre = /^(https?:)?\/\//i,
 	htmlmap = {
@@ -14,13 +17,33 @@ const
 		"'": '&#x27;'
 	},
 
-	disallowedTags = [
-		'svg','script','title','link','base','meta',
-		'input','output','select','button','textarea',
-		'bgsound','keygen','source','object','embed','applet','iframe','frame','frameset','video','audio','area','map'
-		// not supported by <template> element
-//		,'html','head','body'
+	keepTagContent = 'form,button,data', // font
+
+	allowedTags = [
+		// Structural Elements:
+		'blockquote','br','div','figcaption','figure','h1','h2','h3','h4','h5','h6','hgroup','hr','p','wbr',
+		'article','aside','header','footer','main','section',
+		'details','summary',
+		// List Elements
+		'dd','dl','dt','li','ol','ul',
+		// Text Formatting Elements
+		'a','abbr','address','b','bdi','bdo','cite','code','del','dfn',
+		'em','i','ins','kbd','mark','pre','q','rp','rt','ruby','s','samp','small',
+		'span','strong','sub','sup','time','u','var',
+		// Deprecated by HTML Standard
+		'acronym','big','center','dir','font','marquee',
+		'nobr','plaintext','rb','rtc','strike','tt',
+		// Media Elements
+		'img',//'picture','source',
+		// Table Elements
+		'caption','col','colgroup','table','tbody','td','tfoot','th','thead','tr',
+		// Disallowed but converted later
+		'style','xmp'
 	].join(','),
+
+	nonEmptyTags = [
+		'A','B','EM','I','SPAN','STRONG'
+	],
 
 	blockquoteSwitcher = () => {
 		SettingsUserStore.collapseBlockquotes() &&
@@ -99,8 +122,10 @@ const
 	},
 
 	cleanCSS = source =>
-		source.trim().replace(/(^|;)\s*-(ms|webkit)-[^;]+(;|$)/g, '')
-			.replace(/white-space[^;]+(;|$)/g, '')
+		source.trim()
+			.replace(/;\s*-[^;]+/g, '')
+			.replace(/^\s*-[^;]+(;|$)/g, '')
+			.replace(/white-space[^;]+/g, '')
 			// Drop Microsoft Office style properties
 //			.replace(/mso-[^:;]+:[^;]+/gi, '')
 	,
@@ -142,14 +167,15 @@ const
 		if (source) {
 			source = source
 				// strip comments
-				.replace(/\/\*[\s\S]*?\*\/|<!--|-->/gi, '')
-				// strip import statements
-				.replace(/@import .*?;/gi , '')
-				// strip keyframe statements
-				.replace(/((@.*?keyframes [\s\S]*?){([\s\S]*?}\s*?)})/gi, '');
+				.replace(/\/\*[\s\S]*?\*\//gi, '')
+				// strip MS Word comments
+				.replace(/<!--[\s\S]*?-->/gi, '')
+				// strip HTML, as < is no CSS combinator anyway
+				.replace(/<[\s\S]*/gi, '');
+//				.replace(/<\/?[a-z][\s\S]*?>/gi, '');
 
 			// unified regex to match css & media queries together
-			let unified = /((\s*?(?:\/\*[\s\S]*?\*\/)?\s*?@media[\s\S]*?){([\s\S]*?)}\s*?})|(([\s\S]*?){([\s\S]*?)})/gi,
+			let unified = /(?:(\s*?@(?:media)[\s\S]*?){([\s\S]*?)}\s*?})|(?:([\s\S]*?){([\s\S]*?)})/gi,
 				arr;
 
 			while (true) {
@@ -158,7 +184,7 @@ const
 					break;
 				}
 
-				let selector = arr[arr[2] === undefined ? 5 : 2].split('\r\n').join('\n').trim()
+				let selector = arr[arr[2] === undefined ? 3 : 1].split('\r\n').join('\n').trim()
 					// Never have more than a single line break in a row
 					.replace(/\n+/, "\n")
 					// Remove :root and html
@@ -170,13 +196,14 @@ const
 					css.push({
 						selector: selector,
 						type: 'media',
-						subStyles: parseCSS(arr[3] + '\n}') //recursively parse media query inner css
+						subStyles: parseCSS(arr[2] + '\n}') //recursively parse media query inner css
 					});
 				} else if (selector && !selector.includes('@')) {
 					// we have standard css
+					// ignores @import, @keyframe, @font-face statements
 					css.push({
 						selector: selector,
-						rules: cleanCSS(arr[6])
+						rules: cleanCSS(arr[4])
 					});
 				}
 			}
@@ -255,9 +282,6 @@ export const
 				'abbr', 'scope',
 				// td
 				'colspan', 'rowspan', 'headers'
-			],
-			nonEmptyTags = [
-				'A','B','EM','I','SPAN','STRONG'
 			];
 
 		if (SettingsUserStore.allowStyles()) {
@@ -304,13 +328,21 @@ export const
 			}
 		});
 
+		// https://github.com/the-djmaze/snappymail/issues/1125
+		tmpl.content.querySelectorAll(keepTagContent).forEach(oElement => replaceWithChildren(oElement));
+
 		tmpl.content.querySelectorAll(
-			disallowedTags
+			':not('+allowedTags+')'
 			+ (0 < bqLevel ? ',' + (new Array(1 + bqLevel).fill('blockquote').join(' ')) : '')
 		).forEach(oElement => oElement.remove());
-
-		// https://github.com/the-djmaze/snappymail/issues/1125
-		tmpl.content.querySelectorAll('form,button').forEach(oElement => replaceWithChildren(oElement));
+/*		// Is this slower or faster?
+		).forEach(oElement => {
+			if (!node || !node.contains(oElement)) {
+				oElement.remove();
+				node = oElement;
+			}
+		});
+*/
 
 		// https://github.com/the-djmaze/snappymail/issues/1641
 		let body = tmpl.content.querySelector('.mail-body');
@@ -340,6 +372,13 @@ export const
 				} else {
 					oElement.remove();
 				}
+				return;
+			}
+
+			if ('XMP' === name) {
+				const pre = createElement('pre');
+				pre.innerHTML = encodeHtml(oElement.innerHTML);
+				oElement.replaceWith(pre);
 				return;
 			}
 
@@ -429,7 +468,7 @@ export const
 			}
 
 //			if (['CENTER','FORM'].includes(name)) {
-			if ('O:P' === name || (nonEmptyTags.includes(name) && ('' == oElement.textContent.trim()))) {
+			if (nonEmptyTags.includes(name) && ('' == oElement.textContent.trim())) {
 				('A' !== name || !oElement.querySelector('IMG')) && replaceWithChildren(oElement);
 				return;
 			}
@@ -604,6 +643,9 @@ export const
 	 * @returns {string}
 	 */
 	htmlToPlain = html => {
+		if (SettingsUserStore.markdown()) {
+			return htmlToMarkdown(html);
+		}
 		const
 			hr = '⎯'.repeat(64),
 			forEach = (selector, fn) => tmpl.content.querySelectorAll(selector).forEach(fn),
@@ -639,6 +681,8 @@ export const
 		tmpl.innerHTML = html
 			.replace(/<t[dh](\s[\s\S]*?)?>/gi, '\t')
 			.replace(/<\/tr(\s[\s\S]*?)?>/gi, '\n');
+
+		forEach('style', node => node.remove());
 
 		// lines
 		forEach('hr', node => node.replaceWith(`\n\n${hr}\n\n`));
@@ -698,6 +742,11 @@ export const
 		blockquotes(tmpl.content);
 
 		return (tmpl.content.textContent || '').trim();
+	},
+
+	htmlToMarkdown = html => {
+		tmpl.innerHTML = html;
+		return turndown.turndown(tmpl.content);
 	},
 
 	/**
@@ -771,5 +820,7 @@ export const
 
 rl.Utils = {
 	htmlToPlain: htmlToPlain,
-	plainToHtml: plainToHtml
+	plainToHtml: plainToHtml,
+	htmlToMarkdown: htmlToMarkdown
+//	markdownToHtml: md => marked.parse(md)
 };

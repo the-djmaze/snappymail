@@ -245,7 +245,7 @@ export class ContactModel extends AbstractModel {
 			this.namePrefix(),
 			this.nameSuffix()
 		]/*, params, group*/);
-//		jCard.parseFullName({set:true});
+		jCard.parseFullName({set:true});
 
 		['nickname', 'note', 'title'].forEach(field =>
 			this[field]() ? jCard.set(field, this[field]()/*, params, group*/) : jCard.remove(field)

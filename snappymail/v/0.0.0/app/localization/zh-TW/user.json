@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "清除搜尋",
 		"CONTACT_VIEW_DESC": "選取聯絡人以在清單中檢視。",
 		"LABEL_BIRTHDAY": "生日",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "顯示名稱",
-		"PLACEHOLDER_ENTER_LAST_NAME": "姓",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "名",
-		"PLACEHOLDER_ENTER_NICK_NAME": "暱稱",
+		"DISPLAY_NAME": "顯示名稱",
+		"LAST_NAME": "姓",
+		"FIRST_NAME": "名",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "暱稱",
 		"LABEL_READ_ONLY": "唯讀",
 		"ADD_MENU_LABEL": "新增",
 		"ADD_MENU_NICKNAME": "暱稱",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "永遠顯示",
 		"IMAGES_WHITELIST": "圖片白名單",
 		"MESSAGE_POPUP_WINDOW": "在新彈出窗口而非分頁中打開",
-		"MAILTO": "注冊成 mailto: 連結處理器"
+		"MAILTO": "注冊成 mailto: 連結處理器",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "自動新增收件者至通訊錄",

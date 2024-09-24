@@ -12,10 +12,10 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 {
 	const
 		NAME     = 'LDAP Mail Accounts',
-		VERSION  = '2.2.0',
+		VERSION  = '2.2.1',
 		AUTHOR   = 'cm-schl',
 		URL      = 'https://github.com/cm-sch',
-		RELEASE  = '2024-05-28',
+		RELEASE  = '2024-09-20',
 		REQUIRED = '2.36.1',
 		CATEGORY = 'Accounts',
 		DESCRIPTION = 'Add additional mail accounts the SnappyMail user has access to by a LDAP query. Basing on the work of FWest98 (https://github.com/FWest98).';
@@ -44,7 +44,7 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 	 * @param string &$sPassword
 	 * @param string &$sSmtpUser
 	 */
-	public function overwriteMainAccountEmail(&$sEmail, &$sImapUser, &$sPassword, &$sSmtpUser)
+	public function overwriteMainAccountEmail(string &$sEmail, string &$sImapUser, string &$sPassword, string &$sSmtpUser)
 	{
 		$this->Manager()->Actions()->Logger()->Write("Login DATA: login: $sImapUser email: $sEmail", \LOG_WARNING, "LDAP MAIL ACCOUNTS PLUGIN");
 
@@ -100,7 +100,7 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 			->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 			->SetDescription("SnappyMail saves the passwords of the additional accounts by encrypting them using a cryptkey that is saved in the file \".cryptkey\". When the password of the main account changes, SnappyMail asks the user for the old password to reencrypt the keys with the new userpassword.
 				\nOn a password change using ldap (or when the password has been forgotten by the user) this makes problems and asks the user to insert the old password. Therefore activating this option overwrites the .cryptkey file on login in order to always accept the actual ldap password of the user.
-				\nATTENTION: This has side effects on pgp keys because these are also secured by the cryptkey and could therefore not be accessible anymore! 
+				\nATTENTION: This has side effects on pgp keys because these are also secured by the cryptkey and could therefore not be accessible anymore!
 				\nSee https://github.com/the-djmaze/snappymail/issues/1570#issuecomment-2085528061")
 			->SetDefaultValue(false),
 		]);

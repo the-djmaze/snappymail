@@ -66,7 +66,7 @@ class Exception extends \Exception
 		511 => 'Network Authentication Required',
 	);
 
-	function __construct(string $message = "", int $code = 0, Response $response = null)
+	function __construct(string $message = "", int $code = 0, ?Response $response = null)
 	{
 		if ($response) {
 			if (\in_array($code, array(301, 302, 303, 307))) {

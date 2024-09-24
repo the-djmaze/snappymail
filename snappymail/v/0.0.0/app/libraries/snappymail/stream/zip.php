@@ -102,7 +102,7 @@ class ZIP
 		}
 	}
 
-	public function addFile($file, string $name = null) : bool
+	public function addFile($file, ?string $name = null) : bool
 	{
 		if (\is_file($file) && $fp = new \SplFileObject($file, 'rb')) {
 			return $this->addFromStream($fp, $name ?: \basename($file));

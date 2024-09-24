@@ -285,7 +285,7 @@ trait Folders
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function FolderExpunge(SequenceSet $oUidRange = null) : void
+	public function FolderExpunge(?SequenceSet $oUidRange = null) : void
 	{
 		$sCmd = 'EXPUNGE';
 		$aArguments = array();

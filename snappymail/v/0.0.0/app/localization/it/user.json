@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Pulisci ricerca",
 		"CONTACT_VIEW_DESC": "Seleziona un contatto dalla lista per visualizzarlo qui",
 		"LABEL_BIRTHDAY": "Compleanno",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Inserisci il nome visualizzato",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Inserisci il cognome",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Inserisci il nome",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Inserisci il nickname",
+		"DISPLAY_NAME": "Nome visualizzato",
+		"LAST_NAME": "Cognome",
+		"FIRST_NAME": "Nome",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Nickname",
 		"LABEL_READ_ONLY": "Sola lettura",
 		"ADD_MENU_LABEL": "Aggiungi",
 		"ADD_MENU_NICKNAME": "Soprannome",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Visualizza sempre",
 		"IMAGES_WHITELIST": "Whitelist per immagini",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Aggiungi automaticamente le persone che ti inviano mail alla rubrica",

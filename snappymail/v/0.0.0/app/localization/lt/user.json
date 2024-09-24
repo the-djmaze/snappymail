@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Išvalyti paiešką",
 		"CONTACT_VIEW_DESC": "Pasirinkite kontaktą sąraše, kad matytumėte informaciją čia.",
 		"LABEL_BIRTHDAY": "Gimtadienis",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Įveskite rodomą vardą",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Įveskite pavardę",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Įveskite vardą",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Įveskite slapyvardį",
+		"DISPLAY_NAME": "Rodomą vardą",
+		"LAST_NAME": "Pavardę",
+		"FIRST_NAME": "Vardą",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Slapyvardį",
 		"LABEL_READ_ONLY": "Tik skaitymui",
 		"ADD_MENU_LABEL": "Pridėti",
 		"ADD_MENU_NICKNAME": "Slapyvardis",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Automatiškai pridėti gavėjus į adresų knygą",

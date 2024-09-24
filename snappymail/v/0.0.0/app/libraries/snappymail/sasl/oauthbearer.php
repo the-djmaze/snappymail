@@ -14,6 +14,8 @@ class OAuthBearer extends \SnappyMail\SASL
 		?string $authzid = null
 	) : string
 	{
+		// add host and port?
+		//return $this->encode("n,a={$username},\x01host={$host}\x01port={$port}\x01auth=Bearer {$accessToken}\x01\x01");
 		return $this->encode("n,a={$username},\x01auth=Bearer {$accessToken}\x01\x01");
 	}
 

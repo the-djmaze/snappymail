@@ -4,11 +4,11 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Nextcloud',
-		VERSION = '2.37.0',
-		RELEASE  = '2024-08-11',
+		VERSION = '2.38.0',
+		RELEASE  = '2024-09-16',
 		CATEGORY = 'Integrations',
 		DESCRIPTION = 'Integrate with Nextcloud v20+',
-		REQUIRED = '2.36.2';
+		REQUIRED = '2.38.0';
 
 	private const IGNORE_SYSTEM_ADDRESSBOOK_KEY = 'ignoreSystemAddressbook';
 	private const IGNORE_SYSTEM_ADDRESSBOOK_DEFAULT_VALUE = true;
@@ -55,6 +55,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 			$this->addTemplate('templates/PopupsNextcloudFiles.html');
 			$this->addTemplate('templates/PopupsNextcloudCalendars.html');
+			$this->addTemplate('templates/PopupsNextcloudInvites.html');
 
 //			$this->addHook('login.credentials.step-2', 'loginCredentials2');
 //			$this->addHook('login.credentials', 'loginCredentials');
@@ -163,32 +164,17 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 	public function beforeLogin(\RainLoop\Model\Account $oAccount, \MailSo\Net\NetClient $oClient, \MailSo\Net\ConnectSettings $oSettings) : void
 	{
-		// https://apps.nextcloud.com/apps/oidc_login
-		$config = \OC::$server->getConfig();
-		$oUser = \OC::$server->getUserSession()->getUser();
-		$sUID = $oUser->getUID();
-
-		$sEmail = $config->getUserValue($sUID, 'snappymail', 'snappymail-email');
-		$sPassword = $config->getUserValue($sUID, 'snappymail', 'passphrase')
-			?: $config->getUserValue($sUID, 'snappymail', 'snappymail-password');
-		$bAccountDefinedExplicitly = ($sEmail && $sPassword) && $sEmail === $oSettings->username;
-
-		$sNcEmail = $oUser->getEMailAddress() ?: $oUser->getPrimaryEMailAddress();
-
 		// Only login with OIDC access token if
 		// it is enabled in config, the user is currently logged in with OIDC,
 		// the current snappymail account is the OIDC account and no account defined explicitly
-		if (\OC::$server->getConfig()->getAppValue('snappymail', 'snappymail-autologin-oidc', false)
-		 && \OC::$server->getSession()->get('is_oidc')
-		 && $sNcEmail === $oSettings->username
-		 && !$bAccountDefinedExplicitly
+		if ($oAccount instanceof \RainLoop\Model\MainAccount
+		 && \OCA\SnappyMail\Util\SnappyMailHelper::isOIDCLogin()
 //		 && $oClient->supportsAuthType('OAUTHBEARER') // v2.28
+		 && \str_starts_with($oSettings->passphrase, 'oidc_login|')
 		) {
-			$sAccessToken = \OC::$server->getSession()->get('oidc_access_token');
-			if ($sAccessToken) {
-				$oSettings->passphrase = $sAccessToken;
-				\array_unshift($oSettings->SASLMechanisms, 'OAUTHBEARER');
-			}
+//			$oSettings->passphrase = \OC::$server->getSession()->get('snappymail-passphrase');
+			$oSettings->passphrase = \OC::$server->getSession()->get('oidc_access_token');
+			\array_unshift($oSettings->SASLMechanisms, 'OAUTHBEARER');
 		}
 	}
 

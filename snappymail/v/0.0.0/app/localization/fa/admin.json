@@ -8,7 +8,9 @@
 		"USERNAME": "نام کاربری",
 		"PASSWORD": "گذرواژه",
 		"CANCEL": "انصراف",
-		"SEARCH": "هیچ تماسی پیدا نشد"
+		"SEARCH": "هیچ تماسی پیدا نشد",
+		"YES": "Yes",
+		"NO": "No"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "ورود",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "چیزی برای پیکربندی نیست"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Yes",
-		"BUTTON_NO": "No",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "آیا شما از بستن این پنجره اطمینان دارید؟"
 	},
 	"POPUPS_LANGUAGES": {

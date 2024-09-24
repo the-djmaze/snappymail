@@ -235,6 +235,7 @@ Warning: only enable when server does not do this, else double compression error
 				'admin_login'             => array('admin', 'Login and password for web admin panel'),
 				'admin_password'          => array(''),
 				'admin_totp'              => array(''),
+				'insecure_cryptkey'       => array(false, 'Use email address instead of login password for encrypting sensitive data (like account passwords)'),
 
 				'force_https'             => array(false),
 				'hide_x_mailer_header'    => array(true),

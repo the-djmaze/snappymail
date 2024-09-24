@@ -40,7 +40,7 @@ export class AddressTest extends TestCommand
 		this.header_list  = new GrammarStringList;
 		this.key_list     = new GrammarStringList;
 		// rfc5260#section-6
-		this.index        = new GrammarNumber;
+		this.index        = new GrammarNumber('');
 		this.last         = false;
 		// rfc5703#section-6
 //		this.mime
@@ -68,9 +68,10 @@ export class AddressTest extends TestCommand
 		}
 		return result
 			+ (this.last ? ' :last' : (this.index.value ? ' :index ' + this.index : ''))
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this.address_part
-			+ ' ' + this.match_type
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + this.header_list
 			+ ' ' + this.key_list;
 	}
@@ -147,9 +148,10 @@ export class EnvelopeTest extends TestCommand
 	toString()
 	{
 		return 'envelope'
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this.address_part
-			+ ' ' + this.match_type
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + this.envelope_part
 			+ ' ' + this.key_list;
 	}
@@ -234,7 +236,7 @@ export class HeaderTest extends TestCommand
 		this.header_names = new GrammarStringList;
 		this.key_list     = new GrammarStringList;
 		// rfc5260#section-6
-		this.index        = new GrammarNumber;
+		this.index        = new GrammarNumber('');
 		this.last         = false;
 		// rfc5703#section-6
 		this.mime         = false;
@@ -279,8 +281,9 @@ export class HeaderTest extends TestCommand
 		}
 		return result
 			+ (this.last ? ' :last' : (this.index.value ? ' :index ' + this.index : ''))
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ ' ' + this.match_type
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + this.header_names
 			+ ' ' + this.key_list;
 	}
@@ -315,11 +318,6 @@ export class NotTest extends TestCommand
 	toString()
 	{
 		return 'not ' + this.test;
-	}
-
-	pushArguments()
-	{
-		throw 'No arguments';
 	}
 }
 

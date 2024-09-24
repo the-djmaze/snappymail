@@ -25,6 +25,8 @@
 /vendors/knockout/spec
 /vendors/openpgp-5
 !/vendors/openpgp-5/dist
+/vendors/squire2
+!/vendors/squire2/dist
 /vendors/vanillaqr.js/
 /integrations/nextcloud/rainloop
 /integrations/owncloud/rainloop

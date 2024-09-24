@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Smazat vyhledávání",
 		"CONTACT_VIEW_DESC": "Vyberte kontakt ze seznamu pro zobrazení zde.",
 		"LABEL_BIRTHDAY": "Narozeniny",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Zadejte zobrazované jméno",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Zadejte příjmení",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Zadejte jméno",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Zadejte přezdívku",
+		"DISPLAY_NAME": "Zobrazované jméno",
+		"LAST_NAME": "Příjmení",
+		"FIRST_NAME": "Jméno",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Přezdívku",
 		"LABEL_READ_ONLY": "Jen pro čtení",
 		"ADD_MENU_LABEL": "Přidat",
 		"ADD_MENU_NICKNAME": "Přezdívka",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Automaticky přidávat adresy příjemců do Adresáře",

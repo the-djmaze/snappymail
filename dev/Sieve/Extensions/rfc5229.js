@@ -21,6 +21,12 @@ export class SetCommand extends ActionCommand
 
 	get require() { return 'variables'; }
 
+	get name()     { return this._name.value; }
+	set name(str)  { this._name.value = str; }
+
+	get value()    { return this._value.value; }
+	set value(str) { this._value.value = str; }
+
 	toString()
 	{
 		return 'set'
@@ -28,12 +34,6 @@ export class SetCommand extends ActionCommand
 			+ ' ' + this._name
 			+ ' ' + this._value;
 	}
-
-	get name()     { return this._name.value; }
-	set name(str)  { this._name.value = str; }
-
-	get value()    { return this._value.value; }
-	set value(str) { this._value.value = str; }
 
 	pushArguments(args)
 	{
@@ -57,8 +57,9 @@ export class StringTest extends TestCommand
 	toString()
 	{
 		return 'string'
-			+ ' ' + this.match_type
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this.source
 			+ ' ' + this.key_list;
 	}

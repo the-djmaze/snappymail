@@ -300,6 +300,30 @@ class Manager
 		return $this;
 	}
 
+/*
+	private static function getCallableName(callable $callable) {
+		if (\is_string($callable)) {
+			if (\str_contains($callable, '::')) {
+				return '[static] ' . $callable;
+			}
+			return '[function] ' . $callable;
+		}
+		if (\is_array($callable)) {
+			if (\is_object($callable[0])) {
+				return '[method] ' . \get_class($callable[0])  . '->' . $callable[1];
+			}
+			return '[static] ' . $callable[0]  . '::' . $callable[1];
+		}
+		if ($callable instanceof \Closure) {
+			return '[closure]';
+		}
+		if (\is_object($callable)) {
+			return '[invokable] ' . \get_class($callable);
+		}
+		return '[unknown]';
+	}
+*/
+
 	public function RunHook(string $sHookName, array $aArg = array(), bool $bLogHook = true) : self
 	{
 		if ($this->bIsEnabled) {
@@ -307,9 +331,13 @@ class Manager
 			if (isset($this->aHooks[$sHookName])) {
 				if ($bLogHook) {
 					$this->WriteLog('Hook: '.$sHookName, \LOG_INFO);
+//					$this->WriteLog('Hooks: '.\implode(',', \array_map('self::getCallableName', $this->aHooks[$sHookName])), \LOG_DEBUG);
 				}
-				foreach ($this->aHooks[$sHookName] as $mCallback) {
+				foreach ($this->aHooks[$sHookName] as $mCallback) try {
 					$mCallback(...$aArg);
+				} catch (\Throwable $e) {
+//					$this->WriteLog("Hook {$sHookName} {$e->getMessage()}\n".static::getCallableName($mCallback), \LOG_ERR);
+					throw $e;
 				}
 			}
 		}

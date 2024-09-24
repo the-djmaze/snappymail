@@ -69,7 +69,7 @@ ko.bindingHandlers['checked'] = {
                             elemValue = undefined;
                         }
                     }
-                    ko.expressionRewriting.writeValueToProperty(modelValue, allBindings, 'checked', elemValue, true);
+                    ko.expressionRewriting.writeValueToProperty(element, modelValue, allBindings, 'checked', elemValue, true);
                 }
             }
 

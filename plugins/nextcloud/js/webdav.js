@@ -320,12 +320,28 @@ class NextcloudCalendarsPopupView extends rl.pluginPopupView {
 	}
 
 	onBuild(dom) {
+		let modalObj = this
 		this.tree = dom.querySelector('#sm-nc-calendars');
 		this.tree.addEventListener('click', event => {
 			let el = event.target;
 			if (el.matches('button')) {
 				this.select = el.href;
-				this.close();
+				let VEVENT = this.VEVENT
+
+				rl.nextcloud.calendarPut(this.select, this.VEVENT, (response) => {
+					if (response.status != 201 && response.status != 204) {
+						InvitesPopupView.showModal([
+							rl.i18n('MESSAGE/EVENT_ADDITION_FAILURE_TITLE'),
+							rl.i18n('MESSAGE/EVENT_ADDITION_FAILURE_BODY', {eventName: VEVENT.SUMMARY}),
+							() => {modalObj.close()}
+						])
+					}
+					InvitesPopupView.showModal([
+						rl.i18n('MESSAGE/EVENT_ADDED_TITLE'),
+						rl.i18n('MESSAGE/EVENT_ADDED_BODY', {eventName: VEVENT.SUMMARY}),
+						() => {modalObj.close()}
+					])
+				})
 			}
 		});
 	}
@@ -375,9 +391,10 @@ class NextcloudCalendarsPopupView extends rl.pluginPopupView {
 		treeElement.appendChild(li);
 	}
 	// Happens after showModal()
-	beforeShow(fResolve) {
+	beforeShow(fResolve, VEVENT) {
 		this.select = '';
 		this.fResolve = fResolve;
+		this.VEVENT = VEVENT
 		this.tree.innerHTML = '';
 		davFetch('calendars', '/', {
 			method: 'PROPFIND',
@@ -432,14 +449,15 @@ close() {}
 }
 
 rl.nextcloud = {
-	selectCalendar: () =>
+	selectCalendar: (VEVENT) =>
 		new Promise(resolve => {
 			NextcloudCalendarsPopupView.showModal([
 				href => resolve(href),
+				VEVENT
 			]);
 		}),
 
-	calendarPut: (path, event) => {
+	calendarPut: (path, event, callback) => {
 		davFetch('calendars', path + '/' + event.UID + '.ics', {
 			method: 'PUT',
 			headers: {
@@ -463,6 +481,8 @@ rl.nextcloud = {
 //				response.text().then(text => console.error({status:response.status, body:text}));
 				Promise.reject(new Error({ response }));
 			}
+
+			callback && callback(response)
 		});
 	},
 
@@ -499,4 +519,28 @@ function getElementsInNamespaces(xmlDocument, tagName) {
 		}
 	}
 	return results;
+}
+
+
+class InvitesPopupView extends rl.pluginPopupView {
+	constructor() {
+		super('NextcloudInvites')
+	}
+
+	onBuild(dom) {
+		this.title = dom.querySelector('#sm-invites-popup-title')
+		this.body = dom.querySelector('#sm-invites-popup-body')
+	}
+
+	beforeShow(title, body, onHide_) {
+		this.title.innerHTML = title
+		this.body.innerHTML = body
+		this.onHide_ = onHide_
+	}
+
+	onHide() {
+		if (this.onHide_) {
+			this.onHide_()
+		}
+	}
 }

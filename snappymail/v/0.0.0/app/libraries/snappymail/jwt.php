@@ -26,7 +26,7 @@ abstract class JWT
 	 * @param int           $timestamp      Allow the current timestamp to be specified. default time()
 	 * @param int           $leeway         When checking nbf (Not Before) Claim, iat (Issued At) Claim or expiration times, we want to provide some extra leeway time to account for clock skew.
 	 */
-	public static function decode(string $jwt, $key, int $timestamp = null, int $leeway = 0) : object
+	public static function decode(string $jwt, $key, ?int $timestamp = null, int $leeway = 0) : object
 	{
 		$timestamp = $timestamp ?: \time();
 

@@ -81,7 +81,7 @@ class TAR
 		}
 	}
 
-	public function addFile($fileinfo, string $name = null) : bool
+	public function addFile($fileinfo, ?string $name = null) : bool
 	{
 		if (!($fileinfo instanceof \SplFileInfo)) {
 			$fileinfo = new \SplFileInfo($fileinfo);
@@ -174,7 +174,7 @@ class TAR
 		return true;
 	}
 
-	public function addDir(string $dirname, \SplFileInfo $fileinfo = null) : void
+	public function addDir(string $dirname, ?\SplFileInfo $fileinfo = null) : void
 	{
 		$this->writeEntryHeader(
 			\rtrim(\strtr($dirname, '\\', '/'), '/') . '/',

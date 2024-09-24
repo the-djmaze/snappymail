@@ -6,9 +6,9 @@ class LoginVirtuserPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME = 'Virtuser Login',
 		AUTHOR = 'v20z',
 		URL     = 'https://github.com/the-djmaze/snappymail/issues/1691',
-		VERSION = '0.1',
-		RELEASE = '2024-06-01',
-		REQUIRED = '2.5.0',
+		VERSION = '0.2',
+		RELEASE = '2024-09-20',
+		REQUIRED = '2.36.1',
 		CATEGORY = 'Login',
 		DESCRIPTION = 'File based Email-to-User lookup.';
 
@@ -19,12 +19,13 @@ class LoginVirtuserPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 	/**
 	 * @param string $sEmail
-	 * @param string $sLogin
+	 * @param string $sImapUser
 	 * @param string $sPassword
+	 * @param string $sSmtpUser
 	 *
 	 * @throws \RainLoop\Exceptions\ClientException
 	 */
-	public function ParseVirtuserFiles(&$sEmail, &$sLogin, &$sPassword)
+	public function ParseVirtuserFiles(string &$sEmail, string &$sImapUser, string &$sPassword, string &$sSmtpUser)
 	{
 		$sFiles = \trim($this->Config()->Get('plugin', 'virtuser_files', ''));
 		if (!empty($sFiles))
@@ -46,7 +47,7 @@ class LoginVirtuserPlugin extends \RainLoop\Plugins\AbstractPlugin
 					$aData = preg_split( '/[[:blank:]]+/', $sLine, 3, PREG_SPLIT_NO_EMPTY);
 					if (is_array($aData) && !empty($aData[0]) && isset($aData[1])) {
 						if ($sEmail === $aData[0] && 0 < strlen($aData[1])) {
-							$sLogin = $aData[1];
+							$sImapUser = $aData[1];
 							return;
 						}
 					}

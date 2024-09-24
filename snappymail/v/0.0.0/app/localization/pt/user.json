@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Limpar pesquisa",
 		"CONTACT_VIEW_DESC": "Escolha o contacto na lista para visualizá-lo.",
 		"LABEL_BIRTHDAY": "Aniversário",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Introduza o nome a apresentar",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Introduza o último nome",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Introduza o primeiro nome",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Introduza uma alcunha",
+		"DISPLAY_NAME": "Nome a apresentar",
+		"LAST_NAME": "Ultimo nome",
+		"FIRST_NAME": "Primeiro nome",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Alcunha",
 		"LABEL_READ_ONLY": "Só de leitura",
 		"ADD_MENU_LABEL": "Adicionar",
 		"ADD_MENU_NICKNAME": "Alcunha",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Mostrar sempre",
 		"IMAGES_WHITELIST": "Lista Branca de imagens",
 		"MESSAGE_POPUP_WINDOW": "Abrir em nova janela em vez de um separador",
-		"MAILTO": "Registar como manipulador de ligações 'mailto:'"
+		"MAILTO": "Registar como manipulador de ligações 'mailto:'",
+		"HTML_TO_MD": "Converter HTML para Markdown em vez de texto simples"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Adicionar destinatários automaticamente à sua lista de endereços",

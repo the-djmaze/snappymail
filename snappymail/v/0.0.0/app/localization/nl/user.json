@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Wis zoekopdracht",
 		"CONTACT_VIEW_DESC": "Selecteer een contactpersoon in de lijst om hier te bekijken",
 		"LABEL_BIRTHDAY": "Geboortedatum",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Weergeven als",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Achternaam",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Voornaam",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Bijnaam",
+		"DISPLAY_NAME": "Weergeven als",
+		"LAST_NAME": "Achternaam",
+		"FIRST_NAME": "Voornaam",
+		"MIDDLE_NAME": "Middelste naam",
+		"NAME_PREFIX": "Voorvoegsel",
+		"NAME_SUFFIX": "Achtervoegsel",
+		"NICK_NAME": "Bijnaam",
 		"LABEL_READ_ONLY": "Alleen lezen",
 		"ADD_MENU_LABEL": "Toevoegen",
 		"ADD_MENU_NICKNAME": "Bijnaam",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Altijd tonen",
 		"IMAGES_WHITELIST": "Afbeeldingen whitelist",
 		"MESSAGE_POPUP_WINDOW": "Openen in een nieuw venster i.p.v. tab",
-		"MAILTO": "Registreer als 'mailto:'-linkhandler"
+		"MAILTO": "Registreer als 'mailto:'-linkhandler",
+		"HTML_TO_MD": "Converteer HTML naar Markdown i.p.v. platte tekst"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Automatisch ontvangers toevoegen aan uw adresboek",

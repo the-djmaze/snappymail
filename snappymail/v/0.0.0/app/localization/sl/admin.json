@@ -8,7 +8,9 @@
 		"USERNAME": "Uporabniško ime",
 		"PASSWORD": "Geslo",
 		"CANCEL": "Prekliči",
-		"SEARCH": "Ni ujemajočih stikov"
+		"SEARCH": "Ni ujemajočih stikov",
+		"YES": "Yes",
+		"NO": "No"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Prijava",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Ni nastavitev za spreminjati"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Yes",
-		"BUTTON_NO": "No",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Želite zapreti to okno?"
 	},
 	"POPUPS_LANGUAGES": {

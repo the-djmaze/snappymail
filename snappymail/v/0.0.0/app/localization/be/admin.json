@@ -8,7 +8,9 @@
 		"USERNAME": "Імя карыстальніка",
 		"PASSWORD": "Пароль",
 		"CANCEL": "Адмяніць",
-		"SEARCH": "Пошук"
+		"SEARCH": "Пошук",
+		"YES": "Так",
+		"NO": "Не"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Логін",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Без налад"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Так",
-		"BUTTON_NO": "Не",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Вы ўпэнены, што жадаеце закрыць гэтае вакно?"
 	},
 	"POPUPS_LANGUAGES": {

@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Počisti iskalne kriterije",
 		"CONTACT_VIEW_DESC": "Izberite stik s seznama za ogled.",
 		"LABEL_BIRTHDAY": "Rojstni dan",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Vnos prikaznega imena",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Vnos priimka",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Vnos imena",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Vnos vzdevka",
+		"DISPLAY_NAME": "Prikaznega imena",
+		"LAST_NAME": "Priimka",
+		"FIRST_NAME": "Imena",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Vzdevka",
 		"LABEL_READ_ONLY": "Samo za branje",
 		"ADD_MENU_LABEL": "Dodajanje",
 		"ADD_MENU_NICKNAME": "Vzdevek",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Samodejno dodaj prejemnike v imenik",

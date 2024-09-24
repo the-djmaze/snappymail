@@ -100,14 +100,14 @@ class ServiceActions
 					if ($_SERVER['HTTP_X_SM_TOKEN'] !== $token) {
 						$oAccount = $this->oActions->getAccountFromToken(false);
 						$sEmail = $oAccount ? $oAccount->Email() : 'guest';
-						$this->oActions->logWrite("{$_SERVER['HTTP_X_SM_TOKEN']} !== {$token} for {$sEmail}", \LOG_ERROR, 'Token');
+						$this->oActions->logWrite("{$_SERVER['HTTP_X_SM_TOKEN']} !== {$token} for {$sEmail}", \LOG_ERR, 'Token');
 						throw new Exceptions\ClientException(Notifications::InvalidToken, null, 'HTTP Token mismatch');
 					}
 				} else if ($this->oHttp->IsPost()) {
 					if (empty($_POST['XToken']) || $_POST['XToken'] !== $token) {
 						$oAccount = $this->oActions->getAccountFromToken(false);
 						$sEmail = $oAccount ? $oAccount->Email() : 'guest';
-						$this->oActions->logWrite("{$_POST['XToken']} !== {$token} for {$sEmail}", \LOG_ERROR, 'XToken');
+						$this->oActions->logWrite("{$_POST['XToken']} !== {$token} for {$sEmail}", \LOG_ERR, 'XToken');
 						throw new Exceptions\ClientException(Notifications::InvalidToken, null, 'XToken mismatch');
 					}
 				}

@@ -60,7 +60,7 @@ abstract class Crypt
 
 	public static function Decrypt(array $data,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) /* : mixed */
 	{
 		if (3 === \count($data) && isset($data[0], $data[1], $data[2]) && \strlen($data[0])) {
@@ -85,7 +85,7 @@ abstract class Crypt
 
 	public static function DecryptFromJSON(string $data,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) /* : mixed */
 	{
 		$data = static::jsonDecode($data);
@@ -98,7 +98,7 @@ abstract class Crypt
 
 	public static function DecryptUrlSafe(string $data,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) /* : mixed */
 	{
 		$data = \explode('.', $data);
@@ -113,7 +113,7 @@ abstract class Crypt
 		#[\SensitiveParameter]
 		$data,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) : array
 	{
 		$data = \json_encode($data);
@@ -151,7 +151,7 @@ abstract class Crypt
 		#[\SensitiveParameter]
 		$data,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) : string
 	{
 		return \json_encode(\array_map('base64_encode', static::Encrypt($data, $key)));
@@ -161,7 +161,7 @@ abstract class Crypt
 		#[\SensitiveParameter]
 		$data,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) : string
 	{
 		return \implode('.', \array_map('MailSo\\Base\\Utils::UrlSafeBase64Encode', static::Encrypt($data, $key)));
@@ -169,7 +169,7 @@ abstract class Crypt
 
 	public static function SodiumDecrypt(string $data, string $nonce,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) /* : string|false */
 	{
 		if (!\is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt')) {
@@ -188,7 +188,7 @@ abstract class Crypt
 		string $data,
 		string $nonce,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) : string
 	{
 		if (!\is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt')) {
@@ -208,7 +208,7 @@ abstract class Crypt
 
 	public static function OpenSSLDecrypt(string $data, string $iv,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) /* : string|false */
 	{
 		if (!$data || !$iv) {
@@ -235,7 +235,7 @@ abstract class Crypt
 		string $data,
 		string $iv,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) : string
 	{
 		if (!$data || !$iv) {
@@ -263,7 +263,7 @@ abstract class Crypt
 
 	public static function XxteaDecrypt(string $data, string $salt,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) /* : mixed */
 	{
 		if (!$data || !$salt) {
@@ -280,7 +280,7 @@ abstract class Crypt
 		string $data,
 		string $salt,
 		#[\SensitiveParameter]
-		string $key = null
+		?string $key = null
 	) : string
 	{
 		if (!$data || !$salt) {

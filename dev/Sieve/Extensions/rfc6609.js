@@ -16,10 +16,13 @@ export class IncludeCommand extends ControlCommand
 		this.global = false; // ':personal' / ':global';
 		this.once = false;
 		this.optional = false;
-		this.value = new GrammarQuotedString;
+		this._value = new GrammarQuotedString;
 	}
 
 	get require() { return 'include'; }
+
+	get value() { return this._value.value; }
+	set value(v) { this._value.value = v; }
 
 	toString()
 	{
@@ -27,7 +30,7 @@ export class IncludeCommand extends ControlCommand
 			+ (this.global ? ' :global' : '')
 			+ (this.once ? ' :once' : '')
 			+ (this.optional ? ' :optional' : '')
-			+ ' ' + this.value + ';';
+			+ ' ' + this._value + ';';
 	}
 
 	pushArguments(args)
@@ -36,7 +39,7 @@ export class IncludeCommand extends ControlCommand
 			if (':global' === arg || ':once' === arg || ':optional' === arg) {
 				this[arg.slice(1)] = true;
 			} else if (arg instanceof GrammarQuotedString) {
-				this.value = arg;
+				this._value = arg;
 			}
 		});
 	}

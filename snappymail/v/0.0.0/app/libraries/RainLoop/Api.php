@@ -35,7 +35,7 @@ abstract class Api
 		return $oConfig;
 	}
 
-	public static function getCSP(string $sScriptNonce = null) : \SnappyMail\HTTP\CSP
+	public static function getCSP(?string $sScriptNonce = null) : \SnappyMail\HTTP\CSP
 	{
 		$oConfig = static::Config();
 		$CSP = new \SnappyMail\HTTP\CSP(\trim($oConfig->Get('security', 'content_security_policy', '')));

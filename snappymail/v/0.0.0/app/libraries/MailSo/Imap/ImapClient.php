@@ -466,7 +466,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	protected function streamResponse(string $sEndTag = null) : void
+	protected function streamResponse(?string $sEndTag = null) : void
 	{
 		try {
 			if (\is_resource($this->ConnectionResource())) {
@@ -488,7 +488,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		}
 	}
 
-	protected function getResponse(string $sEndTag = null) : ResponseCollection
+	protected function getResponse(?string $sEndTag = null) : ResponseCollection
 	{
 		try {
 			$oResult = new ResponseCollection;

@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Poista haku",
 		"CONTACT_VIEW_DESC": "Valitse yhteystieto nähdäksesi sen tässä.",
 		"LABEL_BIRTHDAY": "Syntymäpäivä",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Lisää näytettävä nimi",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Lisää sukunimi",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Lisää etunimi",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Lisää lempinimi",
+		"DISPLAY_NAME": "Näytettävä nimi",
+		"LAST_NAME": "Sukunimi",
+		"FIRST_NAME": "Etunimi",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Lempinimi",
 		"LABEL_READ_ONLY": "Vain luku",
 		"ADD_MENU_LABEL": "Lisää",
 		"ADD_MENU_NICKNAME": "Lempinimi",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Lisää yhetystieto automaattisesti osoitekirjaan",

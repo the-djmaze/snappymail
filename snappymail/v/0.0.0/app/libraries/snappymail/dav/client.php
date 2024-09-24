@@ -63,7 +63,7 @@ class Client
 	 *
 	 * If the specified url is relative, it will be expanded based on the base url.
 	 */
-	public function request(string $method, string $url = '', string $body = null, array $headers = array()) : \SnappyMail\HTTP\Response
+	public function request(string $method, string $url = '', ?string $body = null, array $headers = array()) : \SnappyMail\HTTP\Response
 	{
 		if (!\preg_match('@^(https?:)?//@', $url)) {
 			// If the url starts with a slash, we must calculate the url based off

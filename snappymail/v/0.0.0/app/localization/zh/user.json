@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "清除搜索",
 		"CONTACT_VIEW_DESC": "在此查看在列表中选中的联系人。",
 		"LABEL_BIRTHDAY": "生日",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "显示名称",
-		"PLACEHOLDER_ENTER_LAST_NAME": "姓",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "名",
-		"PLACEHOLDER_ENTER_NICK_NAME": "昵称",
+		"DISPLAY_NAME": "显示名称",
+		"LAST_NAME": "姓",
+		"FIRST_NAME": "名",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "昵称",
 		"LABEL_READ_ONLY": "只读",
 		"ADD_MENU_LABEL": "添加",
 		"ADD_MENU_NICKNAME": "昵称",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "总是显示",
 		"IMAGES_WHITELIST": "图片白名单",
 		"MESSAGE_POPUP_WINDOW": "弹出页面使用新窗口代替新选项卡",
-		"MAILTO": "注册成 mailto: 链接处理器"
+		"MAILTO": "注册成 mailto: 链接处理器",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "自动添加到您的地址簿",

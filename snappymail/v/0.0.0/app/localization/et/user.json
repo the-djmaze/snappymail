@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Puhasta otsinguväli",
 		"CONTACT_VIEW_DESC": "Vali nimekirjast kontakt, mida siin näidata",
 		"LABEL_BIRTHDAY": "Sünnipäev",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Sisesta kuvatav nimi",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Sisesta perenimi",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Sisesta eesnimi",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Sisesta hüüdnimi",
+		"DISPLAY_NAME": "Kuvatav nimi",
+		"LAST_NAME": "Perenimi",
+		"FIRST_NAME": "Eesnimi",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Hüüdnimi",
 		"LABEL_READ_ONLY": "Ainult lugemisõigus",
 		"ADD_MENU_LABEL": "Lisa",
 		"ADD_MENU_NICKNAME": "Hüüdnimi",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Lisa saajad automaatselt aadressiraamatusse",

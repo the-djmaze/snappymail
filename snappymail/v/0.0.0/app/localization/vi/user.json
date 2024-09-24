@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Xóa bỏ tìm kiếm",
 		"CONTACT_VIEW_DESC": "Chọn một tên liên hệ trong danh sách để hiển thị chi tiết ở đây.",
 		"LABEL_BIRTHDAY": "Ngày sinh",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Nhập tên hiển thị",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Nhập họ",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Nhập tên",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Nhập nickname",
+		"DISPLAY_NAME": "Tên hiển thị",
+		"LAST_NAME": "Họ",
+		"FIRST_NAME": "Tên",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Nickname",
 		"LABEL_READ_ONLY": "Chỉ cho phép đọc",
 		"ADD_MENU_LABEL": "Thêm vào",
 		"ADD_MENU_NICKNAME": "Nickname",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Tự động thêm người nhận thư vào sổ địa chỉ của bạn",

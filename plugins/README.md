@@ -124,10 +124,19 @@ $Plugin->addHook('hook.name', 'functionName');
 	params:
 		string &$sEmail
 
+	Happens in resolveLoginCredentials($sEmail) BEFORE resolving domain name.
+	This is the pure text from the login screen (DoLogin) or the SSO feature (ServiceSso) received by LoginProcess().
+	- DoLogin() -> LoginProcess() -> resolveLoginCredentials($sEmail)
+	- ServiceSso() -> LoginProcess() -> resolveLoginCredentials($sEmail)
+	So $sEmail can just have the value `test` without a domain.
+
 ### login.credentials.step-2
 	params:
 		string &$sEmail
 		string &$sPassword
+
+	Happens in resolveLoginCredentials($sEmail) AFTER resolving domain name.
+	So $sEmail always has a domain (for example `test` is now `test@example.com`).
 
 ### login.credentials
 	params:
@@ -135,6 +144,10 @@ $Plugin->addHook('hook.name', 'functionName');
 		string &$sImapUser
 		string &$sPassword
 		string &$sSmtpUser
+
+		$sEmail is the domain imap->fixUsername() without shortening.
+		$sImapUser is the domain imap->fixUsername() for login into IMAP.
+		$sSmtpUser is the domain smtp->fixUsername() for login into SMTP.
 
 ### login.success
 	params:

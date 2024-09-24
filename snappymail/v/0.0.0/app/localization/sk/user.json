@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Zrušiť vyhľadávanie",
 		"CONTACT_VIEW_DESC": "Zvoľte kontakt zo zoznamu pre jeho zobrazenie tu.",
 		"LABEL_BIRTHDAY": "Dátum narodenia",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Zadajte Zobrazované meno",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Zadajte priezvisko",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Zadajte meno",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Zadajte prezývku",
+		"DISPLAY_NAME": "Zobrazované meno",
+		"LAST_NAME": "Priezvisko",
+		"FIRST_NAME": "Meno",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Prezývku",
 		"LABEL_READ_ONLY": "Len pre čítanie",
 		"ADD_MENU_LABEL": "Pridať",
 		"ADD_MENU_NICKNAME": "Prezývka",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Automaticky pridávať príjemcov správ do Adresára",

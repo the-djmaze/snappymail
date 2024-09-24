@@ -49,15 +49,8 @@
 			<div data-bind="component: {
 				name: 'Checkbox',
 				params: {
-					label: 'SETTINGS_GENERAL/REPLY_SAME_FOLDER',
-					value: replySameFolder
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'SETTINGS_GENERAL/SHOW_NEXT_MESSAGE',
-					value: showNextMessage
+					label: 'SETTINGS_GENERAL/HTML_TO_MD',
+					value: markdown
 				}
 			}"></div>
 		</div>
@@ -108,90 +101,6 @@
 		<label data-i18n="SETTINGS_GENERAL/THREAD_ALGORITHM"></label>
 		<select data-bind="options: threadAlgorithms, value: threadAlgorithm"></select>
 	</div>
-
-	<div class="legend" data-i18n="SHORTCUTS_HELP/TAB_COMPOSE"></div>
-	<div class="control-group">
-		<label data-i18n="SETTINGS_GENERAL/EDITOR"></label>
-		<div data-bind="component: {
-			name: 'Select',
-			params: {
-				options: editorDefaultTypes,
-				value: editorDefaultType,
-				trigger: editorDefaultTypeTrigger,
-				optionsText: 'name',
-				optionsValue: 'id'
-			}
-		}"></div>
-	</div>
-	<div class="control-group" data-bind="visible: hasWysiwygs">
-		<label>WYSIWYG</label>
-		<div data-bind="component: {
-			name: 'Select',
-			params: {
-				options: wysiwygs,
-				value: editorWysiwyg,
-				trigger: editorWysiwygTrigger,
-				optionsText: 'name',
-				optionsValue: 'name'
-			}
-		}"></div>
-	</div>
-
-	<div class="control-group">
-		<div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'COMPOSE/ALLOW_DRAFT_AUTOSAVE',
-					value: allowDraftAutosave
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'COMPOSE/BUTTON_REQUEST_READ_RECEIPT',
-					value: requestReadReceipt
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'COMPOSE/BUTTON_REQUEST_DSN',
-					value: requestDsn
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'COMPOSE/BUTTON_REQUIRE_TLS',
-					value: requireTLS
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'CRYPTO/SIGN',
-					value: pgpSign
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'CRYPTO/ENCRYPT',
-					value: pgpEncrypt
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'COMPOSE/ALLOW_SPELLCHECK',
-					value: allowSpellcheck
-				}
-			}"></div>
-		</div>
-	</div>
-
-	<button type="button" data-bind="visible: mailto, click: registerMailto" class="btn" data-i18n="SETTINGS_GENERAL/MAILTO"></button>
 
 	<div class="legend" data-i18n="SHORTCUTS_HELP/TAB_MESSAGE_VIEW"></div>
 	<div class="control-group">
@@ -270,6 +179,13 @@
 			<div data-bind="component: {
 				name: 'Checkbox',
 				params: {
+					label: 'SETTINGS_GENERAL/SHOW_NEXT_MESSAGE',
+					value: showNextMessage
+				}
+			}"></div>
+			<div data-bind="component: {
+				name: 'Checkbox',
+				params: {
 					label: 'SETTINGS_GENERAL/MESSAGE_POPUP_WINDOW',
 					value: messageNewWindow
 				}
@@ -301,6 +217,97 @@
 			<textarea data-bind="textInput: viewImagesWhitelist"></textarea>
 		</div>
 	</div>
+
+	<div class="legend" data-i18n="SHORTCUTS_HELP/TAB_COMPOSE"></div>
+	<div class="control-group">
+		<label data-i18n="SETTINGS_GENERAL/EDITOR"></label>
+		<div data-bind="component: {
+			name: 'Select',
+			params: {
+				options: editorDefaultTypes,
+				value: editorDefaultType,
+				trigger: editorDefaultTypeTrigger,
+				optionsText: 'name',
+				optionsValue: 'id'
+			}
+		}"></div>
+	</div>
+	<div class="control-group" data-bind="visible: hasWysiwygs">
+		<label>WYSIWYG</label>
+		<div data-bind="component: {
+			name: 'Select',
+			params: {
+				options: wysiwygs,
+				value: editorWysiwyg,
+				trigger: editorWysiwygTrigger,
+				optionsText: 'name',
+				optionsValue: 'name'
+			}
+		}"></div>
+	</div>
+
+	<div class="control-group">
+		<div>
+			<div data-bind="component: {
+				name: 'Checkbox',
+				params: {
+					label: 'SETTINGS_GENERAL/REPLY_SAME_FOLDER',
+					value: replySameFolder
+				}
+			}"></div>
+			<div data-bind="component: {
+				name: 'Checkbox',
+				params: {
+					label: 'COMPOSE/ALLOW_DRAFT_AUTOSAVE',
+					value: allowDraftAutosave
+				}
+			}"></div>
+			<div data-bind="component: {
+				name: 'Checkbox',
+				params: {
+					label: 'COMPOSE/BUTTON_REQUEST_READ_RECEIPT',
+					value: requestReadReceipt
+				}
+			}"></div>
+			<div data-bind="component: {
+				name: 'Checkbox',
+				params: {
+					label: 'COMPOSE/BUTTON_REQUEST_DSN',
+					value: requestDsn
+				}
+			}"></div>
+			<div data-bind="component: {
+				name: 'Checkbox',
+				params: {
+					label: 'COMPOSE/BUTTON_REQUIRE_TLS',
+					value: requireTLS
+				}
+			}"></div>
+			<div data-bind="component: {
+				name: 'Checkbox',
+				params: {
+					label: 'CRYPTO/SIGN',
+					value: pgpSign
+				}
+			}"></div>
+			<div data-bind="component: {
+				name: 'Checkbox',
+				params: {
+					label: 'CRYPTO/ENCRYPT',
+					value: pgpEncrypt
+				}
+			}"></div>
+			<div data-bind="component: {
+				name: 'Checkbox',
+				params: {
+					label: 'COMPOSE/ALLOW_SPELLCHECK',
+					value: allowSpellcheck
+				}
+			}"></div>
+		</div>
+	</div>
+
+	<button type="button" data-bind="visible: mailto, click: registerMailto" class="btn" data-i18n="SETTINGS_GENERAL/MAILTO"></button>
 
 	<div class="legend" data-i18n="SETTINGS_GENERAL/NOTIFICATIONS"></div>
 	<div class="control-group">

@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Keresés törlése",
 		"CONTACT_VIEW_DESC": "Válassz egy névjegyet a listából, hogy itt megjelenjen.",
 		"LABEL_BIRTHDAY": "Születésnap",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Add meg a megjelenítendő nevet",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Add meg a vezetéknevet",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Add meg a keresztnevet",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Add meg a felhasználónevet",
+		"DISPLAY_NAME": "Megjelenítendő nevet",
+		"LAST_NAME": "Vezetéknevet",
+		"FIRST_NAME": "Keresztnevet",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Felhasználónevet",
 		"LABEL_READ_ONLY": "Csak olvasás",
 		"ADD_MENU_LABEL": "Hozzáadás",
 		"ADD_MENU_NICKNAME": "Felhasználónév",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Címzettek automatikus hozzáadása a címtárhoz",

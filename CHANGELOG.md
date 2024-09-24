@@ -1,3 +1,29 @@
+## 2.38.0 – 2024-09-16
+
+### Added
+- Remove `tel:` links when converting HTML to plain
+  [#1724](https://github.com/the-djmaze/snappymail/issues/1724)
+- Convert HTML to Markdown instead of plain, by using [Turndown](https://github.com/mixmark-io/turndown)
+  [#1604](https://github.com/the-djmaze/snappymail/issues/1604)
+- Check HTMLInputElement.validity() for
+  [#1733](https://github.com/the-djmaze/snappymail/issues/1733)
+
+### Changed
+- Use a modified [Squire 2.3.2](https://github.com/the-djmaze/Squire/commits/snappymail/)
+- cleanHtml use allowedTags instead of disallowedTags and improved CSS handling
+- Update Portuguese by @ner00
+
+### Fixed
+- mXSS exploit found by SonarSource
+  [CVE-2024-45800](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-2rq7-79vp-ffxm)
+- Call to a member function Email() on null
+  [#1706](https://github.com/the-djmaze/snappymail/issues/1706)
+- IMAP capabilities via IMAP Proxy
+  [#1725](https://github.com/the-djmaze/snappymail/issues/1725)
+- Messages on page setting is not validated against 999 max
+  [#1733](https://github.com/the-djmaze/snappymail/issues/1733)
+
+
 ## 2.37.3 – 2024-08-27
 
 ### Added

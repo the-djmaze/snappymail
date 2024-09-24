@@ -439,7 +439,7 @@ trait UserAuth
 	/**
 	 * @throws \RainLoop\Exceptions\ClientException
 	 */
-	protected function imapConnect(Account $oAccount, bool $bAuthLog = false, \MailSo\Imap\ImapClient $oImapClient = null): void
+	protected function imapConnect(Account $oAccount, bool $bAuthLog = false, ?\MailSo\Imap\ImapClient $oImapClient = null): void
 	{
 		try {
 			if (!$oImapClient) {

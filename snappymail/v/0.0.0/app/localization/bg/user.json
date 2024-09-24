@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Изчистване на търсенето",
 		"CONTACT_VIEW_DESC": "Изберете контакт от списъка, за да го видите тук.",
 		"LABEL_BIRTHDAY": "Рожден ден",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Въвеждете името, което ще се показва",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Въведете фамилия",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Въведете име",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Въведете прякор",
+		"DISPLAY_NAME": "Въвеждете името, което ще се показва",
+		"LAST_NAME": "Фамилия",
+		"FIRST_NAME": "Име",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Прякор",
 		"LABEL_READ_ONLY": "Само за четене",
 		"ADD_MENU_LABEL": "Добави",
 		"ADD_MENU_NICKNAME": "Прякор",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Автоматично добавяне на получателите към адресната ви книга",

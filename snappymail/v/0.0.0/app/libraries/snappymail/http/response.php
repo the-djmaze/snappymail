@@ -12,7 +12,7 @@ class Response
 		$headers = array(), # The headers returned from the final_uri
 		$body;              # The body returned from the final_uri
 
-	function __construct(string $request_uri, int $status = 0, array $headers = null, $body = null)
+	function __construct(string $request_uri, int $status = 0, ?array $headers = null, $body = null)
 	{
 		if ($headers) {
 			$name = null;

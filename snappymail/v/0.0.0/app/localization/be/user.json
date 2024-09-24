@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Ачысціць пошук",
 		"CONTACT_VIEW_DESC": "Абярыце кантакт для прагляду.",
 		"LABEL_BIRTHDAY": "Дзень нараджэння",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Увядзіце поўнае імя",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Увядзіце імя",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Увядзіце прозвішча",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Увядзіце мянушку",
+		"DISPLAY_NAME": "Поўнае імя",
+		"LAST_NAME": "Імя",
+		"FIRST_NAME": "Прозвішча",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Мянушку",
 		"LABEL_READ_ONLY": "Толькі чытанне",
 		"ADD_MENU_LABEL": "Дадаць",
 		"ADD_MENU_NICKNAME": "Мянушка",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Показваць заўсёды",
 		"IMAGES_WHITELIST": "Фарматы з белага спісу",
 		"MESSAGE_POPUP_WINDOW": "Усплываючае вакно ў новым вакне замест карткі",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Аўтаматычна дадаваць атрымальнікаў лістоў у адрасную кнігу",

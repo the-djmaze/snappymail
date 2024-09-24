@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Nollställ sök",
 		"CONTACT_VIEW_DESC": "Välj kontakt i listan för att visa här.",
 		"LABEL_BIRTHDAY": "Födelsedag",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Ange visningsnamn",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Ange efternamn",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Ange förnamn",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Ange smeknamn",
+		"DISPLAY_NAME": "Visningsnamn",
+		"LAST_NAME": "Efternamn",
+		"FIRST_NAME": "Förnamn",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Smeknamn",
 		"LABEL_READ_ONLY": "Endast läs",
 		"ADD_MENU_LABEL": "Lägg till...",
 		"ADD_MENU_NICKNAME": "Smeknamn",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Lägg till mottagare automatiskt i din adressbok",

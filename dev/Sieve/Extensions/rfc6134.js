@@ -14,7 +14,7 @@ export class ValidExtListTest extends TestCommand
 {
 	constructor()
 	{
-		super();
+		super('valid_ext_list');
 		this.ext_list_names = new GrammarStringList;
 	}
 

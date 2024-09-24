@@ -62,6 +62,12 @@ input {
   }
 }
 
+//input:invalid,
+input:user-invalid {
+  background-color: var(--error-bg-clr, #f2dede);
+  border-color: var(--error-border-clr, #eed3d7);
+  color: var(--error-clr, #b94a48);
+}
 
 // Position radios and checkboxes better
 input[type="radio"],

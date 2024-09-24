@@ -62,7 +62,7 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 		 'viewHTML', 'viewImages', 'viewImagesWhitelist', 'removeColors', 'allowStyles', 'allowDraftAutosave',
 		 'hideDeleted', 'listInlineAttachments', 'simpleAttachmentsList', 'collapseBlockquotes',
 		 'useCheckboxesInList', 'listGrouped', 'replySameFolder', 'allowSpellcheck',
-		 'messageReadAuto', 'showNextMessage', 'messageNewWindow'
+		 'messageReadAuto', 'showNextMessage', 'messageNewWindow', 'markdown'
 		].forEach(name => this[name] = SettingsUserStore[name]);
 
 		this.allowLanguagesOnSettings = !!SettingsGet('allowLanguagesOnSettings');
@@ -123,7 +123,7 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 			'ViewHTML', 'ViewImages', 'ViewImagesWhitelist', 'RemoveColors', 'AllowStyles', 'AllowDraftAutosave',
 			'HideDeleted', 'ListInlineAttachments', 'simpleAttachmentsList', 'CollapseBlockquotes',
 			'UseCheckboxesInList', 'listGrouped', 'ReplySameFolder', 'allowSpellcheck',
-			'messageReadAuto', 'showNextMessage', 'messageNewWindow',
+			'messageReadAuto', 'showNextMessage', 'messageNewWindow', 'markdown',
 			'DesktopNotifications', 'SoundNotification']);
 
 		const fReloadLanguageHelper = (saveSettingsStep) => () => {

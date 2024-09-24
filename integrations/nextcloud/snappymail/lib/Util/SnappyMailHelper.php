@@ -90,26 +90,23 @@ class SnappyMailHelper
 				}
 */
 				if ($doLogin && $aCredentials[1] && $aCredentials[2]) {
+					$isOIDC = \str_starts_with($aCredentials[2], 'oidc_login|');
 					try {
 						$ocSession = \OC::$server->getSession();
-						if ($ocSession->get('is_oidc')) {
-							$pwd = new \SnappyMail\SensitiveString($aCredentials[1]);
-							$oAccount = $oActions->LoginProcess($aCredentials[1], $pwd);
-							if ($oAccount) {
-								$oActions->SetSignMeToken($oAccount);
-							}
-						} else {
-							$oAccount = $oActions->LoginProcess($aCredentials[1], $aCredentials[2]);
-							if ($oAccount && $oConfig->Get('login', 'sign_me_auto', \RainLoop\Enumerations\SignMeType::DefaultOff) === \RainLoop\Enumerations\SignMeType::DefaultOn) {
-								$oActions->SetSignMeToken($oAccount);
-							}	
+						$oAccount = $oActions->LoginProcess($aCredentials[1], $aCredentials[2]);
+						if (!$isOIDC && $oAccount
+						 && $oConfig->Get('login', 'sign_me_auto', \RainLoop\Enumerations\SignMeType::DefaultOff) === \RainLoop\Enumerations\SignMeType::DefaultOn
+						) {
+							$oActions->SetSignMeToken($oAccount);
 						}
 					} catch (\Throwable $e) {
 						// Login failure, reset password to prevent more attempts
-						$sUID = \OC::$server->getUserSession()->getUser()->getUID();
-						\OC::$server->getSession()['snappymail-passphrase'] = '';
-						\OC::$server->getConfig()->setUserValue($sUID, 'snappymail', 'passphrase', '');
-						\SnappyMail\Log::error('Nextcloud', $e->getMessage());
+						if (!$isOIDC) {
+							$sUID = \OC::$server->getUserSession()->getUser()->getUID();
+							\OC::$server->getSession()['snappymail-passphrase'] = '';
+							\OC::$server->getConfig()->setUserValue($sUID, 'snappymail', 'passphrase', '');
+							\SnappyMail\Log::error('Nextcloud', $e->getMessage());
+						}
 					}
 				}
 			}
@@ -124,6 +121,32 @@ class SnappyMailHelper
 		} catch (\Throwable $e) {
 			// Ignore login failure
 		}
+	}
+
+	// Check if OpenID Connect (OIDC) is enabled and used for login
+	// https://apps.nextcloud.com/apps/oidc_login
+	public static function isOIDCLogin() : bool
+	{
+		$config = \OC::$server->getConfig();
+		if ($config->getAppValue('snappymail', 'snappymail-autologin-oidc', false)) {
+			// Check if the OIDC Login app is enabled
+			if (\OC::$server->getAppManager()->isEnabledForUser('oidc_login')) {
+				// Check if session is an OIDC Login
+				$ocSession = \OC::$server->getSession();
+				if ($ocSession->get('is_oidc')) {
+					// IToken->getPassword() ???
+					if ($ocSession->get('oidc_access_token')) {
+						return true;
+					}
+					\SnappyMail\Log::debug('Nextcloud', 'OIDC access_token missing');
+				} else {
+					\SnappyMail\Log::debug('Nextcloud', 'No OIDC login');
+				}
+			} else {
+				\SnappyMail\Log::debug('Nextcloud', 'OIDC login disabled');
+			}
+		}
+		return false;
 	}
 
 	private static function getLoginCredentials() : array
@@ -151,18 +174,9 @@ class SnappyMailHelper
 		if ($ocSession['snappymail-nc-uid'] == $sUID) {
 
 			// If OpenID Connect (OIDC) is enabled and used for login, use this.
-			// https://apps.nextcloud.com/apps/oidc_login
-			if ($config->getAppValue('snappymail', 'snappymail-autologin-oidc', false)) {
-				if ($ocSession->get('is_oidc')) {
-					// IToken->getPassword() ???
-					if ($sAccessToken = $ocSession->get('oidc_access_token')) {
-						$sEmail = $config->getUserValue($sUID, 'settings', 'email');
-						return [$sUID, $sEmail, $sAccessToken];
-					}
-					\SnappyMail\Log::debug('Nextcloud', 'OIDC access_token missing');
-				} else {
-					\SnappyMail\Log::debug('Nextcloud', 'No OIDC login');
-				}
+			if (static::isOIDCLogin()) {
+				$sEmail = $config->getUserValue($sUID, 'settings', 'email');
+				return [$sUID, $sEmail, "oidc_login|{$sUID}"];
 			}
 
 			// Only use the user's password in the current session if they have

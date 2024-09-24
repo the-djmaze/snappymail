@@ -211,7 +211,7 @@ const TurndownService = (() => {
         )
       ,
 
-      replacement: function (content, node, options) {
+      replacement(content, node, options) {
         var href = node.getAttribute('href');
         var title = cleanAttribute(node.getAttribute('title'));
         if (title) title = ' "' + title + '"';
@@ -239,7 +239,7 @@ const TurndownService = (() => {
 
       references: [],
 
-      append: function () {
+      append() {
         var references = '';
         if (this.references.length) {
           references = '\n\n' + this.references.join('\n') + '\n\n';
@@ -298,6 +298,11 @@ const TurndownService = (() => {
         var titlePart = title ? ' "' + title + '"' : '';
         return src ? '![' + alt + ']' + '(' + src + titlePart + ')' : ''
       }
+    },
+
+    style: {
+      filter: 'style',
+      replacement: () => ''
     }
   },
 
@@ -309,7 +314,7 @@ const TurndownService = (() => {
 
   class Rules
   {
-	constructor(options) {
+    constructor(options) {
       this.options = options;
       this._keep = [];
       this._remove = [];
@@ -639,9 +644,7 @@ const TurndownService = (() => {
 
   class TurndownService
   {
-	constructor(options) {
-      if (!(this instanceof TurndownService)) return new TurndownService(options)
-
+    constructor(options) {
       this.options = Object.assign({
         rules: rules,
         headingStyle: 'setext',
@@ -679,8 +682,8 @@ const TurndownService = (() => {
 
       if (input === '') return ''
 
-      var output = process.call(this, new RootNode(input, this.options));
-      return postProcess.call(this, output)
+      var output = this.process(RootNode(input, this.options));
+      return this.postProcess(output)
     }
 
     /**
@@ -753,70 +756,70 @@ const TurndownService = (() => {
     escape(string) {
       return escapes.reduce((accumulator, escape) => accumulator.replace(escape[0], escape[1]), string)
     }
+
+    /**
+     * Reduces a DOM node down to its Markdown string equivalent
+     * @private
+     * @param {HTMLElement} parentNode The node to convert
+     * @returns A Markdown representation of the node
+     * @type String
+     */
+
+    process(parentNode) {
+      var self = this;
+      return reduce.call(parentNode.childNodes, (output, node) => {
+        node = Node(node, self.options);
+
+        var replacement = '';
+        if (node.nodeType === 3) {
+          replacement = node.isCode ? node.nodeValue : self.escape(node.nodeValue);
+        } else if (node.nodeType === 1) {
+          replacement = self.replacementForNode(node);
+        }
+
+        return join(output, replacement)
+      }, '')
+    }
+
+    /**
+     * Appends strings as each rule requires and trims the output
+     * @private
+     * @param {String} output The conversion output
+     * @returns A trimmed version of the ouput
+     * @type String
+     */
+
+    postProcess(output) {
+      var self = this;
+      this.rules.forEach((rule) => {
+        if (typeof rule.append === 'function') {
+          output = join(output, rule.append(self.options));
+        }
+      });
+
+      return output.replace(/^[\t\r\n]+/, '').replace(/[\t\r\n\s]+$/, '')
+    }
+
+    /**
+     * Converts an element node to its Markdown equivalent
+     * @private
+     * @param {HTMLElement} node The node to convert
+     * @returns A Markdown representation of the node
+     * @type String
+     */
+
+    replacementForNode(node) {
+      var rule = this.rules.forNode(node);
+      var content = this.process(node);
+      var whitespace = node.flankingWhitespace;
+      if (whitespace.leading || whitespace.trailing) content = content.trim();
+      return (
+        whitespace.leading +
+        rule.replacement(content, node, this.options) +
+        whitespace.trailing
+      )
+    }
   }
-
-  /**
-   * Reduces a DOM node down to its Markdown string equivalent
-   * @private
-   * @param {HTMLElement} parentNode The node to convert
-   * @returns A Markdown representation of the node
-   * @type String
-   */
-
-  const process = (parentNode) => {
-    var self = this;
-    return reduce.call(parentNode.childNodes, (output, node) => {
-      node = new Node(node, self.options);
-
-      var replacement = '';
-      if (node.nodeType === 3) {
-        replacement = node.isCode ? node.nodeValue : self.escape(node.nodeValue);
-      } else if (node.nodeType === 1) {
-        replacement = replacementForNode.call(self, node);
-      }
-
-      return join(output, replacement)
-    }, '')
-  },
-
-  /**
-   * Appends strings as each rule requires and trims the output
-   * @private
-   * @param {String} output The conversion output
-   * @returns A trimmed version of the ouput
-   * @type String
-   */
-
-  postProcess = (output) => {
-    var self = this;
-    this.rules.forEach((rule) => {
-      if (typeof rule.append === 'function') {
-        output = join(output, rule.append(self.options));
-      }
-    });
-
-    return output.replace(/^[\t\r\n]+/, '').replace(/[\t\r\n\s]+$/, '')
-  },
-
-  /**
-   * Converts an element node to its Markdown equivalent
-   * @private
-   * @param {HTMLElement} node The node to convert
-   * @returns A Markdown representation of the node
-   * @type String
-   */
-
-  replacementForNode = (node) => {
-    var rule = this.rules.forNode(node);
-    var content = process.call(this, node);
-    var whitespace = node.flankingWhitespace;
-    if (whitespace.leading || whitespace.trailing) content = content.trim();
-    return (
-      whitespace.leading +
-      rule.replacement(content, node, this.options) +
-      whitespace.trailing
-    )
-  },
 
   /**
    * Joins replacement to the current output with appropriate number of new lines
@@ -827,7 +830,7 @@ const TurndownService = (() => {
    * @type String
    */
 
-  join = (output, replacement) => {
+  const join = (output, replacement) => {
     var s1 = trimTrailingNewlines(output);
     var s2 = trimLeadingNewlines(replacement);
     var nls = Math.max(output.length - s1.length, replacement.length - s2.length);

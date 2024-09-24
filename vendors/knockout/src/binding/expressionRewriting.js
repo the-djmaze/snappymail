@@ -45,9 +45,9 @@ ko.expressionRewriting = (() => {
         divisionLookBehind = /[\])"'A-Za-z0-9_$]+$/,
         keywordRegexLookBehind = {'in':1,'return':1,'typeof':1},
 
-        parseObjectLiteral = objectLiteralString => {
+        preProcessBindings = bindingsStringOrKeyValueArray => {
             // Trim leading and trailing spaces from the string
-            var str = ko.utils.stringTrim(objectLiteralString);
+            var str = ko.utils.stringTrim(bindingsStringOrKeyValueArray);
 
             // Trim braces '{' surrounding the whole object literal
             if (str.charCodeAt(0) === 123) str = str.slice(1, -1);
@@ -66,9 +66,10 @@ ko.expressionRewriting = (() => {
                     // A comma signals the end of a key/value pair if depth is zero
                     if (c === 44) { // ","
                         if (depth <= 0) {
-                            result.push((key && values.length)
-                                ? {key: key, value: values.join('')}
-                                : {'unknown': key || values.join('')});
+                            if (key && values.length) {
+                                // Values are wrapped in a function so that each value can be accessed independently
+                                result.push("'" + key + "':()=>(" + values.join('') + ")");
+                            }
                             key = depth = 0;
                             values = [];
                             continue;
@@ -109,40 +110,20 @@ ko.expressionRewriting = (() => {
                     throw Error("Unbalanced parentheses, braces, or brackets");
                 }
             }
-            return result;
-        },
 
-        preProcessBindings = (bindingsStringOrKeyValueArray) => {
+            result.push("'$data':()=>$data");
 
-            var resultStrings = [],
-//                propertyAccessorResultStrings = [],
-                keyValueArray = parseObjectLiteral(bindingsStringOrKeyValueArray),
-
-                processKeyValue = (key, val) => {
-                    // Values are wrapped in a function so that each value can be accessed independently
-                    val = 'function(){return ' + val + ' }';
-                    resultStrings.push("'" + key + "':" + val);
-                };
-
-            keyValueArray.forEach(keyValue =>
-                processKeyValue(keyValue.key || keyValue['unknown'], keyValue.value)
-            );
-/*
-            if (propertyAccessorResultStrings.length)
-                processKeyValue('_ko_property_writers', "{" + propertyAccessorResultStrings.join(",") + " }");
-*/
-            return resultStrings.join(",");
+            return result.join(",");
         };
 
     return {
-        parseObjectLiteral: parseObjectLiteral,
-
         preProcessBindings: preProcessBindings,
 
         keyValueArrayContainsKey: (keyValueArray, key) =>
             -1 < keyValueArray.findIndex(v => v['key'] == key),
 
         // Internal, private KO utility for updating model properties from within bindings
+        // element:             the HTML element it belongs to
         // property:            If the property being updated is (or might be) an observable, pass it here
         //                      If it turns out to be a writable observable, it will be written to directly
         // allBindings:         An object with a get method to retrieve bindings in the current execution context.
@@ -151,10 +132,11 @@ ko.expressionRewriting = (() => {
         // value:               The value to be written
         // checkIfDifferent:    If true, and if the property being written is a writable observable, the value will only be written if
         //                      it is !== existing value on that writable observable
-        writeValueToProperty: (property, allBindings, key, value, checkIfDifferent) => {
+        writeValueToProperty: (element, property, allBindings, key, value, checkIfDifferent) => {
             if (!property || !ko.isObservable(property)) {
-                throw Error(`${key} , must be observable`);
-//                allBindings.get('_ko_property_writers')?.[key]?.(value);
+                console.error(`"${key}" should be observable in ${element.outerHTML.replace(/>.+/,'>')}`);
+//                ko.dataFor(element).key = value;
+                allBindings.get('$data')[key] = value;
             } else if (ko.isWriteableObservable(property) && (!checkIfDifferent || property.peek() !== value)) {
                 property(value);
             }

@@ -4,9 +4,9 @@ class LoginOverridePlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Login Override',
-		VERSION = '2.3',
-		RELEASE = '2024-03-12',
-		REQUIRED = '2.35.3',
+		VERSION = '2.4',
+		RELEASE = '2024-09-20',
+		REQUIRED = '2.36.1',
 		CATEGORY = 'Filters',
 		DESCRIPTION = 'Override IMAP/SMTP login credentials for specific users.';
 
@@ -17,7 +17,7 @@ class LoginOverridePlugin extends \RainLoop\Plugins\AbstractPlugin
 		$this->addHook('smtp.before-login', 'MapSmtpCredentials');
 	}
 
-	public function MapEmailAddress(string &$sEmail, string &$sLogin, string &$sPassword)
+	public function MapEmailAddress(string &$sEmail, string &$sImapUser, string &$sPassword, string &$sSmtpUser)
 	{
 		$sMapping = \trim($this->Config()->Get('plugin', 'email_mapping', ''));
 		if (!empty($sMapping)) {

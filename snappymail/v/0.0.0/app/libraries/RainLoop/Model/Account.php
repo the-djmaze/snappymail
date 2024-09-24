@@ -144,28 +144,34 @@ abstract class Account implements \JsonSerializable
 	{
 		$oAccount = null;
 		$aAccountHash = static::convertArray($aAccountHash);
-		if (!empty($aAccountHash['email']) && !empty($aAccountHash['login']) && !empty($aAccountHash['pass'])) {
-			try {
-				$oDomain = $oActions->DomainProvider()->getByEmailAddress($aAccountHash['email']);
-				if ($oDomain) {
-//					$aAccountHash['email'] = $oDomain->ImapSettings()->fixUsername($aAccountHash['email'], false);
-//					$aAccountHash['login'] = $oDomain->ImapSettings()->fixUsername($aAccountHash['login']);
-					$oAccount = new static;
-					$oAccount->sEmail = \SnappyMail\IDN::emailToAscii($aAccountHash['email']);
-					$oAccount->sImapUser = \SnappyMail\IDN::emailToAscii($aAccountHash['login']);
-					$oAccount->setImapPass(new SensitiveString($aAccountHash['pass']));
-					$oAccount->oDomain = $oDomain;
-					$oActions->Plugins()->RunHook('filter.account', array($oAccount));
-					if ($bThrowExceptionOnFalse && !$oAccount) {
-						throw new ClientException(Notifications::AccountFilterError);
-					}
-				}
-			} catch (\Throwable $e) {
-				if ($bThrowExceptionOnFalse) {
-					throw $e;
-				}
+		try {
+/*
+			if (empty($aAccountHash['email'])) {
+				throw new ClientException(Notifications::InvalidToken, null, 'TokenArray missing email');
 			}
-			if ($oAccount) {
+			if (empty($aAccountHash['login'])) {
+				throw new ClientException(Notifications::InvalidToken, null, 'TokenArray missing login');
+			}
+			if (empty($aAccountHash['pass'])) {
+				throw new ClientException(Notifications::InvalidToken, null, 'TokenArray missing pass');
+			}
+*/
+			if (empty($aAccountHash['email']) || empty($aAccountHash['login']) || empty($aAccountHash['pass'])) {
+				throw new \RuntimeException("Invalid TokenArray");
+			}
+			$oDomain = $oActions->DomainProvider()->getByEmailAddress($aAccountHash['email']);
+			if ($oDomain) {
+//				$aAccountHash['email'] = $oDomain->ImapSettings()->fixUsername($aAccountHash['email'], false);
+//				$aAccountHash['login'] = $oDomain->ImapSettings()->fixUsername($aAccountHash['login']);
+				$oAccount = new static;
+				$oAccount->sEmail = \SnappyMail\IDN::emailToAscii($aAccountHash['email']);
+				$oAccount->sImapUser = \SnappyMail\IDN::emailToAscii($aAccountHash['login']);
+				$oAccount->setImapPass(new SensitiveString($aAccountHash['pass']));
+				$oAccount->oDomain = $oDomain;
+				$oActions->Plugins()->RunHook('filter.account', array($oAccount));
+				if (!$oAccount) {
+					throw new ClientException(Notifications::AccountFilterError);
+				}
 				if (isset($aAccountHash['name'])) {
 					$oAccount->sName = $aAccountHash['name'];
 				}
@@ -176,6 +182,11 @@ abstract class Account implements \JsonSerializable
 				if (isset($aAccountHash['smtp']['pass'])) {
 					$oAccount->setSmtpPass(new SensitiveString($aAccountHash['smtp']['pass']));
 				}
+			}
+		} catch (\Throwable $e) {
+			\SnappyMail\Log::debug('ACCOUNT', $e->getMessage());
+			if ($bThrowExceptionOnFalse) {
+				throw $e;
 			}
 		}
 		return $oAccount;

@@ -8,7 +8,9 @@
 		"USERNAME": "Användarnamn",
 		"PASSWORD": "Lösenord",
 		"CANCEL": "Avbryt",
-		"SEARCH": "Inga kontakter funna"
+		"SEARCH": "Inga kontakter funna",
+		"YES": "Ja",
+		"NO": "Nej"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Logga in",
@@ -150,8 +152,6 @@
 		"DESC_NOTHING_TO_CONFIGURE": "Inget att konfigurera"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Ja",
-		"BUTTON_NO": "Nej",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Är du säker på att du vill stänga sidan?"
 	},
 	"POPUPS_LANGUAGES": {

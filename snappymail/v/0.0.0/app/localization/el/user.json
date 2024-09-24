@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Καθαρισμός αναζήτησης",
 		"CONTACT_VIEW_DESC": "Επιλέξτε μια επαφή από τη λίστα για να εμφανιστεί εδώ.",
 		"LABEL_BIRTHDAY": "Γενέθλια",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Εισαγωγή ονόματος εμφάνισης",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Εισαγωγή επωνύμου",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Εισαγωγή ονόματος",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Εισαγωγή πρόσθετου ονόματος",
+		"DISPLAY_NAME": "Ονόματος εμφάνισης",
+		"LAST_NAME": "Επωνύμου",
+		"FIRST_NAME": "Ονόματος",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Πρόσθετου ονόματος",
 		"LABEL_READ_ONLY": "Μόνο για ανάγνωση",
 		"ADD_MENU_LABEL": "Προσθήκη",
 		"ADD_MENU_NICKNAME": "Πρόσθετο όνομα",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Αυτόματη προσθήκη επαφών στον κατάλογο διευθύνσεων",

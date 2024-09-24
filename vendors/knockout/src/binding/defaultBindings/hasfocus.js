@@ -11,7 +11,7 @@ ko.bindingHandlers['hasfocus'] = {
             // Discussion at https://github.com/SteveSanderson/knockout/pull/352
             element[hasfocusUpdatingProperty] = true;
             isFocused = (element.ownerDocument.activeElement === element);
-            ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'hasfocus', isFocused, true);
+            ko.expressionRewriting.writeValueToProperty(element, valueAccessor(), allBindings, 'hasfocus', isFocused, true);
 
             //cache the latest value, so we can avoid unnecessarily calling focus/blur in the update function
             element[hasfocusLastValue] = isFocused;

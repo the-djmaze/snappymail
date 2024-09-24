@@ -6,8 +6,8 @@ class LoginRemotePlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME     = 'Login Remote',
 		AUTHOR   = 'SnappyMail',
 		URL      = 'https://snappymail.eu/',
-		VERSION  = '1.4',
-		RELEASE  = '2024-03-27',
+		VERSION  = '1.5',
+		RELEASE  = '2024-09-20',
 		REQUIRED = '2.36.1',
 		CATEGORY = 'Login',
 		LICENSE  = 'MIT',
@@ -56,7 +56,7 @@ class LoginRemotePlugin extends \RainLoop\Plugins\AbstractPlugin
 		return true;
 	}
 
-	public function FilterLoginCredentials(&$sEmail, &$sImapUser, &$sPassword, &$sSmtpUser)
+	public function FilterLoginCredentials(string &$sEmail, string &$sImapUser, string &$sPassword, string &$sSmtpUser)
 	{
 		// cPanel https://github.com/the-djmaze/snappymail/issues/697
 //		 && !empty($_ENV['CPANEL'])

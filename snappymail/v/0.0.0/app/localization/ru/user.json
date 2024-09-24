@@ -216,10 +216,13 @@
 		"CLEAR_SEARCH": "Очистить поиск",
 		"CONTACT_VIEW_DESC": "Выберите контакт для просмотра.",
 		"LABEL_BIRTHDAY": "День рождения",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Введите полное имя",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Введите имя",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Введите фамилию",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Введите ник",
+		"DISPLAY_NAME": "Полное имя",
+		"LAST_NAME": "Имя",
+		"FIRST_NAME": "Фамилию",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "Ник",
 		"LABEL_READ_ONLY": "Только чтение",
 		"ADD_MENU_LABEL": "Добавить",
 		"ADD_MENU_NICKNAME": "Ник",
@@ -499,7 +502,8 @@
 		"IMAGES_OPTION_ALWAYS": "Показать всегда",
 		"IMAGES_WHITELIST": "Форматы из белого списка",
 		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
-		"MAILTO": "Register as 'mailto:' links handler"
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Автоматически добавлять получателей писем в адресную книгу",

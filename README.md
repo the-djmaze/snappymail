@@ -141,27 +141,27 @@ RainLoop 1.17 vs SnappyMail
 |js/*           	|RainLoop 	|Snappy   	|
 |---------------	|--------:	|--------:	|
 |admin.js        	|2.170.153	|   84.203	|
-|app.js          	|4.207.787	|  445.359	|
+|app.js          	|4.207.787	|  446.887	|
 |boot.js         	|  868.735	|    4.343	|
-|libs.js         	|  658.812	|  193.716	|
+|libs.js         	|  658.812	|  236.059	|
 |sieve.js         	|        0	|   84.571	|
 |polyfills.js    	|  334.608	|        0	|
 |serviceworker.js	|        0	|      285	|
-|TOTAL           	|8.240.095	|  812.477	|
+|TOTAL           	|8.240.095	|  856.348	|
 
 |js/min/*       	|RainLoop 	|Snappy   	|RL gzip	|SM gzip	|RL brotli	|SM brotli	|
 |---------------	|--------:	|--------:	|------:	|------:	|--------:	|--------:	|
 |admin.min.js    	|  256.831	|   41.256	| 73.606	| 13.940	| 60.877  	| 12.493	|
-|app.min.js      	|  515.367	|  201.270	|139.456	| 68.096	|110.485  	| 58.078	|
+|app.min.js      	|  515.367	|  201.917	|139.456	| 68.450	|110.485  	| 58.321	|
 |boot.min.js     	|   84.659	|    2.231	| 26.998	|  1.271	| 23.643  	|  1.067	|
-|libs.min.js     	|  584.772	|   92.365	|180.901	| 34.487	|155.182  	| 30.830	|
+|libs.min.js     	|  584.772	|  111.742	|180.901	| 39.882	|155.182  	| 35.584	|
 |sieve.min.js     	|        0	|   41.288	|      0	| 10.327	|      0  	|  9.318	|
 |polyfills.min.js	|   32.837	|        0	| 11.406	|      0	| 10.175  	|      0	|
-|TOTAL user      	|1.217.635	|  295.866	|358.761	|103.854	|299.485  	| 89.975	|
-|TOTAL user+sieve	|1.217.635	|  337.154	|358.761	|114.181	|299.485  	| 99.293	|
-|TOTAL admin     	|  959.099	|  135.852	|292.911	| 49.698	|249.877  	| 44.390	|
+|TOTAL user      	|1.217.635	|  315.890	|358.761	|109.603	|299.485  	| 94.972	|
+|TOTAL user+sieve	|1.217.635	|  357.178	|358.761	|119.930	|299.485  	|104.290	|
+|TOTAL admin     	|  959.099	|  155.229	|292.911	| 55.093	|249.877  	| 49.144	|
 
-For a user it is around 68% smaller and faster than traditional RainLoop.
+For a user it is around 67% smaller and faster than traditional RainLoop.
 
 ### CSS changes
 
@@ -188,12 +188,12 @@ For a user it is around 68% smaller and faster than traditional RainLoop.
 
 |css/*       	|RainLoop	|Snappy   	|RL gzip	|SM gzip	|SM brotli	|
 |------------	|-------:	|------:	|------:	|------:	|--------:	|
-|app.css     	| 340.331	| 84.691	| 46.946	| 17.693	| 15.157	|
-|app.min.css 	| 274.947	| 68.052	| 39.647	| 15.589	| 13.610	|
+|app.css     	| 340.331	| 84.850	| 46.946	| 17.710	| 15.161	|
+|app.min.css 	| 274.947	| 68.192	| 39.647	| 15.602	| 13.626	|
 |boot.css    	|       	|  1.326	|       	|    664	|    545	|
 |boot.min.css	|       	|  1.071	|       	|    590	|    474	|
-|admin.css    	|       	| 30.602	|       	|  7.023	|  6.112	|
-|admin.min.css	|       	| 24.717	|       	|  6.346	|  5.586	|
+|admin.css    	|       	| 30.761	|       	|  7.038	|  6.118	|
+|admin.min.css	|       	| 24.857	|       	|  6.360	|  5.598	|
 
 ### PGP
 RainLoop uses the old OpenPGP.js v2

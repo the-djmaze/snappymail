@@ -43,11 +43,12 @@ class FlagCommand extends ActionCommand
 			if (args[0] instanceof GrammarQuotedString) {
 				this._variablename = args[0];
 			}
-			if (args[1] instanceof GrammarString) {
-				this.list_of_flags = args[1];
-			}
-		} else if (args[0] instanceof GrammarString) {
+			args[0] = args[1];
+		}
+		if (args[0] instanceof GrammarStringList) {
 			this.list_of_flags = args[0];
+		} else if (args[0]) {
+			this.list_of_flags.push(args[0]);
 		}
 	}
 }
@@ -78,8 +79,9 @@ export class HasFlagTest extends TestCommand
 	toString()
 	{
 		return 'hasflag'
-			+ ' ' + this.match_type
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
 			+ ' ' + this.variable_list
 			+ ' ' + this.list_of_flags;
 	}
