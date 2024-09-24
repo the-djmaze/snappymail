@@ -58,18 +58,6 @@ export const
 		serverErrorDesc(text);
 	},
 
-	koObserve = (obj, prop) => {
-//		Object.getOwnPropertyNames(obj).forEach(prop => {
-//			prop = prop.replace(/^_/, '');
-			obj['ko_' + prop] = ko.computed({
-				read: () => obj[prop],
-				write: (v) => obj[prop] = v,
-				pure:true
-			});
-//		});
-//		Object.preventExtensions(obj);
-	},
-
 	getComparators = (validOnly = 0) => {
 		let result = [
 			// Default

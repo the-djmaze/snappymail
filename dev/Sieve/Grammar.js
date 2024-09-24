@@ -9,7 +9,7 @@ import {
 	MULTILINE_DOTSTART
 } from 'Sieve/RegEx';
 
-import { arrayToString, getMatchTypes, getComparators, koObserve } from 'Sieve/Utils';
+import { arrayToString, getMatchTypes, getComparators } from 'Sieve/Utils';
 
 /**
  * abstract
@@ -154,7 +154,6 @@ export /*abstract*/ class TestCommand extends GrammarCommand
 		this._comparator = '';
 		this._match_type = '';
 		this.relational_match = ''; // GrammarQuotedString DQUOTE ( "gt" / "ge" / "lt" / "le" / "eq" / "ne" ) DQUOTE
-		koObserve(this, 'match_type');
 	}
 
 	get require() { return /:value|:count/.test(this._match_type) ? 'relational' : ''; }
