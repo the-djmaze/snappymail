@@ -2,11 +2,15 @@
 .squire-toolbar {
 	border-bottom: 1px solid #b6b6b6;
 	min-height: 28px;
-	overflow-x: auto;
-	overflow-y: hidden;
-	padding: 2px;
+	overflow: hidden;
+	padding: 10px 5px;
 	position: relative;
 	white-space: nowrap;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: center;
+	box-sizing: content-box;
+
 }
 
 .squire-toolbar input[type="color"] {
@@ -17,18 +21,31 @@
 	width: 40px;
 }
 
+.squire-toolbar input[type="color"][list="squire-colors"] {
+	top: 10px;
+}
+
 .squire-toolbar select {
 	font-size: 85%;
 	padding: 4px 1.5em 4px 6px;
-	text-align: var(--left, left);
+	text-align: left;
 	vertical-align: middle;
-	width: 7em;
+	width: fit-content;;
+	background-color: unset;
+	border: unset;
+	text-shadow: none;
+	box-shadow: none !important;
 }
 .squire-toolbar select[data-action="fontSize"] {
 	width: 5em;
 }
 .squire-toolbar button {
-	font-family: snappymail, var(--fontSans)
+	font-family: snappymail, var(--fontSans);
+	padding: 2px 10px 4px 10px !important;
+	background-color: unset;
+	border: unset;
+	text-shadow: none;
+	box-shadow: none !important;
 }
 .squire-toolbar button[data-action="bold"] {
 	font-weight: bold;
@@ -44,6 +61,21 @@
 	text-decoration: line-through;
 }
 */
+.squire-toolbar button:hover {
+	transform: scale(1.2);
+}
+
+.squire-toolbar button svg {
+	width: 18px;
+	height: 18px;
+	margin-top: 8px;
+	fill: var(--btn-clr, #333);
+}
+
+[dir="rtl"]  .squire-toolbar.btn-toolbar div.btn-group {
+	display: flex;
+	flex-direction: row-reverse;
+}
 
 .squire-wysiwyg, .squire-plain {
 	height: 100%;
@@ -55,16 +87,19 @@
 
 .squire-wysiwyg {
 	font-family: var(--fontSans);
+	line-height: 1.6;
 
 	ul {
-		padding-left: 40px;
+		padding-left: 20px;
+		padding-right: 20px;
 		li {
 			list-style-type: disc !important;
 		}
 	}
 
 	ol {
-		padding-left: 40px;
+		padding-left: 20px;
+		padding-right: 20px;
 		li {
 			list-style-type: decimal !important;
 		}
