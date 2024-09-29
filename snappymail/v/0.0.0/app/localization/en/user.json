@@ -428,7 +428,11 @@
 		"IMAGEUPLOAD": "Image select",
 		"UNDO": "Undo",
 		"REDO": "Redo",
-		"REMOVESTYLE": "Remove style"
+		"REMOVESTYLE": "Remove style",
+		"LEFTALIGN": "Right",
+		"CENTERALIGN": "Center",
+		"RIGHTALIGN": "Left",
+		"JUSTIFYALIGN": "Justify"
 	},
 	"SETTINGS_LABELS": {
 		"GENERAL": "General",

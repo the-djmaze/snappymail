@@ -428,7 +428,11 @@
 		"IMAGEUPLOAD": "Image select",
 		"UNDO": "Undo",
 		"REDO": "Redo",
-		"REMOVESTYLE": "Remove style"
+		"REMOVESTYLE": "Remove style",
+		"LEFTALIGN": "Right",
+		"CENTERALIGN": "Center",
+		"RIGHTALIGN": "Left",
+		"JUSTIFYALIGN": "Justify"
 	},
 	"SETTINGS_LABELS": {
 		"GENERAL": "عمومی",
@@ -465,8 +469,8 @@
 		"LAYOUT_HORIZONTAL_SPLIT": "تقسیم افقی",
 		"SHOW_NEXT_MESSAGE": "Show next message when (re)move current message",
 		"EDITOR": "ویرایشگر پیش‌فرض",
-		"EDITOR_HTML": "تحت فرمت Html",
-		"EDITOR_PLAIN": "ساده",
+		"EDITOR_HTML": "فرمت HTML",
+		"EDITOR_PLAIN": "فرمت ساده",
 		"VIEW_OPTIONS": "مشاهده گزینه‌ها",
 		"USE_PREVIEW_PANE": "استفاده از پنجره پیش‌نمایش",
 		"HIDE_DELETED_MESSAGES": "پنهان کردن پیام های علامت گذاری شده برای حذف",
