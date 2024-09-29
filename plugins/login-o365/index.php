@@ -7,8 +7,9 @@
  *
  * https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/RegisteredApps
  *
- * redirect_uri=https://{DOMAIN}/?LoginO365
- * redirect_uri=https://{DOMAIN}/LoginO365
+ * https://learn.microsoft.com/en-us/entra/identity-platform/reply-url#query-parameter-support-in-redirect-uris
+ * Azure:    redirect_uri=https://{DOMAIN}/?LoginO365
+ * Personal: redirect_uri=https://{DOMAIN}/LoginO365
  */
 
 use RainLoop\Model\MainAccount;
@@ -18,8 +19,8 @@ class LoginO365Plugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME     = 'Office365/Outlook OAuth2',
-		VERSION  = '0.2',
-		RELEASE  = '2024-08-13',
+		VERSION  = '0.3',
+		RELEASE  = '2024-09-29',
 		REQUIRED = '2.36.1',
 		CATEGORY = 'Login',
 		DESCRIPTION = 'Office365/Outlook IMAP, Sieve & SMTP login using RFC 7628 OAuth2';
@@ -47,6 +48,7 @@ class LoginO365Plugin extends \RainLoop\Plugins\AbstractPlugin
 
 	public function httpPaths(array &$aPaths) : void
 	{
+		// Personal accounts workaround
 		if (!empty($_SERVER['PATH_INFO']) && \str_ends_with($_SERVER['PATH_INFO'], 'LoginO365')) {
 			$aPaths = ['LoginO365'];
 		}
@@ -113,7 +115,7 @@ class LoginO365Plugin extends \RainLoop\Plugins\AbstractPlugin
 			$iExpires += $aResponse['expires_in'];
 
 			$oO365->setAccessToken($sAccessToken);
-			$aUserInfo = $oO365->fetch('https://graph.microsoft.com/oidc/userinfo"');
+			$aUserInfo = $oO365->fetch('https://graph.microsoft.com/oidc/userinfo');
 			if (200 != $aUserInfo['code']) {
 				throw new \RuntimeException("HTTP: {$aResponse['code']}");
 			}
@@ -154,6 +156,12 @@ class LoginO365Plugin extends \RainLoop\Plugins\AbstractPlugin
 	public function configMapping() : array
 	{
 		return [
+			\RainLoop\Plugins\Property::NewInstance('personal')
+				->SetLabel('Use with personal accounts')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
+				->SetDefaultValue(true)
+				->SetAllowedInJs()
+				->SetDescription('Sign in users with personal Microsoft accounts such as Outlook.com (Hotmail)'),
 			\RainLoop\Plugins\Property::NewInstance('client_id')
 				->SetLabel('Client ID')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::STRING)
