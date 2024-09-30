@@ -8,7 +8,7 @@
 		"FILE_ATTACH": "attach",
 		"FILE_INTERNAL": "internal",
 		"FILE_PUBLIC": "public",
-
+		"ADDRESS_BOOK": "Address Book",
 		"SELECT_CALENDAR": "Select calendar",
 		"SAVE_ICS": "Add to calendar",
 		"OLD_INVITATION": "Old invitation",
