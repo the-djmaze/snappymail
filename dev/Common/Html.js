@@ -23,7 +23,7 @@ const
 		// Structural Elements:
 		'blockquote','br','div','figcaption','figure','h1','h2','h3','h4','h5','h6','hgroup','hr','p','wbr',
 		'article','aside','header','footer','main','section',
-		'details','summary',
+		'details','summary','nav',
 		// List Elements
 		'dd','dl','dt','li','ol','ul',
 		// Text Formatting Elements
@@ -282,6 +282,8 @@ export const
 				'abbr', 'scope',
 				// td
 				'colspan', 'rowspan', 'headers'
+				// others
+				//'class', 'id', 'target'
 			];
 
 		if (SettingsUserStore.allowStyles()) {
@@ -332,7 +334,7 @@ export const
 		tmpl.content.querySelectorAll(keepTagContent).forEach(oElement => replaceWithChildren(oElement));
 
 		tmpl.content.querySelectorAll(
-			':not('+allowedTags+')'
+			':not('+allowedTags+'),a:empty,span:empty'
 			+ (0 < bqLevel ? ',' + (new Array(1 + bqLevel).fill('blockquote').join(' ')) : '')
 		).forEach(oElement => oElement.remove());
 /*		// Is this slower or faster?
@@ -356,7 +358,7 @@ export const
 			});
 */
 
-		[...tmpl.content.querySelectorAll('*')].forEach(oElement => {
+		msgId && [...tmpl.content.querySelectorAll('*')].forEach(oElement => {
 			const name = oElement.tagName,
 				oStyle = oElement.style;
 
@@ -631,7 +633,7 @@ export const
 			}
 		});
 
-		blockquoteSwitcher();
+		msgId && blockquoteSwitcher();
 
 //		return tmpl.content.firstChild;
 		result.html = tmpl.innerHTML.trim();
@@ -819,6 +821,7 @@ export const
 	};
 
 rl.Utils = {
+	cleanHtml: cleanHtml,
 	htmlToPlain: htmlToPlain,
 	plainToHtml: plainToHtml,
 	htmlToMarkdown: htmlToMarkdown

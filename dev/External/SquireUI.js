@@ -3,10 +3,6 @@
 (doc => {
 
 const
-	removeElements = 'HEAD,LINK,META,NOSCRIPT,SCRIPT,TEMPLATE,TITLE',
-	allowedElements = 'A,B,BLOCKQUOTE,BR,DIV,FONT,H1,H2,H3,H4,H5,H6,HR,IMG,LI,OL,P,SPAN,STRONG,TABLE,TD,TH,TR,U,UL',
-	allowedAttributes = 'abbr,align,background,bgcolor,border,cellpadding,cellspacing,class,color,colspan,dir,face,frame,height,href,hspace,id,lang,rowspan,rules,scope,size,src,style,target,type,usemap,valign,vspace,width'.split(','),
-
 	i18n = (str, def) => rl.i18n(str) || def,
 
 	ctrlKey = shortcuts.getMetaKey() + ' + ',
@@ -21,38 +17,17 @@ const
 
 	forEachObjectValue = (obj, fn) => Object.values(obj).forEach(fn),
 
-	getFragmentOfChildren = parent => {
-		let frag = doc.createDocumentFragment();
-		frag.append(...parent.childNodes);
-		return frag;
-	},
-
 	SquireDefaultConfig = {
 /*
 		addLinks: true // allow_smart_html_links
 */
 		sanitizeToDOMFragment: (html, isPaste/*, squire*/) => {
-			tpl.innerHTML = (html||'')
+			html = (html||'')
 				.replace(/<\/?(BODY|HTML)[^>]*>/gi,'')
 				.replace(/<!--[^>]+-->/g,'')
 				.replace(/<span[^>]*>\s*<\/span>/gi,'')
 				.trim();
-			tpl.querySelectorAll('a:empty,span:empty').forEach(el => el.remove());
-			if (isPaste) {
-				tpl.querySelectorAll(removeElements).forEach(el => el.remove());
-				tpl.querySelectorAll('*').forEach(el => {
-					if (!el.matches(allowedElements)) {
-						el.replaceWith(getFragmentOfChildren(el));
-					} else if (el.hasAttributes()) {
-						[...el.attributes].forEach(attr => {
-							let name = attr.name.toLowerCase();
-							if (!allowedAttributes.includes(name)) {
-								el.removeAttribute(name);
-							}
-						});
-					}
-				});
-			}
+			tpl.innerHTML =  isPaste ? rl.Utils.cleanHtml(html).html : html;
 			return tpl.content;
 		}
 	};
