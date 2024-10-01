@@ -239,6 +239,8 @@ export const
 				linkedData: []
 			},
 
+			isMsg = !!msgId,
+
 			findAttachmentByCid = cId => oAttachments.findByCid(cId),
 			findLocationByCid = cId => {
 				const attachment = findAttachmentByCid(cId);
@@ -358,7 +360,7 @@ export const
 			});
 */
 
-		msgId && [...tmpl.content.querySelectorAll('*')].forEach(oElement => {
+		isMsg && [...tmpl.content.querySelectorAll('*')].forEach(oElement => {
 			const name = oElement.tagName,
 				oStyle = oElement.style;
 
@@ -633,7 +635,7 @@ export const
 			}
 		});
 
-		msgId && blockquoteSwitcher();
+		isMsg && blockquoteSwitcher();
 
 //		return tmpl.content.firstChild;
 		result.html = tmpl.innerHTML.trim();
