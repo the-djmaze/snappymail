@@ -629,8 +629,10 @@ export class MailMessageList extends AbstractViewRight {
 				}
 			},
 			dblclick: event => {
-				let el = eqs(event, '.messageListItem');
-				el && this.gotoThread(ko.dataFor(el));
+				let msg = ko.dataFor(eqs(event, '.messageListItem'));
+				if (msg) {
+					msg.threadsLen() ? this.gotoThread(msg) : toggleFullscreen();
+				}
 			}
 		});
 
