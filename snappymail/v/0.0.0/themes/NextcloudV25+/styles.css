@@ -342,9 +342,9 @@
 
 /* #region button */
 
-#rl-app .btn,
-#rl-app button,
-#rl-app button.btn:not(.button-vue) {
+#rl-app .btn:not(.squire-toolbar *),
+#rl-app button:not(.squire-toolbar *),
+#rl-app button.btn:not(.button-vue):not(.squire-toolbar *) {
 	min-height: 36px;
 	height: 36px;
 	box-sizing: border-box;
@@ -514,20 +514,20 @@
 	margin-left: 0.5px;
 }
 
-#rl-app .btn-group .btn:nth-child(n+2 of :not([style*="display: none;"])):nth-last-child(n+2 of :not([style*="display: none;"])) {
+#rl-app .btn-group .btn:nth-child(n+2 of :not([style*="display: none;"])):nth-last-child(n+2 of :not([style*="display: none;"])):not(.squire-toolbar *) {
 	border-radius: 0 !important;
 	margin-right: 0.5px;
 	margin-left: 0.5px;
 }
 
 /* fallback */
-#rl-app .btn-group .btn:not(:first-of-type):not(:last-of-type) {
+#rl-app .btn-group .btn:not(:first-of-type):not(:last-of-type):not(.squire-toolbar *) {
 	border-radius: 0;
 	margin: 0 0.5px;
 }
 
-#rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])),
-[dir="rtl"] #rl-app .btn-group .btn:nth-last-child(1 of :not([style*="display: none;"])) {
+#rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])):not(.squire-toolbar *),
+[dir="rtl"] #rl-app .btn-group .btn:nth-last-child(1 of :not([style*="display: none;"])):not(.squire-toolbar *) {
 	border-radius: 0 !important;
 	border-top-left-radius: var(--nc-border-radius-pill) !important;
 	border-bottom-left-radius: var(--nc-border-radius-pill) !important;
@@ -541,8 +541,8 @@
 	border-bottom-left-radius: var(--nc-border-radius-pill);
 }
 
-#rl-app .btn-group .btn:nth-last-child(1 of :not([style*="display: none;"])),
-[dir="rtl"] #rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])) {
+#rl-app .btn-group .btn:nth-last-child(1 of :not([style*="display: none;"])):not(.squire-toolbar *),
+[dir="rtl"] #rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])):not(.squire-toolbar *) {
 	border-radius: 0 !important;
 	border-top-right-radius: var(--nc-border-radius-pill) !important;
 	border-bottom-right-radius: var(--nc-border-radius-pill) !important;
@@ -556,14 +556,14 @@
 	border-bottom-right-radius: var(--nc-border-radius-pill);
 }
 
-#rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])):nth-last-child(1 of :not([style*="display: none;"])),
-[dir="rtl"] #rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])):nth-last-child(1 of :not([style*="display: none;"])) {
+#rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])):nth-last-child(1 of :not([style*="display: none;"])):not(.squire-toolbar *),
+[dir="rtl"] #rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])):nth-last-child(1 of :not([style*="display: none;"])):not(.squire-toolbar *) {
 	border-radius: var(--nc-border-radius-pill) !important;
 }
 
 /* fallback */
-#rl-app .btn-group .btn:first-of-type:last-of-type,
-[dir="rtl"] #rl-app .btn-group .btn:first-of-type:last-of-type {
+#rl-app .btn-group .btn:first-of-type:last-of-type:not(.squire-toolbar *),
+[dir="rtl"] #rl-app .btn-group .btn:first-of-type:last-of-type:not(.squire-toolbar *) {
 	border-radius: var(--nc-border-radius-pill) !important;
 }
 
@@ -612,17 +612,15 @@
 
 /* #region input & select */
 
-#rl-app select,
-#rl-app .select,
-#rl-app .emailaddresses,
-#rl-app input:not([type="checkbox"]) {
+#rl-app select:not(.squire-toolbar *),
+#rl-app .select:not(.squire-toolbar *),
+#rl-app .emailaddresses:not(.squire-toolbar *),
+#rl-app input:not([type="checkbox"]):not(.squire-toolbar *) {
 	padding: 0 12px;
 	font-size: var(--nc-default-font-size);
 	color: var(--nc-color-main-text);
 	background-color: unset;
 	height: 36px;
-	border: 2px solid var(--nc-color-border-maxcontrast);
-	border-radius: var(--nc-border-radius-large);
 	line-height: 32px;
 	outline: none;
 }
@@ -842,8 +840,6 @@ input[type="checkbox"] {
 /* #region textarea */
 
 #rl-app .squire-toolbar {
-	height: 50px;
-	padding: 5px;
 	box-sizing: content-box;
 	border: none;
 }
