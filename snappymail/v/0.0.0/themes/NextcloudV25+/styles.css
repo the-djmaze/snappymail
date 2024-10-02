@@ -52,8 +52,8 @@
 	--nc-animation-quick: var(--animation-quick, 100ms);
 	--nc-animation-slow: var(--animation-slow, 300ms);
 	--nc-border-radius: var(--border-radius, 3px);
-	--nc-border-radius-large: var(--border-radius-large, 10px);
-	--nc-border-radius-pill: var(--border-radius-pill, 100px);
+	--nc-border-radius-large: var(--border-radius-large, 8px);
+	--nc-border-radius-pill: var("--border-radius-pill", 100px);
 	--nc-default-grid-baseline: var(--default-grid-baseline, 4px);
 	--nc-navigation-width: var(--navigation-width, 300px);
 	--nc-sidebar-min-width: var(--sidebar-min-width, 300px);
@@ -116,7 +116,7 @@
 		--nc-animation-quick: var(--animation-quick, 100ms);
 		--nc-animation-slow: var(--animation-slow, 300ms);
 		--nc-border-radius: var(--border-radius, 3px);
-		--nc-border-radius-large: var(--border-radius-large, 10px);
+		--nc-border-radius-large: var(--border-radius-large, 8px);
 		--nc-border-radius-pill: var(--border-radius-pill, 100px);
 		--nc-default-grid-baseline: var(--default-grid-baseline, 4px);
 		--nc-navigation-width: var(--navigation-width, 300px);
@@ -353,7 +353,7 @@
 	color: var(--nc-color-main-text);
 	background-color: var(--nc-color-background-dark);
 	border: 1px solid var(--nc-color-border-dark) !important;
-	border-radius: var(--nc-border-radius-pill);
+	border-radius: var(--nc-border-radius-large);
 	font-size: var(--nc-default-font-size);
 	text-shadow: none;
 	box-shadow: none;
@@ -529,42 +529,42 @@
 #rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])),
 [dir="rtl"] #rl-app .btn-group .btn:nth-last-child(1 of :not([style*="display: none;"])) {
 	border-radius: 0 !important;
-	border-top-left-radius: var(--nc-border-radius-pill) !important;
-	border-bottom-left-radius: var(--nc-border-radius-pill) !important;
+	border-top-left-radius: var(--nc-border-radius-large) !important;
+	border-bottom-left-radius: var(--nc-border-radius-large) !important;
 }
 
 /* fallback */
 #rl-app .btn-group .btn:first-of-type,
 [dir="rtl"] #rl-app .btn-group .btn:last-of-type {
 	border-radius: 0;
-	border-top-left-radius: var(--nc-border-radius-pill);
-	border-bottom-left-radius: var(--nc-border-radius-pill);
+	border-top-left-radius: var(--nc-border-radius-large);
+	border-bottom-left-radius: var(--nc-border-radius-large);
 }
 
 #rl-app .btn-group .btn:nth-last-child(1 of :not([style*="display: none;"])),
 [dir="rtl"] #rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])) {
 	border-radius: 0 !important;
-	border-top-right-radius: var(--nc-border-radius-pill) !important;
-	border-bottom-right-radius: var(--nc-border-radius-pill) !important;
+	border-top-right-radius: var(--nc-border-radius-large) !important;
+	border-bottom-right-radius: var(--nc-border-radius-large) !important;
 }
 
 /* fallback */
 #rl-app .btn-group .btn:last-of-type,
 [dir="rtl"] #rl-app .btn-group .btn:first-of-type {
 	border-radius: 0;
-	border-top-right-radius: var(--nc-border-radius-pill);
-	border-bottom-right-radius: var(--nc-border-radius-pill);
+	border-top-right-radius: var(--nc-border-radius-large);
+	border-bottom-right-radius: var(--nc-border-radius-large);
 }
 
 #rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])):nth-last-child(1 of :not([style*="display: none;"])),
 [dir="rtl"] #rl-app .btn-group .btn:nth-child(1 of :not([style*="display: none;"])):nth-last-child(1 of :not([style*="display: none;"])) {
-	border-radius: var(--nc-border-radius-pill) !important;
+	border-radius: var(--nc-border-radius-large) !important;
 }
 
 /* fallback */
 #rl-app .btn-group .btn:first-of-type:last-of-type,
 [dir="rtl"] #rl-app .btn-group .btn:first-of-type:last-of-type {
-	border-radius: var(--nc-border-radius-pill) !important;
+	border-radius: var(--nc-border-radius-large) !important;
 }
 
 #rl-app .btn-group .btn.fontastic:nth-child(1 of :not([style*="display: none;"])),
@@ -1338,7 +1338,7 @@ html.rl-left-panel-disabled #rl-app .b-folders .b-toolbar {
 	padding: 0 2em 0 15px;
 	height: 38px;
 	line-height: 38px !important;
-	border-radius: var(--nc-border-radius-pill);
+	border-radius: var(--nc-border-radius-large);
 	color: unset;
 	border: none;
 }
@@ -1390,7 +1390,7 @@ html.rl-left-panel-disabled #rl-app .b-folders .b-folders-system a.selectable {
 
 #rl-app .b-folders hr {
 	border-top: solid var(--nc-color-main-text);
-	border-radius: var(--nc-border-radius-pill);
+	border-radius: var(--nc-border-radius-large);
 	opacity: .1;
 }
 
@@ -1441,7 +1441,7 @@ html.rl-left-panel-disabled #rl-app .b-folders .b-folders-system a.selectable {
 #rl-app .b-footer.btn-toolbar .btn-group .btn.fontastic:nth-child(1 of :not([style*="display: none;"])):nth-last-child(1 of :not([style*="display: none;"])),
 [dir="rtl"] #rl-app .b-footer.btn-toolbar .btn-group .btn:nth-child(1 of :not([style*="display: none;"])):nth-last-child(1 of :not([style*="display: none;"])),
 [dir="rtl"] #rl-app .b-footer.btn-toolbar .btn-group .btn.fontastic:nth-child(1 of :not([style*="display: none;"])):nth-last-child(1 of :not([style*="display: none;"])) {
-	border-radius: var(--nc-border-radius-pill) !important;
+	border-radius: var(--nc-border-radius-large) !important;
 }
 
 /* fallback */
@@ -1449,7 +1449,7 @@ html.rl-left-panel-disabled #rl-app .b-folders .b-folders-system a.selectable {
 #rl-app .b-footer.btn-toolbar .btn-group .btn.fontastic,
 [dir="rtl"] #rl-app .b-footer.btn-toolbar .btn-group .btn,
 [dir="rtl"] #rl-app .b-footer.btn-toolbar .btn-group .btn.fontastic {
-	border-radius: var(--nc-border-radius-pill) !important;
+	border-radius: var(--nc-border-radius-large) !important;
 }
 
 #rl-app .b-footer.btn-toolbar .btn:hover,
@@ -1826,17 +1826,17 @@ html.sm-msgView-bottom #rl-app .messageView {
 
 #rl-app .messageView .messageItemHeader .informationShort meter::-webkit-meter-optimum-value {
 	background-color: var(--nc-color-success);
-	border-radius: var(--nc-border-radius-pill);
+	border-radius: var(--nc-border-radius-large);
 }
 
 #rl-app .messageView .messageItemHeader .informationShort meter::-webkit-meter-suboptimum-value {
 	background-color: var(--nc-color-warning);
-	border-radius: var(--nc-border-radius-pill);
+	border-radius: var(--nc-border-radius-large);
 }
 
 #rl-app .messageView .messageItemHeader .informationShort meter::-webkit-meter-even-less-good-value {
 	background-color: var(--nc-color-error);
-	border-radius: var(--nc-border-radius-pill);
+	border-radius: var(--nc-border-radius-large);
 }
 
 #rl-app .messageView .messageItemHeader .hasVirus {
@@ -1876,7 +1876,7 @@ html.sm-msgView-bottom #rl-app .messageView {
 }
 
 #rl-app .messageView .messageAssignedTags span {
-	border-radius: var(--nc-border-radius-pill);
+	border-radius: var(--nc-border-radius-large);
 	background: unset;
 	padding: 2px 5px;
 }
