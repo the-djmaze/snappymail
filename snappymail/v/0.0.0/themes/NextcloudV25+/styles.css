@@ -53,7 +53,7 @@
 	--nc-animation-slow: var(--animation-slow, 300ms);
 	--nc-border-radius: var(--border-radius, 3px);
 	--nc-border-radius-large: var(--border-radius-large, 8px);
-	--nc-border-radius-pill: var("--border-radius-pill", 100px);
+	--nc-border-radius-pill: var(--border-radius-pill, 100px);
 	--nc-default-grid-baseline: var(--default-grid-baseline, 4px);
 	--nc-navigation-width: var(--navigation-width, 300px);
 	--nc-sidebar-min-width: var(--sidebar-min-width, 300px);
