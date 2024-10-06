@@ -35,7 +35,6 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 			$this->addTemplate('templates/PopupsNextcloudFiles.html');
 			$this->addTemplate('templates/PopupsNextcloudCalendars.html');
-			$this->addTemplate('templates/PopupsNextcloudInvites.html');
 
 //			$this->addHook('login.credentials.step-2', 'loginCredentials2');
 //			$this->addHook('login.credentials', 'loginCredentials');
