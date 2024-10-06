@@ -1158,10 +1158,6 @@ html.rl-mobile.rl-left-panel-disabled #rl-app #rl-left {
 	color: var(--nc-color-primary-text);
 }
 
-:not(#rl-app) ol, ul {
-	margin: unset;
-}
-
 #rl-app .control-group {
 	margin-bottom: 0.5em;
 }
