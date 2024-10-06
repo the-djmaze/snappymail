@@ -360,7 +360,7 @@ export const
 			});
 */
 
-		isMsg && [...tmpl.content.querySelectorAll('*')].forEach(oElement => {
+		[...tmpl.content.querySelectorAll('*')].forEach(oElement => {
 			const name = oElement.tagName,
 				oStyle = oElement.style;
 
@@ -485,70 +485,72 @@ export const
 			*/
 
 			let skipStyle = false;
-			value = delAttribute('src');
-			if (value) {
-				if ('IMG' === name) {
-					oElement.loading = 'lazy';
-					let attachment;
-					if (value.startsWith('cid:'))
-					{
-						value = value.slice(4);
-						setAttribute('data-x-src-cid', value);
-						attachment = findAttachmentByCid(value);
-						if (attachment?.download) {
-							oElement.src = attachment.linkPreview();
-							oElement.title += ' ('+attachment.fileName+')';
-							attachment.isInline(true);
-							attachment.isLinked(true);
+			if (isMsg) {
+				value = isMsg && delAttribute('src');
+				if (value) {
+					if ('IMG' === name) {
+						oElement.loading = 'lazy';
+						let attachment;
+						if (value.startsWith('cid:'))
+						{
+							value = value.slice(4);
+							setAttribute('data-x-src-cid', value);
+							attachment = findAttachmentByCid(value);
+							if (attachment?.download) {
+								oElement.src = attachment.linkPreview();
+								oElement.title += ' ('+attachment.fileName+')';
+								attachment.isInline(true);
+								attachment.isLinked(true);
+							}
 						}
-					}
-					else if ((attachment = findLocationByCid(value)))
-					{
-						if (attachment.download) {
-							oElement.src = attachment.linkPreview();
-							attachment.isLinked(true);
+						else if ((attachment = findLocationByCid(value)))
+						{
+							if (attachment.download) {
+								oElement.src = attachment.linkPreview();
+								attachment.isLinked(true);
+							}
 						}
-					}
-					else if (detectHiddenImages
-						&& ((oStyle.maxHeight && 3 > pInt(oStyle.maxHeight)) // TODO: issue with 'in'
-							|| (oStyle.maxWidth && 3 > pInt(oStyle.maxWidth)) // TODO: issue with 'in'
-							|| (oStyle.width && 2 > pInt(oStyle.width))
-							|| [
-								'email.microsoftemail.com/open',
-								'github.com/notifications/beacon/',
-								'/track/open', // mandrillapp.com list-manage.com
-								'google-analytics.com'
-							].filter(uri => value.toLowerCase().includes(uri)).length
-					)) {
-						skipStyle = true;
-						oStyle.display = 'none';
-//						setAttribute('style', 'display:none');
-						setAttribute('data-x-src-hidden', value);
-//						result.tracking = true;
-					}
-					else if (httpre.test(value))
-					{
-						let src = stripTracking(value);
-						if (src != value) {
-							result.tracking = true;
-							setAttribute('data-x-src-tracking', value);
+						else if (detectHiddenImages
+							&& ((oStyle.maxHeight && 3 > pInt(oStyle.maxHeight)) // TODO: issue with 'in'
+								|| (oStyle.maxWidth && 3 > pInt(oStyle.maxWidth)) // TODO: issue with 'in'
+								|| (oStyle.width && 2 > pInt(oStyle.width))
+								|| [
+									'email.microsoftemail.com/open',
+									'github.com/notifications/beacon/',
+									'/track/open', // mandrillapp.com list-manage.com
+									'google-analytics.com'
+								].filter(uri => value.toLowerCase().includes(uri)).length
+						)) {
+							skipStyle = true;
+							oStyle.display = 'none';
+	//						setAttribute('style', 'display:none');
+							setAttribute('data-x-src-hidden', value);
+	//						result.tracking = true;
 						}
-						setAttribute('data-x-src', src);
-						result.hasExternals = true;
-						oElement.alt || (oElement.alt = src.replace(/^.+\/([^/?]+).*$/, '$1').slice(-20));
-					}
-					else if (value.startsWith('data:image/'))
-					{
-						oElement.src = value;
+						else if (httpre.test(value))
+						{
+							let src = stripTracking(value);
+							if (src != value) {
+								result.tracking = true;
+								setAttribute('data-x-src-tracking', value);
+							}
+							setAttribute('data-x-src', src);
+							result.hasExternals = true;
+							oElement.alt || (oElement.alt = src.replace(/^.+\/([^/?]+).*$/, '$1').slice(-20));
+						}
+						else if (value.startsWith('data:image/'))
+						{
+							oElement.src = value;
+						}
+						else
+						{
+							setAttribute('data-x-src-broken', value);
+						}
 					}
 					else
 					{
 						setAttribute('data-x-src-broken', value);
 					}
-				}
-				else
-				{
-					setAttribute('data-x-src-broken', value);
 				}
 			}
 

@@ -58,7 +58,7 @@
   var notWS = /[^ \t\r\n]/;
 
   // source/node/Category.ts
-  var inlineNodeNames = /^(?:#text|A(?:BBR|CRONYM)?|B(?:R|D[IO])?|C(?:ITE|ODE)|D(?:ATA|EL|FN)|EM|FONT|HR|I(?:FRAME|MG|NPUT|NS)?|KBD|Q|R(?:P|T|UBY)|S(?:AMP|MALL|PAN|TR(?:IKE|ONG)|U[BP])?|TIME|U|VAR|WBR)$/;
+  var inlineNodeNames = /^(?:#text|A(?:BBR|CRONYM)?|B(?:R|D[IO])?|C(?:ITE|ODE)|D(?:ATA|EL|FN)|EM|FONT|HR|I(?:MG|NS)?|KBD|Q|R(?:P|T|UBY)|S(?:AMP|MALL|PAN|TR(?:IKE|ONG)|U[BP])?|TIME|U|VAR|WBR)$/;
   var leafNodeNames = /* @__PURE__ */ new Set(["BR", "HR", "IMG"]);
   var UNKNOWN = 0;
   var INLINE = 1;
@@ -198,7 +198,7 @@
     // okay if data is 'undefined' here.
     notWS.test(node.data)
   );
-  var isLineBreak = (br, isLBIfEmptyBlock) => {
+  var isLineBreak = (br) => {
     let block = br.parentNode;
     while (isInline(block)) {
       block = block.parentNode;
@@ -209,7 +209,7 @@
       notWSTextNode
     );
     walker.currentNode = br;
-    return !!walker.nextNode() || isLBIfEmptyBlock && !walker.previousNode();
+    return !!walker.nextNode();
   };
   var removeZWS = (root, keepNode) => {
     const walker = createTreeWalker(root, SHOW_TEXT);
@@ -267,7 +267,7 @@
               textChild = prev;
             }
             startContainer = textChild;
-            startOffset = textChild.data.length;
+            startOffset = textChild.length;
           }
         }
         break;
@@ -279,7 +279,7 @@
       while (!(endContainer instanceof Text)) {
         const child = endContainer.childNodes[endOffset - 1];
         if (!child || isLeaf(child)) {
-          if (child && child.nodeName === "BR" && !isLineBreak(child, false)) {
+          if (child && child.nodeName === "BR" && !isLineBreak(child)) {
             --endOffset;
             continue;
           }
@@ -323,7 +323,7 @@
       if (endContainer === endMax || endContainer === root) {
         break;
       }
-      if (endContainer.nodeType !== TEXT_NODE && endContainer.childNodes[endOffset] && endContainer.childNodes[endOffset].nodeName === "BR" && !isLineBreak(endContainer.childNodes[endOffset], false)) {
+      if (endContainer.nodeType !== TEXT_NODE && endContainer.childNodes[endOffset] && endContainer.childNodes[endOffset].nodeName === "BR" && !isLineBreak(endContainer.childNodes[endOffset])) {
         ++endOffset;
       }
       if (endOffset !== getLength(endContainer)) {
@@ -529,30 +529,23 @@
         if (isInline(child) && !child.firstChild) {
           node.removeChild(child);
         }
-      } else if (child instanceof Text && !child.data) {
+      } else if (child instanceof Text && !child.length) {
         node.removeChild(child);
       }
     }
   };
   var cleanupBRs = (node) => {
-    const brs = node.querySelectorAll("BR");
-    const brBreaksLine = [];
+    const brs = node.querySelectorAll("BR:last-child");
     let l = brs.length;
-    for (let i = 0; i < l; ++i) {
-      brBreaksLine[i] = isLineBreak(brs[i], false);
-    }
     while (l--) {
       const br = brs[l];
-      const parent = br.parentNode;
-      if (parent) {
-        if (!brBreaksLine[l]) {
-          detach(br);
-        }
+      if (!isLineBreak(br)) {
+        br.remove();
       }
     }
   };
   var escapeHTML = (text) => {
-    return text.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;").split('"').join("&quot;");
+    return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
   };
 
   // source/node/MergeSplit.ts
@@ -980,7 +973,7 @@
     const iterator = createTreeWalker(root, SHOW_ELEMENT_OR_TEXT);
     let afterNode = startContainer;
     let afterOffset = startOffset;
-    if (!(afterNode instanceof Text) || afterOffset === afterNode.data.length) {
+    if (!(afterNode instanceof Text) || afterOffset === afterNode.length) {
       afterNode = getAdjacentInlineNode(iterator, "nextNode", afterNode);
       afterOffset = 0;
     }
@@ -993,7 +986,7 @@
         afterNode || (startContainer instanceof Text ? startContainer : startContainer.childNodes[startOffset] || startContainer)
       );
       if (beforeNode instanceof Text) {
-        beforeOffset = beforeNode.data.length;
+        beforeOffset = beforeNode.length;
       }
     }
     let node = null;
@@ -3171,7 +3164,7 @@
           nodeAfterSplit = child;
           break;
         }
-        while (child && child instanceof Text && !child.data) {
+        while (child && child instanceof Text && !child.length) {
           next = child.nextSibling;
           if (!next || next.nodeName === "BR") {
             break;
@@ -3517,7 +3510,7 @@
             const brBreaksLine = [];
             let l = nodes.length;
             for (let i = 0; i < l; ++i) {
-              brBreaksLine[i] = isLineBreak(nodes[i], false);
+              brBreaksLine[i] = isLineBreak(nodes[i]);
             }
             while (l--) {
               const br = nodes[l];

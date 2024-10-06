@@ -386,6 +386,44 @@ class SquireUI
 			changes.redo.input.disabled = !e.detail.canRedo;
 		});
 
+		squire.addEventListener('pasteImage', e => {
+			const items = e.detail.clipboardData.items;
+			let l = items.length;
+			while (l--) {
+				const item = items[l];
+				if (/^image\/(png|jpeg|webp)/.test(item.type)) {
+					let reader = new FileReader();
+					reader.onload = event => {
+						let img = createElement("img"),
+							canvas = createElement("canvas"),
+							ctx = canvas.getContext('2d');
+						img.onload = ()=>{
+							ctx.drawImage(img, 0, 0);
+							let width = img.width, height = img.height;
+							if (width > height) {
+								// Landscape
+								if (width > 1024) {
+									height = height * 1024 / width;
+									width = 1024;
+								}
+							} else if (height > 1024) {
+								// Portrait
+								width = width * 1024 / height;
+								height = 1024;
+							}
+							canvas.width = width;
+							canvas.height = height;
+							ctx.drawImage(img, 0, 0, width, height);
+							squire.insertHTML('<img alt="" style="width:100%;max-width:'+width+'px" src="'+canvas.toDataURL()+'">', true);
+						};
+						img.src = event.target.result;
+					}
+					reader.readAsDataURL(item.getAsFile());
+					break;
+				}
+			}
+		});
+
 		actions.font.fontSize.input.selectedIndex = actions.font.fontSize.defaultValueIndex;
 
 //		squire.addEventListener('focus', () => shortcuts.off());
