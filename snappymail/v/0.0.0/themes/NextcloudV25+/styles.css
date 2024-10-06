@@ -1534,7 +1534,8 @@ html.rl-left-panel-disabled[dir="rtl"] #rl-app #V-MailFolderList .b-footer.btn-t
 #rl-app .messageView {
 	height: calc(100% - 65px);
 	margin: 0 5px;
-	border: none;
+	border: 0;
+	border-top: 1px solid transparent;
 	box-shadow: none !important;
 	background: var(--nc-color-main-background);
 }
