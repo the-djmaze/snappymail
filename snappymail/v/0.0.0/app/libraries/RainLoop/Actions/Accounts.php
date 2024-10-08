@@ -69,6 +69,7 @@ trait Accounts
 	}
 
 	/**
+	 * Add/Edit additional account
 	 * @throws \MailSo\RuntimeException
 	 */
 	public function DoAccountSetup(): array

@@ -6,15 +6,9 @@ use RainLoop\Exceptions\ClientException;
 
 class Domain extends AbstractProvider
 {
-	/**
-	 * @var Domain\DomainInterface
-	 */
-	private $oDriver;
+	private Domain\DomainInterface $oDriver;
 
-	/**
-	 * @var \RainLoop\Plugins\Manager
-	 */
-	private $oPlugins;
+	private \RainLoop\Plugins\Manager $oPlugins;
 
 	public function __construct(Domain\DomainInterface $oDriver, \RainLoop\Plugins\Manager $oPlugins)
 	{
@@ -86,10 +80,13 @@ class Domain extends AbstractProvider
 	{
 		$oDomain = $this->Load(\MailSo\Base\Utils::getEmailAddressDomain($sEmail), true);
 		if (!$oDomain) {
+			$this->logWrite("{$sEmail} has no domain configuration", \LOG_INFO, 'domain');
 			throw new ClientException(Notifications::DomainNotAllowed);
 		}
 		if (!$oDomain->ValidateWhiteList($sEmail)) {
+			$this->logWrite("{$sEmail} not whitelisted in {$oDomain->Name()}", \LOG_WARNING, 'domain');
 			throw new ClientException(Notifications::AccountNotAllowed);
+//			throw new ClientException(Notifications::AccountNotAllowed, null, "{$sEmail} not whitelisted in {$oDomain->Name()}");
 		}
 		return $oDomain;
 	}

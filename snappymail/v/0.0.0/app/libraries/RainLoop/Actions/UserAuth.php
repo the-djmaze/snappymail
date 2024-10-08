@@ -207,6 +207,7 @@ trait UserAuth
 
 				// Test the login
 				$oImapClient = new \MailSo\Imap\ImapClient;
+				$oImapClient->SetLogger($this->Logger());
 				$this->imapConnect($oAccount, false, $oImapClient);
 			}
 			$this->SetAdditionalAuthToken($oAccount);

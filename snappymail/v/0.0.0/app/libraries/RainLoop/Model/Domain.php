@@ -106,7 +106,7 @@ class Domain implements \JsonSerializable
 
 	public function ValidateWhiteList(string $sEmail) : bool
 	{
-		$sW = \trim($this->whiteList);
+		$sW = $this->whiteList;
 		if (!$sW) {
 			return true;
 		}
@@ -210,7 +210,7 @@ class Domain implements \JsonSerializable
 			$oDomain->SMTP->setSender = !empty($aDomain['smtp_set_sender']);
 			$oDomain->SMTP->usePhpMail = !empty($aDomain['smtp_php_mail']);
 
-			$oDomain->whiteList = \trim($aDomain['white_list'] ?? '');
+			$oDomain->whiteList = $aDomain['white_list'] ?? '';
 
 			$oDomain->Normalize();
 		}

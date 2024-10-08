@@ -12,6 +12,7 @@ class CustomLoginMappingPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 	public function Init() : void
 	{
+		// Happens only at DoLogin | ServiceSso | DoAccountSetup
 		$this->addHook('login.credentials', 'FilterLoginCredentials');
 	}
 
@@ -29,18 +30,14 @@ class CustomLoginMappingPlugin extends \RainLoop\Plugins\AbstractPlugin
 		if (!empty($sMapping)) {
 			$aLines = \explode("\n", \preg_replace('/[\r\n\t\s]+/', "\n", $sMapping));
 			foreach ($aLines as $sLine) {
-				if (false !== \strpos($sLine, ':')) {
-					$aData = \explode(':', $sLine, 3);
-					if (\is_array($aData) && !empty($aData[0]) && isset($aData[1])) {
-						$aData = \array_map('trim', $aData);
-						if ($sEmail === $aData[0]) {
-							if (\strlen($aData[1])) {
-								$sImapUser = $aData[1];
-							}
-							if (isset($aData[2]) && \strlen($aData[2])) {
-								$sSmtpUser = $aData[2];
-							}
-						}
+				$aData = \explode(':', $sLine, 3);
+				if (\is_array($aData) && isset($aData[1]) && \trim($aData[0]) === $sEmail) {
+					$aData = \array_map('trim', $aData);
+					if (\strlen($aData[1])) {
+						$sImapUser = $aData[1];
+					}
+					if (isset($aData[2]) && \strlen($aData[2])) {
+						$sSmtpUser = $aData[2];
 					}
 				}
 			}
