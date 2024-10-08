@@ -457,10 +457,21 @@ export class ComposePopupView extends AbstractViewPopup {
 		this.from(IdentityUserStore()[0].formattedName());
 	}
 
-	sendCommand() {
-		const identity = this.currentIdentity();
-		let sSentFolder = identity?.sentFolder?.() || FolderUserStore.sentFolder();
+	sentFolder()
+	{
+		let sSentFolder = this.currentIdentity()?.sentFolder?.() || FolderUserStore.sentFolder();
+		if (SettingsUserStore.replySameFolder()) {
+			if (
+				3 === arrayLength(this.aDraftInfo) &&
+				this.aDraftInfo[2]?.length
+			) {
+				sSentFolder = this.aDraftInfo[2];
+			}
+		}
+		return UNUSED_OPTION_VALUE === sSentFolder ? null : sSentFolder;
+	}
 
+	sendCommand() {
 		this.attachmentsInProcessError(false);
 		this.attachmentsInErrorError(false);
 		this.emptyToError(false);
@@ -478,16 +489,8 @@ export class ComposePopupView extends AbstractViewPopup {
 		}
 
 		if (!this.emptyToError() && !this.attachmentsInErrorError() && !this.attachmentsInProcessError()) {
-			if (SettingsUserStore.replySameFolder()) {
-				if (
-					3 === arrayLength(this.aDraftInfo) &&
-					this.aDraftInfo[2]?.length
-				) {
-					sSentFolder = this.aDraftInfo[2];
-				}
-			}
-
-			if (!sSentFolder) {
+			const sSentFolder = this.sentFolder();
+			if ('' === sSentFolder) {
 				showScreenPopup(FolderSystemPopupView, [FolderType.Sent]);
 			} else {
 				const sendError = e => {
@@ -506,8 +509,6 @@ export class ComposePopupView extends AbstractViewPopup {
 				try {
 					this.sendError(false);
 					this.sending(true);
-
-					sSentFolder = UNUSED_OPTION_VALUE === sSentFolder ? '' : sSentFolder;
 
 					const sendMessage = params => {
 						Remote.request('SendMessage',
@@ -538,7 +539,7 @@ export class ComposePopupView extends AbstractViewPopup {
 										this.sendError(true);
 										sendFailed(iError, data);
 										// Remove remembered passphrase as it could be wrong
-										let key = ('S/MIME' === params.sign) ? identity : null;
+										let key = ('S/MIME' === params.sign) ? this.currentIdentity() : null;
 										params.signFingerprint
 										&& this.signOptions.forEach(option => ('GnuPG' === option[0]) && (key = option[1]));
 										key && Passphrases.delete(key);
@@ -560,10 +561,9 @@ export class ComposePopupView extends AbstractViewPopup {
 									this.close();
 								}
 								setFolderETag(this.draftsFolder(), '');
-								setFolderETag(sSentFolder, '');
+								setFolderETag(params.saveFolder, '');
 								if (3 === arrayLength(this.aDraftInfo)) {
-									const folder = this.aDraftInfo[2];
-									setFolderETag(folder, '');
+									setFolderETag(this.aDraftInfo[2], '');
 								}
 								reloadDraftFolder();
 							},
