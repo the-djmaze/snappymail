@@ -17,18 +17,28 @@
 	addEventListener('rl-view-model', e => {
 		const vm = e.detail;
 		if ('PopupsCompose' === vm.viewModelTemplateID && rl.settings.get('editorWysiwyg') === 'CompactComposer') {
-			vm.querySelector('.tabs label[for="tab-body"]').dataset.bind = "visible: canMailvelope";
+			// add visible binding to the label
+			const bodyLabel = vm.querySelector('.tabs label[for="tab-body"]');
+			bodyLabel.dataset.bind = 'visible: canMailvelope';
+			// re-apply the binding
+			const labelNext = bodyLabel.nextElementSibling;
+			ko.removeNode(bodyLabel);
+			labelNext.parentElement.insertBefore(bodyLabel, labelNext);
+			ko.applyBindingAccessorsToNode(bodyLabel, null, vm);
+
 			// Now move the attachments tab to the bottom of the screen
-			const
-				input = vm.querySelector('.tabs input[value="attachments"]'),
-				label = vm.querySelector('.tabs label[for="tab-attachments"]'),
-				area = vm.querySelector('.tabs .attachmentAreaParent');
-			input.remove();
-			label.remove();
-			area.remove();
+			const area = vm.querySelector('.tabs .attachmentAreaParent');
+			vm.querySelector('.tabs input[value="attachments"]').remove();
+			vm.querySelector('.tabs label[for="tab-attachments"]').remove();
+			area.querySelector('.no-attachments-desc').remove();
 			area.classList.add('compact');
-			area.querySelector('.b-attachment-place').dataset.bind = "visible: addAttachmentEnabled(), css: {dragAndDropOver: dragAndDropVisible}";
 			vm.viewModelDom.append(area);
+			// Add and re-apply the bindings for the attachment-place
+			const place = area.querySelector('.b-attachment-place');
+			ko.removeNode(place);
+			area.insertBefore(place, area.firstElementChild);
+			place.dataset.bind = 'visible: addAttachmentEnabled(), css: {dragAndDropOver: dragAndDropVisible}';
+			ko.applyBindingAccessorsToNode(place, null, vm);
 			// There is a better way to do this probably,
 			// but we need this for drag and drop to work
 			e.detail.attachmentsArea = e.detail.bodyArea;
