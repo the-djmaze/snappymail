@@ -8,7 +8,7 @@ class SendSaveInPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME     = 'Send Save In',
 		AUTHOR   = 'SnappyMail',
 		URL      = 'https://snappymail.eu/',
-		VERSION  = '0.0',
+		VERSION  = '0.1',
 		RELEASE  = '2024-10-08',
 		REQUIRED = '2.38.1',
 		CATEGORY = 'General',
