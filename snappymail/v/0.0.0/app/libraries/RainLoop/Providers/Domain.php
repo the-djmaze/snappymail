@@ -2,6 +2,7 @@
 
 namespace RainLoop\Providers;
 
+use RainLoop\Notifications;
 use RainLoop\Exceptions\ClientException;
 
 class Domain extends AbstractProvider
@@ -80,13 +81,10 @@ class Domain extends AbstractProvider
 	{
 		$oDomain = $this->Load(\MailSo\Base\Utils::getEmailAddressDomain($sEmail), true);
 		if (!$oDomain) {
-			$this->logWrite("{$sEmail} has no domain configuration", \LOG_INFO, 'domain');
-			throw new ClientException(Notifications::DomainNotAllowed);
+			throw new ClientException(Notifications::DomainNotAllowed, null, "{$sEmail} has no domain configuration");
 		}
 		if (!$oDomain->ValidateWhiteList($sEmail)) {
-			$this->logWrite("{$sEmail} not whitelisted in {$oDomain->Name()}", \LOG_WARNING, 'domain');
-			throw new ClientException(Notifications::AccountNotAllowed);
-//			throw new ClientException(Notifications::AccountNotAllowed, null, "{$sEmail} not whitelisted in {$oDomain->Name()}");
+			throw new ClientException(Notifications::AccountNotAllowed, null, "{$sEmail} not whitelisted");
 		}
 		return $oDomain;
 	}

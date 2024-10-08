@@ -141,21 +141,23 @@ trait UserAuth
 	 */
 	public function LoginProcess(string $sEmail, SensitiveString $oPassword, bool $bMainAccount = true): Account
 	{
-		$sCredentials = $this->resolveLoginCredentials($sEmail, $oPassword);
+		$aCredentials = $this->resolveLoginCredentials($sEmail, $oPassword);
 
-		if (!\str_contains($sCredentials['email'], '@') || !\strlen($oPassword)) {
+		if (!\str_contains($aCredentials['email'], '@') || !\strlen($oPassword)) {
 			throw new ClientException(Notifications::InvalidInputArgument);
 		}
+
+		$oDomain = $this->DomainProvider()->getByEmailAddress($aCredentials['email']);
 
 		$oAccount = null;
 		try {
 			$oAccount = $bMainAccount ? new MainAccount : new AdditionalAccount;
 			$oAccount->setCredentials(
-				$sCredentials['domain'],
-				$sCredentials['email'],
-				$sCredentials['imapUser'],
+				$aCredentials['domain'],
+				$aCredentials['email'],
+				$aCredentials['imapUser'],
 				$oPassword,
-				$sCredentials['smtpUser']
+				$aCredentials['smtpUser']
 //				,new SensitiveString($oPassword)
 			);
 			$this->Plugins()->RunHook('filter.account', array($oAccount));
