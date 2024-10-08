@@ -1,3 +1,8 @@
+/* Prevent collapse of empty elements so that the caret can be placed in there */
+.CompactComposer *:empty::before {
+    content: "\200B";
+}
+
 .CompactComposer .squire-toolbar {
     padding-top: 4px;
     padding-bottom: 0;

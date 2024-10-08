@@ -46,10 +46,6 @@
 	});
 
 	const
-		removeElements = 'HEAD,LINK,META,NOSCRIPT,SCRIPT,TEMPLATE,TITLE',
-		allowedElements = 'A,B,BLOCKQUOTE,BR,DIV,EM,FONT,H1,H2,H3,H4,H5,H6,HR,I,IMG,LI,OL,P,SPAN,STRONG,TABLE,TD,TH,TR,U,UL',
-		allowedAttributes = 'abbr,align,background,bgcolor,border,cellpadding,cellspacing,class,color,colspan,dir,face,frame,height,href,hspace,id,lang,rowspan,rules,scope,size,src,style,target,type,usemap,valign,vspace,width'.split(','),
-
 		// TODO: labels translations
 		i18n = (str, def) => rl.i18n(str) || def,
 
@@ -105,21 +101,7 @@
 		},
 
 		pasteSanitizer = (event) => {
-			const frag = event.detail.fragment;
-			frag.querySelectorAll('a:empty,span:empty').forEach(el => el.remove());
-			frag.querySelectorAll(removeElements).forEach(el => el.remove());
-			frag.querySelectorAll('*').forEach(el => {
-				if (!el.matches(allowedElements)) {
-					el.replaceWith(getFragmentOfChildren(el));
-				} else if (el.hasAttributes()) {
-					[...el.attributes].forEach(attr => {
-						let name = attr.name.toLowerCase();
-						if (!allowedAttributes.includes(name)) {
-							el.removeAttribute(name);
-						}
-					});
-				}
-			});
+			return rl.Utils.cleanHtml(event.detail.html).html;
 		},
 
 		pasteImageHandler = (e, squire) => {
@@ -327,7 +309,8 @@
 				clr.style.left = (input.offsetLeft + input.parentNode.offsetLeft) + 'px';
 				clr.style.width = input.offsetWidth + 'px';
 
-				clr.value = '';
+				// firefox does not call "onchange" for #000 if we use clr.value=''
+				clr.value = '#00ff0c';
 				clr.onchange = () => {
 					switch (name) {
 						case 'color':
