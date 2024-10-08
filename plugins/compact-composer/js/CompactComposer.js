@@ -17,18 +17,28 @@
 	addEventListener('rl-view-model', e => {
 		const vm = e.detail;
 		if ('PopupsCompose' === vm.viewModelTemplateID && rl.settings.get('editorWysiwyg') === 'CompactComposer') {
-			vm.querySelector('.tabs label[for="tab-body"]').dataset.bind = "visible: canMailvelope";
+			// add visible binding to the label
+			const bodyLabel = vm.querySelector('.tabs label[for="tab-body"]');
+			bodyLabel.dataset.bind = 'visible: canMailvelope';
+			// re-apply the binding
+			const labelNext = bodyLabel.nextElementSibling;
+			ko.removeNode(bodyLabel);
+			labelNext.parentElement.insertBefore(bodyLabel, labelNext);
+			ko.applyBindingAccessorsToNode(bodyLabel, null, vm);
+
 			// Now move the attachments tab to the bottom of the screen
-			const
-				input = vm.querySelector('.tabs input[value="attachments"]'),
-				label = vm.querySelector('.tabs label[for="tab-attachments"]'),
-				area = vm.querySelector('.tabs .attachmentAreaParent');
-			input.remove();
-			label.remove();
-			area.remove();
+			const area = vm.querySelector('.tabs .attachmentAreaParent');
+			vm.querySelector('.tabs input[value="attachments"]').remove();
+			vm.querySelector('.tabs label[for="tab-attachments"]').remove();
+			area.querySelector('.no-attachments-desc').remove();
 			area.classList.add('compact');
-			area.querySelector('.b-attachment-place').dataset.bind = "visible: addAttachmentEnabled(), css: {dragAndDropOver: dragAndDropVisible}";
 			vm.viewModelDom.append(area);
+			// Add and re-apply the bindings for the attachment-place
+			const place = area.querySelector('.b-attachment-place');
+			ko.removeNode(place);
+			area.insertBefore(place, area.firstElementChild);
+			place.dataset.bind = 'visible: addAttachmentEnabled(), css: {dragAndDropOver: dragAndDropVisible}';
+			ko.applyBindingAccessorsToNode(place, null, vm);
 			// There is a better way to do this probably,
 			// but we need this for drag and drop to work
 			e.detail.attachmentsArea = e.detail.bodyArea;
@@ -36,10 +46,6 @@
 	});
 
 	const
-		removeElements = 'HEAD,LINK,META,NOSCRIPT,SCRIPT,TEMPLATE,TITLE',
-		allowedElements = 'A,B,BLOCKQUOTE,BR,DIV,EM,FONT,H1,H2,H3,H4,H5,H6,HR,I,IMG,LI,OL,P,SPAN,STRONG,TABLE,TD,TH,TR,U,UL',
-		allowedAttributes = 'abbr,align,background,bgcolor,border,cellpadding,cellspacing,class,color,colspan,dir,face,frame,height,href,hspace,id,lang,rowspan,rules,scope,size,src,style,target,type,usemap,valign,vspace,width'.split(','),
-
 		// TODO: labels translations
 		i18n = (str, def) => rl.i18n(str) || def,
 
@@ -95,21 +101,7 @@
 		},
 
 		pasteSanitizer = (event) => {
-			const frag = event.detail.fragment;
-			frag.querySelectorAll('a:empty,span:empty').forEach(el => el.remove());
-			frag.querySelectorAll(removeElements).forEach(el => el.remove());
-			frag.querySelectorAll('*').forEach(el => {
-				if (!el.matches(allowedElements)) {
-					el.replaceWith(getFragmentOfChildren(el));
-				} else if (el.hasAttributes()) {
-					[...el.attributes].forEach(attr => {
-						let name = attr.name.toLowerCase();
-						if (!allowedAttributes.includes(name)) {
-							el.removeAttribute(name);
-						}
-					});
-				}
-			});
+			return rl.Utils.cleanHtml(event.detail.html).html;
 		},
 
 		pasteImageHandler = (e, squire) => {
@@ -317,7 +309,8 @@
 				clr.style.left = (input.offsetLeft + input.parentNode.offsetLeft) + 'px';
 				clr.style.width = input.offsetWidth + 'px';
 
-				clr.value = '';
+				// firefox does not call "onchange" for #000 if we use clr.value=''
+				clr.value = '#00ff0c';
 				clr.onchange = () => {
 					switch (name) {
 						case 'color':
