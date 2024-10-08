@@ -6,8 +6,8 @@ class CompactComposerPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME = 'Compact Composer',
 		AUTHOR = 'Sergey Mosin',
 		URL = 'https://github.com/the-djmaze/snappymail/pull/1466',
-		VERSION = '1.0.4',
-		RELEASE = '2024-04-23',
+		VERSION = '1.0.5',
+		RELEASE = '2024-08-08',
 		REQUIRED = '2.34.0',
 		LICENSE = 'AGPL v3',
 		DESCRIPTION = 'WYSIWYG editor with a compact toolbar';
