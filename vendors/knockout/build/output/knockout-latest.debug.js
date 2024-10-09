@@ -1625,10 +1625,12 @@ ko.bindingProvider = new class
                     // Deprecated: with is no longer recommended
                     var rewrittenBindings = ko.expressionRewriting.preProcessBindings(bindingsString),
                         functionBody = "with($data){return{" + rewrittenBindings + "}}";
-                    bindingFunction = new Function("$root", "$parent", "$data", "$element", functionBody);
+                    bindingFunction = new Function("$context", "$root", "$parent", "$data", "$element", functionBody);
                     bindingCache.set(cacheKey, bindingFunction);
                 }
-                return bindingFunction(bindingContext["$root"], bindingContext["$parent"], bindingContext["$data"] || {}, node);
+                return bindingFunction(bindingContext,
+                    bindingContext["$root"], bindingContext["$parent"], bindingContext["$data"] || {}, node
+                );
             } catch (ex) {
                 ex.message = "Unable to parse bindings.\nBindings value: " + bindingsString
                     + "\nMessage: " + ex.message;
@@ -3553,5 +3555,5 @@ ko.utils.compareArrays = (() => {
         itemsForBeforeRemoveCallbacks.forEach(callback => callback && (callback.arrayEntry = deletedItemDummyValue));
     }
 })();
-	window['ko'] = koExports;
+    window['ko'] = koExports;
 })(this);

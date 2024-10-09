@@ -1,2 +1,2 @@
-	window['ko'] = koExports;
+    window['ko'] = koExports;
 })(this);
