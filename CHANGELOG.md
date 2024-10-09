@@ -1,3 +1,9 @@
+## 2.38.2 – 2024-10-09
+### Fixed
+- error '$index is not defined' in Settings > Accounts
+  [#1797](https://github.com/the-djmaze/snappymail/issues/1797)
+
+
 ## 2.38.1 – 2024-10-08
 
 ### Added

@@ -66,7 +66,7 @@ This fork of RainLoop has the following changes:
 * CRLF => LF line endings
 * Embed boot.js and boot.css into index.html
 * Removal of old JavaScript code (things are native these days)
-* Added modified [Squire](https://github.com/neilj/Squire) HTML editor as replacement for CKEditor
+* Added modified [Squire](https://github.com/the-djmaze/Squire/tree/snappymail) HTML editor as replacement for CKEditor
 * Updated [Sabre/VObject](https://github.com/sabre-io/vobject)
 * Split Admin specific JavaScript code from User code
 * Split Sieve specific JavaScript code from User code
@@ -143,23 +143,23 @@ RainLoop 1.17 vs SnappyMail
 |admin.js        	|2.170.153	|   84.925	|
 |app.js          	|4.207.787	|  447.263	|
 |boot.js         	|  868.735	|    4.343	|
-|libs.js         	|  658.812	|  233.715	|
+|libs.js         	|  658.812	|  233.728	|
 |sieve.js         	|        0	|   91.418	|
 |polyfills.js    	|  334.608	|        0	|
 |serviceworker.js	|        0	|      285	|
-|TOTAL           	|8.240.095	|  861.949	|
+|TOTAL           	|8.240.095	|  861.962	|
 
 |js/min/*       	|RainLoop 	|Snappy   	|RL gzip	|SM gzip	|RL brotli	|SM brotli	|
 |---------------	|--------:	|--------:	|------:	|------:	|--------:	|--------:	|
 |admin.min.js    	|  256.831	|   41.719	| 73.606	| 14.022	| 60.877  	| 12.567	|
 |app.min.js      	|  515.367	|  202.101	|139.456	| 68.505	|110.485  	| 58.481	|
 |boot.min.js     	|   84.659	|    2.231	| 26.998	|  1.271	| 23.643  	|  1.067	|
-|libs.min.js     	|  584.772	|  110.633	|180.901	| 39.515	|155.182  	| 35.246	|
+|libs.min.js     	|  584.772	|  110.646	|180.901	| 39.518	|155.182  	| 35.207	|
 |sieve.min.js     	|        0	|   45.504	|      0	| 11.131	|      0  	|  9.917	|
 |polyfills.min.js	|   32.837	|        0	| 11.406	|      0	| 10.175  	|      0	|
-|TOTAL user      	|1.217.635	|  314.965	|358.761	|109.291	|299.485  	| 94.794	|
-|TOTAL user+sieve	|1.217.635	|  360.469	|358.761	|120.422	|299.485  	|104.711	|
-|TOTAL admin     	|  959.099	|  154.583	|292.911	| 54.808	|249.877  	| 48.880	|
+|TOTAL user      	|1.217.635	|  314.978	|358.761	|109.294	|299.485  	| 94.755	|
+|TOTAL user+sieve	|1.217.635	|  360.482	|358.761	|120.425	|299.485  	|104.672	|
+|TOTAL admin     	|  959.099	|  154.596	|292.911	| 54.811	|249.877  	| 48.841	|
 
 For a user it is around 66% smaller and faster than traditional RainLoop.
 
