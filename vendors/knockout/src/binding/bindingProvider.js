@@ -36,6 +36,15 @@ ko.bindingProvider = new class
                     // For each scope variable, add an extra level of "with" nesting
                     // Example result: with(sc1) { with(sc0) { return (expression) } }
                     // Deprecated: with is no longer recommended
+/*
+                    functionBody = "$context = new Proxy(
+                        $context,
+                        {
+                            has:()=>true,
+                            get:(target,key)=>Reflect.has(target, key) ? target[key] : target['$data'][key]
+                        }
+                    );with($context){return{" + rewrittenBindings + "}}";
+*/
                     var rewrittenBindings = ko.expressionRewriting.preProcessBindings(bindingsString),
                         functionBody = "with($data){return{" + rewrittenBindings + "}}";
                     bindingFunction = new Function("$context", "$root", "$parent", "$data", "$element", functionBody);
