@@ -210,6 +210,7 @@ trait Accounts
 			'mainEmail' => \RainLoop\Api::Actions()->getMainAccountFromToken()->Email(),
 			'contactsAllowed' => $this->AddressBookProvider($oAccount)->IsActive(),
 			'HideUnsubscribed' => false,
+			'defaultSort' => '',
 			'useThreads' => (bool) $oConfig->Get('defaults', 'mail_use_threads', false),
 			'threadAlgorithm' => '',
 			'ReplySameFolder' => (bool) $oConfig->Get('defaults', 'mail_reply_same_folder', false),
@@ -226,6 +227,7 @@ trait Accounts
 			$aResult['TrashFolder'] = (string) $oSettingsLocal->GetConf('TrashFolder', '');
 			$aResult['ArchiveFolder'] = (string) $oSettingsLocal->GetConf('ArchiveFolder', '');
 			$aResult['HideUnsubscribed'] = (bool) $oSettingsLocal->GetConf('HideUnsubscribed', $aResult['HideUnsubscribed']);
+			$aResult['defaultSort'] = (string) $oSettingsLocal->GetConf('defaultSort', $aResult['defaultSort']);
 			$aResult['useThreads'] = (bool) $oSettingsLocal->GetConf('UseThreads', $aResult['useThreads']);
 			$aResult['threadAlgorithm'] = (string) $oSettingsLocal->GetConf('threadAlgorithm', $aResult['threadAlgorithm']);
 			$aResult['ReplySameFolder'] = (bool) $oSettingsLocal->GetConf('ReplySameFolder', $aResult['ReplySameFolder']);

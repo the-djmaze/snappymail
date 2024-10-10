@@ -65,6 +65,11 @@
 			<span data-bind="saveTrigger: messagesPerPageTrigger"></span>
 		</div>
 	</div>
+	<div class="control-group" data-bind="visible: sortSupported">
+		<label data-i18n="MESSAGE_LIST/SORT"></label>
+		<select data-bind="options: sortOptions, optionsText: 'text', optionsValue: 'value', value: defaultSort"></select>
+		<span data-bind="saveTrigger: defaultSortTrigger"></span>
+	</div>
 	<div class="control-group">
 		<div>
 			<div data-bind="component: {

@@ -204,6 +204,7 @@ trait User
 		$this->setSettingsFromParams($oSettings, 'Resizer5Width', 'int');
 		$this->setSettingsFromParams($oSettings, 'Resizer5Height', 'int');
 
+		$this->setSettingsFromParams($oSettingsLocal, 'defaultSort', 'string');
 		$this->setSettingsFromParams($oSettingsLocal, 'UseThreads', 'bool');
 		$this->setSettingsFromParams($oSettingsLocal, 'threadAlgorithm', 'string');
 		$this->setSettingsFromParams($oSettingsLocal, 'ReplySameFolder', 'bool');
