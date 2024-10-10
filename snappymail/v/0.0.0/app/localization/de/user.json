@@ -130,6 +130,8 @@
 		"QUOTA_SIZE": "Sie nutzen <strong>%SIZE% (%PROC%%)<\/strong> von <strong>%LIMIT%<\/strong>.",
 		"SORT": "Sortieren",
 		"NO_SORT": "Ihr Mailserver unterstützt das Sortieren von E-Mails nicht",
+		"SORT_ARRIVAL_ASC": "Arrived ascending",
+		"SORT_ARRIVAL_DESC": "Arrived descending",
 		"SORT_DATE_ASC": "Datum aufsteigend",
 		"SORT_DATE_DESC": "Datum absteigend",
 		"SORT_SIZE_ASC": "Größe aufsteigend",

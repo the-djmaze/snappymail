@@ -130,6 +130,8 @@
 		"QUOTA_SIZE": "Использовано <strong>%SIZE% (%PROC%%)<\/strong> из <strong>%LIMIT%<\/strong>",
 		"SORT": "Сортировка",
 		"NO_SORT": "Почтовый сервер не поддерживает сортировку",
+		"SORT_ARRIVAL_ASC": "Arrived ascending",
+		"SORT_ARRIVAL_DESC": "Arrived descending",
 		"SORT_DATE_ASC": "Дата по возрастанию",
 		"SORT_DATE_DESC": "Дата по убыванию",
 		"SORT_SIZE_ASC": "Размер по возрастанию",

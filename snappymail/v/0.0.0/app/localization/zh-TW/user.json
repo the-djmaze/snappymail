@@ -130,6 +130,8 @@
 		"QUOTA_SIZE": "已使用  <strong>%LIMIT%<\/strong> 中的 <strong>%SIZE% (%PROC%%)<\/strong> 儲存空間",
 		"SORT": "排序",
 		"NO_SORT": "郵件伺服器不支援排序",
+		"SORT_ARRIVAL_ASC": "Arrived ascending",
+		"SORT_ARRIVAL_DESC": "Arrived descending",
 		"SORT_DATE_ASC": "日期遞增",
 		"SORT_DATE_DESC": "日期遞減",
 		"SORT_SIZE_ASC": "大小遞增",

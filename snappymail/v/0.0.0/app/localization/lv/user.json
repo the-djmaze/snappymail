@@ -130,6 +130,8 @@
 		"QUOTA_SIZE": "Izmantots <strong>%SIZE% (%PROC%%)<\/strong> no <strong>%LIMIT%<\/strong>",
 		"SORT": "Sort",
 		"NO_SORT": "Mail server does not support sorting",
+		"SORT_ARRIVAL_ASC": "Arrived ascending",
+		"SORT_ARRIVAL_DESC": "Arrived descending",
 		"SORT_DATE_ASC": "Date ascending",
 		"SORT_DATE_DESC": "Date descending",
 		"SORT_SIZE_ASC": "Size ascending",

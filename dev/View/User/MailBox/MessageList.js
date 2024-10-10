@@ -213,15 +213,19 @@ export class MailMessageList extends AbstractViewRight {
 
 			sortText: () => {
 				let mode = FolderUserStore.sortMode(),
-					desc = '' === mode || mode.includes('REVERSE');
+					has = w => mode.includes(w),
+					desc = '' === mode || has('REVERSE');
 				mode = mode.split(/\s+/);
-				if (mode.includes('FROM')) {
+				if (has('FROM')) {
 					 return '@' + (desc ? '⬆' : '⬇');
 				}
-				if (mode.includes('SUBJECT')) {
+				if (has('SUBJECT')) {
 					 return '𝐒' + (desc ? '⬆' : '⬇');
 				}
-				return (mode.includes('SIZE') ? '✉' : '📅') + (desc ? '⬇' : '⬆');
+				if (has('SIZE')) {
+					 return '✉' + (desc ? '⬇' : '⬆');
+				}
+				return (has('ARRIVAL') ? '📨' : '📅') + (desc ? '⬇' : '⬆');
 			},
 
 			downloadAsZipAllowed: () => this.attachmentsActions.includes('zip')
