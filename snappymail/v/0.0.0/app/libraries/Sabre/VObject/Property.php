@@ -52,6 +52,20 @@ abstract class Property extends Node
     public string $delimiter = ';';
 
     /**
+     * The line number in the original iCalendar / vCard file
+     *   that corresponds with the current node
+     *   if the node was read from a file.
+     */
+    public ?int $lineIndex;
+
+    /**
+     * The line string from the original iCalendar / vCard file
+     *   that corresponds with the current node
+     *   if the node was read from a file.
+     */
+    public ?string $lineString;
+
+    /**
      * Creates the generic property.
      *
      * Parameters must be specified in key=>value syntax.
@@ -61,7 +75,7 @@ abstract class Property extends Node
      * @param array             $parameters List of parameters
      * @param string|null       $group      The vcard property group
      */
-    public function __construct(Component $root, ?string $name, $value = null, array $parameters = [], string $group = null)
+    public function __construct(Component $root, ?string $name, $value = null, array $parameters = [], ?string $group = null, ?int $lineIndex = null, ?string $lineString = null)
     {
         $this->name = $name;
         $this->group = $group;
@@ -74,6 +88,14 @@ abstract class Property extends Node
 
         if (!is_null($value)) {
             $this->setValue($value);
+        }
+
+        if (!is_null($lineIndex)) {
+            $this->lineIndex = $lineIndex;
+        }
+
+        if (!is_null($lineString)) {
+            $this->lineString = $lineString;
         }
     }
 

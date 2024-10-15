@@ -64,7 +64,7 @@ class Text extends Property
      * @param array             $parameters List of parameters
      * @param string|null       $group      The vcard property group
      */
-    public function __construct(Component $root, string $name, $value = null, array $parameters = [], string $group = null)
+    public function __construct(Component $root, string $name, $value = null, array $parameters = [], ?string $group = null)
     {
         // There's two types of multi-valued text properties:
         // 1. multivalue properties.

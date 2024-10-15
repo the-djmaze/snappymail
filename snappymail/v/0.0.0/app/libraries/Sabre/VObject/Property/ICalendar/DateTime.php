@@ -128,7 +128,7 @@ class DateTime extends Property
      *
      * @throws InvalidDataException
      */
-    public function getDateTime(\DateTimeZone $timeZone = null): ?\DateTimeImmutable
+    public function getDateTime(?\DateTimeZone $timeZone = null): ?\DateTimeImmutable
     {
         $dt = $this->getDateTimes($timeZone);
         if (!$dt) {
@@ -149,7 +149,7 @@ class DateTime extends Property
      *
      * @throws InvalidDataException
      */
-    public function getDateTimes(\DateTimeZone $timeZone = null): array
+    public function getDateTimes(?\DateTimeZone $timeZone = null): array
     {
         // Does the property have a TZID?
         /** @var Property\FlatText $tzid */

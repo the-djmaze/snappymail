@@ -93,8 +93,8 @@ class VCardConverter
         );
 
         if (Document::VCARD30 === $targetVersion) {
-            if ($property instanceof Property\Uri && in_array($property->name, ['PHOTO', 'LOGO', 'SOUND'])) {
-                /** @var Property\Uri $newProperty */
+            if ($property instanceof Uri && in_array($property->name, ['PHOTO', 'LOGO', 'SOUND'])) {
+                /** @var Uri $newProperty */
                 $newProperty = $this->convertUriToBinary($output, $newProperty);
             } elseif ($property instanceof Property\VCard\DateAndOrTime) {
                 // In vCard 4, the birth year may be optional. This is not the
@@ -153,8 +153,8 @@ class VCardConverter
                 return;
             }
 
-            if ($property instanceof Property\Binary) {
-                /** @var Property\Binary $newProperty */
+            if ($property instanceof Binary) {
+                /** @var Binary $newProperty */
                 $newProperty = $this->convertBinaryToUri($output, $newProperty, $parameters);
             } elseif ($property instanceof Property\VCard\DateAndOrTime && isset($parameters['X-APPLE-OMIT-YEAR'])) {
                 // If a property such as BDAY contained 'X-APPLE-OMIT-YEAR',
@@ -256,7 +256,7 @@ class VCardConverter
      *
      * @throws InvalidDataException
      */
-    protected function convertBinaryToUri(Component\VCard $output, Property\Binary $newProperty, array &$parameters): Uri
+    protected function convertBinaryToUri(Component\VCard $output, Binary $newProperty, array &$parameters): Uri
     {
         $value = $newProperty->getValue();
         /** @var Uri $newProperty */
@@ -304,11 +304,11 @@ class VCardConverter
      * be valid in vCard 3.0 as well, we should convert those to BINARY if
      * possible, to improve compatibility.
      *
-     * @return Property\Binary|Property\Uri|null
+     * @return Binary|Uri|null
      *
      * @throws InvalidDataException
      */
-    protected function convertUriToBinary(Component\VCard $output, Property\Uri $newProperty): Property
+    protected function convertUriToBinary(Component\VCard $output, Uri $newProperty): Property
     {
         $value = $newProperty->getValue();
 

@@ -104,7 +104,7 @@ class VTodo extends VObject\Component
             'LAST-MODIFIED' => '?',
             'LOCATION' => '?',
             'ORGANIZER' => '?',
-            'PERCENT' => '?',
+            'PERCENT-COMPLETE' => '?',
             'PRIORITY' => '?',
             'RECURRENCE-ID' => '?',
             'SEQUENCE' => '?',
