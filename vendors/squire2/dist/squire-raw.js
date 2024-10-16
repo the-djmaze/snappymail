@@ -58,7 +58,7 @@
   var notWS = /[^ \t\r\n]/;
 
   // source/node/Category.ts
-  var inlineNodeNames = /^(?:#text|A(?:BBR|CRONYM)?|B(?:R|D[IO])?|C(?:ITE|ODE)|D(?:ATA|EL|FN)|EM|FONT|HR|I(?:FRAME|MG|NPUT|NS)?|KBD|Q|R(?:P|T|UBY)|S(?:AMP|MALL|PAN|TR(?:IKE|ONG)|U[BP])?|TIME|U|VAR|WBR)$/;
+  var inlineNodeNames = /^(?:#text|A(?:BBR|CRONYM)?|B(?:R|D[IO])?|C(?:ITE|ODE)|D(?:ATA|EL|FN)|EM|FONT|HR|I(?:MG|NS)?|KBD|Q|R(?:P|T|UBY)|S(?:AMP|MALL|PAN|TR(?:IKE|ONG)|U[BP])?|TIME|U|VAR|WBR)$/;
   var leafNodeNames = /* @__PURE__ */ new Set(["BR", "HR", "IMG"]);
   var UNKNOWN = 0;
   var INLINE = 1;
@@ -198,7 +198,7 @@
     // okay if data is 'undefined' here.
     notWS.test(node.data)
   );
-  var isLineBreak = (br, isLBIfEmptyBlock) => {
+  var isLineBreak = (br) => {
     let block = br.parentNode;
     while (isInline(block)) {
       block = block.parentNode;
@@ -209,7 +209,7 @@
       notWSTextNode
     );
     walker.currentNode = br;
-    return !!walker.nextNode() || isLBIfEmptyBlock && !walker.previousNode();
+    return !!walker.nextNode();
   };
   var removeZWS = (root, keepNode) => {
     const walker = createTreeWalker(root, SHOW_TEXT);
@@ -267,7 +267,7 @@
               textChild = prev;
             }
             startContainer = textChild;
-            startOffset = textChild.data.length;
+            startOffset = textChild.length;
           }
         }
         break;
@@ -279,7 +279,7 @@
       while (!(endContainer instanceof Text)) {
         const child = endContainer.childNodes[endOffset - 1];
         if (!child || isLeaf(child)) {
-          if (child && child.nodeName === "BR" && !isLineBreak(child, false)) {
+          if (child && child.nodeName === "BR" && !isLineBreak(child)) {
             --endOffset;
             continue;
           }
@@ -323,7 +323,7 @@
       if (endContainer === endMax || endContainer === root) {
         break;
       }
-      if (endContainer.nodeType !== TEXT_NODE && endContainer.childNodes[endOffset] && endContainer.childNodes[endOffset].nodeName === "BR" && !isLineBreak(endContainer.childNodes[endOffset], false)) {
+      if (endContainer.nodeType !== TEXT_NODE && endContainer.childNodes[endOffset] && endContainer.childNodes[endOffset].nodeName === "BR" && !isLineBreak(endContainer.childNodes[endOffset])) {
         ++endOffset;
       }
       if (endOffset !== getLength(endContainer)) {
@@ -347,203 +347,6 @@
       }
     }
     return range;
-  };
-
-  // source/node/MergeSplit.ts
-  var fixCursor = (node) => {
-    let fixer = null;
-    if (node instanceof Text) {
-      return node;
-    }
-    if (isInline(node)) {
-      let child = node.firstChild;
-      if (cantFocusEmptyTextNodes) {
-        while (child && child instanceof Text && !child.data) {
-          node.removeChild(child);
-          child = node.firstChild;
-        }
-      }
-      if (!child) {
-        if (cantFocusEmptyTextNodes) {
-          fixer = document.createTextNode(ZWS);
-        } else {
-          fixer = document.createTextNode("");
-        }
-      }
-    } else if ((node instanceof Element || node instanceof DocumentFragment) && !node.querySelector("BR")) {
-      fixer = createElement("BR");
-      let parent = node;
-      let child;
-      while ((child = parent.lastElementChild) && !isInline(child)) {
-        parent = child;
-      }
-      node = parent;
-    }
-    if (fixer) {
-      try {
-        node.appendChild(fixer);
-      } catch (error) {
-      }
-    }
-    return node;
-  };
-  var fixContainer = (container, root) => {
-    let wrapper = null;
-    [...container.childNodes].forEach((child) => {
-      const isBR = child.nodeName === "BR";
-      if (!isBR && child.parentNode == root && isInline(child)) {
-        wrapper || (wrapper = createElement("DIV"));
-        wrapper.append(child);
-      } else if (isBR || wrapper) {
-        wrapper || (wrapper = createElement("DIV"));
-        fixCursor(wrapper);
-        if (isBR) {
-          child.replaceWith(wrapper);
-        } else {
-          container.insertBefore(wrapper, child);
-        }
-        wrapper = null;
-      }
-      isContainer(child) && fixContainer(child, root);
-    });
-    wrapper && container.append(fixCursor(wrapper));
-    return container;
-  };
-  var split = (node, offset, stopNode, root) => {
-    if (node instanceof Text && node !== stopNode) {
-      if (typeof offset !== "number") {
-        throw new Error("Offset must be a number to split text node!");
-      }
-      if (!node.parentNode) {
-        throw new Error("Cannot split text node with no parent!");
-      }
-      return split(node.parentNode, node.splitText(offset), stopNode, root);
-    }
-    let nodeAfterSplit = typeof offset === "number" ? offset < node.childNodes.length ? node.childNodes[offset] : null : offset;
-    const parent = node.parentNode;
-    if (!parent || node === stopNode || !(node instanceof Element)) {
-      return nodeAfterSplit;
-    }
-    const clone = node.cloneNode(false);
-    while (nodeAfterSplit) {
-      const next = nodeAfterSplit.nextSibling;
-      clone.append(nodeAfterSplit);
-      nodeAfterSplit = next;
-    }
-    if (node instanceof HTMLOListElement && getClosest(node, root, "BLOCKQUOTE")) {
-      clone.start = (+node.start || 1) + node.childNodes.length - 1;
-    }
-    fixCursor(node);
-    fixCursor(clone);
-    node.after(clone);
-    return split(parent, clone, stopNode, root);
-  };
-  var _mergeInlines = (node, fakeRange) => {
-    const children = node.childNodes;
-    let l = children.length;
-    const frags = [];
-    while (l--) {
-      const child = children[l];
-      const prev = l ? children[l - 1] : null;
-      if (prev && isInline(child) && areAlike(child, prev)) {
-        if (fakeRange.startContainer === child) {
-          fakeRange.startContainer = prev;
-          fakeRange.startOffset += getLength(prev);
-        }
-        if (fakeRange.endContainer === child) {
-          fakeRange.endContainer = prev;
-          fakeRange.endOffset += getLength(prev);
-        }
-        if (fakeRange.startContainer === node) {
-          if (fakeRange.startOffset > l) {
-            --fakeRange.startOffset;
-          } else if (fakeRange.startOffset === l) {
-            fakeRange.startContainer = prev;
-            fakeRange.startOffset = getLength(prev);
-          }
-        }
-        if (fakeRange.endContainer === node) {
-          if (fakeRange.endOffset > l) {
-            --fakeRange.endOffset;
-          } else if (fakeRange.endOffset === l) {
-            fakeRange.endContainer = prev;
-            fakeRange.endOffset = getLength(prev);
-          }
-        }
-        detach(child);
-        if (child instanceof Text) {
-          prev.appendData(child.data);
-        } else {
-          frags.push(empty(child));
-        }
-      } else if (child instanceof Element) {
-        let frag;
-        while (frag = frags.pop()) {
-          child.append(frag);
-        }
-        _mergeInlines(child, fakeRange);
-      }
-    }
-  };
-  var mergeInlines = (node, range) => {
-    const element = node instanceof Text ? node.parentNode : node;
-    if (element instanceof Element) {
-      const fakeRange = {
-        startContainer: range.startContainer,
-        startOffset: range.startOffset,
-        endContainer: range.endContainer,
-        endOffset: range.endOffset
-      };
-      _mergeInlines(element, fakeRange);
-      range.setStart(fakeRange.startContainer, fakeRange.startOffset);
-      range.setEnd(fakeRange.endContainer, fakeRange.endOffset);
-    }
-  };
-  var mergeWithBlock = (block, next, range, root) => {
-    let container = next;
-    let parent;
-    let offset;
-    while ((parent = container.parentNode) && parent !== root && parent instanceof Element && parent.childNodes.length === 1) {
-      container = parent;
-    }
-    detach(container);
-    offset = block.childNodes.length;
-    const last = block.lastChild;
-    if (last && last.nodeName === "BR") {
-      last.remove();
-      --offset;
-    }
-    block.append(empty(next));
-    range.setStart(block, offset);
-    range.collapse(true);
-    mergeInlines(block, range);
-  };
-  var mergeContainers = (node, root) => {
-    const prev = node.previousSibling;
-    const first = node.firstChild;
-    const isListItem = node.nodeName === "LI";
-    if (isListItem && (!first || !/^[OU]L$/.test(first.nodeName))) {
-      return;
-    }
-    if (prev && areAlike(prev, node)) {
-      if (!isContainer(prev)) {
-        if (!isListItem) {
-          return;
-        }
-        const block = createElement("DIV");
-        block.append(empty(prev));
-        prev.append(block);
-      }
-      detach(node);
-      const needsFix = !isContainer(node);
-      prev.append(empty(node));
-      needsFix && fixContainer(prev, root);
-      first && mergeContainers(first, root);
-    } else if (isListItem) {
-      const block = createElement("DIV");
-      node.insertBefore(block, first);
-      fixCursor(block);
-    }
   };
 
   // source/Clean.ts
@@ -726,33 +529,181 @@
         if (isInline(child) && !child.firstChild) {
           node.removeChild(child);
         }
-      } else if (child instanceof Text && !child.data) {
+      } else if (child instanceof Text && !child.length) {
         node.removeChild(child);
       }
     }
   };
-  var cleanupBRs = (node, root, keepForBlankLine) => {
-    const brs = node.querySelectorAll("BR");
-    const brBreaksLine = [];
+  var cleanupBRs = (node) => {
+    const brs = node.querySelectorAll("BR:last-child");
     let l = brs.length;
-    for (let i = 0; i < l; ++i) {
-      brBreaksLine[i] = isLineBreak(brs[i], keepForBlankLine);
-    }
     while (l--) {
       const br = brs[l];
-      const parent = br.parentNode;
-      if (!parent) {
-        continue;
-      }
-      if (!brBreaksLine[l]) {
-        detach(br);
-      } else if (!isInline(parent)) {
-        fixContainer(parent, root);
+      if (!isLineBreak(br)) {
+        br.remove();
       }
     }
   };
   var escapeHTML = (text) => {
-    return text.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;").split('"').join("&quot;");
+    return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+  };
+
+  // source/node/MergeSplit.ts
+  var fixCursor = (node) => {
+    if ((node instanceof Element || node instanceof DocumentFragment) && !isInline(node) && !node.children.length && !node.textContent.length) {
+      node.appendChild(createElement("BR"));
+    }
+    return node;
+  };
+  var fixContainer = (container) => {
+    let wrapper = null;
+    [...container.childNodes].forEach((child) => {
+      if (isInline(child)) {
+        wrapper || (wrapper = createElement("DIV"));
+        wrapper.append(child);
+      } else if (wrapper) {
+        (wrapper.children.length || wrapper.textContent.trim().length) && container.insertBefore(wrapper, child);
+        wrapper = null;
+      }
+    });
+    wrapper && container.append(wrapper);
+    return container;
+  };
+  var split = (node, offset, stopNode, root) => {
+    if (node instanceof Text && node !== stopNode) {
+      if (typeof offset !== "number") {
+        throw new Error("Offset must be a number to split text node!");
+      }
+      if (!node.parentNode) {
+        throw new Error("Cannot split text node with no parent!");
+      }
+      return split(node.parentNode, node.splitText(offset), stopNode, root);
+    }
+    let nodeAfterSplit = typeof offset === "number" ? offset < node.childNodes.length ? node.childNodes[offset] : null : offset;
+    const parent = node.parentNode;
+    if (!parent || node === stopNode || !(node instanceof Element)) {
+      return nodeAfterSplit;
+    }
+    const clone = node.cloneNode(false);
+    while (nodeAfterSplit) {
+      const next = nodeAfterSplit.nextSibling;
+      clone.append(nodeAfterSplit);
+      nodeAfterSplit = next;
+    }
+    if (node instanceof HTMLOListElement && getClosest(node, root, "BLOCKQUOTE")) {
+      clone.start = (+node.start || 1) + node.childNodes.length - 1;
+    }
+    fixCursor(node);
+    fixCursor(clone);
+    node.after(clone);
+    return split(parent, clone, stopNode, root);
+  };
+  var _mergeInlines = (node, fakeRange) => {
+    const children = node.childNodes;
+    let l = children.length;
+    const frags = [];
+    while (l--) {
+      const child = children[l];
+      const prev = l ? children[l - 1] : null;
+      if (prev && isInline(child) && areAlike(child, prev)) {
+        if (fakeRange.startContainer === child) {
+          fakeRange.startContainer = prev;
+          fakeRange.startOffset += getLength(prev);
+        }
+        if (fakeRange.endContainer === child) {
+          fakeRange.endContainer = prev;
+          fakeRange.endOffset += getLength(prev);
+        }
+        if (fakeRange.startContainer === node) {
+          if (fakeRange.startOffset > l) {
+            --fakeRange.startOffset;
+          } else if (fakeRange.startOffset === l) {
+            fakeRange.startContainer = prev;
+            fakeRange.startOffset = getLength(prev);
+          }
+        }
+        if (fakeRange.endContainer === node) {
+          if (fakeRange.endOffset > l) {
+            --fakeRange.endOffset;
+          } else if (fakeRange.endOffset === l) {
+            fakeRange.endContainer = prev;
+            fakeRange.endOffset = getLength(prev);
+          }
+        }
+        detach(child);
+        if (child instanceof Text) {
+          prev.appendData(child.data);
+        } else {
+          frags.push(empty(child));
+        }
+      } else if (child instanceof Element) {
+        let frag;
+        while (frag = frags.pop()) {
+          child.append(frag);
+        }
+        _mergeInlines(child, fakeRange);
+      }
+    }
+  };
+  var mergeInlines = (node, range) => {
+    const element = node instanceof Text ? node.parentNode : node;
+    if (element instanceof Element) {
+      const fakeRange = {
+        startContainer: range.startContainer,
+        startOffset: range.startOffset,
+        endContainer: range.endContainer,
+        endOffset: range.endOffset
+      };
+      _mergeInlines(element, fakeRange);
+      range.setStart(fakeRange.startContainer, fakeRange.startOffset);
+      range.setEnd(fakeRange.endContainer, fakeRange.endOffset);
+    }
+  };
+  var mergeWithBlock = (block, next, range, root) => {
+    let container = next;
+    let parent;
+    let offset;
+    while ((parent = container.parentNode) && parent !== root && parent instanceof Element && parent.childNodes.length === 1) {
+      container = parent;
+    }
+    detach(container);
+    offset = block.childNodes.length;
+    const last = block.lastChild;
+    if (last && last.nodeName === "BR") {
+      last.remove();
+      --offset;
+    }
+    block.append(empty(next));
+    range.setStart(block, offset);
+    range.collapse(true);
+    mergeInlines(block, range);
+  };
+  var mergeContainers = (node, root) => {
+    const prev = node.previousSibling;
+    const first = node.firstChild;
+    const isListItem = node.nodeName === "LI";
+    if (isListItem && (!first || !/^[OU]L$/.test(first.nodeName))) {
+      return;
+    }
+    if (prev && areAlike(prev, node)) {
+      if (!isContainer(prev)) {
+        if (!isListItem) {
+          return;
+        }
+        const block = createElement("DIV");
+        block.append(empty(prev));
+        prev.append(block);
+      }
+      detach(node);
+      const needsFix = !isContainer(node);
+      prev.append(empty(node));
+      needsFix && fixContainer(prev);
+      first && mergeContainers(first, root);
+    } else if (isListItem) {
+      const block = createElement("DIV");
+      node.insertBefore(block, first);
+      fixCursor(block);
+    }
   };
 
   // source/node/Block.ts
@@ -1022,7 +973,7 @@
     const iterator = createTreeWalker(root, SHOW_ELEMENT_OR_TEXT);
     let afterNode = startContainer;
     let afterOffset = startOffset;
-    if (!(afterNode instanceof Text) || afterOffset === afterNode.data.length) {
+    if (!(afterNode instanceof Text) || afterOffset === afterNode.length) {
       afterNode = getAdjacentInlineNode(iterator, "nextNode", afterNode);
       afterOffset = 0;
     }
@@ -1035,7 +986,7 @@
         afterNode || (startContainer instanceof Text ? startContainer : startContainer.childNodes[startOffset] || startContainer)
       );
       if (beforeNode instanceof Text) {
-        beforeOffset = beforeNode.data.length;
+        beforeOffset = beforeNode.length;
       }
     }
     let node = null;
@@ -1059,7 +1010,7 @@
   var insertTreeFragmentIntoRange = (range, frag, root) => {
     const firstInFragIsInline = frag.firstChild && isInline(frag.firstChild);
     let node;
-    fixContainer(frag, root);
+    fixContainer(frag);
     node = frag;
     while (node = getNextBlock(node, root)) {
       fixCursor(node);
@@ -1080,7 +1031,7 @@
       range.collapse(true);
       let container = range.endContainer;
       let offset = range.endOffset;
-      cleanupBRs(block, root, false);
+      cleanupBRs(block);
       if (isInline(container)) {
         const nodeAfterSplit = split(
           container,
@@ -1480,7 +1431,7 @@
         return;
       }
       let current = startBlock;
-      fixContainer(current.parentNode, root);
+      fixContainer(current.parentNode);
       const previous = getPreviousBlock(current, root);
       if (previous) {
         if (!previous.isContentEditable) {
@@ -1547,7 +1498,7 @@
       if (!current) {
         return;
       }
-      fixContainer(current.parentNode, root);
+      fixContainer(current.parentNode);
       next = getNextBlock(current, root);
       if (next) {
         if (!next.isContentEditable) {
@@ -1945,8 +1896,6 @@
     _makeConfig(userConfig) {
       const config = {
         blockTag: "DIV",
-        blockAttributes: null,
-        tagAttributes: {},
         classNames: {
           color: "color",
           fontFamily: "font",
@@ -2549,8 +2498,8 @@
       const frag = this._config.sanitizeToDOMFragment(html, this);
       const root = this._root;
       cleanTree(frag, this._config);
-      cleanupBRs(frag, root, false);
-      fixContainer(frag, root);
+      cleanupBRs(frag);
+      fixContainer(frag);
       let node = frag;
       let child = node.firstChild;
       if (!child || child.nodeName === "BR") {
@@ -2596,7 +2545,7 @@
           this.addDetectedLinks(frag, frag);
         }
         cleanTree(frag, this._config);
-        cleanupBRs(frag, root, false);
+        cleanupBRs(frag);
         removeEmptyInlines(frag);
         frag.normalize();
         let node = frag;
@@ -2728,13 +2677,8 @@
       const lines = plainText.split("\n");
       const config = this._config;
       const tag = config.blockTag;
-      const attributes = config.blockAttributes;
       const closeBlock = "</" + tag + ">";
-      let openBlock = "<" + tag;
-      for (const attr in attributes) {
-        openBlock += " " + attr + '="' + escapeHTML(attributes[attr]) + '"';
-      }
-      openBlock += ">";
+      const openBlock = "<" + tag + ">";
       for (let i = 0, l = lines.length; i < l; ++i) {
         let line = lines[i];
         line = escapeHTML(line).replace(/ (?=(?: |$))/g, "&nbsp;");
@@ -3034,7 +2978,6 @@
         {
           href: url
         },
-        this._config.tagAttributes.a,
         attributes
       );
       return this.changeFormat(
@@ -3065,7 +3008,6 @@
         (node2) => !getClosest(node2, root || this._root, "A")
       );
       const linkRegExp = this.linkRegExp;
-      const defaultAttributes = this._config.tagAttributes.a;
       let node;
       while (node = walker.nextNode()) {
         const parent = node.parentNode;
@@ -3082,12 +3024,9 @@
           }
           const child = createElement(
             "A",
-            Object.assign(
-              {
-                href: match[1] ? /^(?:ht|f)tps?:/i.test(match[1]) ? match[1] : "http://" + match[1] : "mailto:" + match[0]
-              },
-              defaultAttributes
-            )
+            {
+              href: match[1] ? /^(?:ht|f)tps?:/i.test(match[1]) ? match[1] : "http://" + match[1] : "mailto:" + match[0]
+            }
           );
           child.textContent = data.slice(index, endIndex);
           parent.insertBefore(child, node);
@@ -3107,7 +3046,7 @@
     createDefaultBlock(children) {
       const config = this._config;
       return fixCursor(
-        createElement(config.blockTag, config.blockAttributes, children)
+        createElement(config.blockTag, null, children)
       );
     }
     splitBlock(lineBreakOnly, range) {
@@ -3197,21 +3136,15 @@
       }
       node = range.startContainer;
       const offset = range.startOffset;
-      let splitTag = this.tagAfterSplit[block.nodeName];
+      let splitTag = this.tagAfterSplit[block.nodeName] || this._config.blockTag;
       nodeAfterSplit = split(
         node,
         offset,
         block.parentNode,
         this._root
       );
-      const config = this._config;
-      let splitProperties = null;
-      if (!splitTag) {
-        splitTag = config.blockTag;
-        splitProperties = config.blockAttributes;
-      }
-      if (!hasTagAttributes(nodeAfterSplit, splitTag, splitProperties)) {
-        block = createElement(splitTag, splitProperties);
+      if (!hasTagAttributes(nodeAfterSplit, splitTag)) {
+        block = createElement(splitTag);
         if (nodeAfterSplit.dir) {
           block.dir = nodeAfterSplit.dir;
         }
@@ -3231,7 +3164,7 @@
           nodeAfterSplit = child;
           break;
         }
-        while (child && child instanceof Text && !child.data) {
+        while (child && child instanceof Text && !child.length) {
           next = child.nextSibling;
           if (!next || next.nodeName === "BR") {
             break;
@@ -3376,11 +3309,9 @@
       this._recordUndoState(range, this._isInUndoState);
       const type = list.nodeName;
       let newParent = startLi.previousSibling;
-      let listAttrs;
       let next;
       if (newParent.nodeName !== type) {
-        listAttrs = this._config.tagAttributes[type.toLowerCase()];
-        newParent = createElement(type, listAttrs);
+        newParent = createElement(type);
         list.insertBefore(newParent, startLi);
       }
       do {
@@ -3450,9 +3381,6 @@
     }
     _makeList(frag, type) {
       const walker = getBlockWalker(frag, this._root);
-      const tagAttributes = this._config.tagAttributes;
-      const listAttrs = tagAttributes[type.toLowerCase()];
-      const listItemAttrs = tagAttributes.li;
       let node;
       while (node = walker.nextNode()) {
         if (node.parentNode instanceof HTMLLIElement) {
@@ -3460,7 +3388,7 @@
           walker.currentNode = node.lastChild;
         }
         if (!(node instanceof HTMLLIElement)) {
-          const newLi = createElement("LI", listItemAttrs);
+          const newLi = createElement("LI");
           if (node.dir) {
             newLi.dir = node.dir;
           }
@@ -3469,7 +3397,7 @@
             prev.append(newLi);
             detach(node);
           } else {
-            replaceWith(node, createElement(type, listAttrs, [newLi]));
+            replaceWith(node, createElement(type, null, [newLi]));
           }
           newLi.append(empty(node));
           walker.currentNode = newLi;
@@ -3479,7 +3407,7 @@
           if (tag !== type && /^[OU]L$/.test(tag)) {
             replaceWith(
               node,
-              createElement(type, listAttrs, [empty(node)])
+              createElement(type, null, [empty(node)])
             );
           }
         }
@@ -3502,7 +3430,7 @@
         for (let i = 0, l = lists.length; i < l; ++i) {
           const list = lists[i];
           const listFrag = empty(list);
-          fixContainer(listFrag, root);
+          fixContainer(listFrag);
           replaceWith(list, listFrag);
         }
         for (let i = 0, l = items.length; i < l; ++i) {
@@ -3510,7 +3438,7 @@
           if (isBlock(item)) {
             replaceWith(item, this.createDefaultBlock([empty(item)]));
           } else {
-            fixContainer(item, root);
+            fixContainer(item);
             replaceWith(item, empty(item));
           }
         }
@@ -3523,7 +3451,7 @@
       this.modifyBlocks(
         (frag) => createElement(
           "BLOCKQUOTE",
-          this._config.tagAttributes.blockquote,
+          null,
           [frag]
         ),
         range
@@ -3582,7 +3510,7 @@
             const brBreaksLine = [];
             let l = nodes.length;
             for (let i = 0; i < l; ++i) {
-              brBreaksLine[i] = isLineBreak(nodes[i], false);
+              brBreaksLine[i] = isLineBreak(nodes[i]);
             }
             while (l--) {
               const br = nodes[l];
@@ -3608,7 +3536,7 @@
           }
           output.normalize();
           return fixCursor(
-            createElement("PRE", this._config.tagAttributes.pre, [
+            createElement("PRE", null, [
               output
             ])
           );
@@ -3618,7 +3546,7 @@
         this.changeFormat(
           {
             tag: "CODE",
-            attributes: this._config.tagAttributes.code
+            attributes: null
           },
           null,
           range
@@ -3654,7 +3582,7 @@
               node.parentNode.insertBefore(contents, node);
               node.data = value;
             }
-            fixContainer(pre, root);
+            fixContainer(pre);
             replaceWith(pre, empty(pre));
           }
           return frag;

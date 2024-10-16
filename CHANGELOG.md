@@ -1,3 +1,60 @@
+## 2.38.2 – 2024-10-09
+### Fixed
+- error '$index is not defined' in Settings > Accounts
+  [#1797](https://github.com/the-djmaze/snappymail/issues/1797)
+
+
+## 2.38.1 – 2024-10-08
+
+### Added
+- Admin - Extensions search filter
+- Options to unset current font family and size
+  [#1726](https://github.com/the-djmaze/snappymail/issues/1726)
+- Option to allow insecure cryptkey
+  [#1746](https://github.com/the-djmaze/snappymail/issues/1746)
+- Save vCard FN property
+  [#1761](https://github.com/the-djmaze/snappymail/issues/1761)
+- Docker Nginx should listen on IPv6 addresses in addition to IPv4
+  [#1770](https://github.com/the-djmaze/snappymail/issues/1770)
+- Full-screen Message View on Double-Click
+  [#1787](https://github.com/the-djmaze/snappymail/issues/1787)
+
+### Changed
+- Use the custom Squire as submodule vendors/squire2
+- Disallow noembed and noframes HTML elements
+- Keep 1 space between HTML elements in compressed templates
+- Squire: sanitizeToDOMFragment now uses cleanHTML()
+- Squire: improved handling of BR elements
+  [#1389](https://github.com/the-djmaze/snappymail/issues/1389)
+- Nextcloud border-radius by @gnilebein
+  [#1790](https://github.com/the-djmaze/snappymail/pull/1790)
+- Compose window sentFolder handling for
+  [#1793](https://github.com/the-djmaze/snappymail/pull/1793)
+- Update Portuguese by @ner00
+- Update Polish by @tinola
+- Update French by @hguilbert
+- Update Portuguese (Brazil) by @mstolf
+
+### Fixed
+- Composer dialog scroll got broken in v2.28
+- Composer dialog "from" triangle button wrong position due to font changes
+- Admin - Config `search` should be ko.observable() not ko.observableArray()
+- Squire: paste images
+  [#1389](https://github.com/the-djmaze/snappymail/issues/1389)
+- Domain whitelist failures on login
+  [#1706](https://github.com/the-djmaze/snappymail/issues/1706)
+- Sieve parse errors
+- Sieve support `index` was not optional for
+  [#1709](https://github.com/the-djmaze/snappymail/issues/1709)
+- Pagination problem for large mailbox after 2.36.1
+  [#1716](https://github.com/the-djmaze/snappymail/issues/1716)
+- Undefined constant "LOG_ERROR"
+  [#1754](https://github.com/the-djmaze/snappymail/issues/1754)
+- Search Filter Capital "B" not working
+  [#1780](https://github.com/the-djmaze/snappymail/issues/1780)
+- PHP 8.4: Implicitly nullable parameter declarations deprecated
+
+
 ## 2.38.0 – 2024-09-16
 
 ### Added
@@ -247,7 +304,7 @@
 - CSS set min-width for .attachmentParent and .flagParent to line them up
 - cPanel use extension login-cpanel instead of login-remote
 - Improved login credentials handling
-- Speedup Knockout a bit
+- Speedup Knockout a bit and removed `with($context)` scope
 - Update Belarusian by @spoooyders
 - Update Chinese by @mayswind
 - Update French by @hguilbert

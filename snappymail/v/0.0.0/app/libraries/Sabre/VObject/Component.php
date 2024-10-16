@@ -2,7 +2,6 @@
 
 namespace Sabre\VObject;
 
-use Sabre\VObject;
 use Sabre\Xml;
 
 /**
@@ -15,7 +14,7 @@ use Sabre\Xml;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  *
- * @property VObject\Property\FlatText UID
+ * @property Property\FlatText UID
  */
 class Component extends Node
 {

@@ -1,11 +1,13 @@
 (rl => {
 	const client_id = rl.pluginSettingsGet('login-o365', 'client_id'),
+		// https://learn.microsoft.com/en-us/entra/identity-platform/reply-url#query-parameter-support-in-redirect-uris
+		query = rl.pluginSettingsGet('login-o365', 'personal') ? '' : '?',
 		tenant = rl.pluginSettingsGet('login-o365', 'tenant'),
 		login = () => {
 			document.location = 'https://login.microsoftonline.com/'+tenant+'/oauth2/v2.0/authorize?' + (new URLSearchParams({
 				response_type: 'code',
 				client_id: client_id,
-				redirect_uri: document.location.href.replace(/\/$/, '') + '/LoginO365',
+				redirect_uri: document.location.href.replace(/\/$/, '') + '/' + query + 'LoginO365',
 				scope: [
 					// Associate personal info
 					'openid',

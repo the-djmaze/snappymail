@@ -2,8 +2,6 @@
 
 namespace Sabre\VObject;
 
-use Sabre\VObject;
-
 /**
  * Document.
  *
@@ -18,7 +16,7 @@ use Sabre\VObject;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  *
- * @property VObject\Property\FlatText VERSION
+ * @property Property\FlatText VERSION
  */
 abstract class Document extends Component
 {
@@ -140,7 +138,7 @@ abstract class Document extends Component
      * an iCalendar object, this may be something like CALSCALE:GREGORIAN. To
      * ensure that this does not happen, set $defaults to false.
      */
-    public function createComponent(string $name, array $children = null, bool $defaults = true): Component
+    public function createComponent(string $name, ?array $children = null, bool $defaults = true): Component
     {
         $name = strtoupper($name);
         $class = Component::class;
@@ -169,7 +167,7 @@ abstract class Document extends Component
      *
      * @throws InvalidDataException
      */
-    public function createProperty(string $name, $value = null, array $parameters = null, string $valueType = null): Property
+    public function createProperty(string $name, $value = null, ?array $parameters = null, ?string $valueType = null, ?int $lineIndex = null, ?string $lineString = null): Property
     {
         // If there's a . in the name, it means it's prefixed by a group name.
         if (false !== ($i = strpos($name, '.'))) {
@@ -203,7 +201,7 @@ abstract class Document extends Component
             $parameters = [];
         }
 
-        return new $class($this, $name, $value, $parameters, $group);
+        return new $class($this, $name, $value, $parameters, $group, $lineIndex, $lineString);
     }
 
     /**

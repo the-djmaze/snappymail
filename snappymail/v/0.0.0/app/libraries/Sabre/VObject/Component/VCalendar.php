@@ -20,8 +20,8 @@ use Sabre\VObject\Recur\NoInstancesException;
  *
  * @property VEvent VEVENT
  * @property VJournal VJOURNAL
- * @property VObject\Property\Text ORG
- * @property VObject\Property\FlatText METHOD
+ * @property Property\Text ORG
+ * @property Property\FlatText METHOD
  */
 class VCalendar extends VObject\Document
 {
@@ -51,21 +51,21 @@ class VCalendar extends VObject\Document
      * List of value-types, and which classes they map to.
      */
     public static array $valueMap = [
-        'BINARY' => VObject\Property\Binary::class,
-        'BOOLEAN' => VObject\Property\Boolean::class,
-        'CAL-ADDRESS' => VObject\Property\ICalendar\CalAddress::class,
-        'DATE' => VObject\Property\ICalendar\Date::class,
-        'DATE-TIME' => VObject\Property\ICalendar\DateTime::class,
-        'DURATION' => VObject\Property\ICalendar\Duration::class,
-        'FLOAT' => VObject\Property\FloatValue::class,
-        'INTEGER' => VObject\Property\IntegerValue::class,
-        'PERIOD' => VObject\Property\ICalendar\Period::class,
-        'RECUR' => VObject\Property\ICalendar\Recur::class,
-        'TEXT' => VObject\Property\Text::class,
-        'TIME' => VObject\Property\Time::class,
-        'UNKNOWN' => VObject\Property\Unknown::class, // jCard / jCal-only.
-        'URI' => VObject\Property\Uri::class,
-        'UTC-OFFSET' => VObject\Property\UtcOffset::class,
+        'BINARY' => Property\Binary::class,
+        'BOOLEAN' => Property\Boolean::class,
+        'CAL-ADDRESS' => Property\ICalendar\CalAddress::class,
+        'DATE' => Property\ICalendar\Date::class,
+        'DATE-TIME' => Property\ICalendar\DateTime::class,
+        'DURATION' => Property\ICalendar\Duration::class,
+        'FLOAT' => Property\FloatValue::class,
+        'INTEGER' => Property\IntegerValue::class,
+        'PERIOD' => Property\ICalendar\Period::class,
+        'RECUR' => Property\ICalendar\Recur::class,
+        'TEXT' => Property\Text::class,
+        'TIME' => Property\Time::class,
+        'UNKNOWN' => Property\Unknown::class, // jCard / jCal-only.
+        'URI' => Property\Uri::class,
+        'UTC-OFFSET' => Property\UtcOffset::class,
     ];
 
     /**
@@ -73,78 +73,78 @@ class VCalendar extends VObject\Document
      */
     public static array $propertyMap = [
         // Calendar properties
-        'CALSCALE' => VObject\Property\FlatText::class,
-        'METHOD' => VObject\Property\FlatText::class,
-        'PRODID' => VObject\Property\FlatText::class,
-        'VERSION' => VObject\Property\FlatText::class,
+        'CALSCALE' => Property\FlatText::class,
+        'METHOD' => Property\FlatText::class,
+        'PRODID' => Property\FlatText::class,
+        'VERSION' => Property\FlatText::class,
 
         // Component properties
-        'ATTACH' => VObject\Property\Uri::class,
-        'CATEGORIES' => VObject\Property\Text::class,
-        'CLASS' => VObject\Property\FlatText::class,
-        'COMMENT' => VObject\Property\FlatText::class,
-        'DESCRIPTION' => VObject\Property\FlatText::class,
-        'GEO' => VObject\Property\FloatValue::class,
-        'LOCATION' => VObject\Property\FlatText::class,
-        'PERCENT-COMPLETE' => VObject\Property\IntegerValue::class,
-        'PRIORITY' => VObject\Property\IntegerValue::class,
-        'RESOURCES' => VObject\Property\Text::class,
-        'STATUS' => VObject\Property\FlatText::class,
-        'SUMMARY' => VObject\Property\FlatText::class,
+        'ATTACH' => Property\Uri::class,
+        'CATEGORIES' => Property\Text::class,
+        'CLASS' => Property\FlatText::class,
+        'COMMENT' => Property\FlatText::class,
+        'DESCRIPTION' => Property\FlatText::class,
+        'GEO' => Property\FloatValue::class,
+        'LOCATION' => Property\FlatText::class,
+        'PERCENT-COMPLETE' => Property\IntegerValue::class,
+        'PRIORITY' => Property\IntegerValue::class,
+        'RESOURCES' => Property\Text::class,
+        'STATUS' => Property\FlatText::class,
+        'SUMMARY' => Property\FlatText::class,
 
         // Date and Time Component Properties
-        'COMPLETED' => VObject\Property\ICalendar\DateTime::class,
-        'DTEND' => VObject\Property\ICalendar\DateTime::class,
-        'DUE' => VObject\Property\ICalendar\DateTime::class,
-        'DTSTART' => VObject\Property\ICalendar\DateTime::class,
-        'DURATION' => VObject\Property\ICalendar\Duration::class,
-        'FREEBUSY' => VObject\Property\ICalendar\Period::class,
-        'TRANSP' => VObject\Property\FlatText::class,
+        'COMPLETED' => Property\ICalendar\DateTime::class,
+        'DTEND' => Property\ICalendar\DateTime::class,
+        'DUE' => Property\ICalendar\DateTime::class,
+        'DTSTART' => Property\ICalendar\DateTime::class,
+        'DURATION' => Property\ICalendar\Duration::class,
+        'FREEBUSY' => Property\ICalendar\Period::class,
+        'TRANSP' => Property\FlatText::class,
 
         // Time Zone Component Properties
-        'TZID' => VObject\Property\FlatText::class,
-        'TZNAME' => VObject\Property\FlatText::class,
-        'TZOFFSETFROM' => VObject\Property\UtcOffset::class,
-        'TZOFFSETTO' => VObject\Property\UtcOffset::class,
-        'TZURL' => VObject\Property\Uri::class,
+        'TZID' => Property\FlatText::class,
+        'TZNAME' => Property\FlatText::class,
+        'TZOFFSETFROM' => Property\UtcOffset::class,
+        'TZOFFSETTO' => Property\UtcOffset::class,
+        'TZURL' => Property\Uri::class,
 
         // Relationship Component Properties
-        'ATTENDEE' => VObject\Property\ICalendar\CalAddress::class,
-        'CONTACT' => VObject\Property\FlatText::class,
-        'ORGANIZER' => VObject\Property\ICalendar\CalAddress::class,
-        'RECURRENCE-ID' => VObject\Property\ICalendar\DateTime::class,
-        'RELATED-TO' => VObject\Property\FlatText::class,
-        'URL' => VObject\Property\Uri::class,
-        'UID' => VObject\Property\FlatText::class,
+        'ATTENDEE' => Property\ICalendar\CalAddress::class,
+        'CONTACT' => Property\FlatText::class,
+        'ORGANIZER' => Property\ICalendar\CalAddress::class,
+        'RECURRENCE-ID' => Property\ICalendar\DateTime::class,
+        'RELATED-TO' => Property\FlatText::class,
+        'URL' => Property\Uri::class,
+        'UID' => Property\FlatText::class,
 
         // Recurrence Component Properties
-        'EXDATE' => VObject\Property\ICalendar\DateTime::class,
-        'RDATE' => VObject\Property\ICalendar\DateTime::class,
-        'RRULE' => VObject\Property\ICalendar\Recur::class,
-        'EXRULE' => VObject\Property\ICalendar\Recur::class, // Deprecated since rfc5545
+        'EXDATE' => Property\ICalendar\DateTime::class,
+        'RDATE' => Property\ICalendar\DateTime::class,
+        'RRULE' => Property\ICalendar\Recur::class,
+        'EXRULE' => Property\ICalendar\Recur::class, // Deprecated since rfc5545
 
         // Alarm Component Properties
-        'ACTION' => VObject\Property\FlatText::class,
-        'REPEAT' => VObject\Property\IntegerValue::class,
-        'TRIGGER' => VObject\Property\ICalendar\Duration::class,
+        'ACTION' => Property\FlatText::class,
+        'REPEAT' => Property\IntegerValue::class,
+        'TRIGGER' => Property\ICalendar\Duration::class,
 
         // Change Management Component Properties
-        'CREATED' => VObject\Property\ICalendar\DateTime::class,
-        'DTSTAMP' => VObject\Property\ICalendar\DateTime::class,
-        'LAST-MODIFIED' => VObject\Property\ICalendar\DateTime::class,
-        'SEQUENCE' => VObject\Property\IntegerValue::class,
+        'CREATED' => Property\ICalendar\DateTime::class,
+        'DTSTAMP' => Property\ICalendar\DateTime::class,
+        'LAST-MODIFIED' => Property\ICalendar\DateTime::class,
+        'SEQUENCE' => Property\IntegerValue::class,
 
         // Request Status
-        'REQUEST-STATUS' => VObject\Property\Text::class,
+        'REQUEST-STATUS' => Property\Text::class,
 
         // Additions from draft-daboo-valarm-extensions-04
-        'ALARM-AGENT' => VObject\Property\Text::class,
-        'ACKNOWLEDGED' => VObject\Property\ICalendar\DateTime::class,
-        'PROXIMITY' => VObject\Property\Text::class,
-        'DEFAULT-ALARM' => VObject\Property\Boolean::class,
+        'ALARM-AGENT' => Property\Text::class,
+        'ACKNOWLEDGED' => Property\ICalendar\DateTime::class,
+        'PROXIMITY' => Property\Text::class,
+        'DEFAULT-ALARM' => Property\Boolean::class,
 
         // Additions from draft-daboo-calendar-availability-05
-        'BUSYTYPE' => VObject\Property\Text::class,
+        'BUSYTYPE' => Property\Text::class,
     ];
 
     /**
@@ -166,10 +166,10 @@ class VCalendar extends VObject\Document
      *
      * @return VObject\Component[]
      */
-    public function getBaseComponents(string $componentName = null): array
+    public function getBaseComponents(?string $componentName = null): array
     {
         $isBaseComponent = function ($component): bool {
-            if (!$component instanceof VObject\Component) {
+            if (!$component instanceof Component) {
                 return false;
             }
             if ('VTIMEZONE' === $component->name) {
@@ -214,13 +214,11 @@ class VCalendar extends VObject\Document
      * If there is no such component, null will be returned.
      *
      * @param string|null $componentName filter by component name
-     *
-     * @return VObject\Component|null
      */
-    public function getBaseComponent(string $componentName = null): ?Component
+    public function getBaseComponent(?string $componentName = null): ?Component
     {
         $isBaseComponent = function ($component): bool {
-            if (!$component instanceof VObject\Component) {
+            if (!$component instanceof Component) {
                 return false;
             }
             if ('VTIMEZONE' === $component->name) {
@@ -275,7 +273,7 @@ class VCalendar extends VObject\Document
      * @throws InvalidDataException
      * @throws VObject\Recur\MaxInstancesExceededException
      */
-    public function expand(\DateTimeInterface $start, \DateTimeInterface $end, \DateTimeZone $timeZone = null): VCalendar
+    public function expand(\DateTimeInterface $start, \DateTimeInterface $end, ?\DateTimeZone $timeZone = null): VCalendar
     {
         $newChildren = [];
         $recurringEvents = [];

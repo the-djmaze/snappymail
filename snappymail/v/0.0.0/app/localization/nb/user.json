@@ -130,6 +130,8 @@
 		"QUOTA_SIZE": "Bruker <strong> %SIZE% ( %PROC%% ) <\/strong> av <strong> %LIMIT% <\/strong>",
 		"SORT": "Sort",
 		"NO_SORT": "Mail server does not support sorting",
+		"SORT_ARRIVAL_ASC": "Arrived ascending",
+		"SORT_ARRIVAL_DESC": "Arrived descending",
 		"SORT_DATE_ASC": "Dato, stigende",
 		"SORT_DATE_DESC": "Dato, synkende",
 		"SORT_SIZE_ASC": "Størrelse, stigende",

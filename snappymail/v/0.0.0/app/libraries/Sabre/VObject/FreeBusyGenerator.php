@@ -72,7 +72,7 @@ class FreeBusyGenerator
      * Check the setTimeRange and setObjects methods for details about the
      * arguments.
      */
-    public function __construct(\DateTimeInterface $start = null, \DateTimeInterface $end = null, $objects = null, \DateTimeZone $timeZone = null)
+    public function __construct(?\DateTimeInterface $start = null, ?\DateTimeInterface $end = null, $objects = null, ?\DateTimeZone $timeZone = null)
     {
         $this->setTimeRange($start, $end);
 
@@ -138,7 +138,7 @@ class FreeBusyGenerator
      *
      * @throws \Exception
      */
-    public function setTimeRange(\DateTimeInterface $start = null, \DateTimeInterface $end = null): void
+    public function setTimeRange(?\DateTimeInterface $start = null, ?\DateTimeInterface $end = null): void
     {
         if (!$start) {
             $start = new \DateTimeImmutable(Settings::$minDate);

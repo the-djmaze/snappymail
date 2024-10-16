@@ -130,6 +130,8 @@
 		"QUOTA_SIZE": "使用了 <strong>%LIMIT%<\/strong> 存储空间中的<strong>%SIZE% (%PROC%%)<\/strong>",
 		"SORT": "排序",
 		"NO_SORT": "邮件服务器不支持排序",
+		"SORT_ARRIVAL_ASC": "Arrived ascending",
+		"SORT_ARRIVAL_DESC": "Arrived descending",
 		"SORT_DATE_ASC": "日期升序",
 		"SORT_DATE_DESC": "日期降序",
 		"SORT_SIZE_ASC": "大小升序",

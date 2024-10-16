@@ -61,7 +61,7 @@ class VCard implements SplitterInterface
         try {
             $object = $this->parser->parse();
 
-            if (!$object instanceof VObject\Component\VCard) {
+            if (!$object instanceof Component\VCard) {
                 throw new VObject\ParseException('The supplied input contained non-VCARD data.');
             }
         } catch (VObject\EofException $e) {

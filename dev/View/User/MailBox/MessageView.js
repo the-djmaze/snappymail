@@ -20,7 +20,8 @@ import {
 	fireEvent,
 	stopEvent,
 	addShortcut,
-	registerShortcut
+	registerShortcut,
+	formFieldFocused
 } from 'Common/Globals';
 
 import { arrayLength } from 'Common/Utils';
@@ -467,8 +468,10 @@ export class MailMessageView extends AbstractViewRight {
 		});
 
 		addShortcut('b', 'shift', [ScopeMessageList, ScopeMessageView], () => {
-			currentMessage()?.swapColors?.();
-			return false;
+			if (!formFieldFocused()) {
+				currentMessage()?.swapColors?.();
+				return false;
+			}
 		});
 
 		addShortcut('arrowup,arrowleft', 'meta', [ScopeMessageList, ScopeMessageView], () => {

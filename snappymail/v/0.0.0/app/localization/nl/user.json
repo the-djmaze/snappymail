@@ -130,6 +130,8 @@
 		"QUOTA_SIZE": "U gebruikt <strong>%SIZE% (%PROC%%)<\/strong> van <strong>%LIMIT%<\/strong>",
 		"SORT": "Sorteren",
 		"NO_SORT": "Mail server ondersteund sorteren niet",
+		"SORT_ARRIVAL_ASC": "Ontvangen oplopend",
+		"SORT_ARRIVAL_DESC": "Ontvangen aflopend",
 		"SORT_DATE_ASC": "Datum oplopend",
 		"SORT_DATE_DESC": "Datum aflopend",
 		"SORT_SIZE_ASC": "Grootte oplopend",

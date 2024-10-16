@@ -23,7 +23,7 @@ const
 		// Structural Elements:
 		'blockquote','br','div','figcaption','figure','h1','h2','h3','h4','h5','h6','hgroup','hr','p','wbr',
 		'article','aside','header','footer','main','section',
-		'details','summary',
+		'details','summary','nav',
 		// List Elements
 		'dd','dl','dt','li','ol','ul',
 		// Text Formatting Elements
@@ -239,6 +239,8 @@ export const
 				linkedData: []
 			},
 
+			isMsg = !!msgId,
+
 			findAttachmentByCid = cId => oAttachments.findByCid(cId),
 			findLocationByCid = cId => {
 				const attachment = findAttachmentByCid(cId);
@@ -282,6 +284,8 @@ export const
 				'abbr', 'scope',
 				// td
 				'colspan', 'rowspan', 'headers'
+				// others
+				//'class', 'id', 'target'
 			];
 
 		if (SettingsUserStore.allowStyles()) {
@@ -332,7 +336,7 @@ export const
 		tmpl.content.querySelectorAll(keepTagContent).forEach(oElement => replaceWithChildren(oElement));
 
 		tmpl.content.querySelectorAll(
-			':not('+allowedTags+')'
+			':not('+allowedTags+'),a:empty,span:empty'
 			+ (0 < bqLevel ? ',' + (new Array(1 + bqLevel).fill('blockquote').join(' ')) : '')
 		).forEach(oElement => oElement.remove());
 /*		// Is this slower or faster?
@@ -481,70 +485,72 @@ export const
 			*/
 
 			let skipStyle = false;
-			value = delAttribute('src');
-			if (value) {
-				if ('IMG' === name) {
-					oElement.loading = 'lazy';
-					let attachment;
-					if (value.startsWith('cid:'))
-					{
-						value = value.slice(4);
-						setAttribute('data-x-src-cid', value);
-						attachment = findAttachmentByCid(value);
-						if (attachment?.download) {
-							oElement.src = attachment.linkPreview();
-							oElement.title += ' ('+attachment.fileName+')';
-							attachment.isInline(true);
-							attachment.isLinked(true);
+			if (isMsg) {
+				value = isMsg && delAttribute('src');
+				if (value) {
+					if ('IMG' === name) {
+						oElement.loading = 'lazy';
+						let attachment;
+						if (value.startsWith('cid:'))
+						{
+							value = value.slice(4);
+							setAttribute('data-x-src-cid', value);
+							attachment = findAttachmentByCid(value);
+							if (attachment?.download) {
+								oElement.src = attachment.linkPreview();
+								oElement.title += ' ('+attachment.fileName+')';
+								attachment.isInline(true);
+								attachment.isLinked(true);
+							}
 						}
-					}
-					else if ((attachment = findLocationByCid(value)))
-					{
-						if (attachment.download) {
-							oElement.src = attachment.linkPreview();
-							attachment.isLinked(true);
+						else if ((attachment = findLocationByCid(value)))
+						{
+							if (attachment.download) {
+								oElement.src = attachment.linkPreview();
+								attachment.isLinked(true);
+							}
 						}
-					}
-					else if (detectHiddenImages
-						&& ((oStyle.maxHeight && 3 > pInt(oStyle.maxHeight)) // TODO: issue with 'in'
-							|| (oStyle.maxWidth && 3 > pInt(oStyle.maxWidth)) // TODO: issue with 'in'
-							|| (oStyle.width && 2 > pInt(oStyle.width))
-							|| [
-								'email.microsoftemail.com/open',
-								'github.com/notifications/beacon/',
-								'/track/open', // mandrillapp.com list-manage.com
-								'google-analytics.com'
-							].filter(uri => value.toLowerCase().includes(uri)).length
-					)) {
-						skipStyle = true;
-						oStyle.display = 'none';
-//						setAttribute('style', 'display:none');
-						setAttribute('data-x-src-hidden', value);
-//						result.tracking = true;
-					}
-					else if (httpre.test(value))
-					{
-						let src = stripTracking(value);
-						if (src != value) {
-							result.tracking = true;
-							setAttribute('data-x-src-tracking', value);
+						else if (detectHiddenImages
+							&& ((oStyle.maxHeight && 3 > pInt(oStyle.maxHeight)) // TODO: issue with 'in'
+								|| (oStyle.maxWidth && 3 > pInt(oStyle.maxWidth)) // TODO: issue with 'in'
+								|| (oStyle.width && 2 > pInt(oStyle.width))
+								|| [
+									'email.microsoftemail.com/open',
+									'github.com/notifications/beacon/',
+									'/track/open', // mandrillapp.com list-manage.com
+									'google-analytics.com'
+								].filter(uri => value.toLowerCase().includes(uri)).length
+						)) {
+							skipStyle = true;
+							oStyle.display = 'none';
+	//						setAttribute('style', 'display:none');
+							setAttribute('data-x-src-hidden', value);
+	//						result.tracking = true;
 						}
-						setAttribute('data-x-src', src);
-						result.hasExternals = true;
-						oElement.alt || (oElement.alt = src.replace(/^.+\/([^/?]+).*$/, '$1').slice(-20));
-					}
-					else if (value.startsWith('data:image/'))
-					{
-						oElement.src = value;
+						else if (httpre.test(value))
+						{
+							let src = stripTracking(value);
+							if (src != value) {
+								result.tracking = true;
+								setAttribute('data-x-src-tracking', value);
+							}
+							setAttribute('data-x-src', src);
+							result.hasExternals = true;
+							oElement.alt || (oElement.alt = src.replace(/^.+\/([^/?]+).*$/, '$1').slice(-20));
+						}
+						else if (value.startsWith('data:image/'))
+						{
+							oElement.src = value;
+						}
+						else
+						{
+							setAttribute('data-x-src-broken', value);
+						}
 					}
 					else
 					{
 						setAttribute('data-x-src-broken', value);
 					}
-				}
-				else
-				{
-					setAttribute('data-x-src-broken', value);
 				}
 			}
 
@@ -631,7 +637,7 @@ export const
 			}
 		});
 
-		blockquoteSwitcher();
+		isMsg && blockquoteSwitcher();
 
 //		return tmpl.content.firstChild;
 		result.html = tmpl.innerHTML.trim();
@@ -819,6 +825,7 @@ export const
 	};
 
 rl.Utils = {
+	cleanHtml: cleanHtml,
 	htmlToPlain: htmlToPlain,
 	plainToHtml: plainToHtml,
 	htmlToMarkdown: htmlToMarkdown

@@ -165,7 +165,8 @@ abstract class Account implements \JsonSerializable
 //				$aAccountHash['login'] = $oDomain->ImapSettings()->fixUsername($aAccountHash['login']);
 				$oAccount = new static;
 				$oAccount->sEmail = \SnappyMail\IDN::emailToAscii($aAccountHash['email']);
-				$oAccount->sImapUser = \SnappyMail\IDN::emailToAscii($aAccountHash['login']);
+//				$oAccount->sImapUser = \SnappyMail\IDN::emailToAscii($aAccountHash['login']);
+				$oAccount->sImapUser = $aAccountHash['login'];
 				$oAccount->setImapPass(new SensitiveString($aAccountHash['pass']));
 				$oAccount->oDomain = $oDomain;
 				$oActions->Plugins()->RunHook('filter.account', array($oAccount));
@@ -286,7 +287,7 @@ abstract class Account implements \JsonSerializable
 */
 
 	/**
-	 * @deprecated
+	 * @deprecated since v2.36.1
 	 */
 	public function IncLogin() : string
 	{

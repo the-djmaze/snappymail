@@ -82,7 +82,7 @@ class VCard extends VObject\Document
         'ROLE' => VObject\Property\FlatText::class,
         'LOGO' => VObject\Property\Binary::class,
         // 'AGENT'   => 'Sabre\\VObject\\Property\\',      // Todo: is an embedded vCard. Probably rare, so
-                                 // not supported at the moment
+        // not supported at the moment
         'ORG' => VObject\Property\Text::class,
         'NOTE' => VObject\Property\FlatText::class,
         'REV' => VObject\Property\VCard\TimeStamp::class,

@@ -4,8 +4,8 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Nextcloud',
-		VERSION = '2.38.0',
-		RELEASE  = '2024-09-16',
+		VERSION = '2.38.1',
+		RELEASE  = '2024-10-08',
 		CATEGORY = 'Integrations',
 		DESCRIPTION = 'Integrate with Nextcloud v20+',
 		REQUIRED = '2.38.0';
@@ -55,7 +55,6 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 			$this->addTemplate('templates/PopupsNextcloudFiles.html');
 			$this->addTemplate('templates/PopupsNextcloudCalendars.html');
-			$this->addTemplate('templates/PopupsNextcloudInvites.html');
 
 //			$this->addHook('login.credentials.step-2', 'loginCredentials2');
 //			$this->addHook('login.credentials', 'loginCredentials');

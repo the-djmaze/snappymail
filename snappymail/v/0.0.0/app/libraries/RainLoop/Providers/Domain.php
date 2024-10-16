@@ -2,19 +2,14 @@
 
 namespace RainLoop\Providers;
 
+use RainLoop\Notifications;
 use RainLoop\Exceptions\ClientException;
 
 class Domain extends AbstractProvider
 {
-	/**
-	 * @var Domain\DomainInterface
-	 */
-	private $oDriver;
+	private Domain\DomainInterface $oDriver;
 
-	/**
-	 * @var \RainLoop\Plugins\Manager
-	 */
-	private $oPlugins;
+	private \RainLoop\Plugins\Manager $oPlugins;
 
 	public function __construct(Domain\DomainInterface $oDriver, \RainLoop\Plugins\Manager $oPlugins)
 	{
@@ -86,10 +81,10 @@ class Domain extends AbstractProvider
 	{
 		$oDomain = $this->Load(\MailSo\Base\Utils::getEmailAddressDomain($sEmail), true);
 		if (!$oDomain) {
-			throw new ClientException(Notifications::DomainNotAllowed);
+			throw new ClientException(Notifications::DomainNotAllowed, null, "{$sEmail} has no domain configuration");
 		}
 		if (!$oDomain->ValidateWhiteList($sEmail)) {
-			throw new ClientException(Notifications::AccountNotAllowed);
+			throw new ClientException(Notifications::AccountNotAllowed, null, "{$sEmail} not whitelisted");
 		}
 		return $oDomain;
 	}

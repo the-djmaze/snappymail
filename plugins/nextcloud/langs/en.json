@@ -2,21 +2,14 @@
 	"NEXTCLOUD": {
 		"SAVE_ATTACHMENTS": "Save in Nextcloud",
 		"SAVE_EML": "Save as .eml in Nextcloud",
+		"SAVE_ICS": "Add to calendar",
 		"SELECT_FOLDER": "Select folder",
 		"SELECT_FILES": "Select file(s)",
 		"ATTACH_FILES": "Attach Nextcloud files",
+		"SELECT_CALENDAR": "Select calendar",
 		"FILE_ATTACH": "attach",
 		"FILE_INTERNAL": "internal",
-		"FILE_PUBLIC": "public",
 		"ADDRESS_BOOK": "Address Book",
-		"SELECT_CALENDAR": "Select calendar",
-		"SAVE_ICS": "Add to calendar",
-		"OLD_INVITATION": "Old invitation",
-		"UPDATE_ON_MY_CALENDAR": "Update invitation",
-		"LAST_INVITATION": "Last invitation",
-		"EVENT_UPDATE_FAILURE_TITLE": "Update failed",
-		"EVENT_UPDATE_FAILURE_BODY": "Why, i have no clue",
-		"EVENT_UPDATED_TITLE": "Updated",
-		"EVENT_UPDATED_BODY": "Why, i have no clue"
+		"FILE_PUBLIC": "public"
 	}
 }

@@ -1618,6 +1618,7 @@ ko.bindingProvider = new class
             try {
                 let cacheKey = bindingsString,
                     bindingFunction = bindingCache.get(cacheKey);
+/*
                 if (!bindingFunction) {
                     // Build the source for a function that evaluates "expression"
                     // For each scope variable, add an extra level of "with" nesting
@@ -1625,10 +1626,29 @@ ko.bindingProvider = new class
                     // Deprecated: with is no longer recommended
                     var rewrittenBindings = ko.expressionRewriting.preProcessBindings(bindingsString),
                         functionBody = "with($data){return{" + rewrittenBindings + "}}";
-                    bindingFunction = new Function("$root", "$parent", "$data", "$element", functionBody);
+                    bindingFunction = new Function("$context", "$root", "$parent", "$data", "$element", functionBody);
                     bindingCache.set(cacheKey, bindingFunction);
                 }
-                return bindingFunction(bindingContext["$root"], bindingContext["$parent"], bindingContext["$data"] || {}, node);
+                return bindingFunction(bindingContext,
+                    bindingContext["$root"], bindingContext["$parent"], bindingContext["$data"] || {}, node
+                );
+*/
+                if (!bindingFunction) {
+                    // Build the source for a function that evaluates "expression"
+                    // Use one "with" that has one secure scope handling Proxy
+                    // Deprecated: with is no longer recommended
+                    var rewrittenBindings = ko.expressionRewriting.preProcessBindings(bindingsString),
+                        functionBody = "$context = new Proxy(\
+                            $context,\
+                            {\
+                                has: () => true,\
+                                get: (target, key) => target[key] || target['$data'][key]\
+                            }\
+                        );with($context){return{" + rewrittenBindings + "}}";
+                    bindingFunction = new Function("$context", functionBody);
+                    bindingCache.set(cacheKey, bindingFunction);
+                }
+                return bindingFunction(bindingContext);
             } catch (ex) {
                 ex.message = "Unable to parse bindings.\nBindings value: " + bindingsString
                     + "\nMessage: " + ex.message;
@@ -3553,5 +3573,5 @@ ko.utils.compareArrays = (() => {
         itemsForBeforeRemoveCallbacks.forEach(callback => callback && (callback.arrayEntry = deletedItemDummyValue));
     }
 })();
-	window['ko'] = koExports;
+    window['ko'] = koExports;
 })(this);

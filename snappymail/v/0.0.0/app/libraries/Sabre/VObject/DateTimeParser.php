@@ -27,7 +27,7 @@ class DateTimeParser
      *
      * @throws InvalidDataException
      */
-    public static function parseDateTime(string $dt, \DateTimeZone $tz = null): \DateTimeImmutable
+    public static function parseDateTime(string $dt, ?\DateTimeZone $tz = null): \DateTimeImmutable
     {
         // Format is YYYYMMDD + "T" + hhmmss
         $result = preg_match('/^([0-9]{4})([0-1][0-9])([0-3][0-9])T([0-2][0-9])([0-5][0-9])([0-5][0-9])([Z]?)$/', $dt, $matches);
@@ -54,7 +54,7 @@ class DateTimeParser
      *
      * @throws InvalidDataException
      */
-    public static function parseDate(string $date, \DateTimeZone $tz = null): \DateTimeImmutable
+    public static function parseDate(string $date, ?\DateTimeZone $tz = null): \DateTimeImmutable
     {
         // Format is YYYYMMDD
         $result = preg_match('/^([0-9]{4})([0-1][0-9])([0-3][0-9])$/', $date, $matches);
@@ -98,12 +98,12 @@ class DateTimeParser
         }
 
         $parts = [
-                'week',
-                'day',
-                'hour',
-                'minute',
-                'second',
-            ];
+            'week',
+            'day',
+            'hour',
+            'minute',
+            'second',
+        ];
 
         foreach ($parts as $part) {
             $matches[$part] = isset($matches[$part]) && $matches[$part] ? (int) $matches[$part] : 0;

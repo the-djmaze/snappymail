@@ -44,6 +44,51 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 		this.desktopNotifications = NotificationUserStore.enabled;
 		this.isDesktopNotificationAllowed = NotificationUserStore.allowed;
 
+		const i18nSort = s => i18n('MESSAGE_LIST/SORT_'+s);
+		this.sortSupported = FolderUserStore.hasCapability('SORT');
+		this.sortOptions = [
+			{
+				value: '',
+				text: i18nSort('DATE_DESC')
+			},
+			{
+				value: 'DATE',
+				text: i18nSort('DATE_ASC')
+			},
+			{
+				value: 'FROM',
+				text: i18nSort('FROM_ASC')
+			},
+			{
+				value: 'REVERSE FROM',
+				text: i18nSort('FROM_DESC')
+			},
+			{
+				value: 'REVERSE SIZE',
+				text: i18nSort('SIZE_DESC')
+			},
+			{
+				value: 'SIZE',
+				text: i18nSort('SIZE_ASC')
+			},
+			{
+				value: 'SUBJECT',
+				text: i18nSort('SUBJECT_ASC')
+			},
+			{
+				value: 'REVERSE SUBJECT',
+				text: i18nSort('SUBJECT_DESC')
+			},
+			{
+				value: 'REVERSE ARRIVAL',
+				text: i18nSort('ARRIVAL_DESC')
+			},
+			{
+				value: 'ARRIVAL',
+				text: i18nSort('ARRIVAL_ASC')
+			}
+		];
+
 		this.threadsAllowed = AppUserStore.threadsAllowed;
 		// 'THREAD=REFS', 'THREAD=REFERENCES', 'THREAD=ORDEREDSUBJECT'
 		this.threadAlgorithms = ko.observableArray();
@@ -51,9 +96,8 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 			capa.startsWith('THREAD=') && this.threadAlgorithms.push(capa.slice(7))
 		);
 		this.threadAlgorithms.sort((a, b) => a.length - b.length);
-		this.threadAlgorithm = SettingsUserStore.threadAlgorithm;
 
-		['useThreads', 'threadAlgorithm',
+		['defaultSort', 'useThreads', 'threadAlgorithm',
 		 // These use addSetting()
 		 'layout', 'messageReadDelay', 'messagesPerPage', 'checkMailInterval',
 		 'editorDefaultType', 'editorWysiwyg', 'msgDefaultAction', 'maxBlockquotesLevel',
@@ -117,6 +161,7 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 		this.addSetting('CheckMailInterval');
 		this.addSetting('Layout');
 		this.addSetting('MaxBlockquotesLevel');
+		this.addSetting('defaultSort');
 
 		this.addSettings([
 			'requestReadReceipt', 'requestDsn', 'requireTLS', 'pgpSign', 'pgpEncrypt',

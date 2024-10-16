@@ -131,7 +131,7 @@ class Json extends Parser
         list(
             $propertyName,
             $parameters,
-            $valueType
+            $valueType,
         ) = $jProp;
 
         $propertyName = strtoupper($propertyName);

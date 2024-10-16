@@ -79,6 +79,12 @@ class MimeDir extends Parser
             $this->setInput($input);
         }
 
+        if (!\is_resource($this->input)) {
+            // Null was passed as input, but there was no existing input buffer
+            // There is nothing to parse.
+            throw new ParseException('No input provided to parse');
+        }
+
         if (0 !== $options) {
             $this->options = $options;
         }
@@ -445,7 +451,7 @@ class MimeDir extends Parser
             }
         }
 
-        $propObj = $this->root->createProperty($property['name'], null, $namedParameters);
+        $propObj = $this->root->createProperty($property['name'], null, $namedParameters, null, $this->startLine, $line);
 
         foreach ($namelessParameters as $namelessParameter) {
             $propObj->add(null, $namelessParameter);

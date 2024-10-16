@@ -22,10 +22,16 @@
 
 	.tabs {
 		height: 100%;
+		max-height: 100%;
+		overflow: auto;
 	}
 
 	.tabs > label > * + * {
 		margin-left: 0.5em;
+	}
+
+	.tabs .tab-content {
+		overflow: auto;
 	}
 
 	.textAreaParent, .attachmentAreaParent {

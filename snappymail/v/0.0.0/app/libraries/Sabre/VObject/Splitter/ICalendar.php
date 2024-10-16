@@ -46,7 +46,7 @@ class ICalendar implements SplitterInterface
     {
         $data = VObject\Reader::read($input, $options);
 
-        if (!$data instanceof VObject\Component\VCalendar) {
+        if (!$data instanceof VCalendar) {
             throw new VObject\ParseException('Supplied input could not be parsed as VCALENDAR.');
         }
 

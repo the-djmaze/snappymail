@@ -236,7 +236,7 @@ class Writer extends \XMLWriter
 
         list(
             $namespace,
-            $localName
+            $localName,
         ) = Service::parseClarkNotation($name);
 
         if (array_key_exists($namespace, $this->namespaceMap)) {

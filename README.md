@@ -66,7 +66,7 @@ This fork of RainLoop has the following changes:
 * CRLF => LF line endings
 * Embed boot.js and boot.css into index.html
 * Removal of old JavaScript code (things are native these days)
-* Added modified [Squire](https://github.com/neilj/Squire) HTML editor as replacement for CKEditor
+* Added modified [Squire](https://github.com/the-djmaze/Squire/tree/snappymail) HTML editor as replacement for CKEditor
 * Updated [Sabre/VObject](https://github.com/sabre-io/vobject)
 * Split Admin specific JavaScript code from User code
 * Split Sieve specific JavaScript code from User code
@@ -140,28 +140,28 @@ RainLoop 1.17 vs SnappyMail
 
 |js/*           	|RainLoop 	|Snappy   	|
 |---------------	|--------:	|--------:	|
-|admin.js        	|2.170.153	|   84.203	|
-|app.js          	|4.207.787	|  446.887	|
+|admin.js        	|2.170.153	|   84.925	|
+|app.js          	|4.207.787	|  447.263	|
 |boot.js         	|  868.735	|    4.343	|
-|libs.js         	|  658.812	|  236.059	|
-|sieve.js         	|        0	|   84.571	|
+|libs.js         	|  658.812	|  233.728	|
+|sieve.js         	|        0	|   91.418	|
 |polyfills.js    	|  334.608	|        0	|
 |serviceworker.js	|        0	|      285	|
-|TOTAL           	|8.240.095	|  856.348	|
+|TOTAL           	|8.240.095	|  861.962	|
 
 |js/min/*       	|RainLoop 	|Snappy   	|RL gzip	|SM gzip	|RL brotli	|SM brotli	|
 |---------------	|--------:	|--------:	|------:	|------:	|--------:	|--------:	|
-|admin.min.js    	|  256.831	|   41.256	| 73.606	| 13.940	| 60.877  	| 12.493	|
-|app.min.js      	|  515.367	|  201.917	|139.456	| 68.450	|110.485  	| 58.321	|
+|admin.min.js    	|  256.831	|   41.719	| 73.606	| 14.022	| 60.877  	| 12.567	|
+|app.min.js      	|  515.367	|  202.101	|139.456	| 68.505	|110.485  	| 58.481	|
 |boot.min.js     	|   84.659	|    2.231	| 26.998	|  1.271	| 23.643  	|  1.067	|
-|libs.min.js     	|  584.772	|  111.742	|180.901	| 39.882	|155.182  	| 35.584	|
-|sieve.min.js     	|        0	|   41.288	|      0	| 10.327	|      0  	|  9.318	|
+|libs.min.js     	|  584.772	|  110.646	|180.901	| 39.518	|155.182  	| 35.207	|
+|sieve.min.js     	|        0	|   45.504	|      0	| 11.131	|      0  	|  9.917	|
 |polyfills.min.js	|   32.837	|        0	| 11.406	|      0	| 10.175  	|      0	|
-|TOTAL user      	|1.217.635	|  315.890	|358.761	|109.603	|299.485  	| 94.972	|
-|TOTAL user+sieve	|1.217.635	|  357.178	|358.761	|119.930	|299.485  	|104.290	|
-|TOTAL admin     	|  959.099	|  155.229	|292.911	| 55.093	|249.877  	| 49.144	|
+|TOTAL user      	|1.217.635	|  314.978	|358.761	|109.294	|299.485  	| 94.755	|
+|TOTAL user+sieve	|1.217.635	|  360.482	|358.761	|120.425	|299.485  	|104.672	|
+|TOTAL admin     	|  959.099	|  154.596	|292.911	| 54.811	|249.877  	| 48.841	|
 
-For a user it is around 67% smaller and faster than traditional RainLoop.
+For a user it is around 66% smaller and faster than traditional RainLoop.
 
 ### CSS changes
 
@@ -188,12 +188,12 @@ For a user it is around 67% smaller and faster than traditional RainLoop.
 
 |css/*       	|RainLoop	|Snappy   	|RL gzip	|SM gzip	|SM brotli	|
 |------------	|-------:	|------:	|------:	|------:	|--------:	|
-|app.css     	| 340.331	| 84.850	| 46.946	| 17.710	| 15.161	|
-|app.min.css 	| 274.947	| 68.192	| 39.647	| 15.602	| 13.626	|
+|app.css     	| 340.331	| 85.073	| 46.946	| 17.792	| 15.210	|
+|app.min.css 	| 274.947	| 68.272	| 39.647	| 15.615	| 13.636	|
 |boot.css    	|       	|  1.326	|       	|    664	|    545	|
 |boot.min.css	|       	|  1.071	|       	|    590	|    474	|
-|admin.css    	|       	| 30.761	|       	|  7.038	|  6.118	|
-|admin.min.css	|       	| 24.857	|       	|  6.360	|  5.598	|
+|admin.css    	|       	| 30.880	|       	|  7.045	|  6.127	|
+|admin.min.css	|       	| 24.959	|       	|  6.368	|  5.615	|
 
 ### PGP
 RainLoop uses the old OpenPGP.js v2

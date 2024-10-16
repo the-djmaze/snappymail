@@ -130,6 +130,8 @@
 		"QUOTA_SIZE": "Vous utilisez <strong>%SIZE% (%PROC%%)<\/strong> sur <strong>%LIMIT%<\/strong>",
 		"SORT": "Trier",
 		"NO_SORT": "Le serveur de messagerie ne prend pas en charge le tri",
+		"SORT_ARRIVAL_ASC": "Arrivée ascendante",
+		"SORT_ARRIVAL_DESC": "Arrivée décroissante",
 		"SORT_DATE_ASC": "Date ascendante",
 		"SORT_DATE_DESC": "Date décroissante",
 		"SORT_SIZE_ASC": "Taille ascendante",

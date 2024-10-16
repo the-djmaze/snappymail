@@ -66,7 +66,7 @@ export class FilterPopupView extends rl.pluginPopupView {
 		});
 
 		this.defaultOptionsAfterRender = defaultOptionsAfterRender;
-		this.folderSelectList = koComputable(() => folderListOptionsBuilder());
+		this.folderSelectList = koComputable(folderListOptionsBuilder);
 
 		this.selectedFolderValue.subscribe(() => this.filter().actionValueError(false));
 
