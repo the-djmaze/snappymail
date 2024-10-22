@@ -7,11 +7,10 @@
 (window => {
     // (0, eval)('this') is a robust way of getting a reference to the global object
     // For details, see http://stackoverflow.com/questions/14119988/return-this-0-evalthis/14120023#14120023
-    var document = window['document'],
-        koExports = {};
+    var document = window['document'];
 // Internally, all KO objects are attached to koExports (even the non-exported ones whose names will be minified by the closure compiler).
 // In the future, the following "ko" variable may be made distinct from "koExports" so that private objects are not externally reachable.
-var ko = typeof koExports !== 'undefined' ? koExports : {};
+const ko = {};
 // Google Closure Compiler helpers (used only to make the minified file smaller)
 ko.exportSymbol = (koPath, object) => {
     var tokens = koPath.split(".");
@@ -3573,5 +3572,5 @@ ko.utils.compareArrays = (() => {
         itemsForBeforeRemoveCallbacks.forEach(callback => callback && (callback.arrayEntry = deletedItemDummyValue));
     }
 })();
-    window['ko'] = koExports;
+    window['ko'] = ko;
 })(this);
