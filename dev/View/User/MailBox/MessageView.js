@@ -670,7 +670,7 @@ export class MailMessageView extends AbstractViewRight {
 	async smimeDecrypt() {
 		const message = currentMessage();
 		const addresses = message.from.concat(message.to, message.cc, message.bcc).map(item => item.email),
-			identity = IdentityUserStore.find(item => addresses.includes(item.email())),
+			identity = IdentityUserStore.find(item => addresses.includes(item.email)),
 			data = message.smimeEncrypted(); // { partId: "1" }
 		if (data && identity) {
 			delete data.error;
@@ -682,7 +682,7 @@ export class MailMessageView extends AbstractViewRight {
 			params.privateKey = identity.smimeKey();
 			if (identity.smimeKeyEncrypted()) {
 				pass = await Passphrases.ask(identity,
-					i18n('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email()}),
+					i18n('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email}),
 					'CRYPTO/DECRYPT'
 				);
 				if (!pass) {

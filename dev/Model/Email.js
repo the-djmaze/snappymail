@@ -73,4 +73,9 @@ export class EmailModel extends AbstractModel {
 		}
 		return result || name;
 	}
+
+	get domain() {
+		return this.email.replace(/^.+@([^@]+)$/, '$1');
+//		return this.email.slice(this.email.lastIndexOf('@'))
+	}
 }

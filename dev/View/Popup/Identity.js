@@ -57,8 +57,8 @@ export class IdentityPopupView extends AbstractViewPopup {
 						this.submitError(oData.message);
 					}
 				}, {
-					name: identity.name(),
-					email: identity.email(),
+					name: identity.name,
+					email: identity.email,
 					privateKey: identity.smimeKey(),
 					passphrase: result.password
 				});

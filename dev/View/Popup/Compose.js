@@ -92,7 +92,7 @@ const
 
 	findIdentity = addresses => {
 		addresses = addresses.map(item => item.email);
-		return IdentityUserStore.find(item => addresses.includes(item.email()));
+		return IdentityUserStore.find(item => addresses.includes(item.email));
 	},
 
 	/**
@@ -873,8 +873,8 @@ export class ComposePopupView extends AbstractViewPopup {
 		}
 		identity = identity || IdentityUserStore()[0];
 		if (identity) {
-//			excludeEmail.add(identity.email());
-			excludeEmail[identity.email()] = true;
+//			excludeEmail.add(identity.email);
+			excludeEmail[identity.email] = true;
 		}
 
 		if (arrayLength(options.to)) {
@@ -1381,7 +1381,7 @@ export class ComposePopupView extends AbstractViewPopup {
 	allRecipients() {
 		return [
 				// From/sender is also recipient (Sent mailbox)
-//				this.currentIdentity().email(),
+//				this.currentIdentity().email,
 				this.from(),
 				this.to(),
 				this.cc(),
@@ -1401,7 +1401,7 @@ export class ComposePopupView extends AbstractViewPopup {
 		key && options.push(['OpenPGP', key]);
 		key = GnuPGUserStore.getPrivateKeyFor(email, 1);
 		key && options.push(['GnuPG', key]);
-		identity.smimeKeyValid() && identity.smimeCertificateValid() && identity.email() === email
+		identity.smimeKeyValid() && identity.smimeCertificateValid() && identity.email === email
 			&& options.push(['S/MIME']);
 		console.dir({signOptions: options});
 		this.signOptions(options);
@@ -1420,7 +1420,7 @@ export class ComposePopupView extends AbstractViewPopup {
 
 			const count = recipients.length,
 				identity = this.currentIdentity(),
-				from = (identity.smimeKey() && identity.smimeCertificate()) ? identity.email() : null;
+				from = (identity.smimeKey() && identity.smimeCertificate()) ? identity.email : null;
 			count
 				&& count === recipients.filter(email =>
 					email == from
@@ -1497,7 +1497,7 @@ export class ComposePopupView extends AbstractViewPopup {
 				 **/
 				linkedData: []
 			},
-			recipients = draft ? [identity.email()] : this.allRecipients(),
+			recipients = draft ? [identity.email] : this.allRecipients(),
 			signOptions = !draft && this.doSign() && this.signOptions(),
 			encryptOptions = this.doEncrypt() && this.encryptOptions(),
 			isHtml = this.oEditor.isHtml();
@@ -1593,7 +1593,7 @@ export class ComposePopupView extends AbstractViewPopup {
 //					params.attachCertificate = false;
 					if (identity.smimeKeyEncrypted()) {
 						const pass = await Passphrases.ask(identity,
-							i18n('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email()}),
+							i18n('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email}),
 							'CRYPTO/SIGN'
 						);
 						if (null != pass) {
@@ -1633,7 +1633,7 @@ export class ComposePopupView extends AbstractViewPopup {
 					if ('S/MIME' == encryptOptions[i]) {
 						params.encryptCertificates = [identity.smimeCertificate()];
 						SMimeUserStore.forEach(certificate => {
-							certificate.emailAddress != identity.email()
+							certificate.emailAddress != identity.email
 							&& recipients.includes(certificate.emailAddress)
 							&& params.encryptCertificates.push(certificate.id)
 						});

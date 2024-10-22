@@ -105,9 +105,9 @@ export class OpenPgpGeneratePopupView extends AbstractViewPopup {
 	}
 
 	onShow() {
-		this.name(''/*IdentityUserStore()[0].name()*/);
+		this.name(''/*IdentityUserStore()[0].name*/);
 		this.password('');
-		this.email(''/*IdentityUserStore()[0].email()*/);
+		this.email(''/*IdentityUserStore()[0].email*/);
 		this.emailError(false);
 		this.submitError('');
 	}
