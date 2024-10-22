@@ -7,7 +7,6 @@ import { forEachObjectEntry } from 'Common/Utils';
 import { getFolderInboxName, getFolderFromCacheList } from 'Common/Cache';
 import { Settings, SettingsCapa } from 'Common/Globals';
 //import Remote from 'Remote/User/Fetch'; // Circular dependency
-import { SettingsUserStore } from 'Stores/User/Settings';
 
 export const
 
@@ -60,7 +59,7 @@ FolderUserStore = new class {
 			 */
 			displaySpecSetting: false,
 
-			sortMode: SettingsUserStore.defaultSort(),
+			sortMode: '',
 
 			quotaLimit: 0,
 			quotaUsage: 0,

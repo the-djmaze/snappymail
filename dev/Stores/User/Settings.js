@@ -5,6 +5,7 @@ import { LayoutSideView, LayoutBottomView } from 'Common/EnumsUser';
 import { pInt } from 'Common/Utils';
 import { $htmlCL, SettingsGet, fireEvent } from 'Common/Globals';
 import { ThemeStore } from 'Stores/Theme';
+import { FolderUserStore } from 'Stores/User/Folder';
 
 export const SettingsUserStore = new class {
 	constructor() {
@@ -163,5 +164,7 @@ export const SettingsUserStore = new class {
 		self.messageReadDelay(pInt(SettingsGet('MessageReadDelay')));
 		self.autoLogout(pInt(SettingsGet('AutoLogout')));
 		self.keyPassForget(pInt(SettingsGet('keyPassForget')));
+
+		FolderUserStore.sortMode(self.defaultSort());
 	}
 };

@@ -212,7 +212,7 @@ export class MailMessageList extends AbstractViewRight {
 			},
 
 			sortText: () => {
-				let mode = FolderUserStore.sortMode() || '',
+				let mode = FolderUserStore.sortMode(),
 					has = w => mode.includes(w),
 					desc = '' === mode || has('REVERSE');
 				mode = mode.split(/\s+/);
