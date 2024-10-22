@@ -134,7 +134,7 @@ ko.expressionRewriting = (() => {
         //                      it is !== existing value on that writable observable
         writeValueToProperty: (element, property, allBindings, key, value, checkIfDifferent) => {
             if (!property || !ko.isObservable(property)) {
-                console.error(`"${key}" should be observable in ${element.outerHTML.replace(/>.+/,'>')}`);
+                console.log(`"${key}" should contain observable in ${element.outerHTML.replace(/>.+/,'>')}`);
 //                ko.dataFor(element).key = value;
                 allBindings.get('$data')[key] = value;
             } else if (ko.isWriteableObservable(property) && (!checkIfDifferent || property.peek() !== value)) {
