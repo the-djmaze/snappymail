@@ -3,10 +3,6 @@ import { EmailModel } from 'Model/Email';
 import { addObservablesTo, addComputablesTo } from 'External/ko';
 
 export class IdentityModel extends EmailModel /*AbstractModel*/ {
-	/**
-	 * @param {string} id
-	 * @param {string} email
-	 */
 	constructor() {
 		super();
 

@@ -44,6 +44,7 @@ import Remote from 'Remote/User/Fetch';
 
 import { ComposeAttachmentModel } from 'Model/ComposeAttachment';
 import { EmailModel } from 'Model/Email';
+import { IdentityModel } from 'Model/Identity';
 import { MimeHeaderAutocryptModel } from 'Model/MimeHeaderAutocrypt';
 import { addressparser } from 'Mime/Address';
 
@@ -870,6 +871,16 @@ export class ComposePopupView extends AbstractViewPopup {
 				// no default
 //				case ComposeType.Empty:
 			}
+		}
+		// Set from custom email
+		if (!identity
+			&& oLastMessage && (ComposeType.Reply === options.mode || ComposeType.ReplyAll === options.mode)
+			&& 1 === oLastMessage.to.length
+//			&& mEmail.includes(oLastMessage.to[0].domain)
+		) {
+			identity = new IdentityModel;
+			identity.name = oLastMessage.to[0].name;
+			identity.email = oLastMessage.to[0].email;
 		}
 		identity = identity || IdentityUserStore()[0];
 		if (identity) {
