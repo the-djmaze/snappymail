@@ -25,7 +25,7 @@
 					<div class="textEmail" data-bind="text: email, visible: !id()"></div>
 					<input name="Email" type="email" class="input-xlarge" autofocus=""
 						autocomplete="off" autocorrect="off" autocapitalize="off"
-						data-bind="visible: id, value: email, attr: {required: id}">
+						data-bind="visible: id, value: email, attr: {required: !!id()}">
 				</div>
 			</div>
 			<div class="control-group">
