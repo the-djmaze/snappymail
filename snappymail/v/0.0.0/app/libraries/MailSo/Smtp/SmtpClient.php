@@ -203,7 +203,8 @@ class SmtpClient extends \MailSo\Net\NetClient
 					$SASL->verify($sResult);
 					// Now end the authentication
 					$sRequest = '';
-					$this->sendRequestWithCheck($sRequest, 235);
+					$this->sendRaw($sRequest, true, '');
+					$this->validateResponse(235, '');
 				} else switch ($type) {
 				// RFC 4616
 				case 'PLAIN':
