@@ -538,8 +538,8 @@
     const brs = node.querySelectorAll("BR:last-child");
     let l = brs.length;
     while (l--) {
-      const br = brs[l];
-      if (!isLineBreak(br)) {
+      const br = brs[l], parent = br.parentElement;
+      if (!br.nextSibling && 1 === parent.children.length && parent.textContent.trim().length) {
         br.remove();
       }
     }
