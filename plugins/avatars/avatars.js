@@ -39,6 +39,8 @@
 		avatars = new Map,
 		ncAvatars = new Map,
 		templateId = 'MailMessageView',
+		b64 = data => btoa(unescape(encodeURIComponent(data))),
+		b64url = data => b64(data).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
 		getBimiSelector = msg => {
 			// Get 's' value out of 'v=BIMI1; s=foo;'
 			let bimiSelector = msg.headers().valueByName('BIMI-Selector');
@@ -46,9 +48,21 @@
 			return bimiSelector || '';
 		},
 		getBimiId = msg => ('pass' == msg.from[0].dkimStatus ? 1 : 0) + '-' + getBimiSelector(msg),
-		getAvatarUrl = msg => `?Avatar/${getBimiId(msg)}/${msg.avatar}`,
-		getAvatarUid = msg => `${getBimiId(msg)}/${msg.from[0].email.toLowerCase()}`,
-		getAvatar = msg => ncAvatars.get(msg.from[0].email.toLowerCase()) || avatars.get(getAvatarUid(msg)),
+		email = msg => msg.from[0].email.toLowerCase(),
+		getAvatarUid = msg => `${getBimiId(msg)}/${email(msg)}`,
+		getAvatar = msg => ncAvatars.get(email(msg)) || avatars.get(getAvatarUid(msg)),
+		getAvatarUri = msg => {
+			if ('remote' === msg.avatar) {
+				msg.avatar = `?Avatar/${getBimiId(msg)}/${b64url(email(msg))}`;
+			}
+/*
+			else if (!msg.avatar.startsWith('data:')) {
+				msg.avatar = null;
+			}
+*/
+			return msg.avatar;
+		},
+
 		hash = async txt => {
 			if (/^[0-9a-f]{15,}$/i.test(txt)) {
 				return txt;
@@ -64,58 +78,47 @@
 			(from.name?.split(/[^\p{L}]+/gu) || []).reduce((a, s) => a + (s[0] || ''), '')
 			.slice(0,2)
 			.toUpperCase(),
-		setIdenticon = (from, fn) => hash(from.email).then(hash =>
-			fn('data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(window.identiconSvg(
+		setIdenticon = (msg, fn) => hash(msg.from[0].email).then(hash => {
+			const uri = 'data:image/svg+xml;base64,' + b64(window.identiconSvg(
 				hash,
-				fromChars(from),
+				fromChars(msg.from[0]),
 				window.getComputedStyle(getEl('rl-app'), null).getPropertyValue('font-family')
-			)))))
-		),
+			));
+//			avatars.set(getAvatarUid(msg), uri);
+			fn(uri);
+		}),
+
 		addQueue = (msg, fn) => {
-			msg.from?.[0] && setIdenticon(msg.from[0], fn);
-			if (rl.pluginSettingsGet('avatars', 'delay')) {
-				queue.push([msg, fn]);
-				runQueue();
-			} else if (msg.avatar) {
-				fn(getAvatarUrl(msg));
+			if (msg.from?.[0]) {
+				if (getAvatarUri(msg)) {
+					if (rl.pluginSettingsGet('avatars', 'delay')) {
+						setIdenticon(msg, fn);
+						queue.push([msg, fn]);
+						runQueue();
+					} else {
+						fn(msg.avatar);
+					}
+				} else {
+					setIdenticon(msg, fn);
+				}
 			}
 		},
 		runQueue = (() => {
 			let item = queue.shift();
 			while (item) {
-				if (item[0].from) {
-					let url = getAvatar(item[0]),
-						uid = getAvatarUid(item[0]);
-					if (url) {
-						item[1](url);
-						item = queue.shift();
-						continue;
-					} else if (item[0].avatar) {
-						item[1](getAvatarUrl(item[0]));
-					} else if (!avatars.has(uid)) {
-						let from = item[0].from[0];
-						rl.pluginRemoteRequest((iError, data) => {
-							if (!iError && data?.Result.type) {
-								url = `data:${data.Result.type};base64,${data.Result.data}`;
-								avatars.set(uid, url);
-								item[1](url);
-							} else {
-								avatars.set(uid, '');
-							}
-							runQueue();
-						}, 'Avatar', {
-							bimi: 'pass' == from.dkimStatus ? 1 : 0,
-							bimiSelector: getBimiSelector(item[0]),
-							email: from.email
-						});
-					}
+				let url = getAvatar(item[0]);
+				if (url) {
+					item[1](url);
+					item = queue.shift();
+					continue;
+				} else if (item[0].avatar) {
+					item[1](item[0].avatar);
 				}
 				runQueue();
 				break;
 			}
 		}).debounce(1000);
 
-//	addEventListener('DOMContentLoaded', () => {
 		/**
 		 * Modify templates
 		 */
@@ -188,13 +191,19 @@
 						fn = url=>{element.src = url};
 					element.onerror = ()=>{
 						element.onerror = null;
-						setIdenticon(msg.from[0], fn);
+						setIdenticon(msg, fn);
 					};
 					if (url) {
 						fn(url);
 					} else if (msg.avatar?.startsWith('data:')) {
 						fn(msg.avatar);
 					} else {
+						element.onload = ()=>{
+							if (!element.src.startsWith('data:')) {
+								element.onload = null;
+								avatars.set(getAvatarUid(msg), element.src);
+							}
+						};
 						addQueue(msg, fn);
 					}
 				}
@@ -221,11 +230,8 @@
 					if (url) {
 						fn(url);
 					} else if (msg.avatar) {
-						fn(msg.avatar.startsWith('data:') ? msg.avatar : getAvatarUrl(msg));
+						fn(getAvatarUri(msg));
 					} else {
-//						let from = msg.from[0];
-//						view.viewUserPic(`?Avatar/${'pass' == from.dkimStatus ? 1 : 0}/${encodeURIComponent(from.email)}`);
-//						view.viewUserPicVisible(true);
 						addQueue(msg, fn);
 					}
 				}
