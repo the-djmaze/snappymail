@@ -122,7 +122,7 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 
 			identityMainDesc: () => {
 				const identity = IdentityUserStore.main();
-				return identity ? identity.formattedName() : '---';
+				return identity ? identity.toString() : '---';
 			},
 
 			editorDefaultTypes: () => {

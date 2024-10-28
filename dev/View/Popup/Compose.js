@@ -344,7 +344,7 @@ export class ComposePopupView extends AbstractViewPopup {
 				IdentityUserStore.map(item => ({
 					item: item,
 					optValue: item.id(),
-					optText: item.formattedName()
+					optText: item
 				})),
 
 			canBeSentOrSaved: () => !this.sending() && !this.saving()
@@ -359,7 +359,7 @@ export class ComposePopupView extends AbstractViewPopup {
 
 			currentIdentity: value => {
 				if (value) {
-					this.from(value.formattedName());
+					this.from(value.toString());
 					this.doEncrypt(value.pgpEncrypt() || SettingsUserStore.pgpEncrypt());
 					this.doSign(value.pgpSign() || SettingsUserStore.pgpSign());
 				}
@@ -455,7 +455,7 @@ export class ComposePopupView extends AbstractViewPopup {
 			contactsCommand: self => self.allowContacts
 		});
 
-		this.from(IdentityUserStore()[0].formattedName());
+		this.from(IdentityUserStore()[0].toString());
 	}
 
 	sentFolder()

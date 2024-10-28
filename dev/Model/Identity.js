@@ -40,7 +40,7 @@ export class IdentityModel extends EmailModel /*AbstractModel*/ {
 	/**
 	 * @returns {string}
 	 */
-	formattedName() {
+	toString() {
 		const name = this.name,
 			email = this.email,
 			label = this.label();
