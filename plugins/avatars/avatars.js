@@ -79,7 +79,7 @@
 			(from.name?.split(/[^\p{L}]+/gu) || []).reduce((a, s) => a + (s[0] || ''), '')
 			.slice(0,2)
 			.toUpperCase(),
-		setIdenticon = (msg, fn) => {
+		setIdenticon = (msg, fn, cache) => {
 			const from = email(msg);
 			if (identicons.get(from)) {
 				fn(identicons.get(from));
@@ -90,8 +90,9 @@
 						fromChars(msg.from[0]),
 						window.getComputedStyle(getEl('rl-app'), null).getPropertyValue('font-family')
 					));
-					identicons.set(email(msg), uri);
 					fn(uri);
+					identicons.set(email(msg), uri);
+					cache && avatars.set(getAvatarUid(msg), uri);
 				});
 			}
 		},
@@ -199,7 +200,7 @@
 						fn = url=>{element.src = url};
 					element.onerror = ()=>{
 						element.onerror = null;
-						setIdenticon(msg, fn);
+						setIdenticon(msg, fn, 1);
 					};
 					if (url) {
 						fn(url);
