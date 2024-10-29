@@ -4,10 +4,7 @@ namespace RainLoop\Providers;
 
 class AddressBook extends AbstractProvider
 {
-	/**
-	 * @var \RainLoop\Providers\AddressBook\AddressBookInterface
-	 */
-	private $oDriver;
+	private ?AddressBook\AddressBookInterface $oDriver;
 
 	public function __construct(?AddressBook\AddressBookInterface $oDriver)
 	{

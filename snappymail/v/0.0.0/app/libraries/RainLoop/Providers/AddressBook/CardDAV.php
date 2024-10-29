@@ -265,17 +265,9 @@ trait CardDAV
 	 */
 	private function checkContactsPath(DAVClient $oClient, string $sPath) : bool
 	{
-		$aResponse = null;
-		try
-		{
-			$aResponse = $oClient->propFind($sPath, array(
-				'{DAV:}resourcetype'
-			), 1);
-		}
-		catch (\Throwable $oException)
-		{
-			$this->logException($oException);
-		}
+		$aResponse = $oClient->propFind($sPath, array(
+			'{DAV:}resourcetype'
+		), 1);
 
 		$bGood = false;
 		if (\is_array($aResponse)) {
@@ -339,7 +331,7 @@ trait CardDAV
 		return $oClient;
 	}
 
-	protected function getDavClient() : ?DAVClient
+	public function getDavClient() : ?DAVClient
 	{
 		if (!$this->aDAVConfig['Mode']) {
 			return null;
@@ -405,7 +397,11 @@ trait CardDAV
 
 			$bGood = $sNewPath && $this->checkContactsPath($oClient, $sNewPath);
 			if (!$bGood) {
-				$this->logWrite('Contacts path not found at: '.$sPath, \LOG_INFO, 'DAV');
+				throw new \RainLoop\Exceptions\ClientException(
+					\RainLoop\Notifications::ContactsSyncError,
+					null,
+					'Contacts path not found at: '.$sPath
+				);
 			}
 		}
 

@@ -129,7 +129,12 @@ class PdoAddressBook
 			return false;
 		}
 
-		$oClient = $this->getDavClient();
+		try {
+			$oClient = $this->getDavClient();
+		} catch (\Throwable $e) {
+			\SnappyMail\Log::error('DAV', $e->getMessage());
+//			$this->logException($oException);
+		}
 		if (!$oClient) {
 			\SnappyMail\Log::warning('PdoAddressBook', 'Sync() invalid DavClient');
 			return false;

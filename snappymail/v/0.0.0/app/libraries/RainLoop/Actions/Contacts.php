@@ -3,13 +3,11 @@
 namespace RainLoop\Actions;
 
 use RainLoop\Enumerations\Capa;
+use RainLoop\Exceptions\ClientException;
 
 trait Contacts
 {
-	/**
-	 * @var \RainLoop\Providers\AddressBook
-	 */
-	protected $oAddressBookProvider = null;
+	protected ?\RainLoop\Providers\AddressBook $oAddressBookProvider = null;
 
 	public function AddressBookProvider(?\RainLoop\Model\Account $oAccount = null): \RainLoop\Providers\AddressBook
 	{
@@ -61,18 +59,66 @@ trait Contacts
 		return $this->DefaultResponse($bResult);
 	}
 
+	public function DoTestContactsSyncData() : array
+	{
+		if (!$this->GetCapa(Capa::CONTACTS)) {
+			throw new ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'Disallowed');
+		}
+
+		$oAccount = $this->getAccountFromToken();
+
+		$sPassword = $this->GetActionParam('Password', '');
+		if (static::APP_DUMMY === $sPassword) {
+			$mData = $this->getContactsSyncData($oAccount);
+			$sPassword = isset($mData['Password']) ? $mData['Password'] : '';
+		}
+		$sPasswordHMAC = null;
+		if ($sPassword) {
+			$oMainAccount = $this->getMainAccountFromToken();
+			$sPassword = \SnappyMail\Crypt::EncryptToJSON($sPassword, $oMainAccount->CryptKey());
+			if ($sPassword) {
+				$sPasswordHMAC = \hash_hmac('sha1', $sPassword, $oMainAccount->CryptKey());
+			}
+		}
+
+		$oDriver = $this->fabrica('address-book', $oAccount);
+		if (!$oDriver) {
+			throw new ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'No driver');
+		}
+		$oDriver->SetEmail($this->GetMainEmail($oAccount));
+		$oDriver->setDAVClientConfig([
+			'Mode' => 2, // readonly
+			'User' => $this->GetActionParam('User', ''),
+			'Password' => $sPassword,
+			'Url' => $this->GetActionParam('Url', ''),
+			'PasswordHMAC' => $sPasswordHMAC
+		]);
+
+		$oClient = $oDriver->getDavClient();
+		if (!$oClient) {
+			throw new ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'No client');
+		}
+		$oClient->propFind($oClient->urlPath, [
+			'{DAV:}getlastmodified',
+			'{DAV:}resourcetype',
+			'{DAV:}getetag'
+		], 1);
+
+		return $this->TrueResponse();
+	}
+
 	public function DoContactsSync() : array
 	{
 		$oAccount = $this->getAccountFromToken();
 		$oAddressBookProvider = $this->AddressBookProvider($oAccount);
 		if (!$oAddressBookProvider) {
-			throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'No AddressBookProvider');
+			throw new ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'No AddressBookProvider');
 		}
 		\ignore_user_abort(true);
 		\SnappyMail\HTTP\Stream::start(/*$binary = false*/);
 		\SnappyMail\HTTP\Stream::JSON(['messsage'=>'start']);
 		if (!$oAddressBookProvider->Sync()) {
-			throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'AddressBookProvider->Sync() failed');
+			throw new ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'AddressBookProvider->Sync() failed');
 		}
 		return $this->TrueResponse();
 	}

@@ -15,6 +15,7 @@ export const
 	 * based solely on the values of other observables in the application
 	 */
 	koComputable = fn => ko.computed(fn, {'pure':true}),
+//	koObservable = value => ko.observable(value),
 
 	addObservablesTo = (target, observables) =>
 		forEachObjectEntry(observables, (key, value) =>

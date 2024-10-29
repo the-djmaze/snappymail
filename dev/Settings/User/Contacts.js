@@ -2,7 +2,7 @@ import ko from 'ko';
 import { koComputable } from 'External/ko';
 
 import { SettingsGet } from 'Common/Globals';
-import { i18n, translateTrigger } from 'Common/Translator';
+import { i18n, translateTrigger, getErrorMessage } from 'Common/Translator';
 import { ContactUserStore } from 'Stores/User/Contact';
 import Remote from 'Remote/User/Fetch';
 
@@ -15,6 +15,7 @@ export class UserSettingsContacts /*extends AbstractViewSettings*/ {
 		this.syncUrl = ContactUserStore.syncUrl;
 		this.syncUser = ContactUserStore.syncUser;
 		this.syncPass = ContactUserStore.syncPass;
+		this.syncError = ko.observable('');
 
 		this.syncModeOptions = koComputable(() => {
 			translateTrigger();
@@ -47,5 +48,16 @@ export class UserSettingsContacts /*extends AbstractViewSettings*/ {
 				Password: ContactUserStore.syncPass()
 			})
 		);
+	}
+
+	test() {
+		this.syncError('');
+		Remote.request('TestContactsSyncData', (iError, data) => {
+			iError && this.syncError(data.messageAdditional || data.message || getErrorMessage(iError, data));
+		}, {
+			Url: ContactUserStore.syncUrl(),
+			User: ContactUserStore.syncUser(),
+			Password: ContactUserStore.syncPass()
+		})
 	}
 }
