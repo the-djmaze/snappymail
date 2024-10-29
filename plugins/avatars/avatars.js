@@ -79,7 +79,7 @@
 			(from.name?.split(/[^\p{L}]+/gu) || []).reduce((a, s) => a + (s[0] || ''), '')
 			.slice(0,2)
 			.toUpperCase(),
-		setIdenticon = (msg, fn, cache) => {
+		setIdenticon = (msg, fn, cb) => {
 			const from = email(msg);
 			if (identicons.get(from)) {
 				fn(identicons.get(from));
@@ -92,7 +92,7 @@
 					));
 					fn(uri);
 					identicons.set(email(msg), uri);
-					cache && avatars.set(getAvatarUid(msg), uri);
+					cb?.(uri);
 				});
 			}
 		},
@@ -101,9 +101,10 @@
 			if (msg.from?.[0]) {
 				if (getAvatarUri(msg)) {
 					if (rl.pluginSettingsGet('avatars', 'delay')) {
-						setIdenticon(msg, fn);
-						queue.push([msg, fn]);
-						runQueue();
+						setIdenticon(msg, fn, ()=>{
+							queue.push([msg, fn]);
+							runQueue();
+						});
 					} else {
 						fn(msg.avatar);
 					}
@@ -200,7 +201,7 @@
 						fn = url=>{element.src = url};
 					element.onerror = ()=>{
 						element.onerror = null;
-						setIdenticon(msg, fn, 1);
+						setIdenticon(msg, fn, uri=>avatars.set(getAvatarUid(msg), uri));
 					};
 					if (url) {
 						fn(url);
