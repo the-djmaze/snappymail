@@ -45,7 +45,7 @@ ko.utils.domNodeDisposal = (() => {
     };
 
     return {
-        'addDisposeCallback' : (node, callback) => {
+        addDisposeCallback : (node, callback) => {
             if (typeof callback != "function")
                 throw Error("Callback must be a function");
             getDisposeCallbacksCollection(node, 1).add(callback);
@@ -82,4 +82,5 @@ ko.utils.domNodeDisposal = (() => {
 })();
 ko.cleanNode = ko.utils.domNodeDisposal.cleanNode; // Shorthand name for convenience
 ko.removeNode = ko.utils.domNodeDisposal.removeNode; // Shorthand name for convenience
-ko.exportSymbol('utils.domNodeDisposal', ko.utils.domNodeDisposal);
+//ko.exportSymbol('utils.domNodeDisposal', ko.utils.domNodeDisposal);
+ko.exportSymbol('addDisposeCallback', ko.utils.domNodeDisposal.addDisposeCallback);

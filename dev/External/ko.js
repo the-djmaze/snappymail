@@ -31,7 +31,7 @@ export const
 
 	onEvent = (element, event, fn) => {
 		element.addEventListener(event, fn);
-		ko.utils.domNodeDisposal.addDisposeCallback(element, () => element.removeEventListener(event, fn));
+		ko.addDisposeCallback(element, () => element.removeEventListener(event, fn));
 	},
 
 	onKey = (key, element, fValueAccessor, fAllBindings, model) => {

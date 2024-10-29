@@ -121,7 +121,7 @@ ko.utils = {
         element.textContent = ko.utils.unwrapObservable(textContent)
 };
 
-ko.exportSymbol('utils', ko.utils);
+//ko.exportSymbol('utils', ko.utils);
 ko.exportSymbol('unwrap', ko.utils.unwrapObservable); // Convenient shorthand, because this is used so commonly
 (() => {
 
@@ -195,7 +195,7 @@ ko.utils.domNodeDisposal = (() => {
     };
 
     return {
-        'addDisposeCallback' : (node, callback) => {
+        addDisposeCallback : (node, callback) => {
             if (typeof callback != "function")
                 throw Error("Callback must be a function");
             getDisposeCallbacksCollection(node, 1).add(callback);
@@ -232,7 +232,8 @@ ko.utils.domNodeDisposal = (() => {
 })();
 ko.cleanNode = ko.utils.domNodeDisposal.cleanNode; // Shorthand name for convenience
 ko.removeNode = ko.utils.domNodeDisposal.removeNode; // Shorthand name for convenience
-ko.exportSymbol('utils.domNodeDisposal', ko.utils.domNodeDisposal);
+//ko.exportSymbol('utils.domNodeDisposal', ko.utils.domNodeDisposal);
+ko.exportSymbol('addDisposeCallback', ko.utils.domNodeDisposal.addDisposeCallback);
 ko['extenders'] = {
     'debounce': (target, timeout) => target.limit(callback => debounce(callback, timeout)),
 
@@ -295,7 +296,7 @@ class koSubscription
     disposeWhenNodeIsRemoved(node) {
         // MutationObserver ?
         this._node = node;
-        ko.utils.domNodeDisposal['addDisposeCallback'](node, this._domNodeDisposalCallback = this['dispose'].bind(this));
+        ko.utils.domNodeDisposal.addDisposeCallback(node, this._domNodeDisposalCallback = this['dispose'].bind(this));
     }
 }
 
@@ -881,7 +882,7 @@ ko.computed = (evaluatorFunctionOrOptions, options) => {
     // Attach a DOM node disposal callback so that the computed will be proactively disposed as soon as the node is
     // removed using ko.removeNode. But skip if isActive is false (there will never be any dependencies to dispose).
     if (state.disposeWhenNodeIsRemoved && computedObservable.isActive()) {
-        ko.utils.domNodeDisposal['addDisposeCallback'](state.disposeWhenNodeIsRemoved, state.domNodeDisposalCallback = () => {
+        ko.utils.domNodeDisposal.addDisposeCallback(state.disposeWhenNodeIsRemoved, state.domNodeDisposalCallback = () => {
             computedObservable['dispose']();
         });
     }
@@ -1537,17 +1538,15 @@ ko.expressionRewriting = (() => {
                 ko.utils.setDomNodeChildren(node, childNodes);
         },
 
-        prepend: (containerNode, nodeToPrepend) => {
-            // Start comments must always have a parent and at least one following sibling (the end comment)
-            isStartComment(containerNode)
-                ? containerNode.nextSibling.before(nodeToPrepend)
-                : containerNode.prepend(nodeToPrepend);
-        },
-
         insertAfter: (containerNode, nodeToInsert, insertAfterNode) => {
             insertAfterNode
                 ? insertAfterNode.after(nodeToInsert)
-                : ko.virtualElements.prepend(containerNode, nodeToInsert);
+                : (
+                    // Start comments must always have a parent and at least one following sibling (the end comment)
+                    isStartComment(containerNode)
+                        ? containerNode.nextSibling.before(nodeToInsert)
+                        : containerNode.prepend(nodeToInsert)
+                );
         },
 
         firstChild: node => {
@@ -1790,7 +1789,7 @@ class AsyncCompleteContext {
         this.asyncDescendants = new Set;
         this.childrenComplete = false;
 
-        bindingInfo.asyncContext || ko.utils.domNodeDisposal['addDisposeCallback'](node, asyncContextDispose);
+        bindingInfo.asyncContext || ko.utils.domNodeDisposal.addDisposeCallback(node, asyncContextDispose);
 
         if (ancestorBindingInfo?.asyncContext) {
             ancestorBindingInfo.asyncContext.asyncDescendants.add(node);
@@ -2206,7 +2205,7 @@ ko.exportSymbol('bindingHandlers', ko.bindingHandlers);
                 };
 
             ko.virtualElements.emptyNode(element);
-            ko.utils.domNodeDisposal['addDisposeCallback'](element, disposeAssociatedComponentViewModel);
+            ko.utils.domNodeDisposal.addDisposeCallback(element, disposeAssociatedComponentViewModel);
 
             ko.computed(() => {
                 var componentName = ko.utils.unwrapObservable(valueAccessor()),

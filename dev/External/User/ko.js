@@ -97,7 +97,7 @@ Object.assign(ko.bindingHandlers, {
 
 				fValue.subscribe(fUpdateEditorValue);
 
-				// ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
+				// ko.addDisposeCallback(element, () => {
 				// });
 			}
 		}

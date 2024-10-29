@@ -80,7 +80,6 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 				|| ($this->Config()->Get('plugin', 'favicon', false) && 'pass' == $mFrom['dkimStatus'])
 			 )
 			) {
-//				return \MailSo\Base\Utils::UrlSafeBase64Encode(\mb_strtolower($mFrom['email']));
 				return 'remote';
 			}
 			if ('pass' == $mFrom['dkimStatus'] && $this->Config()->Get('plugin', 'service', true)) {
@@ -186,11 +185,8 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		return $aResult;
 	}
 
-	// Only allow service icon when DKIM is valid. $bBimi is true when DKIM is valid.
-	private static function getServiceIcon(string $sEmail) : ?string
+	private static function getServicePng(string $sDomain) : ?string
 	{
-		$sDomain = \explode('@', $sEmail);
-		$sDomain = \array_pop($sDomain);
 		$aServices = [
 			"services/{$sDomain}",
 			'services/' . static::serviceDomain($sDomain)
@@ -198,8 +194,19 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		foreach ($aServices as $service) {
 			$file = __DIR__ . "/images/{$service}.png";
 			if (\file_exists($file)) {
-				return 'data:image/png;base64,' . \base64_encode(\file_get_contents($file));
+				return $file;
 			}
+		}
+		return null;
+	}
+
+	// Only allow service icon when DKIM is valid. $bBimi is true when DKIM is valid.
+	private static function getServiceIcon(string $sEmail) : ?string
+	{
+		$aParts = \explode('@', $sEmail);
+		$file = static::getServicePng(\array_pop($aParts));
+		if ($file) {
+			return 'data:image/png;base64,' . \base64_encode(\file_get_contents($file));
 		}
 
 		$aResult = static::getCachedImage($sEmail);
@@ -282,20 +289,13 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 		// Only allow service icon when DKIM is valid. $bBimi is true when DKIM is valid.
 		if ($bBimi && !$aResult) {
-			$aServices = [
-				"services/{$sDomain}",
-				'services/' . static::serviceDomain($sDomain)
-			];
-			foreach ($aServices as $service) {
-				$file = __DIR__ . "/images/{$service}.png";
-				if (\file_exists($file)) {
-					\MailSo\Base\Http::setLastModified(\filemtime($file));
-					$aResult = [
-						'image/png',
-						\file_get_contents($file)
-					];
-					break;
-				}
+			$file = static::getServicePng($sDomain);
+			if ($file) {
+				\MailSo\Base\Http::setLastModified(\filemtime($file));
+				$aResult = [
+					'image/png',
+					\file_get_contents($file)
+				];
 			}
 
 			if (!$aResult && $this->Config()->Get('plugin', 'favicon', false)) {
