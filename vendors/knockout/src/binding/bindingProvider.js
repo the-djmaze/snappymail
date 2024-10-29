@@ -50,17 +50,17 @@ ko.bindingProvider = new class
                     // Build the source for a function that evaluates "expression"
                     // Use one "with" that has one secure scope handling Proxy
                     // Deprecated: with is no longer recommended
-                    var rewrittenBindings = ko.expressionRewriting.preProcessBindings(bindingsString),
-                        functionBody = "$context = new Proxy(\
-                            $context,\
-                            {\
-                                has: () => true,\
-                                get: (target, key) => target[key] || target['$data'][key]\
-                            }\
-                        );with($context){return{" + rewrittenBindings + "}}";
-                    bindingFunction = new Function("$context", functionBody);
+                    bindingFunction = new Function("$context",
+                        "with($context){return{" + ko.expressionRewriting.preProcessBindings(bindingsString) + "}}");
                     bindingCache.set(cacheKey, bindingFunction);
                 }
+                bindingContext = new Proxy(
+                    bindingContext,
+                    {
+                        has: () => true,
+                        get: (target, key) => target[key] || target['$data'][key]
+                    }
+                );
                 return bindingFunction(bindingContext);
             } catch (ex) {
                 ex.message = "Unable to parse bindings.\nBindings value: " + bindingsString
