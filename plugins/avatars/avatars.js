@@ -38,6 +38,7 @@
 		queue = [],
 		avatars = new Map,
 		ncAvatars = new Map,
+		identicons = new Map,
 		templateId = 'MailMessageView',
 		b64 = data => btoa(unescape(encodeURIComponent(data))),
 		b64url = data => b64(data).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
@@ -78,15 +79,22 @@
 			(from.name?.split(/[^\p{L}]+/gu) || []).reduce((a, s) => a + (s[0] || ''), '')
 			.slice(0,2)
 			.toUpperCase(),
-		setIdenticon = (msg, fn) => hash(msg.from[0].email).then(hash => {
-			const uri = 'data:image/svg+xml;base64,' + b64(window.identiconSvg(
-				hash,
-				fromChars(msg.from[0]),
-				window.getComputedStyle(getEl('rl-app'), null).getPropertyValue('font-family')
-			));
-//			avatars.set(getAvatarUid(msg), uri);
-			fn(uri);
-		}),
+		setIdenticon = (msg, fn) => {
+			const from = email(msg);
+			if (identicons.get(from)) {
+				fn(identicons.get(from));
+			} else {
+				hash(from).then(hash => {
+					const uri = 'data:image/svg+xml;base64,' + b64(window.identiconSvg(
+						hash,
+						fromChars(msg.from[0]),
+						window.getComputedStyle(getEl('rl-app'), null).getPropertyValue('font-family')
+					));
+					identicons.set(email(msg), uri);
+					fn(uri);
+				});
+			}
+		},
 
 		addQueue = (msg, fn) => {
 			if (msg.from?.[0]) {
