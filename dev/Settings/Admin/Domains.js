@@ -18,8 +18,8 @@ export class AdminSettingsDomains /*extends AbstractViewSettings*/ {
 	testUsername() {
 		Remote.request('AdminDomainMatch',
 			(iError, oData) => {
-				if (oData?.Result?.domain) {
-					alert(`${oData.Result.email} matched domain: ${oData.Result.domain.name}`);
+				if (oData?.Result?.name) {
+					alert(`${oData.Result.email} matched domain: ${oData.Result.name}`);
 				} else {
 					alert('No domain match');
 				}

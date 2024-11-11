@@ -71,7 +71,8 @@ trait AdminDomains
 		return $this->DefaultResponse(array(
 			'email' => $sEmail,
 			'login' => $sCredentials['imapUser'],
-			'domain' => $sCredentials['domain'],
+			'name' => $sCredentials['domain'] ? $sCredentials['domain']->Name() : null,
+//			'domain' => $sCredentials['domain'],
 			'whitelist' => $sCredentials['domain'] ? $sCredentials['domain']->ValidateWhiteList($sEmail) : null
 		));
 	}
