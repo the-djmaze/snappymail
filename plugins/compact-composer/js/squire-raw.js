@@ -1,5 +1,5 @@
-'use strict';
-// v2.2.8
+"use strict";
+// v2.3.2
 (() => {
   // source/node/TreeIterator.ts
   var SHOW_ELEMENT = 1;
@@ -13,13 +13,11 @@
       this.nodeType = nodeType;
       this.filter = filter || always;
     }
-
     isAcceptableNode(node) {
       const nodeType = node.nodeType;
       const nodeFilterType = nodeType === Node.ELEMENT_NODE ? SHOW_ELEMENT : nodeType === Node.TEXT_NODE ? SHOW_TEXT : 0;
       return !!(nodeFilterType & this.nodeType) && this.filter(node);
     }
-
     nextNode() {
       const root = this.root;
       let current = this.currentNode;
@@ -45,7 +43,6 @@
         current = node;
       }
     }
-
     previousNode() {
       const root = this.root;
       let current = this.currentNode;
@@ -72,7 +69,6 @@
         current = node;
       }
     }
-
     // Previous node in post-order.
     previousPONode() {
       const root = this.root;
@@ -105,7 +101,7 @@
   var ELEMENT_NODE = 1;
   var TEXT_NODE = 3;
   var DOCUMENT_FRAGMENT_NODE = 11;
-  var ZWS = '\u200B';
+  var ZWS = "\u200B";
   var ua = navigator.userAgent;
   var isMac = /Mac OS X/.test(ua);
   var isWin = /Windows NT/.test(ua);
@@ -114,14 +110,14 @@
   var isGecko = /Gecko\//.test(ua);
   var isLegacyEdge = /Edge\//.test(ua);
   var isWebKit = !isLegacyEdge && /WebKit\//.test(ua);
-  var ctrlKey = isMac || isIOS ? 'Meta-' : 'Ctrl-';
+  var ctrlKey = isMac || isIOS ? "Meta-" : "Ctrl-";
   var cantFocusEmptyTextNodes = isWebKit;
-  var supportsInputEvents = 'onbeforeinput' in document && 'inputType' in new InputEvent('input');
+  var supportsInputEvents = "onbeforeinput" in document && "inputType" in new InputEvent("input");
   var notWS = /[^ \t\r\n]/;
 
   // source/node/Category.ts
   var inlineNodeNames = /^(?:#text|A(?:BBR|CRONYM)?|B(?:R|D[IO])?|C(?:ITE|ODE)|D(?:ATA|EL|FN)|EM|FONT|HR|I(?:FRAME|MG|NPUT|NS)?|KBD|Q|R(?:P|T|UBY)|S(?:AMP|MALL|PAN|TR(?:IKE|ONG)|U[BP])?|TIME|U|VAR|WBR)$/;
-  var leafNodeNames = /* @__PURE__ */ new Set(['BR', 'HR', 'IFRAME', 'IMG', 'INPUT']);
+  var leafNodeNames = /* @__PURE__ */ new Set(["BR", "HR", "IFRAME", "IMG", "INPUT"]);
   var UNKNOWN = 0;
   var INLINE = 1;
   var BLOCK = 2;
@@ -195,7 +191,7 @@
       return false;
     }
     if (node instanceof HTMLElement && node2 instanceof HTMLElement) {
-      return node.nodeName !== 'A' && node.className === node2.className && node.style.cssText === node2.style.cssText;
+      return node.nodeName !== "A" && node.className === node2.className && node.style.cssText === node2.style.cssText;
     }
     return true;
   };
@@ -204,7 +200,7 @@
       return false;
     }
     for (const attr in attributes) {
-      if (!('getAttribute' in node) || node.getAttribute(attr) !== attributes[attr]) {
+      if (!("getAttribute" in node) || node.getAttribute(attr) !== attributes[attr]) {
         return false;
       }
     }
@@ -273,7 +269,7 @@
 
   // source/node/Whitespace.ts
   var notWSTextNode = (node) => {
-    return node instanceof Element ? node.nodeName === 'BR' : (
+    return node instanceof Element ? node.nodeName === "BR" : (
       // okay if data is 'undefined' here.
       notWS.test(node.data)
     );
@@ -363,7 +359,7 @@
       while (!(endContainer instanceof Text)) {
         const child = endContainer.childNodes[endOffset - 1];
         if (!child || isLeaf(child)) {
-          if (child && child.nodeName === 'BR' && !isLineBreak(child, false)) {
+          if (child && child.nodeName === "BR" && !isLineBreak(child, false)) {
             endOffset -= 1;
             continue;
           }
@@ -407,7 +403,7 @@
       if (endContainer === endMax || endContainer === root) {
         break;
       }
-      if (endContainer.nodeType !== TEXT_NODE && endContainer.childNodes[endOffset] && endContainer.childNodes[endOffset].nodeName === 'BR' && !isLineBreak(endContainer.childNodes[endOffset], false)) {
+      if (endContainer.nodeType !== TEXT_NODE && endContainer.childNodes[endOffset] && endContainer.childNodes[endOffset].nodeName === "BR" && !isLineBreak(endContainer.childNodes[endOffset], false)) {
         endOffset += 1;
       }
       if (endOffset !== getLength(endContainer)) {
@@ -451,11 +447,11 @@
         if (cantFocusEmptyTextNodes) {
           fixer = document.createTextNode(ZWS);
         } else {
-          fixer = document.createTextNode('');
+          fixer = document.createTextNode("");
         }
       }
-    } else if ((node instanceof Element || node instanceof DocumentFragment) && !node.querySelector('BR')) {
-      fixer = createElement('BR');
+    } else if ((node instanceof Element || node instanceof DocumentFragment) && !node.querySelector("BR")) {
+      fixer = createElement("BR");
       let parent = node;
       let child;
       while ((child = parent.lastElementChild) && !isInline(child)) {
@@ -474,15 +470,15 @@
   var fixContainer = (container, root) => {
     let wrapper = null;
     Array.from(container.childNodes).forEach((child) => {
-      const isBR = child.nodeName === 'BR';
+      const isBR = child.nodeName === "BR";
       if (!isBR && isInline(child)) {
         if (!wrapper) {
-          wrapper = createElement('DIV');
+          wrapper = createElement("DIV");
         }
         wrapper.appendChild(child);
       } else if (isBR || wrapper) {
         if (!wrapper) {
-          wrapper = createElement('DIV');
+          wrapper = createElement("DIV");
         }
         fixCursor(wrapper);
         if (isBR) {
@@ -503,15 +499,15 @@
   };
   var split = (node, offset, stopNode, root) => {
     if (node instanceof Text && node !== stopNode) {
-      if (typeof offset !== 'number') {
-        throw new Error('Offset must be a number to split text node!');
+      if (typeof offset !== "number") {
+        throw new Error("Offset must be a number to split text node!");
       }
       if (!node.parentNode) {
-        throw new Error('Cannot split text node with no parent!');
+        throw new Error("Cannot split text node with no parent!");
       }
       return split(node.parentNode, node.splitText(offset), stopNode, root);
     }
-    let nodeAfterSplit = typeof offset === 'number' ? offset < node.childNodes.length ? node.childNodes[offset] : null : offset;
+    let nodeAfterSplit = typeof offset === "number" ? offset < node.childNodes.length ? node.childNodes[offset] : null : offset;
     const parent = node.parentNode;
     if (!parent || node === stopNode || !(node instanceof Element)) {
       return nodeAfterSplit;
@@ -522,7 +518,7 @@
       clone.appendChild(nodeAfterSplit);
       nodeAfterSplit = next;
     }
-    if (node instanceof HTMLOListElement && getNearest(node, root, 'BLOCKQUOTE')) {
+    if (node instanceof HTMLOListElement && getNearest(node, root, "BLOCKQUOTE")) {
       clone.start = (+node.start || 1) + node.childNodes.length - 1;
     }
     fixCursor(node);
@@ -601,7 +597,7 @@
     detach(container);
     offset = block.childNodes.length;
     const last = block.lastChild;
-    if (last && last.nodeName === 'BR') {
+    if (last && last.nodeName === "BR") {
       block.removeChild(last);
       offset -= 1;
     }
@@ -613,14 +609,14 @@
   var mergeContainers = (node, root) => {
     const prev = node.previousSibling;
     const first = node.firstChild;
-    const isListItem = node.nodeName === 'LI';
+    const isListItem = node.nodeName === "LI";
     if (isListItem && (!first || !/^[OU]L$/.test(first.nodeName))) {
       return;
     }
     if (prev && areAlike(prev, node)) {
       if (!isContainer(prev)) {
         if (isListItem) {
-          const block = createElement('DIV');
+          const block = createElement("DIV");
           block.appendChild(empty(prev));
           prev.appendChild(block);
         } else {
@@ -637,7 +633,7 @@
         mergeContainers(first, root);
       }
     } else if (isListItem) {
-      const block = createElement('DIV');
+      const block = createElement("DIV");
       node.insertBefore(block, first);
       fixCursor(block);
     }
@@ -645,40 +641,40 @@
 
   // source/Clean.ts
   var styleToSemantic = {
-    'font-weight': {
+    "font-weight": {
       regexp: /^bold|^700/i,
       replace() {
-        return createElement('B');
+        return createElement("B");
       }
     },
-    'font-style': {
+    "font-style": {
       regexp: /^italic/i,
       replace() {
-        return createElement('I');
+        return createElement("I");
       }
     },
-    'font-family': {
+    "font-family": {
       regexp: notWS,
       replace(classNames, family) {
-        return createElement('SPAN', {
+        return createElement("SPAN", {
           class: classNames.fontFamily,
-          style: 'font-family:' + family
+          style: "font-family:" + family
         });
       }
     },
-    'font-size': {
+    "font-size": {
       regexp: notWS,
       replace(classNames, size) {
-        return createElement('SPAN', {
+        return createElement("SPAN", {
           class: classNames.fontSize,
-          style: 'font-size:' + size
+          style: "font-size:" + size
         });
       }
     },
-    'text-decoration': {
+    "text-decoration": {
       regexp: /^underline/i,
       replace() {
-        return createElement('U');
+        return createElement("U");
       }
     }
   };
@@ -728,19 +724,19 @@
     };
   };
   var fontSizes = {
-    '1': '10',
-    '2': '13',
-    '3': '16',
-    '4': '18',
-    '5': '24',
-    '6': '32',
-    '7': '48'
+    "1": "10",
+    "2": "13",
+    "3": "16",
+    "4": "18",
+    "5": "24",
+    "6": "32",
+    "7": "48"
   };
   var stylesRewriters = {
-    STRONG: replaceWithTag('B'),
-    EM: replaceWithTag('I'),
-    INS: replaceWithTag('U'),
-    STRIKE: replaceWithTag('S'),
+    STRONG: replaceWithTag("B"),
+    EM: replaceWithTag("I"),
+    INS: replaceWithTag("U"),
+    STRIKE: replaceWithTag("S"),
     SPAN: replaceStyles,
     FONT: (node, parent, config) => {
       const font = node;
@@ -754,17 +750,17 @@
       let newTreeBottom;
       let newTreeTop;
       if (face) {
-        fontSpan = createElement('SPAN', {
+        fontSpan = createElement("SPAN", {
           class: classNames.fontFamily,
-          style: 'font-family:' + face
+          style: "font-family:" + face
         });
         newTreeTop = fontSpan;
         newTreeBottom = fontSpan;
       }
       if (size) {
-        sizeSpan = createElement('SPAN', {
+        sizeSpan = createElement("SPAN", {
           class: classNames.fontSize,
-          style: 'font-size:' + fontSizes[size] + 'px'
+          style: "font-size:" + fontSizes[size] + "px"
         });
         if (!newTreeTop) {
           newTreeTop = sizeSpan;
@@ -775,12 +771,12 @@
         newTreeBottom = sizeSpan;
       }
       if (color && /^#?([\dA-F]{3}){1,2}$/i.test(color)) {
-        if (color.charAt(0) !== '#') {
-          color = '#' + color;
+        if (color.charAt(0) !== "#") {
+          color = "#" + color;
         }
-        colorSpan = createElement('SPAN', {
+        colorSpan = createElement("SPAN", {
           class: classNames.color,
-          style: 'color:' + color
+          style: "color:" + color
         });
         if (!newTreeTop) {
           newTreeTop = colorSpan;
@@ -791,14 +787,14 @@
         newTreeBottom = colorSpan;
       }
       if (!newTreeTop || !newTreeBottom) {
-        newTreeTop = newTreeBottom = createElement('SPAN');
+        newTreeTop = newTreeBottom = createElement("SPAN");
       }
       parent.replaceChild(newTreeTop, font);
       newTreeBottom.appendChild(empty(font));
       return newTreeBottom;
     },
     TT: (node, parent, config) => {
-      const el = createElement('SPAN', {
+      const el = createElement("SPAN", {
         class: config.classNames.fontFamily,
         style: 'font-family:menlo,consolas,"courier new",monospace'
       });
@@ -839,7 +835,7 @@
           continue;
         }
         if (childLength) {
-          cleanTree(child, config, preserveWS || nodeName === 'PRE');
+          cleanTree(child, config, preserveWS || nodeName === "PRE");
         }
       } else {
         if (child instanceof Text) {
@@ -853,7 +849,7 @@
             walker.currentNode = child;
             let sibling;
             while (sibling = walker.previousPONode()) {
-              if (sibling.nodeName === 'IMG' || sibling instanceof Text && notWS.test(sibling.data)) {
+              if (sibling.nodeName === "IMG" || sibling instanceof Text && notWS.test(sibling.data)) {
                 break;
               }
               if (!isInline(sibling)) {
@@ -861,13 +857,13 @@
                 break;
               }
             }
-            data = data.replace(/^[ \t\r\n]+/g, sibling ? ' ' : '');
+            data = data.replace(/^[ \t\r\n]+/g, sibling ? " " : "");
           }
           if (endsWithWS) {
             walker.currentNode = child;
             let sibling;
             while (sibling = walker.nextNode()) {
-              if (sibling.nodeName === 'IMG' || sibling instanceof Text && notWS.test(sibling.data)) {
+              if (sibling.nodeName === "IMG" || sibling instanceof Text && notWS.test(sibling.data)) {
                 break;
               }
               if (!isInline(sibling)) {
@@ -875,7 +871,7 @@
                 break;
               }
             }
-            data = data.replace(/[ \t\r\n]+$/g, sibling ? ' ' : '');
+            data = data.replace(/[ \t\r\n]+$/g, sibling ? " " : "");
           }
           if (data) {
             child.data = data;
@@ -905,7 +901,7 @@
     }
   };
   var cleanupBRs = (node, root, keepForBlankLine) => {
-    const brs = node.querySelectorAll('BR');
+    const brs = node.querySelectorAll("BR");
     const brBreaksLine = [];
     let l = brs.length;
     for (let i = 0; i < l; i += 1) {
@@ -925,7 +921,7 @@
     }
   };
   var escapeHTML = (text) => {
-    return text.split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;');
+    return text.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;").split('"').join("&quot;");
   };
 
   // source/node/Block.ts
@@ -943,7 +939,7 @@
     return block !== root ? block : null;
   };
   var isEmptyBlock = (block) => {
-    return !block.textContent && !block.querySelector('IMG');
+    return !block.textContent && !block.querySelector("IMG");
   };
 
   // source/range/Block.ts
@@ -981,7 +977,7 @@
     return block && isNodeContainedInRange(range, block, true) ? block : null;
   };
   var isContent = (node) => {
-    return node instanceof Text ? notWS.test(node.data) : node.nodeName === 'IMG';
+    return node instanceof Text ? notWS.test(node.data) : node.nodeName === "IMG";
   };
   var rangeDoesStartAtBlockBoundary = (range, root) => {
     const startContainer = range.startContainer;
@@ -1063,14 +1059,13 @@
   function createRange(startContainer, startOffset, endContainer, endOffset) {
     const range = document.createRange();
     range.setStart(startContainer, startOffset);
-    if (endContainer && typeof endOffset === 'number') {
+    if (endContainer && typeof endOffset === "number") {
       range.setEnd(endContainer, endOffset);
     } else {
       range.setEnd(startContainer, startOffset);
     }
     return range;
   }
-
   var insertNodeInRange = (range, node) => {
     let { startContainer, startOffset, endContainer, endOffset } = range;
     let children;
@@ -1135,11 +1130,12 @@
       frag.appendChild(node);
       node = next;
     }
-    if (startContainer instanceof Text && endContainer instanceof Text) {
-      startContainer.appendData(endContainer.data);
+    node = endContainer && endContainer.previousSibling;
+    if (node && node instanceof Text && endContainer instanceof Text) {
+      endOffset = node.length;
+      node.appendData(endContainer.data);
       detach(endContainer);
-      endContainer = startContainer;
-      endOffset = startOffset;
+      endContainer = node;
     }
     range.setStart(startContainer, startOffset);
     if (endContainer) {
@@ -1183,7 +1179,7 @@
       fixCursor(startBlock);
     }
     const child = root.firstChild;
-    if (!child || child.nodeName === 'BR') {
+    if (!child || child.nodeName === "BR") {
       fixCursor(root);
       if (root.firstChild) {
         range.selectNodeContents(root.firstChild);
@@ -1196,7 +1192,7 @@
     let afterNode = startContainer;
     let afterOffset = startOffset;
     if (!(afterNode instanceof Text) || afterOffset === afterNode.data.length) {
-      afterNode = getAdjacentInlineNode(iterator, 'nextNode', afterNode);
+      afterNode = getAdjacentInlineNode(iterator, "nextNode", afterNode);
       afterOffset = 0;
     }
     let beforeNode = startContainer;
@@ -1204,7 +1200,7 @@
     if (!(beforeNode instanceof Text) || beforeOffset === -1) {
       beforeNode = getAdjacentInlineNode(
         iterator,
-        'previousPONode',
+        "previousPONode",
         afterNode || (startContainer instanceof Text ? startContainer : startContainer.childNodes[startOffset] || startContainer)
       );
       if (beforeNode instanceof Text) {
@@ -1213,17 +1209,17 @@
     }
     let node = null;
     let offset = 0;
-    if (afterNode instanceof Text && afterNode.data.charAt(afterOffset) === ' ' && rangeDoesStartAtBlockBoundary(range, root)) {
+    if (afterNode instanceof Text && afterNode.data.charAt(afterOffset) === " " && rangeDoesStartAtBlockBoundary(range, root)) {
       node = afterNode;
       offset = afterOffset;
-    } else if (beforeNode instanceof Text && beforeNode.data.charAt(beforeOffset) === ' ') {
-      if (afterNode instanceof Text && afterNode.data.charAt(afterOffset) === ' ' || rangeDoesEndAtBlockBoundary(range, root)) {
+    } else if (beforeNode instanceof Text && beforeNode.data.charAt(beforeOffset) === " ") {
+      if (afterNode instanceof Text && afterNode.data.charAt(afterOffset) === " " || rangeDoesEndAtBlockBoundary(range, root)) {
         node = beforeNode;
         offset = beforeOffset;
       }
     }
     if (node) {
-      node.replaceData(offset, 1, '\xA0');
+      node.replaceData(offset, 1, "\xA0");
     }
     range.setStart(startContainer, startOffset);
     range.collapse(true);
@@ -1242,13 +1238,13 @@
     }
     moveRangeBoundariesDownTree(range);
     range.collapse(false);
-    const stopPoint = getNearest(range.endContainer, root, 'BLOCKQUOTE') || root;
+    const stopPoint = getNearest(range.endContainer, root, "BLOCKQUOTE") || root;
     let block = getStartBlockOfRange(range, root);
     let blockContentsAfterSplit = null;
     const firstBlockInFrag = getNextBlock(frag, frag);
     const replaceBlock = !firstInFragIsInline && !!block && isEmptyBlock(block);
     if (block && firstBlockInFrag && !replaceBlock && // Don't merge table cells or PRE elements into block
-      !getNearest(firstBlockInFrag, frag, 'PRE') && !getNearest(firstBlockInFrag, frag, 'TABLE')) {
+      !getNearest(firstBlockInFrag, frag, "PRE") && !getNearest(firstBlockInFrag, frag, "TABLE")) {
       moveRangeBoundariesUpTree(range, block, block, root);
       range.collapse(true);
       let container = range.endContainer;
@@ -1327,7 +1323,7 @@
   // source/range/Contents.ts
   var getTextContentsOfRange = (range) => {
     if (range.collapsed) {
-      return '';
+      return "";
     }
     const startContainer = range.startContainer;
     const endContainer = range.endContainer;
@@ -1340,7 +1336,7 @@
     );
     walker.currentNode = startContainer;
     let node = startContainer;
-    let textContent = '';
+    let textContent = "";
     let addedTextInBlock = false;
     let value;
     if (!(node instanceof Element) && !(node instanceof Text) || !walker.filter(node)) {
@@ -1359,13 +1355,13 @@
           textContent += value;
           addedTextInBlock = true;
         }
-      } else if (node.nodeName === 'BR' || addedTextInBlock && !isInline(node)) {
-        textContent += '\n';
+      } else if (node.nodeName === "BR" || addedTextInBlock && !isInline(node)) {
+        textContent += "\n";
         addedTextInBlock = false;
       }
       node = walker.nextNode();
     }
-    textContent = textContent.replace(/ /g, ' ');
+    textContent = textContent.replace(/ /g, " ");
     return textContent;
   };
 
@@ -1376,7 +1372,7 @@
     if (isLegacyEdge || !clipboardData) {
       return false;
     }
-    let text = toPlainText ? '' : getTextContentsOfRange(range);
+    let text = toPlainText ? "" : getTextContentsOfRange(range);
     const startBlock = getStartBlockOfRange(range, root);
     const endBlock = getEndBlockOfRange(range, root);
     let copyRoot = root;
@@ -1404,10 +1400,10 @@
     }
     let html;
     if (contents.childNodes.length === 1 && contents.childNodes[0] instanceof Text) {
-      text = contents.childNodes[0].data.replace(/ /g, ' ');
+      text = contents.childNodes[0].data.replace(/ /g, " ");
       plainTextOnly = true;
     } else {
-      const node = createElement('DIV');
+      const node = createElement("DIV");
       node.appendChild(contents);
       html = node.innerHTML;
       if (toCleanHTML) {
@@ -1418,12 +1414,13 @@
       text = toPlainText(html);
     }
     if (isWin) {
-      text = text.replace(/\r?\n/g, '\r\n');
+      text = text.replace(/\r?\n/g, "\r\n");
     }
     if (!plainTextOnly && html && text !== html) {
-      clipboardData.setData('text/html', html);
+      html = "<!-- squire -->" + html;
+      clipboardData.setData("text/html", html);
     }
-    clipboardData.setData('text/plain', text);
+    clipboardData.setData("text/plain", text);
     event.preventDefault();
     return true;
   };
@@ -1482,11 +1479,11 @@
       while (l--) {
         const item = items[l];
         const type = item.type;
-        if (type === 'text/html') {
+        if (type === "text/html") {
           htmlItem = item;
-        } else if (type === 'text/plain' || type === 'text/uri-list') {
+        } else if (type === "text/plain" || type === "text/uri-list") {
           plainItem = item;
-        } else if (type === 'text/rtf') {
+        } else if (type === "text/rtf") {
           hasRTF = true;
         } else if (/^image\/.*/.test(type)) {
           hasImage = true;
@@ -1494,7 +1491,7 @@
       }
       if (hasImage && !(hasRTF && htmlItem)) {
         event.preventDefault();
-        this.fireEvent('pasteImage', {
+        this.fireEvent("pasteImage", {
           clipboardData
         });
         return;
@@ -1524,12 +1521,12 @@
       }
     }
     const types = clipboardData == null ? void 0 : clipboardData.types;
-    if (!isLegacyEdge && types && (indexOf.call(types, 'text/html') > -1 || !isGecko && indexOf.call(types, 'text/plain') > -1 && indexOf.call(types, 'text/rtf') < 0)) {
+    if (!isLegacyEdge && types && (indexOf.call(types, "text/html") > -1 || !isGecko && indexOf.call(types, "text/plain") > -1 && indexOf.call(types, "text/rtf") < 0)) {
       event.preventDefault();
       let data;
-      if (!choosePlain && (data = clipboardData.getData('text/html'))) {
+      if (!choosePlain && (data = clipboardData.getData("text/html"))) {
         this.insertHTML(data, true);
-      } else if ((data = clipboardData.getData('text/plain')) || (data = clipboardData.getData('text/uri-list'))) {
+      } else if ((data = clipboardData.getData("text/plain")) || (data = clipboardData.getData("text/uri-list"))) {
         this.insertPlainText(data, true);
       }
       return;
@@ -1540,16 +1537,16 @@
     const startOffset = range.startOffset;
     const endContainer = range.endContainer;
     const endOffset = range.endOffset;
-    let pasteArea = createElement('DIV', {
-      contenteditable: 'true',
-      style: 'position:fixed; overflow:hidden; top:0; right:100%; width:1px; height:1px;'
+    let pasteArea = createElement("DIV", {
+      contenteditable: "true",
+      style: "position:fixed; overflow:hidden; top:0; right:100%; width:1px; height:1px;"
     });
     body.appendChild(pasteArea);
     range.selectNodeContents(pasteArea);
     this.setSelection(range);
     setTimeout(() => {
       try {
-        let html = '';
+        let html = "";
         let next = pasteArea;
         let first;
         while (pasteArea = next) {
@@ -1587,10 +1584,10 @@
     let hasHTML = false;
     while (l--) {
       switch (types[l]) {
-        case 'text/plain':
+        case "text/plain":
           hasPlain = true;
           break;
-        case 'text/html':
+        case "text/html":
           hasHTML = true;
           break;
         default:
@@ -1636,7 +1633,7 @@
         fixCursor(parent);
         moveRangeBoundariesDownTree(range);
       }
-      if (node === self._root && (node = node.firstChild) && node.nodeName === 'BR') {
+      if (node === self._root && (node = node.firstChild) && node.nodeName === "BR") {
         detach(node);
       }
       self._ensureBottomLine();
@@ -1657,13 +1654,13 @@
     detach(node);
   };
   var linkifyText = (self, textNode, offset) => {
-    if (getNearest(textNode, self._root, 'A')) {
+    if (getNearest(textNode, self._root, "A")) {
       return;
     }
-    const data = textNode.data || '';
+    const data = textNode.data || "";
     const searchFrom = Math.max(
-      data.lastIndexOf(' ', offset - 1),
-      data.lastIndexOf('\xA0', offset - 1)
+      data.lastIndexOf(" ", offset - 1),
+      data.lastIndexOf("\xA0", offset - 1)
     ) + 1;
     const searchText = data.slice(searchFrom, offset);
     const match = self.linkRegExp.exec(searchText);
@@ -1681,10 +1678,10 @@
       }
       const defaultAttributes = self._config.tagAttributes.a;
       const link = createElement(
-        'A',
+        "A",
         Object.assign(
           {
-            href: match[1] ? /^(?:ht|f)tps?:/i.test(match[1]) ? match[1] : 'http://' + match[1] : 'mailto:' + match[0]
+            href: match[1] ? /^(?:ht|f)tps?:/i.test(match[1]) ? match[1] : "http://" + match[1] : "mailto:" + match[0]
           },
           defaultAttributes
         )
@@ -1733,10 +1730,10 @@
         }
         self.setSelection(range);
       } else if (current) {
-        if (getNearest(current, root, 'UL') || getNearest(current, root, 'OL')) {
+        if (getNearest(current, root, "UL") || getNearest(current, root, "OL")) {
           self.decreaseListLevel(range);
           return;
-        } else if (getNearest(current, root, 'BLOCKQUOTE')) {
+        } else if (getNearest(current, root, "BLOCKQUOTE")) {
           self.removeQuote(range);
           return;
         }
@@ -1808,7 +1805,7 @@
       cursorOffset = range.endOffset;
       if (cursorContainer instanceof Element) {
         nodeAfterCursor = cursorContainer.childNodes[cursorOffset];
-        if (nodeAfterCursor && nodeAfterCursor.nodeName === 'IMG') {
+        if (nodeAfterCursor && nodeAfterCursor.nodeName === "IMG") {
           event.preventDefault();
           detach(nodeAfterCursor);
           moveRangeBoundariesDownTree(range);
@@ -1831,7 +1828,7 @@
       let node = getStartBlockOfRange(range, root);
       let parent;
       while (parent = node.parentNode) {
-        if (parent.nodeName === 'UL' || parent.nodeName === 'OL') {
+        if (parent.nodeName === "UL" || parent.nodeName === "OL") {
           event.preventDefault();
           self.increaseListLevel(range);
           break;
@@ -1845,7 +1842,7 @@
     self._removeZWS();
     if (range.collapsed && rangeDoesStartAtBlockBoundary(range, root)) {
       const node = range.startContainer;
-      if (getNearest(node, root, 'UL') || getNearest(node, root, 'OL')) {
+      if (getNearest(node, root, "UL") || getNearest(node, root, "OL")) {
         event.preventDefault();
         self.decreaseListLevel(range);
       }
@@ -1866,11 +1863,11 @@
       self._updatePath(range, true);
     } else if (rangeDoesEndAtBlockBoundary(range, root)) {
       const block = getStartBlockOfRange(range, root);
-      if (block && block.nodeName !== 'PRE') {
-        const text = (_a = block.textContent) == null ? void 0 : _a.trimEnd().replace(ZWS, '');
-        if (text === '*' || text === '1.') {
+      if (block && block.nodeName !== "PRE") {
+        const text = (_a = block.textContent) == null ? void 0 : _a.trimEnd().replace(ZWS, "");
+        if (text === "*" || text === "1.") {
           event.preventDefault();
-          self.insertPlainText(' ', false);
+          self.insertPlainText(" ", false);
           self._docWasChanged();
           self.saveUndoState(range);
           const walker = new TreeIterator(block, SHOW_TEXT);
@@ -1878,7 +1875,7 @@
           while (textNode = walker.nextNode()) {
             detach(textNode);
           }
-          if (text === '*') {
+          if (text === "*") {
             self.makeUnorderedList();
           } else {
             self.makeOrderedList();
@@ -1890,7 +1887,7 @@
     node = range.endContainer;
     if (range.endOffset === getLength(node)) {
       do {
-        if (node.nodeName === 'A') {
+        if (node.nodeName === "A") {
           range.setStartAfter(node);
           break;
         }
@@ -1914,27 +1911,27 @@
       return;
     }
     let key = event.key;
-    let modifiers = '';
+    let modifiers = "";
     const code = event.code;
     if (/^Digit\d$/.test(code)) {
       key = code.slice(-1);
     }
-    if (key !== 'Backspace' && key !== 'Delete') {
+    if (key !== "Backspace" && key !== "Delete") {
       if (event.altKey) {
-        modifiers += 'Alt-';
+        modifiers += "Alt-";
       }
       if (event.ctrlKey) {
-        modifiers += 'Ctrl-';
+        modifiers += "Ctrl-";
       }
       if (event.metaKey) {
-        modifiers += 'Meta-';
+        modifiers += "Meta-";
       }
       if (event.shiftKey) {
-        modifiers += 'Shift-';
+        modifiers += "Shift-";
       }
     }
-    if (isWin && event.shiftKey && key === 'Delete') {
-      modifiers += 'Shift-';
+    if (isWin && event.shiftKey && key === "Delete") {
+      modifiers += "Shift-";
     }
     key = modifiers + key;
     const range = this.getSelection();
@@ -1949,25 +1946,25 @@
     }
   };
   var keyHandlers = {
-    'Backspace': Backspace,
-    'Delete': Delete,
-    'Tab': Tab,
-    'Shift-Tab': ShiftTab,
-    ' ': Space,
-    'ArrowLeft'(self) {
+    "Backspace": Backspace,
+    "Delete": Delete,
+    "Tab": Tab,
+    "Shift-Tab": ShiftTab,
+    " ": Space,
+    "ArrowLeft"(self) {
       self._removeZWS();
     },
-    'ArrowRight'(self, event, range) {
+    "ArrowRight"(self, event, range) {
       self._removeZWS();
       const root = self.getRoot();
       if (rangeDoesEndAtBlockBoundary(range, root)) {
         moveRangeBoundariesDownTree(range);
         let node = range.endContainer;
         do {
-          if (node.nodeName === 'CODE') {
+          if (node.nodeName === "CODE") {
             let next = node.nextSibling;
             if (!(next instanceof Text)) {
-              const textNode = document.createTextNode('\xA0');
+              const textNode = document.createTextNode("\xA0");
               node.parentNode.insertBefore(textNode, next);
               next = textNode;
             }
@@ -1982,7 +1979,7 @@
   };
   if (!supportsInputEvents) {
     keyHandlers.Enter = Enter;
-    keyHandlers['Shift-Enter'] = Enter;
+    keyHandlers["Shift-Enter"] = Enter;
   }
   if (!isMac && !isIOS) {
     keyHandlers.PageUp = (self) => {
@@ -2004,13 +2001,13 @@
       }
     };
   };
-  keyHandlers[ctrlKey + 'b'] = mapKeyToFormat('B');
-  keyHandlers[ctrlKey + 'i'] = mapKeyToFormat('I');
-  keyHandlers[ctrlKey + 'u'] = mapKeyToFormat('U');
-  keyHandlers[ctrlKey + 'Shift-7'] = mapKeyToFormat('S');
-  keyHandlers[ctrlKey + 'Shift-5'] = mapKeyToFormat('SUB', { tag: 'SUP' });
-  keyHandlers[ctrlKey + 'Shift-6'] = mapKeyToFormat('SUP', { tag: 'SUB' });
-  keyHandlers[ctrlKey + 'Shift-8'] = (self, event) => {
+  keyHandlers[ctrlKey + "b"] = mapKeyToFormat("B");
+  keyHandlers[ctrlKey + "i"] = mapKeyToFormat("I");
+  keyHandlers[ctrlKey + "u"] = mapKeyToFormat("U");
+  keyHandlers[ctrlKey + "Shift-7"] = mapKeyToFormat("S");
+  keyHandlers[ctrlKey + "Shift-5"] = mapKeyToFormat("SUB", { tag: "SUP" });
+  keyHandlers[ctrlKey + "Shift-6"] = mapKeyToFormat("SUP", { tag: "SUB" });
+  keyHandlers[ctrlKey + "Shift-8"] = (self, event) => {
     event.preventDefault();
     const path = self.getPath();
     if (!/(?:^|>)UL/.test(path)) {
@@ -2019,7 +2016,7 @@
       self.removeList();
     }
   };
-  keyHandlers[ctrlKey + 'Shift-9'] = (self, event) => {
+  keyHandlers[ctrlKey + "Shift-9"] = (self, event) => {
     event.preventDefault();
     const path = self.getPath();
     if (!/(?:^|>)OL/.test(path)) {
@@ -2028,7 +2025,7 @@
       self.removeList();
     }
   };
-  keyHandlers[ctrlKey + '['] = (self, event) => {
+  keyHandlers[ctrlKey + "["] = (self, event) => {
     event.preventDefault();
     const path = self.getPath();
     if (/(?:^|>)BLOCKQUOTE/.test(path) || !/(?:^|>)[OU]L/.test(path)) {
@@ -2037,7 +2034,7 @@
       self.decreaseListLevel();
     }
   };
-  keyHandlers[ctrlKey + ']'] = (self, event) => {
+  keyHandlers[ctrlKey + "]"] = (self, event) => {
     event.preventDefault();
     const path = self.getPath();
     if (/(?:^|>)BLOCKQUOTE/.test(path) || !/(?:^|>)[OU]L/.test(path)) {
@@ -2046,18 +2043,18 @@
       self.increaseListLevel();
     }
   };
-  keyHandlers[ctrlKey + 'd'] = (self, event) => {
+  keyHandlers[ctrlKey + "d"] = (self, event) => {
     event.preventDefault();
     self.toggleCode();
   };
-  keyHandlers[ctrlKey + 'z'] = (self, event) => {
+  keyHandlers[ctrlKey + "z"] = (self, event) => {
     event.preventDefault();
     self.undo();
   };
-  keyHandlers[ctrlKey + 'y'] = // Depending on platform, the Shift may cause the key to come through as
+  keyHandlers[ctrlKey + "y"] = // Depending on platform, the Shift may cause the key to come through as
     // upper case, but sometimes not. Just add both as shortcuts — the browser
     // will only ever fire one or the other.
-    keyHandlers[ctrlKey + 'Shift-z'] = keyHandlers[ctrlKey + 'Shift-Z'] = (self, event) => {
+    keyHandlers[ctrlKey + "Shift-z"] = keyHandlers[ctrlKey + "Shift-Z"] = (self, event) => {
       event.preventDefault();
       self.redo();
     };
@@ -2071,15 +2068,15 @@
        * editor code.
        */
       this.customEvents = /* @__PURE__ */ new Set([
-        'pathChange',
-        'select',
-        'input',
-        'pasteImage',
-        'undoStateChange'
+        "pathChange",
+        "select",
+        "input",
+        "pasteImage",
+        "undoStateChange"
       ]);
       // ---
-      this.startSelectionId = 'squire-selection-start';
-      this.endSelectionId = 'squire-selection-end';
+      this.startSelectionId = "squire-selection-start";
+      this.endSelectionId = "squire-selection-end";
       /*
       linkRegExp = new RegExp(
           // Only look on boundaries
@@ -2133,10 +2130,10 @@
       */
       this.linkRegExp = /\b(?:((?:(?:ht|f)tps?:\/\/|www\d{0,3}[.]|[a-z0-9][a-z0-9.\-]*[.][a-z]{2,}\/)(?:[^\s()<>]+|\([^\s()<>]+\))+(?:[^\s?&`!()\[\]{};:'".,<>«»“”‘’]|\([^\s()<>]+\)))|([\w\-.%+]+@(?:[\w\-]+\.)+[a-z]{2,}\b(?:[?][^&?\s]+=[^\s?&`!()\[\]{};:'".,<>«»“”‘’]+(?:&[^&?\s]+=[^\s?&`!()\[\]{};:'".,<>«»“”‘’]+)*)?))/i;
       this.tagAfterSplit = {
-        DT: 'DD',
-        DD: 'DT',
-        LI: 'LI',
-        PRE: 'PRE'
+        DT: "DD",
+        DD: "DT",
+        LI: "LI",
+        PRE: "PRE"
       };
       this._root = root;
       this._config = this._makeConfig(config);
@@ -2146,7 +2143,7 @@
       this._mayHaveZWS = false;
       this._lastAnchorNode = null;
       this._lastFocusNode = null;
-      this._path = '';
+      this._path = "";
       this._events = /* @__PURE__ */ new Map();
       this._undoIndex = -1;
       this._undoStack = [];
@@ -2154,22 +2151,23 @@
       this._isInUndoState = false;
       this._ignoreChange = false;
       this._ignoreAllChanges = false;
-      this.addEventListener('selectionchange', this._updatePathOnEvent);
-      this.addEventListener('blur', this._enableRestoreSelection);
-      this.addEventListener('mousedown', this._disableRestoreSelection);
-      this.addEventListener('touchstart', this._disableRestoreSelection);
-      this.addEventListener('focus', this._restoreSelection);
+      this.addEventListener("selectionchange", this._updatePathOnEvent);
+      this.addEventListener("blur", this._enableRestoreSelection);
+      this.addEventListener("mousedown", this._disableRestoreSelection);
+      this.addEventListener("touchstart", this._disableRestoreSelection);
+      this.addEventListener("focus", this._restoreSelection);
+      this.addEventListener("blur", this._removeZWS);
       this._isShiftDown = false;
-      this.addEventListener('cut', _onCut);
-      this.addEventListener('copy', _onCopy);
-      this.addEventListener('paste', _onPaste);
-      this.addEventListener('drop', _onDrop);
+      this.addEventListener("cut", _onCut);
+      this.addEventListener("copy", _onCopy);
+      this.addEventListener("paste", _onPaste);
+      this.addEventListener("drop", _onDrop);
       this.addEventListener(
-        'keydown',
+        "keydown",
         _monitorShiftKey
       );
-      this.addEventListener('keyup', _monitorShiftKey);
-      this.addEventListener('keydown', _onKey);
+      this.addEventListener("keyup", _monitorShiftKey);
+      this.addEventListener("keydown", _onKey);
       this._keyHandlers = Object.create(keyHandlers);
       const mutation = new MutationObserver(() => this._docWasChanged());
       mutation.observe(root, {
@@ -2179,14 +2177,13 @@
         subtree: true
       });
       this._mutation = mutation;
-      root.setAttribute('contenteditable', 'true');
+      root.setAttribute("contenteditable", "true");
       this.addEventListener(
-        'beforeinput',
+        "beforeinput",
         this._beforeInput
       );
-      this.setHTML('');
+      this.setHTML("");
     }
-
     destroy() {
       this._events.forEach((_, type) => {
         this.removeEventListener(type);
@@ -2196,17 +2193,16 @@
       this._undoStack = [];
       this._undoStackLength = 0;
     }
-
     _makeConfig(userConfig) {
       const config = {
-        blockTag: 'DIV',
+        blockTag: "DIV",
         blockAttributes: null,
         tagAttributes: {},
         classNames: {
-          color: 'color',
-          fontFamily: 'font',
-          fontSize: 'size',
-          highlight: 'highlight'
+          color: "color",
+          fontFamily: "font",
+          fontSize: "size",
+          highlight: "highlight"
         },
         undo: {
           documentSizeThreshold: -1,
@@ -2235,112 +2231,108 @@
       }
       return config;
     }
-
     setKeyHandler(key, fn) {
       this._keyHandlers[key] = fn;
       return this;
     }
-
     _beforeInput(event) {
       switch (event.inputType) {
-        case 'insertLineBreak':
+        case "insertLineBreak":
           event.preventDefault();
           this.splitBlock(true);
           break;
-        case 'insertParagraph':
+        case "insertParagraph":
           event.preventDefault();
           this.splitBlock(false);
           break;
-        case 'insertOrderedList':
+        case "insertOrderedList":
           event.preventDefault();
           this.makeOrderedList();
           break;
-        case 'insertUnoderedList':
+        case "insertUnoderedList":
           event.preventDefault();
           this.makeUnorderedList();
           break;
-        case 'historyUndo':
+        case "historyUndo":
           event.preventDefault();
           this.undo();
           break;
-        case 'historyRedo':
+        case "historyRedo":
           event.preventDefault();
           this.redo();
           break;
-        case 'formatBold':
+        case "formatBold":
           event.preventDefault();
           this.bold();
           break;
-        case 'formaItalic':
+        case "formaItalic":
           event.preventDefault();
           this.italic();
           break;
-        case 'formatUnderline':
+        case "formatUnderline":
           event.preventDefault();
           this.underline();
           break;
-        case 'formatStrikeThrough':
+        case "formatStrikeThrough":
           event.preventDefault();
           this.strikethrough();
           break;
-        case 'formatSuperscript':
+        case "formatSuperscript":
           event.preventDefault();
           this.superscript();
           break;
-        case 'formatSubscript':
+        case "formatSubscript":
           event.preventDefault();
           this.subscript();
           break;
-        case 'formatJustifyFull':
-        case 'formatJustifyCenter':
-        case 'formatJustifyRight':
-        case 'formatJustifyLeft': {
+        case "formatJustifyFull":
+        case "formatJustifyCenter":
+        case "formatJustifyRight":
+        case "formatJustifyLeft": {
           event.preventDefault();
           let alignment = event.inputType.slice(13).toLowerCase();
-          if (alignment === 'full') {
-            alignment = 'justify';
+          if (alignment === "full") {
+            alignment = "justify";
           }
           this.setTextAlignment(alignment);
           break;
         }
-        case 'formatRemove':
+        case "formatRemove":
           event.preventDefault();
           this.removeAllFormatting();
           break;
-        case 'formatSetBlockTextDirection': {
+        case "formatSetBlockTextDirection": {
           event.preventDefault();
           let dir = event.data;
-          if (dir === 'null') {
+          if (dir === "null") {
             dir = null;
           }
           this.setTextDirection(dir);
           break;
         }
-        case 'formatBackColor':
+        case "formatBackColor":
           event.preventDefault();
           this.setHighlightColor(event.data);
           break;
-        case 'formatFontColor':
+        case "formatFontColor":
           event.preventDefault();
           this.setTextColor(event.data);
           break;
-        case 'formatFontName':
+        case "formatFontName":
           event.preventDefault();
           this.setFontFace(event.data);
           break;
       }
     }
-
     // --- Events
     handleEvent(event) {
       this.fireEvent(event.type, event);
     }
-
     fireEvent(type, detail) {
       let handlers = this._events.get(type);
       if (/^(?:focus|blur)/.test(type)) {
         const isFocused = this._root === document.activeElement;
-        if (type === 'focus') {
+        if (type === "focus") {
           if (!isFocused || this._isFocused) {
             return this;
           }
@@ -2359,7 +2351,7 @@
         handlers = handlers.slice();
         for (const handler of handlers) {
           try {
-            if ('handleEvent' in handler) {
+            if ("handleEvent" in handler) {
               handler.handleEvent(event);
             } else {
               handler.call(this, event);
@@ -2371,7 +2363,6 @@
       }
       return this;
     }
-
     addEventListener(type, fn) {
       let handlers = this._events.get(type);
       let target = this._root;
@@ -2379,7 +2370,7 @@
         handlers = [];
         this._events.set(type, handlers);
         if (!this.customEvents.has(type)) {
-          if (type === 'selectionchange') {
+          if (type === "selectionchange") {
             target = document;
           }
           target.addEventListener(type, this, true);
@@ -2388,7 +2379,6 @@
       handlers.push(fn);
       return this;
     }
-
     removeEventListener(type, fn) {
       const handlers = this._events.get(type);
       let target = this._root;
@@ -2406,7 +2396,7 @@
         if (!handlers.length) {
           this._events.delete(type);
           if (!this.customEvents.has(type)) {
-            if (type === 'selectionchange') {
+            if (type === "selectionchange") {
               target = document;
             }
             target.removeEventListener(type, this, true);
@@ -2415,33 +2405,27 @@
       }
       return this;
     }
-
     // --- Focus
     focus() {
       this._root.focus({ preventScroll: true });
       return this;
     }
-
     blur() {
       this._root.blur();
       return this;
     }
-
     // --- Selection and bookmarking
     _enableRestoreSelection() {
       this._willRestoreSelection = true;
     }
-
     _disableRestoreSelection() {
       this._willRestoreSelection = false;
     }
-
     _restoreSelection() {
       if (this._willRestoreSelection) {
         this.setSelection(this._lastSelection);
       }
     }
-
     // ---
     _removeZWS() {
       if (!this._mayHaveZWS) {
@@ -2450,15 +2434,14 @@
       removeZWS(this._root);
       this._mayHaveZWS = false;
     }
-
     _saveRangeToBookmark(range) {
-      let startNode = createElement('INPUT', {
+      let startNode = createElement("INPUT", {
         id: this.startSelectionId,
-        type: 'hidden'
+        type: "hidden"
       });
-      let endNode = createElement('INPUT', {
+      let endNode = createElement("INPUT", {
         id: this.endSelectionId,
-        type: 'hidden'
+        type: "hidden"
       });
       let temp;
       insertNodeInRange(range, startNode);
@@ -2474,11 +2457,10 @@
       range.setStartAfter(startNode);
       range.setEndBefore(endNode);
     }
-
     _getRangeAndRemoveBookmark(range) {
       const root = this._root;
-      const start = root.querySelector('#' + this.startSelectionId);
-      const end = root.querySelector('#' + this.endSelectionId);
+      const start = root.querySelector("#" + this.startSelectionId);
+      const end = root.querySelector("#" + this.endSelectionId);
       if (start && end) {
         let startContainer = start.parentNode;
         let endContainer = end.parentNode;
@@ -2516,7 +2498,6 @@
       }
       return range || null;
     }
-
     getSelection() {
       const selection = window.getSelection();
       const root = this._root;
@@ -2545,7 +2526,6 @@
       }
       return range;
     }
-
     setSelection(range) {
       this._lastSelection = range;
       if (!this._isFocused) {
@@ -2553,7 +2533,7 @@
       } else {
         const selection = window.getSelection();
         if (selection) {
-          if ('setBaseAndExtent' in Selection.prototype) {
+          if ("setBaseAndExtent" in Selection.prototype) {
             selection.setBaseAndExtent(
               range.startContainer,
               range.startOffset,
@@ -2568,7 +2548,6 @@
       }
       return this;
     }
-
     // ---
     _moveCursorTo(toStart) {
       const root = this._root;
@@ -2577,22 +2556,19 @@
       this.setSelection(range);
       return this;
     }
-
     moveCursorToStart() {
       return this._moveCursorTo(true);
     }
-
     moveCursorToEnd() {
       return this._moveCursorTo(false);
     }
-
     // ---
     getCursorPosition() {
       const range = this.getSelection();
       let rect = range.getBoundingClientRect();
       if (rect && !rect.top) {
         this._ignoreChange = true;
-        const node = createElement('SPAN');
+        const node = createElement("SPAN");
         node.textContent = ZWS;
         insertNodeInRange(range, node);
         rect = node.getBoundingClientRect();
@@ -2602,18 +2578,15 @@
       }
       return rect;
     }
-
     // --- Path
     getPath() {
       return this._path;
     }
-
     _updatePathOnEvent() {
       if (this._isFocused) {
         this._updatePath(this.getSelection());
       }
     }
-
     _updatePath(range, force) {
       const anchor = range.startContainer;
       const focus = range.endContainer;
@@ -2621,60 +2594,58 @@
       if (force || anchor !== this._lastAnchorNode || focus !== this._lastFocusNode) {
         this._lastAnchorNode = anchor;
         this._lastFocusNode = focus;
-        newPath = anchor && focus ? anchor === focus ? this._getPath(focus) : '(selection)' : '';
-        if (this._path !== newPath) {
+        newPath = anchor && focus ? anchor === focus ? this._getPath(focus) : "(selection)" : "";
+        if (this._path !== newPath || anchor !== focus) {
           this._path = newPath;
-          this.fireEvent('pathChange', {
+          this.fireEvent("pathChange", {
             path: newPath
           });
         }
       }
-      this.fireEvent(range.collapsed ? 'cursor' : 'select', {
+      this.fireEvent(range.collapsed ? "cursor" : "select", {
         range
       });
     }
-
     _getPath(node) {
       const root = this._root;
       const config = this._config;
-      let path = '';
+      let path = "";
       if (node && node !== root) {
         const parent = node.parentNode;
-        path = parent ? this._getPath(parent) : '';
+        path = parent ? this._getPath(parent) : "";
         if (node instanceof HTMLElement) {
           const id = node.id;
           const classList = node.classList;
           const classNames = Array.from(classList).sort();
           const dir = node.dir;
           const styleNames = config.classNames;
-          path += (path ? '>' : '') + node.nodeName;
+          path += (path ? ">" : "") + node.nodeName;
           if (id) {
-            path += '#' + id;
+            path += "#" + id;
           }
           if (classNames.length) {
-            path += '.';
-            path += classNames.join('.');
+            path += ".";
+            path += classNames.join(".");
           }
           if (dir) {
-            path += '[dir=' + dir + ']';
+            path += "[dir=" + dir + "]";
           }
           if (classList.contains(styleNames.highlight)) {
-            path += '[backgroundColor=' + node.style.backgroundColor.replace(/ /g, '') + ']';
+            path += "[backgroundColor=" + node.style.backgroundColor.replace(/ /g, "") + "]";
           }
           if (classList.contains(styleNames.color)) {
-            path += '[color=' + node.style.color.replace(/ /g, '') + ']';
+            path += "[color=" + node.style.color.replace(/ /g, "") + "]";
           }
           if (classList.contains(styleNames.fontFamily)) {
-            path += '[fontFamily=' + node.style.fontFamily.replace(/ /g, '') + ']';
+            path += "[fontFamily=" + node.style.fontFamily.replace(/ /g, "") + "]";
           }
           if (classList.contains(styleNames.fontSize)) {
-            path += '[fontSize=' + node.style.fontSize + ']';
+            path += "[fontSize=" + node.style.fontSize + "]";
           }
         }
       }
       return path;
     }
-
     // --- History
     modifyDocument(modificationFn) {
       const mutation = this._mutation;
@@ -2698,7 +2669,6 @@
       }
       return this;
     }
-
     _docWasChanged() {
       resetNodeCategoryCache();
       this._mayHaveZWS = true;
@@ -2711,14 +2681,13 @@
       }
       if (this._isInUndoState) {
         this._isInUndoState = false;
-        this.fireEvent('undoStateChange', {
+        this.fireEvent("undoStateChange", {
           canUndo: true,
           canRedo: false
         });
       }
-      this.fireEvent('input');
+      this.fireEvent("input");
     }
-
     /**
      * Leaves bookmark.
      */
@@ -2757,7 +2726,6 @@
       }
       return this;
     }
-
     saveUndoState(range) {
       if (!range) {
         range = this.getSelection();
@@ -2766,7 +2734,6 @@
       this._getRangeAndRemoveBookmark(range);
       return this;
     }
-
     undo() {
       if (this._undoIndex !== 0 || !this._isInUndoState) {
         this._recordUndoState(this.getSelection(), false);
@@ -2777,15 +2744,14 @@
           this.setSelection(range);
         }
         this._isInUndoState = true;
-        this.fireEvent('undoStateChange', {
+        this.fireEvent("undoStateChange", {
           canUndo: this._undoIndex !== 0,
           canRedo: true
         });
-        this.fireEvent('input');
+        this.fireEvent("input");
       }
       return this.focus();
     }
-
     redo() {
       const undoIndex = this._undoIndex;
       const undoStackLength = this._undoStackLength;
@@ -2796,30 +2762,27 @@
         if (range) {
           this.setSelection(range);
         }
-        this.fireEvent('undoStateChange', {
+        this.fireEvent("undoStateChange", {
           canUndo: true,
           canRedo: undoIndex + 2 < undoStackLength
         });
-        this.fireEvent('input');
+        this.fireEvent("input");
       }
       return this.focus();
     }
-
     // --- Get and set data
     getRoot() {
       return this._root;
     }
-
     _getRawHTML() {
       return this._root.innerHTML;
     }
-
     _setRawHTML(html) {
       const root = this._root;
       root.innerHTML = html;
       let node = root;
       const child = node.firstChild;
-      if (!child || child.nodeName === 'BR') {
+      if (!child || child.nodeName === "BR") {
         const block = this.createDefaultBlock();
         if (child) {
           node.replaceChild(block, child);
@@ -2834,20 +2797,18 @@
       this._ignoreChange = true;
       return this;
     }
-
     getHTML(withBookmark) {
       let range;
       if (withBookmark) {
         range = this.getSelection();
         this._saveRangeToBookmark(range);
       }
-      const html = this._getRawHTML().replace(/\u200B/g, '');
+      const html = this._getRawHTML().replace(/\u200B/g, "");
       if (withBookmark) {
         this._getRangeAndRemoveBookmark(range);
       }
       return html;
     }
-
     setHTML(html) {
       const frag = this._config.sanitizeToDOMFragment(html, this);
       const root = this._root;
@@ -2856,7 +2817,7 @@
       fixContainer(frag, root);
       let node = frag;
       let child = node.firstChild;
-      if (!child || child.nodeName === 'BR') {
+      if (!child || child.nodeName === "BR") {
         const block = this.createDefaultBlock();
         if (child) {
           node.replaceChild(block, child);
@@ -2883,7 +2844,6 @@
       this._updatePath(range, true);
       return this;
     }
-
     /**
      * Insert HTML at the cursor location. If the selection is not collapsed
      * insertTreeFragmentIntoRange will delete the selection so that it is
@@ -2909,20 +2869,21 @@
         }
         let doInsert = true;
         if (isPaste) {
-          const event = new CustomEvent('willPaste', {
+          const event = new CustomEvent("willPaste", {
             cancelable: true,
             detail: {
+              html,
               fragment: frag
             }
           });
-          this.fireEvent('willPaste', event);
+          this.fireEvent("willPaste", event);
           frag = event.detail.fragment;
           doInsert = !event.defaultPrevented;
         }
         if (doInsert) {
           insertTreeFragmentIntoRange(range, frag, root);
           range.collapse(false);
-          moveRangeBoundaryOutOf(range, 'A', root);
+          moveRangeBoundaryOutOf(range, "A", root);
           this._ensureBottomLine();
         }
         this.setSelection(range);
@@ -2935,7 +2896,6 @@
       }
       return this;
     }
-
     insertElement(el, range) {
       if (!range) {
         range = this.getSelection();
@@ -2979,10 +2939,9 @@
       this._updatePath(range);
       return this;
     }
-
     insertImage(src, attributes) {
       const img = createElement(
-        'IMG',
+        "IMG",
         Object.assign(
           {
             src
@@ -2993,15 +2952,14 @@
       this.insertElement(img);
       return img;
     }
-
     insertPlainText(plainText, isPaste) {
       const range = this.getSelection();
-      if (range.collapsed && getNearest(range.startContainer, this._root, 'PRE')) {
+      if (range.collapsed && getNearest(range.startContainer, this._root, "PRE")) {
         const startContainer = range.startContainer;
         let offset = range.startOffset;
         let textNode;
         if (!startContainer || !(startContainer instanceof Text)) {
-          const text = document.createTextNode('');
+          const text = document.createTextNode("");
           startContainer.insertBefore(
             text,
             startContainer.childNodes[offset]
@@ -3013,13 +2971,13 @@
         }
         let doInsert = true;
         if (isPaste) {
-          const event = new CustomEvent('willPaste', {
+          const event = new CustomEvent("willPaste", {
             cancelable: true,
             detail: {
               text: plainText
             }
           });
-          this.fireEvent('willPaste', event);
+          this.fireEvent("willPaste", event);
           plainText = event.detail.text;
           doInsert = !event.defaultPrevented;
         }
@@ -3031,31 +2989,29 @@
         this.setSelection(range);
         return this;
       }
-      const lines = plainText.split('\n');
+      const lines = plainText.split("\n");
       const config = this._config;
       const tag = config.blockTag;
       const attributes = config.blockAttributes;
-      const closeBlock = '</' + tag + '>';
-      let openBlock = '<' + tag;
+      const closeBlock = "</" + tag + ">";
+      let openBlock = "<" + tag;
       for (const attr in attributes) {
-        openBlock += ' ' + attr + '="' + escapeHTML(attributes[attr]) + '"';
+        openBlock += " " + attr + '="' + escapeHTML(attributes[attr]) + '"';
       }
-      openBlock += '>';
+      openBlock += ">";
       for (let i = 0, l = lines.length; i < l; i += 1) {
         let line = lines[i];
-        line = escapeHTML(line).replace(/ (?=(?: |$))/g, '&nbsp;');
+        line = escapeHTML(line).replace(/ (?=(?: |$))/g, "&nbsp;");
         if (i) {
-          line = openBlock + (line || '<BR>') + closeBlock;
+          line = openBlock + (line || "<BR>") + closeBlock;
         }
         lines[i] = line;
       }
-      return this.insertHTML(lines.join(''), isPaste);
+      return this.insertHTML(lines.join(""), isPaste);
     }
-
     getSelectedText(range) {
       return getTextContentsOfRange(range || this.getSelection());
     }
-
     // --- Inline formatting
     /**
      * Extracts the font-family and font-size (if any) of the element
@@ -3071,6 +3027,7 @@
       if (!range) {
         range = this.getSelection();
       }
+      moveRangeBoundariesDownTree(range);
       let seenAttributes = 0;
       let element = range.commonAncestorContainer;
       if (range.collapsed || element instanceof Text) {
@@ -3106,7 +3063,6 @@
       }
       return fontInfo;
     }
-
     /**
      * Looks for matching tag and attributes, so won't work if <strong>
      * instead of <b> etc.
@@ -3146,7 +3102,6 @@
       }
       return seenNode;
     }
-
     changeFormat(add, remove, range, partial) {
       if (!range) {
         range = this.getSelection();
@@ -3171,7 +3126,6 @@
       this._updatePath(range, true);
       return this.focus();
     }
-
     _addFormat(tag, attributes, range) {
       const root = this._root;
       if (range.collapsed) {
@@ -3191,7 +3145,7 @@
           range.commonAncestorContainer,
           SHOW_ELEMENT_OR_TEXT,
           (node) => {
-            return (node instanceof Text || node.nodeName === 'BR' || node.nodeName === 'IMG') && isNodeContainedInRange(range, node, true);
+            return (node instanceof Text || node.nodeName === "BR" || node.nodeName === "IMG") && isNodeContainedInRange(range, node, true);
           }
         );
         let { startContainer, startOffset, endContainer, endOffset } = range;
@@ -3236,7 +3190,6 @@
       }
       return range;
     }
-
     _removeFormat(tag, attributes, range, partial) {
       this._saveRangeToBookmark(range);
       let fixer;
@@ -3244,7 +3197,7 @@
         if (cantFocusEmptyTextNodes) {
           fixer = document.createTextNode(ZWS);
         } else {
-          fixer = document.createTextNode('');
+          fixer = document.createTextNode("");
         }
         insertNodeInRange(range, fixer);
       }
@@ -3319,63 +3272,50 @@
       mergeInlines(root, range);
       return range;
     }
-
     // ---
     bold() {
-      return this.changeFormat({ tag: 'B' });
+      return this.changeFormat({ tag: "B" });
     }
-
     removeBold() {
-      return this.changeFormat(null, { tag: 'B' });
+      return this.changeFormat(null, { tag: "B" });
     }
-
     italic() {
-      return this.changeFormat({ tag: 'I' });
+      return this.changeFormat({ tag: "I" });
     }
-
     removeItalic() {
-      return this.changeFormat(null, { tag: 'I' });
+      return this.changeFormat(null, { tag: "I" });
     }
-
     underline() {
-      return this.changeFormat({ tag: 'U' });
+      return this.changeFormat({ tag: "U" });
     }
-
     removeUnderline() {
-      return this.changeFormat(null, { tag: 'U' });
+      return this.changeFormat(null, { tag: "U" });
     }
-
     strikethrough() {
-      return this.changeFormat({ tag: 'S' });
+      return this.changeFormat({ tag: "S" });
     }
-
     removeStrikethrough() {
-      return this.changeFormat(null, { tag: 'S' });
+      return this.changeFormat(null, { tag: "S" });
     }
-
     subscript() {
-      return this.changeFormat({ tag: 'SUB' }, { tag: 'SUP' });
+      return this.changeFormat({ tag: "SUB" }, { tag: "SUP" });
     }
-
     removeSubscript() {
-      return this.changeFormat(null, { tag: 'SUB' });
+      return this.changeFormat(null, { tag: "SUB" });
     }
-
     superscript() {
-      return this.changeFormat({ tag: 'SUP' }, { tag: 'SUB' });
+      return this.changeFormat({ tag: "SUP" }, { tag: "SUB" });
     }
-
     removeSuperscript() {
-      return this.changeFormat(null, { tag: 'SUP' });
+      return this.changeFormat(null, { tag: "SUP" });
     }
-
     // ---
     makeLink(url, attributes) {
       const range = this.getSelection();
       if (range.collapsed) {
-        let protocolEnd = url.indexOf(':') + 1;
+        let protocolEnd = url.indexOf(":") + 1;
         if (protocolEnd) {
-          while (url[protocolEnd] === '/') {
+          while (url[protocolEnd] === "/") {
             protocolEnd += 1;
           }
         }
@@ -3393,32 +3333,30 @@
       );
       return this.changeFormat(
         {
-          tag: 'A',
+          tag: "A",
           attributes
         },
         {
-          tag: 'A'
+          tag: "A"
         },
         range
       );
     }
-
     removeLink() {
       return this.changeFormat(
         null,
         {
-          tag: 'A'
+          tag: "A"
         },
         this.getSelection(),
         true
       );
     }
-
     addDetectedLinks(searchInNode, root) {
       const walker = new TreeIterator(
         searchInNode,
         SHOW_TEXT,
-        (node2) => !getNearest(node2, root || this._root, 'A')
+        (node2) => !getNearest(node2, root || this._root, "A")
       );
       const linkRegExp = this.linkRegExp;
       const defaultAttributes = this._config.tagAttributes.a;
@@ -3437,10 +3375,10 @@
             );
           }
           const child = createElement(
-            'A',
+            "A",
             Object.assign(
               {
-                href: match[1] ? /^(?:ht|f)tps?:/i.test(match[1]) ? match[1] : 'http://' + match[1] : 'mailto:' + match[0]
+                href: match[1] ? /^(?:ht|f)tps?:/i.test(match[1]) ? match[1] : "http://" + match[1] : "mailto:" + match[0]
               },
               defaultAttributes
             )
@@ -3452,76 +3390,71 @@
       }
       return this;
     }
-
     // ---
     setFontFace(name) {
       const className = this._config.classNames.fontFamily;
       return this.changeFormat(
         name ? {
-          tag: 'SPAN',
+          tag: "SPAN",
           attributes: {
             class: className,
-            style: 'font-family: ' + name + ', sans-serif;'
+            style: "font-family: " + name + ", sans-serif;"
           }
         } : null,
         {
-          tag: 'SPAN',
+          tag: "SPAN",
           attributes: { class: className }
         }
       );
     }
-
     setFontSize(size) {
       const className = this._config.classNames.fontSize;
       return this.changeFormat(
         size ? {
-          tag: 'SPAN',
+          tag: "SPAN",
           attributes: {
             class: className,
-            style: 'font-size: ' + (typeof size === 'number' ? size + 'px' : size)
+            style: "font-size: " + (typeof size === "number" ? size + "px" : size)
           }
         } : null,
         {
-          tag: 'SPAN',
+          tag: "SPAN",
           attributes: { class: className }
         }
       );
     }
-
     setTextColor(color) {
       const className = this._config.classNames.color;
       return this.changeFormat(
         color ? {
-          tag: 'SPAN',
+          tag: "SPAN",
           attributes: {
             class: className,
-            style: 'color:' + color
+            style: "color:" + color
           }
         } : null,
         {
-          tag: 'SPAN',
+          tag: "SPAN",
           attributes: { class: className }
         }
       );
     }
-
     setHighlightColor(color) {
       const className = this._config.classNames.highlight;
       return this.changeFormat(
         color ? {
-          tag: 'SPAN',
+          tag: "SPAN",
           attributes: {
             class: className,
-            style: 'background-color:' + color
+            style: "background-color:" + color
           }
         } : null,
         {
-          tag: 'SPAN',
+          tag: "SPAN",
           attributes: { class: className }
         }
       );
     }
-
     // --- Block formatting
     _ensureBottomLine() {
       const root = this._root;
@@ -3530,14 +3463,12 @@
         root.appendChild(this.createDefaultBlock());
       }
     }
-
     createDefaultBlock(children) {
       const config = this._config;
       return fixCursor(
         createElement(config.blockTag, config.blockAttributes, children)
       );
     }
-
     splitBlock(lineBreakOnly, range) {
       if (!range) {
         range = this.getSelection();
@@ -3562,15 +3493,15 @@
         }, 0);
       }
       block = getStartBlockOfRange(range, root);
-      if (block && (parent = getNearest(block, root, 'PRE'))) {
+      if (block && (parent = getNearest(block, root, "PRE"))) {
         moveRangeBoundariesDownTree(range);
         node = range.startContainer;
         const offset2 = range.startOffset;
         if (!(node instanceof Text)) {
-          node = document.createTextNode('');
+          node = document.createTextNode("");
           parent.insertBefore(node, parent.firstChild);
         }
-        if (!lineBreakOnly && node instanceof Text && (node.data.charAt(offset2 - 1) === '\n' || rangeDoesStartAtBlockBoundary(range, root)) && (node.data.charAt(offset2) === '\n' || rangeDoesEndAtBlockBoundary(range, root))) {
+        if (!lineBreakOnly && node instanceof Text && (node.data.charAt(offset2 - 1) === "\n" || rangeDoesStartAtBlockBoundary(range, root)) && (node.data.charAt(offset2) === "\n" || rangeDoesEndAtBlockBoundary(range, root))) {
           node.deleteData(offset2 && offset2 - 1, offset2 ? 2 : 1);
           nodeAfterSplit = split(
             node,
@@ -3589,7 +3520,7 @@
           }
           range.setStart(node, 0);
         } else {
-          node.insertData(offset2, '\n');
+          node.insertData(offset2, "\n");
           fixCursor(parent);
           if (node.length === offset2 + 1) {
             range.setStartAfter(node);
@@ -3604,22 +3535,22 @@
         return this;
       }
       if (!block || lineBreakOnly || /^T[HD]$/.test(block.nodeName)) {
-        moveRangeBoundaryOutOf(range, 'A', root);
-        insertNodeInRange(range, createElement('BR'));
+        moveRangeBoundaryOutOf(range, "A", root);
+        insertNodeInRange(range, createElement("BR"));
         range.collapse(false);
         this.setSelection(range);
         this._updatePath(range, true);
         return this;
       }
-      if (parent = getNearest(block, root, 'LI')) {
+      if (parent = getNearest(block, root, "LI")) {
         block = parent;
       }
       if (isEmptyBlock(block)) {
-        if (getNearest(block, root, 'UL') || getNearest(block, root, 'OL')) {
+        if (getNearest(block, root, "UL") || getNearest(block, root, "OL")) {
           this.decreaseListLevel(range);
           return this;
-        } else if (getNearest(block, root, 'BLOCKQUOTE')) {
-          this.removeQuote(range);
+        } else if (getNearest(block, root, "BLOCKQUOTE")) {
+          this.replaceWithBlankLine(range);
           return this;
         }
       }
@@ -3653,21 +3584,21 @@
       while (nodeAfterSplit instanceof Element) {
         let child = nodeAfterSplit.firstChild;
         let next;
-        if (nodeAfterSplit.nodeName === 'A' && (!nodeAfterSplit.textContent || nodeAfterSplit.textContent === ZWS)) {
-          child = document.createTextNode('');
+        if (nodeAfterSplit.nodeName === "A" && (!nodeAfterSplit.textContent || nodeAfterSplit.textContent === ZWS)) {
+          child = document.createTextNode("");
           replaceWith(nodeAfterSplit, child);
           nodeAfterSplit = child;
           break;
         }
         while (child && child instanceof Text && !child.data) {
           next = child.nextSibling;
-          if (!next || next.nodeName === 'BR') {
+          if (!next || next.nodeName === "BR") {
             break;
           }
           detach(child);
           child = next;
         }
-        if (!child || child.nodeName === 'BR' || child instanceof Text) {
+        if (!child || child.nodeName === "BR" || child instanceof Text) {
           break;
         }
         nodeAfterSplit = child;
@@ -3677,7 +3608,6 @@
       this._updatePath(range, true);
       return this;
     }
-
     forEachBlock(fn, mutates, range) {
       if (!range) {
         range = this.getSelection();
@@ -3701,7 +3631,6 @@
       }
       return this;
     }
-
     modifyBlocks(modify, range) {
       if (!range) {
         range = this.getSelection();
@@ -3739,35 +3668,32 @@
       this._updatePath(range, true);
       return this;
     }
-
     // ---
     setTextAlignment(alignment) {
       this.forEachBlock((block) => {
         const className = block.className.split(/\s+/).filter((klass) => {
           return !!klass && !/^align/.test(klass);
-        }).join(' ');
+        }).join(" ");
         if (alignment) {
-          block.className = className + ' align-' + alignment;
+          block.className = className + " align-" + alignment;
           block.style.textAlign = alignment;
         } else {
           block.className = className;
-          block.style.textAlign = '';
+          block.style.textAlign = "";
         }
       }, true);
       return this.focus();
     }
-
     setTextDirection(direction) {
       this.forEachBlock((block) => {
         if (direction) {
           block.dir = direction;
         } else {
-          block.removeAttribute('dir');
+          block.removeAttribute("dir");
         }
       }, true);
       return this.focus();
     }
-
     // ---
     _getListSelection(range, root) {
       let list = range.commonAncestorContainer;
@@ -3793,7 +3719,6 @@
       }
       return [list, startLi, endLi];
     }
-
     increaseListLevel(range) {
       if (!range) {
         range = this.getSelection();
@@ -3830,7 +3755,6 @@
       this._updatePath(range, true);
       return this.focus();
     }
-
     decreaseListLevel(range) {
       if (!range) {
         range = this.getSelection();
@@ -3853,7 +3777,7 @@
       if (startLi) {
         let newParent = list.parentNode;
         insertBefore = !endLi.nextSibling ? list.nextSibling : split(list, endLi.nextSibling, newParent, root);
-        if (newParent !== root && newParent.nodeName === 'LI') {
+        if (newParent !== root && newParent.nodeName === "LI") {
           newParent = newParent.parentNode;
           while (insertBefore) {
             next = insertBefore.nextSibling;
@@ -3866,7 +3790,7 @@
         do {
           next = startLi === endLi ? null : startLi.nextSibling;
           list.removeChild(startLi);
-          if (makeNotList && startLi.nodeName === 'LI') {
+          if (makeNotList && startLi.nodeName === "LI") {
             startLi = this.createDefaultBlock([empty(startLi)]);
           }
           newParent.insertBefore(startLi, insertBefore);
@@ -3883,7 +3807,6 @@
       this._updatePath(range, true);
       return this.focus();
     }
-
     _makeList(frag, type) {
       const walker = getBlockWalker(frag, this._root);
       const tagAttributes = this._config.tagAttributes;
@@ -3896,7 +3819,7 @@
           walker.currentNode = node.lastChild;
         }
         if (!(node instanceof HTMLLIElement)) {
-          const newLi = createElement('LI', listItemAttrs);
+          const newLi = createElement("LI", listItemAttrs);
           if (node.dir) {
             newLi.dir = node.dir;
           }
@@ -3922,21 +3845,18 @@
       }
       return frag;
     }
-
     makeUnorderedList() {
-      this.modifyBlocks((frag) => this._makeList(frag, 'UL'));
+      this.modifyBlocks((frag) => this._makeList(frag, "UL"));
       return this.focus();
     }
-
     makeOrderedList() {
-      this.modifyBlocks((frag) => this._makeList(frag, 'OL'));
+      this.modifyBlocks((frag) => this._makeList(frag, "OL"));
       return this.focus();
     }
-
     removeList() {
       this.modifyBlocks((frag) => {
-        const lists = frag.querySelectorAll('UL, OL');
-        const items = frag.querySelectorAll('LI');
+        const lists = frag.querySelectorAll("UL, OL");
+        const items = frag.querySelectorAll("LI");
         const root = this._root;
         for (let i = 0, l = lists.length; i < l; i += 1) {
           const list = lists[i];
@@ -3957,12 +3877,11 @@
       });
       return this.focus();
     }
-
     // ---
     increaseQuoteLevel(range) {
       this.modifyBlocks(
         (frag) => createElement(
-          'BLOCKQUOTE',
+          "BLOCKQUOTE",
           this._config.tagAttributes.blockquote,
           [frag]
         ),
@@ -3970,11 +3889,10 @@
       );
       return this.focus();
     }
-
     decreaseQuoteLevel(range) {
       this.modifyBlocks((frag) => {
-        Array.from(frag.querySelectorAll('blockquote')).filter((el) => {
-          return !getNearest(el.parentNode, frag, 'BLOCKQUOTE');
+        Array.from(frag.querySelectorAll("blockquote")).filter((el) => {
+          return !getNearest(el.parentNode, frag, "BLOCKQUOTE");
         }).forEach((el) => {
           replaceWith(el, empty(el));
         });
@@ -3982,24 +3900,33 @@
       }, range);
       return this.focus();
     }
-
     removeQuote(range) {
+      this.modifyBlocks((frag) => {
+        Array.from(frag.querySelectorAll("blockquote")).forEach(
+          (el) => {
+            replaceWith(el, empty(el));
+          }
+        );
+        return frag;
+      }, range);
+      return this.focus();
+    }
+    replaceWithBlankLine(range) {
       this.modifyBlocks(
         () => this.createDefaultBlock([
-          createElement('INPUT', {
+          createElement("INPUT", {
             id: this.startSelectionId,
-            type: 'hidden'
+            type: "hidden"
           }),
-          createElement('INPUT', {
+          createElement("INPUT", {
             id: this.endSelectionId,
-            type: 'hidden'
+            type: "hidden"
           })
         ]),
         range
       );
       return this.focus();
     }
-
     // ---
     code() {
       const range = this.getSelection();
@@ -4010,7 +3937,7 @@
           const blockWalker = getBlockWalker(frag, root);
           let node;
           while (node = blockWalker.nextNode()) {
-            let nodes = node.querySelectorAll('BR');
+            let nodes = node.querySelectorAll("BR");
             const brBreaksLine = [];
             let l = nodes.length;
             for (let i = 0; i < l; i += 1) {
@@ -4021,26 +3948,26 @@
               if (!brBreaksLine[l]) {
                 detach(br);
               } else {
-                replaceWith(br, document.createTextNode('\n'));
+                replaceWith(br, document.createTextNode("\n"));
               }
             }
-            nodes = node.querySelectorAll('CODE');
+            nodes = node.querySelectorAll("CODE");
             l = nodes.length;
             while (l--) {
               replaceWith(nodes[l], empty(nodes[l]));
             }
             if (output.childNodes.length) {
-              output.appendChild(document.createTextNode('\n'));
+              output.appendChild(document.createTextNode("\n"));
             }
             output.appendChild(empty(node));
           }
           const textWalker = new TreeIterator(output, SHOW_TEXT);
           while (node = textWalker.nextNode()) {
-            node.data = node.data.replace(/ /g, ' ');
+            node.data = node.data.replace(/ /g, " ");
           }
           output.normalize();
           return fixCursor(
-            createElement('PRE', this._config.tagAttributes.pre, [
+            createElement("PRE", this._config.tagAttributes.pre, [
               output
             ])
           );
@@ -4049,7 +3976,7 @@
       } else {
         this.changeFormat(
           {
-            tag: 'CODE',
+            tag: "CODE",
             attributes: this._config.tagAttributes.code
           },
           null,
@@ -4058,15 +3985,14 @@
       }
       return this;
     }
-
     removeCode() {
       const range = this.getSelection();
       const ancestor = range.commonAncestorContainer;
-      const inPre = getNearest(ancestor, this._root, 'PRE');
+      const inPre = getNearest(ancestor, this._root, "PRE");
       if (inPre) {
         this.modifyBlocks((frag) => {
           const root = this._root;
-          const pres = frag.querySelectorAll('PRE');
+          const pres = frag.querySelectorAll("PRE");
           let l = pres.length;
           while (l--) {
             const pre = pres[l];
@@ -4074,14 +4000,14 @@
             let node;
             while (node = walker.nextNode()) {
               let value = node.data;
-              value = value.replace(/ (?= )/g, '\xA0');
+              value = value.replace(/ (?= )/g, "\xA0");
               const contents = document.createDocumentFragment();
               let index;
-              while ((index = value.indexOf('\n')) > -1) {
+              while ((index = value.indexOf("\n")) > -1) {
                 contents.appendChild(
                   document.createTextNode(value.slice(0, index))
                 );
-                contents.appendChild(createElement('BR'));
+                contents.appendChild(createElement("BR"));
                 value = value.slice(index + 1);
               }
               node.parentNode.insertBefore(contents, node);
@@ -4094,26 +4020,24 @@
         }, range);
         this.focus();
       } else {
-        this.changeFormat(null, { tag: 'CODE' }, range);
+        this.changeFormat(null, { tag: "CODE" }, range);
       }
       return this;
     }
-
     toggleCode() {
-      if (this.hasFormat('PRE') || this.hasFormat('CODE')) {
+      if (this.hasFormat("PRE") || this.hasFormat("CODE")) {
         this.removeCode();
       } else {
         this.code();
       }
       return this;
     }
-
     // ---
     _removeFormatting(root, clean) {
       for (let node = root.firstChild, next; node; node = next) {
         next = node.nextSibling;
         if (isInline(node)) {
-          if (node instanceof Text || node.nodeName === 'BR' || node.nodeName === 'IMG') {
+          if (node instanceof Text || node.nodeName === "BR" || node.nodeName === "IMG") {
             clean.appendChild(node);
             continue;
           }
@@ -4132,7 +4056,6 @@
       }
       return clean;
     }
-
     removeAllFormatting(range) {
       if (!range) {
         range = this.getSelection();
