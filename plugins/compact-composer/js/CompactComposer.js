@@ -100,10 +100,6 @@
 			}
 		},
 
-		pasteSanitizer = (event) => {
-			return rl.Utils.cleanHtml(event.detail.html).html;
-		},
-
 		pasteImageHandler = (e, squire) => {
 
 			const items = [...e.detail.clipboardData.items];
@@ -142,7 +138,12 @@
 			toolbar.className = 'squire-toolbar btn-toolbar';
 			const actions = this.makeActions(squire, toolbar);
 
-			this.squire.addEventListener('willPaste', pasteSanitizer);
+			this.squire.addEventListener('willPaste', (event) => {
+				// https://github.com/fastmail/Squire?tab=readme-ov-file#addeventlistener
+				// The content that will be inserted is available as either the fragment property, or the text property for plain text, on the detail property of the event. You can modify this text/fragment in your event handler to change what will be pasted
+				tpl.innerHTML = rl.Utils.cleanHtml(event.detail.html).html;
+				event.detail.fragment = tpl.content;
+			});
 			this.squire.addEventListener('pasteImage', (e) => {
 				pasteImageHandler(e, squire);
 			});
