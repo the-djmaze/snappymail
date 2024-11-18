@@ -257,6 +257,15 @@ export const
 				rightmargin: (value, node) => node.style.marginRight = pInt(value) + 'px'
 			},
 			allowedAttributes = [
+				// SnappyMail
+//				'data-x-href-broken',
+//				'data-x-href-tracking',
+				'data-x-src',
+//				'data-x-src-hidden',
+//				'data-x-src-tracking',
+//				'data-x-src-broken',
+//				'data-x-style-url',
+//				'data-x-style-broken-urls',
 				// defaults
 				'name',
 				'dir', 'lang', 'style', 'title',
@@ -493,12 +502,12 @@ export const
 						let attachment;
 						if (value.startsWith('cid:'))
 						{
+							setAttribute('data-x-src', value);
 							value = value.slice(4);
-							setAttribute('data-x-src-cid', value);
 							attachment = findAttachmentByCid(value);
 							if (attachment?.download) {
 								oElement.src = attachment.linkPreview();
-								oElement.title += ' ('+attachment.fileName+')';
+//								oElement.title || (oElement.title = '+attachment.fileName);
 								attachment.isInline(true);
 								attachment.isLinked(true);
 							}

@@ -970,7 +970,7 @@ export class ComposePopupView extends AbstractViewPopup {
 			// https://github.com/the-djmaze/snappymail/issues/491
 			tpl.innerHTML = oLastMessage.bodyAsHTML();
 			tpl.content.querySelectorAll('img').forEach(img => {
-				img.src || img.dataset.xSrcCid || img.dataset.xSrc || img.replaceWith(img.alt || img.title)
+				img.src || img.dataset.xSrc || img.replaceWith(img.alt || img.title)
 			});
 			sText = tpl.innerHTML.trim();
 
@@ -1514,6 +1514,15 @@ export class ComposePopupView extends AbstractViewPopup {
 			isHtml = this.oEditor.isHtml();
 
 		if (isHtml) {
+			tpl.innerHTML = Text;
+			tpl.content.querySelectorAll('img').forEach(img => {
+				if (img.dataset.xSrc) {
+					img.src = img.dataset.xSrc;
+					img.removeAttribute('data-x-src')
+				}
+			});
+			Text = tpl.innerHTML.trim();
+
 			do {
 				l = Text.length;
 				Text = Text
