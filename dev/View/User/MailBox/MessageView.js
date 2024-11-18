@@ -199,7 +199,7 @@ export class MailMessageView extends AbstractViewRight {
 			dkimIcon: () => {
 				switch (this.dkimData()[0]) {
 					case 'none':
-						return '';
+						return '🚫︎';
 					case 'pass':
 						return '✔';
 					default:
@@ -215,7 +215,7 @@ export class MailMessageView extends AbstractViewRight {
 			spfIcon: () => {
 				switch (this.spfData()[0]) {
 					case 'none':
-						return '';
+						return '🚫︎';
 					case 'pass':
 						return '✔';
 					default:
@@ -231,7 +231,7 @@ export class MailMessageView extends AbstractViewRight {
 			dmarcIcon: () => {
 				switch (this.dmarcData()[0]) {
 					case 'none':
-						return '';
+						return '🚫︎';
 					case 'pass':
 						return '✔';
 					default:
