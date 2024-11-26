@@ -1,6 +1,7 @@
 import 'External/User/ko';
 
 import { SMAudio } from 'Common/Audio';
+import { arrayLength } from 'Common/Utils';
 import { mailToHelper, setLayoutResizer, dropdownsDetectVisibility, loadAccountsAndIdentities } from 'Common/UtilsUser';
 
 import {
@@ -240,7 +241,15 @@ export class AppUser extends AbstractApp {
 
 	showMessageComposer(params = [])
 	{
-		showScreenPopup(ComposePopupView, params);
+		let msg = params[1];
+		if (1 == arrayLength(msg)) {
+			msg = msg[0];
+		}
+		if (msg) {
+			msg.decrypt().then((/*success*/)=>showScreenPopup(ComposePopupView, params));
+		} else {
+			showScreenPopup(ComposePopupView, params);
+		}
 	}
 }
 
