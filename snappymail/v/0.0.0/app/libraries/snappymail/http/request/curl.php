@@ -6,9 +6,8 @@ use SnappyMail\HTTP\Response;
 
 class CURL extends \SnappyMail\HTTP\Request
 {
-	private
-		$response_headers = array(),
-		$response_body = '';
+	private array $response_headers = array();
+	private string $response_body = '';
 
 	public function supportsSSL() : bool
 	{

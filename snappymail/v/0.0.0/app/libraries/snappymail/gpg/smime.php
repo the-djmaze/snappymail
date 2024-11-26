@@ -589,7 +589,7 @@ class SMIME extends Base
 	/**
 	 * Verifies a signed text
 	 */
-	public function verify(string $signed_text, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verify(string $signed_text, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		return $this->_verify($signed_text, $signature);
 	}
@@ -597,7 +597,7 @@ class SMIME extends Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyFile(string $filename, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		$fp = \fopen($filename, 'rb');
 		try {
@@ -613,7 +613,7 @@ class SMIME extends Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyStream($fp, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verifyStream($fp, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');
