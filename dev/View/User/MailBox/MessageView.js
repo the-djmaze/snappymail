@@ -130,6 +130,8 @@ export class MailMessageView extends AbstractViewRight {
 			// viewer
 			viewFromShort: '',
 			dkimData: ['none', '', ''],
+			spfData: ['none', '', ''],
+			dmarcData: ['none', '', ''],
 			nowTracking: false
 		});
 
@@ -194,7 +196,7 @@ export class MailMessageView extends AbstractViewRight {
 			dkimIcon: () => {
 				switch (this.dkimData()[0]) {
 					case 'none':
-						return '';
+						return '🚫︎';
 					case 'pass':
 						return '✔';
 					default:
@@ -202,10 +204,41 @@ export class MailMessageView extends AbstractViewRight {
 				}
 			},
 			dkimIconClass: () => 'pass' === this.dkimData()[0] ? 'iconcolor-green' : 'iconcolor-red',
-
 			dkimTitle:() => {
 				const dkim = this.dkimData();
 				return dkim[0] ? dkim[2] || 'DKIM: ' + dkim[0] : '';
+			},
+
+			spfIcon: () => {
+				switch (this.spfData()[0]) {
+					case 'none':
+						return '🚫︎';
+					case 'pass':
+						return '✔';
+					default:
+						return '✖';
+				}
+			},
+			spfIconClass: () => 'pass' === this.spfData()[0] ? 'iconcolor-green' : 'iconcolor-red',
+			spfTitle:() => {
+				const spf = this.spfData();
+				return spf[0] ? spf[2] || 'SPF: ' + spf[0] : '';
+			},
+
+			dmarcIcon: () => {
+				switch (this.dmarcData()[0]) {
+					case 'none':
+						return '🚫︎';
+					case 'pass':
+						return '✔';
+					default:
+						return '✖';
+				}
+			},
+			dmarcIconClass: () => 'pass' === this.dmarcData()[0] ? 'iconcolor-green' : 'iconcolor-red',
+			dmarcTitle:() => {
+				const dmarc = this.dmarcData();
+				return dmarc[0] ? dmarc[2] || 'DMARC: ' + dmarc[0] : '';
 			},
 
 			showWhitelistOptions: () => 'match' === SettingsUserStore.viewImages(),
@@ -230,6 +263,8 @@ export class MailMessageView extends AbstractViewRight {
 					// TODO: make first param a user setting #683
 					this.viewFromShort(message.from.toString(false, true));
 					this.dkimData(message.dkim[0] || ['none', '', '']);
+					this.spfData(message.spf[0] || ['none', '', '']);
+					this.dmarcData(message.dmarc[0] || ['none', '', '']);
 					this.nowTracking(false);
 				} else {
 					MessagelistUserStore.selectedMessage(null);
