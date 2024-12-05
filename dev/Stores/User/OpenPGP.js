@@ -13,7 +13,7 @@ import { OpenPgpKeyPopupView } from 'View/Popup/OpenPgpKey';
 
 import { Passphrases } from 'Storage/Passphrases';
 
-import { baseCollator } from 'Common/Translator';
+import { baseCollator, getNotification } from 'Common/Translator';
 
 const
 	loaded = () => !!window.openpgp,
@@ -120,6 +120,17 @@ class OpenPgpKeyModel {
 				OpenPGPUserStore.publicKeys.remove(this);
 				storeOpenPgpKeys(OpenPGPUserStore.publicKeys, publicKeysItem);
 			}
+			Remote.request('DeletePGPKey',
+				(iError, oData) => {
+					if (oData) {
+						if (iError || oData.Result === false) {
+							alert(oData.message || getNotification(iError));
+						}
+					}
+				}, {
+					key: this.armor
+				}
+			);
 		}
 	}
 /*
