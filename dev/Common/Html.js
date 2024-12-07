@@ -308,6 +308,8 @@ export const
 			// Not supported by <template> element
 //			.replace(/<!doctype[^>]*>/gi, '')
 //			.replace(/<\?xml[^>]*\?>/gi, '')
+			// https://github.com/the-djmaze/snappymail/issues/1860
+			.replace(/<(\/?)x-html(\s[^>]*)?>/gi, '')
 			.replace(/<(\/?)head(\s[^>]*)?>/gi, '')
 			.replace(/<(\/?)body(\s[^>]*)?>/gi, '<$1div class="mail-body"$2>')
 //			.replace(/<\/?(html|head)[^>]*>/gi, '')
