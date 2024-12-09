@@ -13,7 +13,7 @@ const timeouts = {};
 Passphrases.handle = (key, pass) => {
 	const timeout = SettingsUserStore.keyPassForget();
 	if (timeout && !timeouts[key]) {
-		timeouts[key] = (()=>Passphrases.delete(key)).debounce(timeout * 1000);
+		timeouts[key] = (()=>Passphrases.delete(key)).debounce(timeout * 60 * 1000);
 	}
 	pass && Passphrases.set(key, pass);
 	timeout && timeouts[key]();
