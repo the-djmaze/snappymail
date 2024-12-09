@@ -91,6 +91,9 @@ class OpenPgpKeyModel {
 		this.armor = armor;
 		this.askDelete = ko.observable(false);
 		this.openForDeletion = ko.observable(null).askDeleteHelper();
+		this.hasStoredPass = ko.observable(Passphrases.hasInLocalStorage(this));
+		this.askForgetPass = ko.observable(false);
+		this.openForPassForget = ko.observable(null).askDeleteHelper('askForgetPass');
 //		key.getUserIDs()
 //		key.getPrimaryUser()
 	}
@@ -116,6 +119,7 @@ class OpenPgpKeyModel {
 			if (this.key.isPrivate()) {
 				OpenPGPUserStore.privateKeys.remove(this);
 				storeOpenPgpKeys(OpenPGPUserStore.privateKeys, privateKeysItem);
+				this.forgetPass()
 			} else {
 				OpenPGPUserStore.publicKeys.remove(this);
 				storeOpenPgpKeys(OpenPGPUserStore.publicKeys, publicKeysItem);
@@ -132,6 +136,11 @@ class OpenPgpKeyModel {
 				}
 			);
 		}
+	}
+
+	forgetPass() {
+		Passphrases.delete(this);
+		this.hasStoredPass(false);
 	}
 /*
 	toJSON() {
