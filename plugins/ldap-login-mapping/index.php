@@ -13,7 +13,7 @@ class LDAPLoginMappingPlugin extends AbstractPlugin
 		RELEASE  = '2024-09-20',
 		REQUIRED = '2.36.1',
 		CATEGORY = 'Login',
-		DESCRIPTION = 'Enable custom mapping using ldap field';
+		DESCRIPTION = 'This plugins allows to authenticate using LDAP mail field, yet login field would still be used for IMAP and SMTP authentication';
 	/**
 	 * @var array
 	 */
