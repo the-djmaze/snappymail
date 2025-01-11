@@ -156,7 +156,7 @@ class Utils
 	public static function saveFile(string $filename, string $data) : void
 	{
 		$dir = \dirname($filename);
-		if (!\is_dir($dir) && !\mkdir($dir, intval($oConfig->Get('security', 'dir_permissions)), true)) {
+		if (!\is_dir($dir) && !\mkdir($dir, intval($oConfig->Get('security', 'dir_permissions')), true)) {
 			throw new \RuntimeException('Failed to create directory "'.$dir.'"');
 		}
 		if (false === \file_put_contents($filename, $data)) {
