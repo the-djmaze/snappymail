@@ -156,14 +156,14 @@ class Utils
 	public static function saveFile(string $filename, string $data) : void
 	{
 		$dir = \dirname($filename);
-		if (!\is_dir($dir) && !\mkdir($dir, intval($oConfig->Get('security', 'dir_permissions')), true)) {
+		if (!\is_dir($dir) && !\mkdir($dir, intval(Api::Config()->Get('security', 'dir_permissions')), true)) {
 			throw new \RuntimeException('Failed to create directory "'.$dir.'"');
 		}
 		if (false === \file_put_contents($filename, $data)) {
 			throw new \RuntimeException('Failed to save file "'.$filename.'"');
 		}
 		\clearstatcache();
-		\chmod($filename, intval($oConfig->Get('security', 'file_permissions')));
+		\chmod($filename, intval(Api::Config()->Get('security', 'file_permissions')));
 /*
 		try {
 		} catch (\Throwable $oException) {
