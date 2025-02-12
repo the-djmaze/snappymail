@@ -54,11 +54,22 @@ abstract class DateTimeHelper
 			\DateTime::createFromFormat('d M Y H:i:s O', $sDateTime, static::GetUtcTimeZoneObject())
 			// Using T (obsolete timezone abbreviation)
 			?: \DateTime::createFromFormat('d M Y H:i:s T', $sDateTime, static::GetUtcTimeZoneObject());
-		// 398045302 is 1982-08-13 00:08:22 the date RFC 822 was created
-		if (!$oDateTime || 398045302 > $oDateTime->getTimestamp()) {
+
+		try {
+			$timestamp = $oDateTime->getTimestamp();
+
+			// 398045302 is 1982-08-13 00:08:22, the date RFC 822 was created
+			if (398045302 > $timestamp) {
+				\SnappyMail\Log::notice('', "Failed to parse RFC 2822 date '{$sDateTime}'");
+				return 0;
+			}
+
+			return $timestamp;
+		} catch (\Error $error) {
+			// Catch integer overflow or other fatal errors
 			\SnappyMail\Log::notice('', "Failed to parse RFC 2822 date '{$sDateTime}'");
+			return 0;
 		}
-		return $oDateTime ? $oDateTime->getTimestamp() : 0;
 	}
 
 	/**
