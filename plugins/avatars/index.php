@@ -273,7 +273,7 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 			}
 
 			if ($this->Config()->Get('plugin', 'gravatar', false)) {
-				$aUrls[] = 'https://gravatar.com/avatar/'.\md5(\strtolower($sAsciiEmail)).'?s=80&d=404';
+				$aUrls[] = 'https://gravatar.com/avatar/'.\hash('sha256', \strtolower($sAsciiEmail)).'?s=80&d=404';
 			}
 
 			foreach ($aUrls as $sUrl) {
