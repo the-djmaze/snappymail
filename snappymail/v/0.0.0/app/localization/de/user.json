@@ -607,7 +607,7 @@
 	"NOTIFICATIONS": {
 		"RequestError": "Anfrage fehlgeschlagen",
 		"RequestAborted": "Anfrage abgebrochen",
-		"RequestTimeout": "Antrag auf Auslieferung",
+		"RequestTimeout": "Zeitüberschreitung der Anfrage",
 		"InvalidToken": "Ungültiger Token",
 		"AuthError": "Authentifizierung fehlgeschlagen",
 		"ConnectionError": "Serververbindung kann nicht hergestellt werden",
