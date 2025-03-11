@@ -10,8 +10,8 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME     = 'Avatars',
 		AUTHOR   = 'SnappyMail',
 		URL      = 'https://snappymail.eu/',
-		VERSION  = '1.21',
-		RELEASE  = '2024-10-28',
+		VERSION  = '1.22',
+		RELEASE  = '2025-03-10',
 		REQUIRED = '2.33.0',
 		CATEGORY = 'Contacts',
 		LICENSE  = 'MIT',
@@ -273,7 +273,7 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 			}
 
 			if ($this->Config()->Get('plugin', 'gravatar', false)) {
-				$aUrls[] = 'https://gravatar.com/avatar/'.\md5(\strtolower($sAsciiEmail)).'?s=80&d=404';
+				$aUrls[] = 'https://gravatar.com/avatar/'.\hash('sha256', \strtolower($sAsciiEmail)).'?s=80&d=404';
 			}
 
 			foreach ($aUrls as $sUrl) {

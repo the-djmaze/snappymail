@@ -43,15 +43,18 @@ abstract class MimeType
 				\fclose($fp);
 			}
 			if ('application/zip' === \str_replace('/x-', '/', $mime)) {
-				$zip = new \ZipArchive();
-				if ($zip->open($filename, \ZIPARCHIVE::RDONLY)) {
-					if (false !== $zip->locateName('word/_rels/document.xml.rels')) {
-						return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-					}
-					if (false !== $zip->locateName('xl/_rels/workbook.xml.rels')) {
-						return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+				if (\class_exists('ZipArchive')) {
+					$zip = new \ZipArchive();
+					if ($zip->open($filename, \ZIPARCHIVE::RDONLY)) {
+						if (false !== $zip->locateName('word/_rels/document.xml.rels')) {
+							return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+						}
+						if (false !== $zip->locateName('xl/_rels/workbook.xml.rels')) {
+							return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+						}
 					}
 				}
+				$mime = \str_replace('/x-', '/', $mime);
 			}
 		}
 		return $mime ? static::detectDeeper($mime, $name ?: $filename) : null;
