@@ -10,6 +10,26 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 		DESCRIPTION = 'Integrate with Nextcloud v20+',
 		REQUIRED = '2.38.0';
 
+	private const IGNORE_SYSTEM_ADDRESSBOOK_KEY = 'ignoreSystemAddressbook';
+	private const IGNORE_SYSTEM_ADDRESSBOOK_DEFAULT_VALUE = true;
+
+	private const ENABLE_NC_ADDRESSBOOK_KEY = 'enableNcAddressbook';
+	private const ENABLE_NC_ADDRESSBOOK_DEFAULT_VALUE = false;
+
+	private const DISABLE_INHOUSE_ADDRESSBOOK_KEY = 'disableSnappymailContactsUI';
+	private const DISABLE_INHOUSE_ADDRESSBOOK_DEFAULT_VALUE = false;
+
+	private const DEFAULT_ADDRESSBOOK_URI_KEY = 'defaultNCAddressbookUri';
+	private const DEFAULT_ADDRESSBOOK_URI = 'webmail';
+
+	private const DEFAULT_ADDRESSBOOK_NAME_KEY = 'defaultNCAddressbookName';
+	private const DEFAULT_ADDRESSBOOK_NAME = 'WebMail';
+
+	private const DEFAULT_ADDRESSBOOK_DESCRIPTION_KEY = 'defaultNCAddressbookDescription';
+	private const DEFAULT_ADDRESSBOOK_DESCRIPTION = 'Recipients from snappymail';
+
+	private const ADDRESSBOOK_SETTINGS_KEY = 'nextcloudAddressBookUri';
+
 	public function Init() : void
 	{
 		if (static::IsIntegrated()) {
@@ -41,12 +61,66 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			$this->addHook('imap.before-login', 'beforeLogin');
 			$this->addHook('smtp.before-login', 'beforeLogin');
 			$this->addHook('sieve.before-login', 'beforeLogin');
+
+			if ($this->Config()->Get('plugin', self::ENABLE_NC_ADDRESSBOOK_KEY, self::ENABLE_NC_ADDRESSBOOK_DEFAULT_VALUE)) {
+				$this->addJs('js/nextcloudAddressbook.js');
+				$this->addJsonHook('NextcloudGetAddressBooks', 'GetAddressBooks');
+				$this->addJsonHook('NextcloudUpdateAddressBook', 'UpdateAddressBook');
+			}
+
+			if ($this->Config()->Get('plugin', self::DISABLE_INHOUSE_ADDRESSBOOK_KEY, self::DISABLE_INHOUSE_ADDRESSBOOK_DEFAULT_VALUE)) {
+				$this->addJs('js/hideInhouseAddressbook.js');
+			}
 		} else {
 			\SnappyMail\Log::debug('Nextcloud', 'NOT integrated');
 			// \OC::$server->getConfig()->getAppValue('snappymail', 'snappymail-no-embed');
 			$this->addHook('main.content-security-policy', 'ContentSecurityPolicy');
 		}
 	}
+
+	public function GetAddressBooks()
+	{
+		$addressBooks = [];
+
+		$contactsManager = \OC::$server->getContactsManager();
+
+		$defaultUri = $this->Config()->Get('plugin', self::DEFAULT_ADDRESSBOOK_URI_KEY, self::DEFAULT_ADDRESSBOOK_URI);
+		$selectedUri = $this->UserSettings()->GetConf(self::ADDRESSBOOK_SETTINGS_KEY, $defaultUri);
+		$ignoreSystemAddressbook = $this->Config()->Get('plugin', self::IGNORE_SYSTEM_ADDRESSBOOK_KEY, self::IGNORE_SYSTEM_ADDRESSBOOK_DEFAULT_VALUE);
+
+		foreach ($contactsManager->getUserAddressBooks() as $addressBook) {
+			if ($ignoreSystemAddressbook && $addressBook->isSystemAddressBook()) {
+				$contactsManager->unregisterAddressBook($addressBook);
+				continue;
+			}
+
+			$book = new AddressBook();
+			$book->uri = $addressBook->getUri();
+			$book->name = $addressBook->getDisplayName();
+			if (strcmp($selectedUri, $book->uri) === 0) {
+				$book->selected = true;
+			}
+
+			$addressBooks[] = $book;
+		}
+
+
+		return $this->jsonResponse(__FUNCTION__, array(
+			'addressbooks' => json_encode($addressBooks)
+		));
+	}
+
+	public function UpdateAddressBook() : array
+	{
+		$uri = $this->jsonParam('uri');
+		$oSettings = $this->UserSettings();
+		if (\is_string($uri)) {
+			$oSettings->SetConf(self::ADDRESSBOOK_SETTINGS_KEY, $uri);
+			$this->SettingsProvider()->Save($this->Account(), $oSettings);
+		}
+		return $this->jsonResponse(__FUNCTION__, true);
+	}
+
 
 	public function ContentSecurityPolicy(\SnappyMail\HTTP\CSP $CSP)
 	{
@@ -353,7 +427,26 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 				}
 				include_once __DIR__ . '/NextcloudContactsSuggestions.php';
 				$mResult[] = new NextcloudContactsSuggestions(
-					$this->Config()->Get('plugin', 'ignoreSystemAddressbook', true)
+					$this->Config()->Get('plugin', self::IGNORE_SYSTEM_ADDRESSBOOK_KEY, self::IGNORE_SYSTEM_ADDRESSBOOK_DEFAULT_VALUE)
+				);
+			}
+
+			if ('address-book' === $sName && $this->Config()->Get('plugin', self::ENABLE_NC_ADDRESSBOOK_KEY, self::ENABLE_NC_ADDRESSBOOK_DEFAULT_VALUE)) {
+				if (!\is_array($mResult)) {
+					$mResult = array();
+				}
+				include_once __DIR__ . '/NextcloudAddressBook.php';
+
+				$ignoreSystemAddressbook = $this->Config()->Get('plugin', self::IGNORE_SYSTEM_ADDRESSBOOK_KEY, self::IGNORE_SYSTEM_ADDRESSBOOK_DEFAULT_VALUE);
+				$defaultName = $this->Config()->Get('plugin', self::DEFAULT_ADDRESSBOOK_NAME_KEY, self::DEFAULT_ADDRESSBOOK_NAME);
+				$defaultDescription = $this->Config()->Get('plugin', self::DEFAULT_ADDRESSBOOK_DESCRIPTION_KEY, self::DEFAULT_ADDRESSBOOK_DESCRIPTION);
+				$defaultUri = $this->Config()->Get('plugin', self::DEFAULT_ADDRESSBOOK_URI_KEY, self::DEFAULT_ADDRESSBOOK_URI);
+
+				$mResult = new NextcloudAddressBook(
+					$defaultUri,
+					$defaultName,
+					$defaultDescription,
+					$ignoreSystemAddressbook
 				);
 			}
 /*
@@ -371,9 +464,9 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			\RainLoop\Plugins\Property::NewInstance('suggestions')->SetLabel('Suggestions')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 				->SetDefaultValue(true),
-			\RainLoop\Plugins\Property::NewInstance('ignoreSystemAddressbook')->SetLabel('Ignore system addressbook')
+			\RainLoop\Plugins\Property::NewInstance(self::IGNORE_SYSTEM_ADDRESSBOOK_KEY)->SetLabel('Ignore system addressbook')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
-				->SetDefaultValue(true),
+				->SetDefaultValue(self::IGNORE_SYSTEM_ADDRESSBOOK_DEFAULT_VALUE),
 /*
 			\RainLoop\Plugins\Property::NewInstance('storage')->SetLabel('Use Nextcloud user ID in config storage path')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
@@ -381,7 +474,27 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 */
 			\RainLoop\Plugins\Property::NewInstance('calendar')->SetLabel('Enable "Put ICS in calendar"')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
-				->SetDefaultValue(false)
+				->SetDefaultValue(false),
+
+			\RainLoop\Plugins\Property::NewInstance(self::ENABLE_NC_ADDRESSBOOK_KEY)->SetLabel('Enable User to choose Nextcloud addressbook for recipients')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
+				->SetDefaultValue(self::ENABLE_NC_ADDRESSBOOK_DEFAULT_VALUE),
+
+			\RainLoop\Plugins\Property::NewInstance(self::DEFAULT_ADDRESSBOOK_URI_KEY)->SetLabel('Default nextcloud addressbook URI for recipients')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::STRING)
+				->SetDefaultValue(self::DEFAULT_ADDRESSBOOK_URI),
+
+			\RainLoop\Plugins\Property::NewInstance(self::DEFAULT_ADDRESSBOOK_NAME_KEY)->SetLabel('Default nextcloud addressbook Name for recipients')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::STRING)
+				->SetDefaultValue(self::DEFAULT_ADDRESSBOOK_NAME),
+
+			\RainLoop\Plugins\Property::NewInstance(self::DEFAULT_ADDRESSBOOK_DESCRIPTION_KEY)->SetLabel('Default nextcloud addressbook description for recipients')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::STRING)
+				->SetDefaultValue(self::DEFAULT_ADDRESSBOOK_DESCRIPTION),
+
+			\RainLoop\Plugins\Property::NewInstance(self::DISABLE_INHOUSE_ADDRESSBOOK_KEY)->SetLabel('Disable SnappyMail internal addressbook. This is recomended if nextcloud addressbook is being used.')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
+				->SetDefaultValue(self::DISABLE_INHOUSE_ADDRESSBOOK_DEFAULT_VALUE)
 		);
 	}
 
@@ -413,4 +526,26 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 		}
 		return $sFilePath;
 	}
+
+	private function Account() : \RainLoop\Model\Account
+	{
+		return \RainLoop\Api::Actions()->getAccountFromToken();
+	}
+
+	private function SettingsProvider() : \RainLoop\Providers\Settings
+	{
+		return \RainLoop\Api::Actions()->SettingsProvider(true);
+	}
+
+	private function UserSettings() : \RainLoop\Settings
+	{
+		return $this->SettingsProvider()->Load($this->Account());
+	}
+}
+
+class AddressBook
+{
+	public string $uri;
+	public string $name;
+	public bool $selected = false;
 }
