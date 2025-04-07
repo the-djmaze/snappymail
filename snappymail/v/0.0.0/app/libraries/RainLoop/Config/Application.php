@@ -235,6 +235,8 @@ Warning: only enable when server does not do this, else double compression error
 				'admin_login'             => array('admin', 'Login and password for web admin panel'),
 				'admin_password'          => array(''),
 				'admin_totp'              => array(''),
+				'file_permissions'        => array('0600', 'permissions to chmod cache files to when creating'),
+				'dir_permissions'         => array('0700', 'permissions to chmod cache directories to when creating'),
 				'insecure_cryptkey'       => array(false, 'Use email address instead of login password for encrypting sensitive data (like account passwords)'),
 
 				'force_https'             => array(false),
