@@ -29,23 +29,22 @@ This concludes the setup of SnappyMail.
 
 In Dovecot, you need to enable Master User.
 Enable ```!include auth-master.conf.ext``` in /etc/dovecot/conf.d/10-auth.conf.
-The file /etc/dovecot/conf.d/auth-master.conf.ext should contain:
+In Dovecot 2.3, the file /etc/dovecot/conf.d/auth-master.conf.ext should contain:
 ```
-# Authentication for master users. Included from auth.conf.
-
-# By adding master=yes setting inside a passdb you make the passdb a list
-# of "master users", who can log in as anyone else.
-# <doc/wiki/Authentication.MasterUsers.txt>
-
-# Example master user passdb using passwd-file. You can use any passdb though.
 passdb {
   driver = passwd-file
   master = yes
   args = /etc/dovecot/master-users
-
-  # Unless you're using PAM, you probably still want the destination user to
-  # be looked up from passdb that it really exists. pass=yes does that.
   pass = yes
+}
+```
+
+In Dovecot 2.4, the file /etc/dovecot/conf.d/auth-master.conf.ext should contain:
+```
+passdb passwd-file {
+  master = yes
+  passwd_file_path = /etc/dovecot/master-users
+  result_success = continue
 }
 ```
 
