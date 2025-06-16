@@ -65,9 +65,9 @@ abstract class DateTimeHelper
 			}
 
 			return $timestamp;
-		} catch (\Error $error) {
+		} catch (\Throwable $error) {
 			// Catch integer overflow or other fatal errors
-			\SnappyMail\Log::notice('', "Failed to parse RFC 2822 date '{$sDateTime}'");
+			\SnappyMail\Log::notice('', "Failed to parse RFC 2822 date '{$sDateTime}'. {$error->getMessage()}");
 			return 0;
 		}
 	}
