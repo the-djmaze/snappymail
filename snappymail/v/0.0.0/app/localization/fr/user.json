@@ -247,7 +247,7 @@
 		"DISCARD_UNSAVED_DATA": "Abandonner les données non enregistrées ?",
 		"ATTACH_FILES": "Joindre des fichiers",
 		"ATTACH_DROP_FILES_DESC": "Glisser les fichiers ici",
-		"REPLY_MESSAGE_TITLE": "%DATETIME% %EMAIL% a écrit",
+		"REPLY_MESSAGE_TITLE": "%DATETIME% %EMAIL% a écrit ",
 		"FORWARD_MESSAGE_TOP_TITLE": "-------- Message transféré -------",
 		"FORWARD_MESSAGE_TOP_SENT": "Envoyé",
 		"EMPTY_TO_ERROR_DESC": "Merci de spécifier au moins un destinataire",
