@@ -863,6 +863,7 @@ export class ComposePopupView extends AbstractViewPopup {
 				case ComposeType.Forward:
 				case ComposeType.ForwardAsAttachment:
 					identity = findIdentity(oLastMessage.to.concat(oLastMessage.cc, oLastMessage.bcc))
+						|| findIdentity(oLastMessage.from)
 						/* || findIdentity(oLastMessage.deliveredTo)*/;
 					break;
 				case ComposeType.Draft:

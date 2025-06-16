@@ -42,6 +42,12 @@ abstract class Api
 		$CSP->report = $oConfig->Get('security', 'csp_report', false);
 		$CSP->report_only = $oConfig->Get('debug', 'enable', false); // || SNAPPYMAIL_DEV
 
+		// Allow favicon host, if present
+		$parsedFaviconUrl = parse_url($oConfig->Get('webmail', 'favicon_url', ''));
+		if (is_array($parsedFaviconUrl) && array_key_exists('host', $parsedFaviconUrl)) {
+			$CSP->add('img-src', $parsedFaviconUrl['host']);
+		}
+
 		// Allow https: due to remote images in e-mails or use proxy
 		if (!$oConfig->Get('labs', 'use_local_proxy_for_external_images', '')) {
 			$CSP->add('img-src', 'https:');

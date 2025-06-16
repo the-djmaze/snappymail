@@ -139,19 +139,13 @@ abstract class JWT
 						throw new \ValueError('Invalid key, reason: ' . \openssl_error_string());
 					}
 				}
-				try {
-					$details = \openssl_pkey_get_details($key);
-					if (!isset($details['key']) || OPENSSL_KEYTYPE_RSA !== $details['type']) {
-						throw new \ValueError('Key is not compatible with RSA signatures');
-					}
-					$signature = '';
-					if (!\openssl_sign($msg, $signature, $key, 'SHA'.\substr($alg,2))) {
-						throw new \DomainException('OpenSSL unable to sign data: ' . \openssl_error_string());
-					}
-				} finally {
-					if ($free_key) {
-						\openssl_pkey_free($key);
-					}
+				$details = \openssl_pkey_get_details($key);
+				if (!isset($details['key']) || OPENSSL_KEYTYPE_RSA !== $details['type']) {
+					throw new \ValueError('Key is not compatible with RSA signatures');
+				}
+				$signature = '';
+				if (!\openssl_sign($msg, $signature, $key, 'SHA'.\substr($alg,2))) {
+					throw new \DomainException('OpenSSL unable to sign data: ' . \openssl_error_string());
 				}
 				return $signature;
 
@@ -193,19 +187,13 @@ abstract class JWT
 						throw new \ValueError('Invalid key, reason: ' . openssl_error_string());
 					}
 				}
-				try {
-					$details = \openssl_pkey_get_details($key);
-					if (!isset($details['key']) || OPENSSL_KEYTYPE_RSA !== $details['type']) {
-						throw new \ValueError('Key is not compatible with RSA signatures');
-					}
-					$success = \openssl_verify($msg, $signature, $key, 'SHA'.\substr($alg,2));
-					if (-1 == $success) {
-						throw new \DomainException('OpenSSL unable to verify data: ' . \openssl_error_string());
-					}
-				} finally {
-					if ($free_key) {
-						\openssl_pkey_free($key);
-					}
+				$details = \openssl_pkey_get_details($key);
+				if (!isset($details['key']) || OPENSSL_KEYTYPE_RSA !== $details['type']) {
+					throw new \ValueError('Key is not compatible with RSA signatures');
+				}
+				$success = \openssl_verify($msg, $signature, $key, 'SHA'.\substr($alg,2));
+				if (-1 == $success) {
+					throw new \DomainException('OpenSSL unable to verify data: ' . \openssl_error_string());
 				}
 				return $success;
 
