@@ -59,7 +59,7 @@ abstract class Utils
 				return 'iso-8859-8';
 		}
 
-		return \preg_replace('/^(cp-?|windows?)(12[\d])/', 'windows-$1', $sEncoding);
+		return \preg_replace('/^(cp|windows)-?(12[\d]*)/i', 'windows-$2', $sEncoding);
 	}
 
 	public static function NormalizeCharsetByValue(string $sCharset, string $sValue) : string
