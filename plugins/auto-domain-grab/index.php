@@ -1,10 +1,10 @@
 <?php
 
 /**
- * This extension automatically detects the IMAP and SMTP settings by
+ * This extension automatically detects the IMAP, SMTP, and Sieve settings by
  * extracting them from the email address itself. For example, if the user
- * attemps to login as 'info@example.com', then the IMAP and SMTP host would
- * be set to to 'example.com'.
+ * attemps to login as 'info@example.com', then the IMAP, SMTP, and Sieve host 
+ * would be set to to 'example.com'.
  *
  * Based on:
  * https://github.com/the-djmaze/snappymail/blob/master/plugins/override-smtp-credentials/index.php
@@ -19,15 +19,17 @@ class AutoDomainGrabPlugin extends \RainLoop\Plugins\AbstractPlugin
 		RELEASE = '2022-11-11',
 		REQUIRED = '2.21.0',
 		CATEGORY = 'General',
-		DESCRIPTION = 'Sets the IMAP/SMTP host based on the user\'s login';
+		DESCRIPTION = 'Sets the IMAP, SMTP, Sieve host based on the user\'s login';
 
 	private $imap_prefix = 'mail.';
 	private $smtp_prefix = 'mail.';
-
+	private $sieve_prefix = 'mail.';
+	
 	public function Init() : void
 	{
-		$this->addHook('smtp.before-connect', 'FilterSmtpCredentials');
 		$this->addHook('imap.before-connect', 'FilterImapCredentials');
+		$this->addHook('smtp.before-connect', 'FilterSmtpCredentials');
+		$this->addHook('sieve.before-connect', 'FilterSieveCredentials');
 	}
 
 	/**
@@ -68,6 +70,27 @@ class AutoDomainGrabPlugin extends \RainLoop\Plugins\AbstractPlugin
 			else
 			{
 				$oSettings->host = $this->smtp_prefix . $domain;
+			}
+		}
+	}
+
+	/**
+	 * This function detects the Sieve Host, and if it is set to 'auto', replaces it with the MX or email domain.
+	 */
+	public function FilterSieveCredentials(\RainLoop\Model\Account $oAccount, \MailSo\Sieve\SieveClient $oSieveClient, \MailSo\Sieve\Settings $oSettings)
+	{
+		// Check for mail.$DOMAIN as entered value in RL settings
+		if ('auto' === $oSettings->host)
+		{
+			$domain = \substr(\strrchr($oAccount->Email(), '@'), 1);
+			$mxhosts = array();
+			if (\getmxrr($domain, $mxhosts) && $mxhosts)
+			{
+				$oSettings->host = $mxhosts[0];
+			}
+			else
+			{
+				$oSettings->host = $this->sieve_prefix.$domain;
 			}
 		}
 	}
