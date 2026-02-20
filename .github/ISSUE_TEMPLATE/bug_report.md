@@ -31,7 +31,7 @@ If applicable, add screenshots to help explain your problem.
 - Mode: [e.g. standalone, nextcloud, cyberpanel, docker]
 
 **Debug/logging information**
-[Read here how to log](https://github.com/the-djmaze/snappymail/wiki/FAQ#how-do-i-enable-logging)
+[Read here how to log](https://github.com/nextgen-networks/snappymail/wiki/FAQ#how-do-i-enable-logging)
 - [ ] I've placed them here (few lines) or as attachments (many lines)
 
 **Additional context**

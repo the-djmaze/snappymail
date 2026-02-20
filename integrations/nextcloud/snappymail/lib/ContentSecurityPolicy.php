@@ -2,6 +2,9 @@
 
 namespace OCA\SnappyMail;
 
+use OCP\Server;
+use OCP\Security\IContentSecurityPolicyNonceManager;
+
 class ContentSecurityPolicy extends \OCP\AppFramework\Http\ContentSecurityPolicy {
 
 	/** @var bool Whether inline JS snippets are allowed */
@@ -37,7 +40,7 @@ class ContentSecurityPolicy extends \OCP\AppFramework\Http\ContentSecurityPolicy
 	public function getSnappyMailNonce() {
 		static $sNonce;
 		if (!$sNonce) {
-			$cspManager = \OC::$server->getContentSecurityPolicyNonceManager();
+			$cspManager = Server::get(IContentSecurityPolicyNonceManager::class);
 			$sNonce = $cspManager->getNonce() ?: \SnappyMail\UUID::generate();
 			if (\method_exists($cspManager, 'browserSupportsCspV3') && !$cspManager->browserSupportsCspV3()) {
 				$this->addAllowedScriptDomain("'nonce-{$sNonce}'");

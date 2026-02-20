@@ -6,7 +6,8 @@ use OCA\SnappyMail\AppInfo\Application;
 use OCP\IConfig;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
-use OCP\ILogger;
+use Psr\Log\LoggerInterface;
+use OCP\App\IAppManager;
 
 /**
  * Note: this is not run at install, but when:
@@ -15,6 +16,16 @@ use OCP\ILogger;
  */
 class InstallStep implements IRepairStep
 {
+	private IAppManager $appManager;
+	private IConfig $config;
+	private LoggerInterface $logger;
+
+	public function __construct(IAppManager $appManager, IConfig $config, LoggerInterface $logger) {
+		$this->appManager = $appManager;
+		$this->config = $config;
+		$this->logger = $logger;
+	}
+
 	public function getName() {
 		return 'Setup SnappyMail';
 	}
@@ -53,7 +64,7 @@ class InstallStep implements IRepairStep
 
 		if (!$oConfig->Get('webmail', 'app_path')) {
 			$output->info('Set config [webmail]app_path');
-			$oConfig->Set('webmail', 'app_path', \OC::$server->getAppManager()->getAppWebPath('snappymail') . '/app/');
+			$oConfig->Set('webmail', 'app_path', $this->appManager->getAppWebPath('snappymail') . '/app/');
 			$oConfig->Set('webmail', 'allow_languages_on_settings', false);
 			$oConfig->Set('login', 'allow_languages_on_login', false);
 			$bSave = true;
@@ -116,9 +127,7 @@ class InstallStep implements IRepairStep
 		// ex: php occ config:app:set snappymail custom_config_file --value="/path/to/config.php"
 		// https://github.com/the-djmaze/snappymail/pull/1197
 		try {
-			/** @var IConfig $ncConfig */
-			$ncConfig = \OC::$server->get(IConfig::class);
-			$customConfigFile = $ncConfig->getAppValue(Application::APP_ID, 'custom_config_file');
+			$customConfigFile = $this->config->getAppValue(Application::APP_ID, 'custom_config_file');
 			if ($customConfigFile) {
 				$output->info("Load custom config: {$customConfigFile}");
 				if (!\str_contains($customConfigFile, ':') && \is_readable($customConfigFile)) {
@@ -129,9 +138,7 @@ class InstallStep implements IRepairStep
 			}
 		} catch (\Throwable $e) {
 			$output->warning("custom config error: " . $e->getMessage());
-			/** @var \Psr\Log\LoggerInterface $logger */
-			$logger = \OC::$server->get(\Psr\Log\LoggerInterface::class);
-			$logger->error("custom config error: " . $e->getMessage());
+			$this->logger->error("custom config error: " . $e->getMessage());
 		}
 	}
 }

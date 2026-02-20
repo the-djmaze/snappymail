@@ -207,7 +207,7 @@ if ($options['aur']) {
 	pkgdesc = modern PHP webmail client
 	pkgver = '.$package->version.'
 	pkgrel = 1
-	url = https://github.com/the-djmaze/snappymail
+	url = https://github.com/nextgen-networks/snappymail/
 	arch = any
 	license = AGPL3
 	makedepends = php
@@ -218,7 +218,7 @@ if ($options['aur']) {
 	optdepends = mariadb: storage backend for contacts
 	optdepends = php-pgsql: storage backend for contacts
 	optdepends = php-sqlite: storage backend for contacts
-	source = snappymail-'.$package->version.'.tar.gz::https://github.com/the-djmaze/snappymail/archive/v'.$package->version.'.tar.gz
+	source = snappymail-'.$package->version.'.tar.gz::https://github.com/nextgen-networks/snappymail/archive/v'.$package->version.'.tar.gz
 	source = snappymail.sysusers
 	source = snappymail.tmpfiles
 	b2sums = '.implode("\n	b2sums = ", $b2sums).'
@@ -244,7 +244,7 @@ else if ($options['docker']) {
 	$zip_filename = "snappymail-{$package->version}.zip";
 	copy($zip_destination, "./.docker/release/{$zip_filename}");
 	if ($docker) {
-		passthru("{$docker} build --pull " . ROOT_DIR . "/.docker/release/ --build-arg FILES_ZIP={$zip_filename} -t snappymail:{$package->version}");
+		passthru("{$docker} build --pull -f " . ROOT_DIR . '/.docker/release/Dockerfile ' . ROOT_DIR . " --build-arg FILES_ZIP={$zip_filename} -t snappymail:{$package->version}");
 	} else {
 		echo "Docker not installed!\n";
 	}

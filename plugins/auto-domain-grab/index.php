@@ -7,7 +7,7 @@
  * be set to to 'example.com'.
  *
  * Based on:
- * https://github.com/the-djmaze/snappymail/blob/master/plugins/override-smtp-credentials/index.php
+ * https://github.com/nextgen-networks/snappymail/blob/master/plugins/override-smtp-credentials/index.php
  *
  */
 

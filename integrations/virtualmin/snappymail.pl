@@ -153,7 +153,7 @@ sub script_snappymail_files
 local ($d, $ver, $opts, $upgrade) = @_;
 local @files = ( { 'name' => "source",
 	           'file' => "snappymail-$ver.tar.gz",
-	           'url' => "https://github.com/the-djmaze/snappymail/releases/download/v${ver}/snappymail-${ver}.tar.gz" },
+	           'url' => "https://github.com/nextgen-networks/snappymail/releases/download/v${ver}/snappymail-${ver}.tar.gz" },
 	    );
 return @files;
 }

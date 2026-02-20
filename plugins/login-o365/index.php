@@ -166,7 +166,7 @@ class LoginO365Plugin extends \RainLoop\Plugins\AbstractPlugin
 				->SetLabel('Client ID')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::STRING)
 				->SetAllowedInJs()
-				->SetDescription('https://github.com/the-djmaze/snappymail/wiki/FAQ#o365'),
+				->SetDescription('https://github.com/nextgen-networks/snappymail/wiki/FAQ#o365'),
 			\RainLoop\Plugins\Property::NewInstance('client_secret')
 				->SetLabel('Client Secret')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::STRING)

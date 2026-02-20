@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/the-djmaze/snappymail.git"
+    "url": "git://github.com/nextgen-networks/snappymail.git"
   },
   "scripts": {
     "watch-css": "gulp watchCss"

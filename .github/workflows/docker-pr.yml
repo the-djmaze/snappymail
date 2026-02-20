@@ -21,7 +21,7 @@ jobs:
         DOCKER_METADATA_PR_HEAD_SHA: 'true'
       with:
         images: |
-          djmaze/snappymail
+          nextgennetworks/snappymail
           ghcr.io/${{ github.repository }}
         # type=ref,event=pr generates tag(s) on PRs only. E.g. 'pr-123', 'pr-123-abc0123'
         tags: |

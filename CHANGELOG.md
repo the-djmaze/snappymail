@@ -72,7 +72,7 @@
 
 ### Fixed
 - mXSS exploit found by SonarSource
-  [CVE-2024-45800](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-2rq7-79vp-ffxm)
+  [CVE-2024-45800](https://github.com/nextgen-networks/snappymail/security/advisories/GHSA-2rq7-79vp-ffxm)
 - Call to a member function Email() on null
   [#1706](https://github.com/the-djmaze/snappymail/issues/1706)
 - IMAP capabilities via IMAP Proxy
@@ -202,7 +202,7 @@
 
 ### Added
 - Customize private key passphrase expiration interval
-  [#1545](https://github.com/the-djmaze/snappymail/discussions/1545)
+  [#1545](https://github.com/nextgen-networks/snappymail/discussions/1545)
 - AdvancedSearch support for filtering mails before a given date
   [#1606](https://github.com/the-djmaze/snappymail/pull/1606) by @codiflow
 - Control valid spam and virus headers
@@ -411,9 +411,9 @@
   [#1458](https://github.com/the-djmaze/snappymail/issues/1458)
 - Automatically verify PGP and S/MIME signed messages
 - TNEFDecoder for
-  [#1012](https://github.com/the-djmaze/snappymail/discussions/1012)
+  [#1012](https://github.com/nextgen-networks/snappymail/discussions/1012)
 - RTF to HTML converter for
-  [#1012](https://github.com/the-djmaze/snappymail/discussions/1012)
+  [#1012](https://github.com/nextgen-networks/snappymail/discussions/1012)
 - Polyfill for PHP ctype
   [#1250](https://github.com/the-djmaze/snappymail/issues/1250)
 

@@ -1,3 +1,5 @@
+<?php style('snappymail', 'embed'); ?>
+<link type="text/css" rel="stylesheet" href="<?php echo $_['CssLink']; ?>" />
 <style id="app-boot-css"><?php echo $_['BaseAppBootCss']; ?></style>
 <style id="app-theme-style"><?php echo $_['BaseAppThemeCss']; ?></style>
 <div id="rl-app" data-admin="<?php echo $_['Admin']; ?>" spellcheck="false">

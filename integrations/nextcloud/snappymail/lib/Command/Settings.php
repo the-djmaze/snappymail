@@ -3,14 +3,14 @@
 namespace OCA\SnappyMail\Command;
 
 use OCA\SnappyMail\Util\SnappyMailHelper;
-use OC\Core\Command\Base;
 use OCP\IConfig;
 use OCP\IUserManager;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Settings extends Base
+class Settings extends Command
 {
 	protected IUserManager $userManager;
 	protected IConfig $config;
