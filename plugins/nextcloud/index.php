@@ -4,8 +4,9 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Nextcloud',
-		VERSION = '2.38.1',
-		RELEASE  = '2024-10-08',
+		// Keep upstream metadata if you prefer; this is not functional.
+		VERSION = '2.38.2',
+		RELEASE  = '2026-02-06',
 		CATEGORY = 'Integrations',
 		DESCRIPTION = 'Integrate with Nextcloud v20+',
 		REQUIRED = '2.38.0';
@@ -36,14 +37,13 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			$this->addTemplate('templates/PopupsNextcloudFiles.html');
 			$this->addTemplate('templates/PopupsNextcloudCalendars.html');
 
-//			$this->addHook('login.credentials.step-2', 'loginCredentials2');
-//			$this->addHook('login.credentials', 'loginCredentials');
+			// $this->addHook('login.credentials.step-2', 'loginCredentials2');
+			// $this->addHook('login.credentials', 'loginCredentials');
 			$this->addHook('imap.before-login', 'beforeLogin');
 			$this->addHook('smtp.before-login', 'beforeLogin');
 			$this->addHook('sieve.before-login', 'beforeLogin');
 		} else {
 			\SnappyMail\Log::debug('Nextcloud', 'NOT integrated');
-			// \OC::$server->getConfig()->getAppValue('snappymail', 'snappymail-no-embed');
 			$this->addHook('main.content-security-policy', 'ContentSecurityPolicy');
 		}
 	}
@@ -72,13 +72,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 	public function loginCredentials(string &$sEmail, string &$sLogin, ?string &$sPassword = null) : void
 	{
-		/**
-		 * This has an issue.
-		 * When user changes email address, all settings are gone as the new
-		 * _data_/_default_/storage/{domain}/{local-part} is used
-		 */
-//		$ocUser = \OC::$server->getUserSession()->getUser();
-//		$sEmail = $ocUser->getEMailAddress() ?: $ocUser->getPrimaryEMailAddress() ?: $sEmail;
+		// left intentionally as upstream (commented in upstream)
 	}
 
 	public function loginCredentials2(string &$sEmail, ?string &$sPassword = null) : void
@@ -89,83 +83,145 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 	public function beforeLogin(\RainLoop\Model\Account $oAccount, \MailSo\Net\NetClient $oClient, \MailSo\Net\ConnectSettings $oSettings) : void
 	{
-		// Only login with OIDC access token if
-		// it is enabled in config, the user is currently logged in with OIDC,
-		// the current snappymail account is the OIDC account and no account defined explicitly
 		if ($oAccount instanceof \RainLoop\Model\MainAccount
-		 && \OCA\SnappyMail\Util\SnappyMailHelper::isOIDCLogin()
-//		 && $oClient->supportsAuthType('OAUTHBEARER') // v2.28
-		 && \str_starts_with($oSettings->passphrase, 'oidc_login|')
+			&& \OCA\SnappyMail\Util\SnappyMailHelper::isOIDCLogin()
+			&& \str_starts_with($oSettings->passphrase, 'oidc_login|')
 		) {
-//			$oSettings->passphrase = \OC::$server->getSession()->get('snappymail-passphrase');
-			$oSettings->passphrase = \OC::$server->getSession()->get('oidc_access_token');
+			$oSettings->passphrase = (string) \OC::$server->getSession()->get('oidc_access_token');
 			\array_unshift($oSettings->SASLMechanisms, 'OAUTHBEARER');
 		}
 	}
 
-	/*
-	\OC::$server->getCalendarManager();
-	\OC::$server->getLDAPProvider();
-	*/
-
+	/**
+	 * Attach a Nextcloud file into SnappyMail temp storage (for composing).
+	 */
 	public function NextcloudAttachFile() : array
 	{
 		$aResult = [
 			'success' => false,
 			'tempName' => ''
 		];
-		$sFile = $this->jsonParam('file', '');
-		$oFiles = \OCP\Files::getStorage('files');
-		if ($oFiles && $oFiles->is_file($sFile) && $fp = $oFiles->fopen($sFile, 'rb')) {
+
+		$sFile = (string) $this->jsonParam('file', '');
+
+		try {
 			$oActions = \RainLoop\Api::Actions();
 			$oAccount = $oActions->getAccountFromToken();
-			if ($oAccount) {
-				$sSavedName = 'nextcloud-file-' . \sha1($sFile . \microtime());
-				if (!$oActions->FilesProvider()->PutFile($oAccount, $sSavedName, $fp)) {
-					$aResult['error'] = 'failed';
-				} else {
-					$aResult['tempName'] = $sSavedName;
-					$aResult['success'] = true;
-				}
+			if (!$oAccount) {
+				$aResult['error'] = 'no-account';
+				return $this->jsonResponse(__FUNCTION__, $aResult);
 			}
+
+			$user = \OC::$server->getUserSession()->getUser();
+			if (!$user) {
+				$aResult['error'] = 'no-user';
+				return $this->jsonResponse(__FUNCTION__, $aResult);
+			}
+
+			/** @var \OCP\Files\IRootFolder $root */
+			$root = \OC::$server->get(\OCP\Files\IRootFolder::class);
+			$userFolder = $root->getUserFolder($user->getUID());
+
+			// SnappyMail sends "/Documents/app.svg" style paths; userFolder expects relative.
+			$relPath = \ltrim($sFile, '/');
+
+			if ($relPath === '') {
+				$aResult['error'] = 'empty-path';
+				return $this->jsonResponse(__FUNCTION__, $aResult);
+			}
+
+			$node = $userFolder->get($relPath);
+			if (!($node instanceof \OCP\Files\File)) {
+				$aResult['error'] = 'not-a-file';
+				return $this->jsonResponse(__FUNCTION__, $aResult);
+			}
+
+			$fp = $node->fopen('rb');
+			if (!$fp) {
+				$aResult['error'] = 'open-failed';
+				return $this->jsonResponse(__FUNCTION__, $aResult);
+			}
+
+			$sSavedName = 'nextcloud-file-' . \sha1($sFile . \microtime(true));
+			$ok = $oActions->FilesProvider()->PutFile($oAccount, $sSavedName, $fp);
+			@\fclose($fp);
+
+			if (!$ok) {
+				$aResult['error'] = 'failed';
+			} else {
+				$aResult['tempName'] = $sSavedName;
+				$aResult['success'] = true;
+			}
+		} catch (\Throwable $e) {
+			$aResult['error'] = 'exception';
+			$aResult['errorMessage'] = $e->getMessage();
 		}
+
 		return $this->jsonResponse(__FUNCTION__, $aResult);
 	}
 
+	/**
+	 * Save an .eml message from SnappyMail into Nextcloud Files.
+	 */
 	public function NextcloudSaveMsg() : array
 	{
-		$sSaveFolder = \ltrim($this->jsonParam('folder', ''), '/');
-//		$aValues = \RainLoop\Api::Actions()->decodeRawKey($this->jsonParam('msgHash', ''));
-		$msgHash = $this->jsonParam('msgHash', '');
+		$sSaveFolder = \ltrim((string) $this->jsonParam('folder', ''), '/');
+
+		$msgHash = (string) $this->jsonParam('msgHash', '');
 		$aValues = \json_decode(\MailSo\Base\Utils::UrlSafeBase64Decode($msgHash), true);
+
 		$aResult = [
 			'folder' => '',
 			'filename' => '',
-			'success' => false
+			'success' => false,
 		];
-		if ($sSaveFolder && !empty($aValues['folder']) && !empty($aValues['uid'])) {
+
+		if (!empty($aValues['folder']) && !empty($aValues['uid'])) {
 			$oActions = \RainLoop\Api::Actions();
 			$oMailClient = $oActions->MailClient();
+
 			if (!$oMailClient->IsLoggined()) {
 				$oAccount = $oActions->getAccountFromToken();
 				$oAccount->ImapConnectAndLogin($oActions->Plugins(), $oMailClient->ImapClient(), $oActions->Config());
 			}
 
+			// Default folder
 			$sSaveFolder = $sSaveFolder ?: 'Emails';
-			$oFiles = \OCP\Files::getStorage('files');
-			if ($oFiles) {
-				$oFiles->is_dir($sSaveFolder) || $oFiles->mkdir($sSaveFolder);
-			}
-			$aResult['folder'] = $sSaveFolder;
-			$aResult['filename'] = \MailSo\Base\Utils::SecureFileName(
-				\mb_substr($this->jsonParam('filename', '') ?: \date('YmdHis'), 0, 100)
-			) . '.' . \md5($msgHash) . '.eml';
+			$sSaveFolder = \trim($sSaveFolder, '/');
 
+			// Use Nextcloud Files API (per-user)
+			$userFolder = \OC::$server->getUserFolder();
+
+			// Create folder path (supports nested folders)
+			$folderNode = $this->ensureFolderPath($userFolder, $sSaveFolder);
+
+			$filenameBase = (string) ($this->jsonParam('filename', '') ?: \date('YmdHis'));
+			$safeBase = \MailSo\Base\Utils::SecureFileName(\mb_substr($filenameBase, 0, 100));
+			$filename = $safeBase . '.' . \md5($msgHash) . '.eml';
+
+			$aResult['folder'] = $sSaveFolder;
+			$aResult['filename'] = $filename;
 
 			$oMailClient->MessageMimeStream(
-				function ($rResource) use ($oFiles, $aResult) {
-					if (\is_resource($rResource)) {
-						$aResult['success'] = $oFiles->file_put_contents("{$aResult['folder']}/{$aResult['filename']}", $rResource);
+				function ($rResource) use (&$aResult, $folderNode, $filename) {
+					if (!\is_resource($rResource)) {
+						return;
+					}
+
+					// If exists, overwrite by deleting and recreating (keeps behavior deterministic)
+					if ($folderNode->nodeExists($filename)) {
+						$existing = $folderNode->get($filename);
+						if ($existing instanceof \OCP\Files\File) {
+							$existing->delete();
+						}
+					}
+
+					$fileNode = $folderNode->newFile($filename);
+					$out = $fileNode->fopen('w');
+					if (\is_resource($out)) {
+						\stream_copy_to_stream($rResource, $out);
+						\fclose($out);
+						$aResult['success'] = true;
 					}
 				},
 				(string) $aValues['folder'],
@@ -177,118 +233,148 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 		return $this->jsonResponse(__FUNCTION__, $aResult);
 	}
 
+	/**
+	 * Save message attachments from SnappyMail into Nextcloud Files.
+	 * (Used by SnappyMail "save attachments to nextcloud" actions.)
+	 */
 	public function DoAttachmentsActions(\SnappyMail\AttachmentsAction $data)
 	{
-		if (static::isLoggedIn() && 'nextcloud' === $data->action) {
-			$oFiles = \OCP\Files::getStorage('files');
-			if ($oFiles && \method_exists($oFiles, 'file_put_contents')) {
-				$sSaveFolder = \ltrim($this->jsonParam('NcFolder', ''), '/');
-				$sSaveFolder = $sSaveFolder ?: 'Attachments';
-				$oFiles->is_dir($sSaveFolder) || $oFiles->mkdir($sSaveFolder);
-				$data->result = true;
-				foreach ($data->items as $aItem) {
-					$sSavedFileName = empty($aItem['fileName']) ? 'file.dat' : $aItem['fileName'];
-					if (!empty($aItem['data'])) {
-						$sSavedFileNameFull = static::SmartFileExists($sSaveFolder.'/'.$sSavedFileName, $oFiles);
-						if (!$oFiles->file_put_contents($sSavedFileNameFull, $aItem['data'])) {
-							$data->result = false;
-						}
-					} else if (!empty($aItem['fileHash'])) {
-						$fFile = $data->filesProvider->GetFile($data->account, $aItem['fileHash'], 'rb');
-						if (\is_resource($fFile)) {
-							$sSavedFileNameFull = static::SmartFileExists($sSaveFolder.'/'.$sSavedFileName, $oFiles);
-							if (!$oFiles->file_put_contents($sSavedFileNameFull, $fFile)) {
-								$data->result = false;
-							}
-							if (\is_resource($fFile)) {
-								\fclose($fFile);
-							}
-						}
+		if (!static::isLoggedIn() || 'nextcloud' !== $data->action) {
+			return;
+		}
+
+		try {
+			// Target folder in Nextcloud
+			$sSaveFolder = \ltrim((string) $this->jsonParam('NcFolder', ''), '/');
+			$sSaveFolder = $sSaveFolder ?: 'Attachments';
+			$sSaveFolder = \trim($sSaveFolder, '/');
+
+			$userFolder = \OC::$server->getUserFolder();
+			$folderNode = $this->ensureFolderPath($userFolder, $sSaveFolder);
+
+			$data->result = true;
+
+			foreach ($data->items as $aItem) {
+				$sSavedFileName = empty($aItem['fileName']) ? 'file.dat' : (string) $aItem['fileName'];
+				$sSavedFileName = \MailSo\Base\Utils::SecureFileName(\mb_substr($sSavedFileName, 0, 180));
+
+				$finalName = $this->uniqueNameInFolder($folderNode, $sSavedFileName);
+
+				// Create file node
+				$fileNode = $folderNode->newFile($finalName);
+
+				$out = $fileNode->fopen('w');
+				if (!\is_resource($out)) {
+					$data->result = false;
+					continue;
+				}
+
+				$wrote = false;
+
+				if (!empty($aItem['data'])) {
+					// Raw data string
+					$bytes = \fwrite($out, (string) $aItem['data']);
+					$wrote = ($bytes !== false);
+				} else if (!empty($aItem['fileHash'])) {
+					// Stream from SnappyMail temp storage
+					$fFile = $data->filesProvider->GetFile($data->account, (string) $aItem['fileHash'], 'rb');
+					if (\is_resource($fFile)) {
+						\stream_copy_to_stream($fFile, $out);
+						\fclose($fFile);
+						$wrote = true;
 					}
 				}
+
+				\fclose($out);
+
+				if (!$wrote) {
+					// Clean up the empty file
+					try { $fileNode->delete(); } catch (\Throwable $e) {}
+					$data->result = false;
+				}
 			}
+		} catch (\Throwable $e) {
+			$data->result = false;
 		}
 	}
 
 	public function FilterAppData($bAdmin, &$aResult) : void
 	{
-		if (!$bAdmin && \is_array($aResult)) {
-			$ocUser = \OC::$server->getUserSession()->getUser();
-			$sUID = $ocUser->getUID();
-			$oUrlGen = \OC::$server->getURLGenerator();
-			$sWebDAV = $oUrlGen->getAbsoluteURL($oUrlGen->linkTo('', 'remote.php') . '/dav');
-//			$sWebDAV = \OCP\Util::linkToRemote('dav');
-			$aResult['Nextcloud'] = [
-				'UID' => $sUID,
-				'WebDAV' => $sWebDAV,
-				'CalDAV' => $this->Config()->Get('plugin', 'calendar', false)
-//				'WebDAV_files' => $sWebDAV . '/files/' . $sUID
-			];
-			if (empty($aResult['Auth'])) {
-				$config = \OC::$server->getConfig();
-				$sEmail = '';
-				// Only store the user's password in the current session if they have
-				// enabled auto-login using Nextcloud username or email address.
-				if ($config->getAppValue('snappymail', 'snappymail-autologin', false)) {
-					$sEmail = $sUID;
-				} else if ($config->getAppValue('snappymail', 'snappymail-autologin-with-email', false)) {
-					$sEmail = $config->getUserValue($sUID, 'settings', 'email', '');
-				} else {
-					\SnappyMail\Log::debug('Nextcloud', 'snappymail-autologin is off');
-				}
-				// If the user has set credentials for SnappyMail in their personal
-				// settings, override everything before and use those instead.
-				$sCustomEmail = $config->getUserValue($sUID, 'snappymail', 'snappymail-email', '');
-				if ($sCustomEmail) {
-					$sEmail = $sCustomEmail;
-				}
-				if (!$sEmail) {
-					$sEmail = $ocUser->getEMailAddress();
-//						?: $ocUser->getPrimaryEMailAddress();
-				}
-/*
-				if ($config->getAppValue('snappymail', 'snappymail-autologin-oidc', false)) {
-					if (\OC::$server->getSession()->get('is_oidc')) {
-						$sEmail = "{$sUID}@nextcloud";
-						$aResult['DevPassword'] = \OC::$server->getSession()->get('oidc_access_token');
-					} else {
-						\SnappyMail\Log::debug('Nextcloud', 'Not an OIDC login');
-					}
-				} else {
-					\SnappyMail\Log::debug('Nextcloud', 'OIDC is off');
-				}
-*/
-				$aResult['DevEmail'] = $sEmail ?: '';
-			} else if (!empty($aResult['ContactsSync'])) {
-				$bSave = false;
-				if (empty($aResult['ContactsSync']['Url'])) {
-					$aResult['ContactsSync']['Url'] = "{$sWebDAV}/addressbooks/users/{$sUID}/contacts/";
+		if ($bAdmin || !\is_array($aResult)) {
+			return;
+		}
+
+		$ocUser = \OC::$server->getUserSession()->getUser();
+		if (!$ocUser) {
+			return;
+		}
+
+		$sUID = $ocUser->getUID();
+		$oUrlGen = \OC::$server->getURLGenerator();
+		$sWebDAV = $oUrlGen->getAbsoluteURL($oUrlGen->linkTo('', 'remote.php') . '/dav');
+
+		$aResult['Nextcloud'] = [
+			'UID' => $sUID,
+			'WebDAV' => $sWebDAV,
+			'CalDAV' => $this->Config()->Get('plugin', 'calendar', false)
+		];
+
+		if (empty($aResult['Auth'])) {
+			$config = \OC::$server->getConfig();
+			$sEmail = '';
+
+			if ($config->getAppValue('snappymail', 'snappymail-autologin', false)) {
+				$sEmail = $sUID;
+			} else if ($config->getAppValue('snappymail', 'snappymail-autologin-with-email', false)) {
+				$sEmail = $config->getUserValue($sUID, 'settings', 'email', '');
+			} else {
+				\SnappyMail\Log::debug('Nextcloud', 'snappymail-autologin is off');
+			}
+
+			// User-set SnappyMail credentials override
+			$sCustomEmail = $config->getUserValue($sUID, 'snappymail', 'snappymail-email', '');
+			if ($sCustomEmail) {
+				$sEmail = $sCustomEmail;
+			}
+
+			if (!$sEmail) {
+				$sEmail = $ocUser->getEMailAddress();
+			}
+
+			$aResult['DevEmail'] = $sEmail ?: '';
+		} else if (!empty($aResult['ContactsSync'])) {
+			$bSave = false;
+
+			if (empty($aResult['ContactsSync']['Url'])) {
+				$aResult['ContactsSync']['Url'] = "{$sWebDAV}/addressbooks/users/{$sUID}/contacts/";
+				$bSave = true;
+			}
+			if (empty($aResult['ContactsSync']['User'])) {
+				$aResult['ContactsSync']['User'] = $sUID;
+				$bSave = true;
+			}
+
+			// FIX: do not array-access the session; use ->get()
+			$pass = (string) \OC::$server->getSession()->get('snappymail-passphrase');
+			if ($pass) {
+				$pass = \SnappyMail\Crypt::DecryptUrlSafe($pass, $sUID);
+				if ($pass) {
+					$aResult['ContactsSync']['Password'] = $pass;
 					$bSave = true;
 				}
-				if (empty($aResult['ContactsSync']['User'])) {
-					$aResult['ContactsSync']['User'] = $sUID;
-					$bSave = true;
-				}
-				$pass = \OC::$server->getSession()['snappymail-passphrase'];
-				if ($pass/* && empty($aResult['ContactsSync']['Password'])*/) {
-					$pass = \SnappyMail\Crypt::DecryptUrlSafe($pass, $sUID);
-					if ($pass) {
-						$aResult['ContactsSync']['Password'] = $pass;
-						$bSave = true;
-					}
-				}
-				if ($bSave) {
-					$oActions = \RainLoop\Api::Actions();
-					$oActions->setContactsSyncData(
-						$oActions->getAccountFromToken(),
-						array(
-							'Mode' => $aResult['ContactsSync']['Mode'],
-							'User' => $aResult['ContactsSync']['User'],
-							'Password' => $aResult['ContactsSync']['Password'],
-							'Url' => $aResult['ContactsSync']['Url']
-						)
-					);
-				}
+			}
+
+			if ($bSave) {
+				$oActions = \RainLoop\Api::Actions();
+				$oActions->setContactsSyncData(
+					$oActions->getAccountFromToken(),
+					[
+						'Mode' => $aResult['ContactsSync']['Mode'],
+						'User' => $aResult['ContactsSync']['User'],
+						'Password' => $aResult['ContactsSync']['Password'],
+						'Url' => $aResult['ContactsSync']['Url']
+					]
+				);
 			}
 		}
 	}
@@ -301,116 +387,124 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			$userLang = \OC::$server->getConfig()->getUserValue($userId, 'core', 'lang', 'en');
 			$userLang = \strtr($userLang, '_', '-');
 			$sLanguage = $this->determineLocale($userLang, $aResultLang);
-			// Check if $sLanguage is null
 			if (!$sLanguage) {
-				$sLanguage = 'en'; // Assign 'en' if $sLanguage is null
+				$sLanguage = 'en';
 			}
 		}
 	}
 
-	/**
-	 * Determine locale from user language.
-	 *
-	 * @param string $langCode The name of the input.
-	 * @param array  $languagesArray The value of the array.
-	 *
-	 * @return string return locale
-	 */
 	private function determineLocale(string $langCode, array $languagesArray) : ?string
 	{
-		// Direct check for the language code
-		if (\in_array($langCode, $languagesArray)) {
+		if (\in_array($langCode, $languagesArray, true)) {
 			return $langCode;
 		}
 
-		// Check without country code
 		if (\str_contains($langCode, '-')) {
 			$langCode = \explode('-', $langCode)[0];
-			if (\in_array($langCode, $languagesArray)) {
+			if (\in_array($langCode, $languagesArray, true)) {
 				return $langCode;
 			}
 		}
 
-		// Check with uppercase country code
 		$langCodeWithUpperCase = $langCode . '-' . \strtoupper($langCode);
-		if (\in_array($langCodeWithUpperCase, $languagesArray)) {
+		if (\in_array($langCodeWithUpperCase, $languagesArray, true)) {
 			return $langCodeWithUpperCase;
 		}
 
-		// If no match is found
 		return null;
 	}
 
-	/**
-	 * @param mixed $mResult
-	 */
 	public function MainFabrica(string $sName, &$mResult)
 	{
-		if (static::isLoggedIn()) {
-			if ('suggestions' === $sName && $this->Config()->Get('plugin', 'suggestions', true)) {
-				if (!\is_array($mResult)) {
-					$mResult = array();
-				}
-				include_once __DIR__ . '/NextcloudContactsSuggestions.php';
-				$mResult[] = new NextcloudContactsSuggestions(
-					$this->Config()->Get('plugin', 'ignoreSystemAddressbook', true)
-				);
-			}
-/*
-			if ($this->Config()->Get('plugin', 'storage', false) && ('storage' === $sName || 'storage-local' === $sName)) {
-				require_once __DIR__ . '/storage.php';
-				$oDriver = new \NextcloudStorage(APP_PRIVATE_DATA.'storage', $sName === 'storage-local');
-			}
-*/
+		if (!static::isLoggedIn()) {
+			return;
 		}
+
+		if ('suggestions' === $sName && $this->Config()->Get('plugin', 'suggestions', true)) {
+			if (!\is_array($mResult)) {
+				$mResult = [];
+			}
+			include_once __DIR__ . '/NextcloudContactsSuggestions.php';
+			$mResult[] = new NextcloudContactsSuggestions(
+				$this->Config()->Get('plugin', 'ignoreSystemAddressbook', true)
+			);
+		}
+
+		// storage hook left as upstream (commented)
 	}
 
 	protected function configMapping() : array
 	{
-		return array(
+		return [
 			\RainLoop\Plugins\Property::NewInstance('suggestions')->SetLabel('Suggestions')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 				->SetDefaultValue(true),
+
 			\RainLoop\Plugins\Property::NewInstance('ignoreSystemAddressbook')->SetLabel('Ignore system addressbook')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 				->SetDefaultValue(true),
-/*
-			\RainLoop\Plugins\Property::NewInstance('storage')->SetLabel('Use Nextcloud user ID in config storage path')
-				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
-				->SetDefaultValue(false)
-*/
+
 			\RainLoop\Plugins\Property::NewInstance('calendar')->SetLabel('Enable "Put ICS in calendar"')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 				->SetDefaultValue(false)
-		);
+		];
 	}
 
-	private static function SmartFileExists(string $sFilePath, $oFiles) : string
+	/**
+	 * Ensure a (possibly nested) folder path exists under the given base folder.
+	 */
+	private function ensureFolderPath(\OCP\Files\Folder $baseFolder, string $path) : \OCP\Files\Folder
 	{
-		$sFilePath = \str_replace('\\', '/', \trim($sFilePath));
-
-		if (!$oFiles->file_exists($sFilePath)) {
-			return $sFilePath;
+		$path = \trim($path, '/');
+		if ($path === '') {
+			return $baseFolder;
 		}
 
-		$aFileInfo = \pathinfo($sFilePath);
-
-		$iIndex = 0;
-
-		while (true) {
-			++$iIndex;
-			$sFilePathNew = $aFileInfo['dirname'].'/'.
-				\preg_replace('/\(\d{1,2}\)$/', '', $aFileInfo['filename']).
-				' ('.$iIndex.')'.
-				(empty($aFileInfo['extension']) ? '' : '.'.$aFileInfo['extension'])
-			;
-			if (!$oFiles->file_exists($sFilePathNew)) {
-				return $sFilePathNew;
-			}
-			if (10 < $iIndex) {
-				break;
+		$folderNode = $baseFolder;
+		foreach (\array_filter(\explode('/', $path), 'strlen') as $part) {
+			$part = (string) $part;
+			if ($folderNode->nodeExists($part)) {
+				$node = $folderNode->get($part);
+				if ($node instanceof \OCP\Files\Folder) {
+					$folderNode = $node;
+				} else {
+					// name collision: file exists where folder needed; create a suffixed folder
+					$folderNode = $folderNode->newFolder($part . '-folder');
+				}
+			} else {
+				$folderNode = $folderNode->newFolder($part);
 			}
 		}
-		return $sFilePath;
+
+		return $folderNode;
+	}
+
+	/**
+	 * Return a unique filename inside a Nextcloud folder (keeps original extension).
+	 */
+	private function uniqueNameInFolder(\OCP\Files\Folder $folderNode, string $fileName) : string
+	{
+		$fileName = \trim($fileName);
+		if ($fileName === '') {
+			$fileName = 'file.dat';
+		}
+
+		if (!$folderNode->nodeExists($fileName)) {
+			return $fileName;
+		}
+
+		$info = \pathinfo($fileName);
+		$base = $info['filename'] ?? 'file';
+		$ext  = isset($info['extension']) && $info['extension'] !== '' ? ('.' . $info['extension']) : '';
+
+		for ($i = 1; $i <= 50; $i++) {
+			$try = $base . ' (' . $i . ')' . $ext;
+			if (!$folderNode->nodeExists($try)) {
+				return $try;
+			}
+		}
+
+		// fallback
+		return $fileName;
 	}
 }
