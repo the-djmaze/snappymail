@@ -2,19 +2,19 @@
 
 ## Supported Versions
 
-Currently due to the fast development only the latest version receives security updates.
+Currently due to the fast development only the newest version receives security updates.
 
 | Version  | Supported |
 | -------- | --------- |
-| 2.34.x   | ✔         |
-| < 2.34.0 | ❌         |
+| 2.38.x   | ✔         |
+| < 2.38.2 | ❌         |
 
 ## Reporting a Vulnerability
 
 Please report security issues or vulnerabilities as an encrypted email to [security@snappymail.eu](mailto:security@snappymail.eu).
 Your report should be detailed enough with clear steps to reproduce and classify the found vulnerability.
 
-You can find the PGP public key below and on the major public keyservers like [keys.openpgp.org](https://keys.openpgp.org).
+You can find the PGP public key below and on the major public keyservers, like [keys.openpgp.org](https://keys.openpgp.org).
 ```
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Comment: Type: 255-bit EdDSA
@@ -36,5 +36,5 @@ YMXQVq4SJt7UpWABAORudfJxsBqCRKtPlZMgGTJLjcOkyFJ9C2Fx7DeN0J4I
 ## Publishing and Credits
 
 I will analyze and fix the reported issue as fast as possible.
-Together with the reporter I plan the disclosure of the found and fixed vulnerability.
+Together, with the reporter, I plan the disclosure of the found and fixed vulnerability.
 Credits to the reporter are granted and can be included in all public communication if desired.
