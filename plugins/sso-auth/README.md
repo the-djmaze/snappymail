@@ -62,22 +62,38 @@ location / {
 }
 ```
 
+> **Note on `error_page 401 =200`:** The `=200` override is required. Without it nginx
+> preserves the original 401 status code even when `return 200` is used inside the named
+> location, causing SnappyMail's `fetch()` to reject the response before reading the body.
+
 > **Note on `{"Result":true}` for POST:** When a SnappyMail XHR request arrives with an
 > expired proxy session, returning this response causes SnappyMail to call
 > `location.reload()`, which triggers a full page reload. The page load is then
 > intercepted by the proxy (401 → redirect to login). This avoids error dialogs in the UI.
 
+> **Note on `proxy_set_header` placement:** The `proxy_set_header` directives **must** be
+> inside the `location /` block, not in the `server` block. Nginx completely discards any
+> `proxy_set_header` directives inherited from a parent block the moment the `location`
+> block defines its own — so headers set at the server level would silently be dropped.
+
 ### 2. SnappyMail — application.ini
 
-If your proxy redirects to SnappyMail from a different (sub)domain, allow the
-`Sec-Fetch-Site: same-site` header so SnappyMail accepts the final `/?sso&hash=` request:
+If your SSO provider and SnappyMail are on different subdomains (e.g. `auth.example.com`
+and `mail.example.com`), you must allow `Sec-Fetch-Site: same-site` in SnappyMail:
 
 ```ini
 [security]
 secfetch_allow = "site=same-site"
 ```
 
-For logout, set a custom logout link pointing to your SSO provider:
+**Why:** When the SSO provider redirects back to SnappyMail, Chromium-based browsers track
+the original request initiator through the entire redirect chain. The final `/?sso&hash=`
+request therefore carries `Sec-Fetch-Site: same-site` instead of `same-origin`. SnappyMail's
+default security policy rejects this and returns "Access Denied" — the setting above
+allows it.
+
+For logout, set a custom logout link pointing to your SSO provider. The `rd` (or
+`redirect_uri`) parameter tells the SSO provider where to send the user after logout:
 
 ```ini
 [labs]
