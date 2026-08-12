@@ -47,7 +47,14 @@ class CURL extends \SnappyMail\HTTP\Request
 			\curl_setopt($c, CURLOPT_CAINFO, $this->ca_bundle);
 		}
 		if ($extra_headers) {
-			\curl_setopt($c, CURLOPT_HTTPHEADER, $extra_headers);
+			// CURLOPT_HTTPHEADER expects a flat list of "Name: value" strings.
+			// Callers may pass an associative array, in which case curl sends
+			// the bare values as malformed header lines and drops them.
+			$aHeaderLines = array();
+			foreach ($extra_headers as $mKey => $sValue) {
+				$aHeaderLines[] = \is_int($mKey) ? $sValue : "{$mKey}: {$sValue}";
+			}
+			\curl_setopt($c, CURLOPT_HTTPHEADER, $aHeaderLines);
 		}
 		if ($this->auth['user'] && $this->auth['type']) {
 			if ($this->auth['type'] & self::AUTH_BEARER ) {

@@ -43,7 +43,12 @@ class Socket extends \SnappyMail\HTTP\Request
 			$extra_headers['Authorization'] = static::$Authorization[$host];
 		}
 		if ($extra_headers) {
-			$headers = \array_merge($headers, $extra_headers);
+			// $headers is a flat list of "Name: value" strings, so an
+			// associative $extra_headers would lose its keys in the implode()
+			// below and emit bare values as malformed header lines.
+			foreach ($extra_headers as $mKey => $sValue) {
+				$headers[] = \is_int($mKey) ? $sValue : "{$mKey}: {$sValue}";
+			}
 		}
 		$headers = \implode("\r\n", $headers);
 		if (!\is_null($body)) {
