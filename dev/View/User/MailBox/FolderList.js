@@ -7,6 +7,7 @@ import { mailBox, settings } from 'Common/Links';
 import { addComputablesTo } from 'External/ko';
 
 import { AppUserStore } from 'Stores/User/App';
+import { pluginNavEntries } from 'Common/Plugins';
 import { SettingsUserStore } from 'Stores/User/Settings';
 import { FolderUserStore } from 'Stores/User/Folder';
 import { MessageUserStore } from 'Stores/User/Message';
@@ -36,6 +37,7 @@ export class MailFolderList extends AbstractViewLeft {
 		this.moveAction = moveAction;
 
 		this.allowContacts = AppUserStore.allowContacts();
+		this.pluginNavEntries = pluginNavEntries;
 
 		this.foldersFilter = foldersFilter;
 
