@@ -245,7 +245,7 @@ export class AppUser extends AbstractApp {
 		if (1 == arrayLength(msg)) {
 			msg = msg[0];
 		}
-		if (msg) {
+		if (msg && msg.decrypt) {
 			msg.decrypt().then((/*success*/)=>showScreenPopup(ComposePopupView, params));
 		} else {
 			showScreenPopup(ComposePopupView, params);
