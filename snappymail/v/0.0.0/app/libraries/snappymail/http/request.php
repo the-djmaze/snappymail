@@ -166,4 +166,29 @@ abstract class Request
 	{
 		return self::$scheme_ports[$scheme] ?? 0;
 	}
+
+	/**
+	 * Extra headers as the flat list of "Name: value" lines both transports send.
+	 *
+	 * Callers pass either form: a list of ready lines, or an associative array
+	 * such as ['Accept-Encoding' => 'gzip']. The
+	 * associative form used to reach CURLOPT_HTTPHEADER as bare values, so the
+	 * header was sent as a malformed line and dropped.
+	 *
+	 * Some callers file a complete line under its own name
+	 * (['Authorization' => 'Authorization: Basic ...'] in the socket 401
+	 * retry). Such a value is kept as it is, otherwise it would go out
+	 * as "Authorization: Authorization: Basic ...".
+	 */
+	public static function headerLines(array $headers) : array
+	{
+		$lines = array();
+		foreach ($headers as $name => $value) {
+			$value = (string) $value;
+			$lines[] = (\is_int($name) || 0 === \stripos($value, $name . ':'))
+				? $value
+				: "{$name}: {$value}";
+		}
+		return $lines;
+	}
 }
