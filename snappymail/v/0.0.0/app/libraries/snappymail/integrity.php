@@ -57,7 +57,7 @@ abstract class Integrity
 */
 			echo "<h3>gzip encoded</h3>";
 			$response = $HTTP->doRequest('HEAD', $uri . $file . '.gz');
-			echo '<details><summary>Status: ' . $response->status . '</summary><pre>' . \print_r($response->headers, 1) . '</pre></details>';
+			echo '<details><summary>Status: ' . $response->status . '</summary></details>';
 			$size = \filesize(APP_VERSION_ROOT_PATH.$file . '.gz');
 			if ($size == intval($response->getHeader('content-length'))) {
 				echo '<div>content-length matches size ' . $size . '</div>';
@@ -72,7 +72,7 @@ abstract class Integrity
 
 			echo "<h3>brotli encoded</h3>";
 			$response = $HTTP->doRequest('HEAD', $uri . $file . '.br');
-			echo '<details><summary>Status: ' . $response->status . '</summary><pre>' . \print_r($response->headers, 1) . '</pre></details>';
+			echo '<details><summary>Status: ' . $response->status . '</summary></details>';
 			$size = \filesize(APP_VERSION_ROOT_PATH.$file . '.br');
 			if ($size == intval($response->getHeader('content-length'))) {
 				echo '<div>content-length matches size ' . $size . '</div>';
