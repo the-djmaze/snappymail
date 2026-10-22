@@ -1,0 +1,268 @@
+SnappyMail Client IP Passthrough Plugin
+========================================
+
+This plugin for SnappyMail allows you to pass the logged-in user's IP address to your SMTP and IMAP servers. This can be useful for logging, security, and troubleshooting purposes.
+
+How it Works
+------------
+
+• SMTP: The plugin hooks into the smtp.before-connect event and modifies the EHLO message to include the client's IP address. For example: EHLO [192.168.1.100].
+
+• IMAP: The plugin hooks into the imap.after-login event and sends an ID command (RFC 2971) to the IMAP server, including the client's IP address in the command's parameters.
+
+IP Address Detection Priority
+------------------------------
+
+The plugin intelligently detects the client's real IP address by checking headers in the following priority order:
+
+1. CF-Connecting-IP - Cloudflare's header (highest priority)
+2. X-Real-IP - Nginx's real IP header
+3. X-Forwarded-For - Standard proxy header (uses first IP in chain)
+4. HTTP_CLIENT_IP - Less common proxy header
+5. REMOTE_ADDR - Direct connection (no proxy)
+
+This priority order ensures that when SnappyMail is behind Cloudflare or Nginx, the actual client IP is correctly identified rather than the proxy's IP.
+
+Installation
+------------
+
+1. The plugin directory is already created at: plugins/client-ip-passthrough/
+
+2. Enable the Plugin:
+   - Log in to SnappyMail as an administrator
+   - Go to Admin Panel > Plugins
+   - Find "Client IP Passthrough" in the list
+   - Click "Enable"
+   - Configure the plugin settings if needed
+
+Plugin Configuration
+--------------------
+
+The plugin provides the following configuration options in the Admin Panel:
+
+• Enable SMTP IP Passthrough (default: enabled)
+  - Modifies SMTP EHLO message to include client IP address
+
+• Enable IMAP IP Passthrough (default: enabled)
+  - Sends IMAP ID command with client IP address after login
+
+• Trust Proxy Headers (default: enabled)
+  - Enable detection of client IP from proxy headers (CF-Connecting-IP, X-Real-IP, X-Forwarded-For)
+  - IMPORTANT: Only enable if SnappyMail is behind a trusted reverse proxy
+  - If disabled, only REMOTE_ADDR will be used
+
+• IPv6 Support (default: enabled)
+  - Enable IPv6 address support (formats IPv6 addresses correctly for EHLO)
+  - If disabled, IPv6 addresses will fallback to 'localhost' in EHLO
+
+Nginx Configuration
+-------------------
+
+If you're running SnappyMail behind Nginx, you must configure Nginx to pass the client's IP address. Add these headers to your Nginx configuration:
+
+Basic Nginx Configuration:
+
+    location / {
+        proxy_pass http://your-backend;
+
+        # Pass the real client IP to SnappyMail
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $host;
+    }
+
+Nginx Behind Cloudflare:
+
+If your Nginx server is behind Cloudflare, use this configuration to preserve the real client IP:
+
+    # Set real IP from Cloudflare
+    set_real_ip_from 103.21.244.0/22;
+    set_real_ip_from 103.22.200.0/22;
+    set_real_ip_from 103.31.4.0/22;
+    set_real_ip_from 104.16.0.0/13;
+    set_real_ip_from 104.24.0.0/14;
+    set_real_ip_from 108.162.192.0/18;
+    set_real_ip_from 131.0.72.0/22;
+    set_real_ip_from 141.101.64.0/18;
+    set_real_ip_from 162.158.0.0/15;
+    set_real_ip_from 172.64.0.0/13;
+    set_real_ip_from 173.245.48.0/20;
+    set_real_ip_from 188.114.96.0/20;
+    set_real_ip_from 190.93.240.0/20;
+    set_real_ip_from 197.234.240.0/22;
+    set_real_ip_from 198.41.128.0/17;
+    set_real_ip_from 2400:cb00::/32;
+    set_real_ip_from 2606:4700::/32;
+    set_real_ip_from 2803:f800::/32;
+    set_real_ip_from 2405:b500::/32;
+    set_real_ip_from 2405:8100::/32;
+    set_real_ip_from 2c0f:f248::/32;
+    set_real_ip_from 2a06:98c0::/29;
+
+    # Use CF-Connecting-IP as the real IP
+    real_ip_header CF-Connecting-IP;
+
+    location / {
+        proxy_pass http://your-backend;
+
+        # Pass both Cloudflare and Nginx headers
+        proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $host;
+    }
+
+Note: Keep the Cloudflare IP ranges updated. You can get the latest list from: https://www.cloudflare.com/ips/
+
+After Changing Nginx Configuration:
+
+Always test and reload Nginx after making changes:
+
+    # Test configuration
+    sudo nginx -t
+
+    # Reload Nginx
+    sudo systemctl reload nginx
+
+Apache Configuration
+--------------------
+
+If you're using Apache as a reverse proxy, add these directives:
+
+    <VirtualHost *:80>
+        ProxyPreserveHost On
+
+        # Pass client IP headers
+        RequestHeader set X-Forwarded-For "%{REMOTE_ADDR}s"
+        RequestHeader set X-Real-IP "%{REMOTE_ADDR}s"
+
+        ProxyPass / http://your-backend/
+        ProxyPassReverse / http://your-backend/
+    </VirtualHost>
+
+For Cloudflare with Apache, install and configure mod_cloudflare:
+
+    # Install mod_cloudflare
+    wget https://www.cloudflare.com/static/misc/mod_cloudflare/mod_cloudflare.c
+    apxs -a -i -c mod_cloudflare.c
+
+    # Restart Apache
+    sudo systemctl restart apache2
+
+Cloudflare Configuration
+-------------------------
+
+When using Cloudflare, the plugin automatically detects the CF-Connecting-IP header, which contains the real client IP. No additional Cloudflare configuration is needed, but ensure:
+
+1. Your Nginx/Apache is configured to pass the CF-Connecting-IP header (see above)
+2. You trust Cloudflare's IP ranges in your set_real_ip_from directives
+3. The "Trust Proxy Headers" option is enabled in the plugin settings
+
+Testing
+-------
+
+To verify that the plugin is working correctly, you will need to monitor your mail server's logs.
+
+Testing SMTP EHLO Passthrough:
+
+1. Log in to SnappyMail and send an email.
+2. Check your SMTP server's log file (e.g., /var/log/mail.log for Postfix/Exim on Debian/Ubuntu, or /var/log/maillog on CentOS/RHEL).
+3. Look for a line showing the EHLO command with the client's IP address, e.g.:
+   EHLO [192.168.1.100]
+
+Testing IMAP ID Passthrough:
+
+1. Log in to SnappyMail.
+2. Check your IMAP server's log file (e.g., /var/log/dovecot.log for Dovecot).
+3. You should see a line indicating that the ID command was received with the client's IP address. The exact log message will depend on your IMAP server's configuration and logging level. For Dovecot, you may need to enable more verbose logging to see the full command.
+
+Verifying IP Detection:
+
+Create a test PHP file to verify which IP is being detected:
+
+    <?php
+    echo "Detected IP: ";
+    if (!empty($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+        echo $_SERVER["HTTP_CF_CONNECTING_IP"] . " (Cloudflare)";
+    } elseif (!empty($_SERVER["HTTP_X_REAL_IP"])) {
+        echo $_SERVER["HTTP_X_REAL_IP"] . " (X-Real-IP)";
+    } elseif (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+        echo explode(',', $_SERVER["HTTP_X_FORWARDED_FOR"])[0] . " (X-Forwarded-For)";
+    } elseif (!empty($_SERVER["HTTP_CLIENT_IP"])) {
+        echo $_SERVER["HTTP_CLIENT_IP"] . " (HTTP_CLIENT_IP)";
+    } elseif (!empty($_SERVER["REMOTE_ADDR"])) {
+        echo $_SERVER["REMOTE_ADDR"] . " (REMOTE_ADDR)";
+    } else {
+        echo "unknown";
+    }
+    ?>
+
+Place this in your SnappyMail directory and access it via your browser. The displayed IP should match your actual client IP, not the proxy or Cloudflare IP.
+
+Plugin Logs:
+
+If SnappyMail logging is enabled, the plugin will write informational messages when:
+- SMTP EHLO is modified with client IP
+- IMAP ID command is sent with client IP
+- IMAP ID command fails (warning level)
+
+Check your SnappyMail logs (typically in data/_data_/_default_/logs/) for entries prefixed with "Client IP Passthrough:".
+
+Important Considerations
+------------------------
+
+• Proxy Servers: This plugin is designed to work when SnappyMail is behind reverse proxies like Nginx, Apache, or Cloudflare. Proper proxy configuration is required for accurate IP detection.
+
+• Security: Only trust proxy headers from known proxy servers. If your Nginx is publicly accessible, malicious users could spoof these headers. Always use set_real_ip_from to restrict which IPs can set the real IP. You can disable the "Trust Proxy Headers" option in the plugin settings to only use REMOTE_ADDR.
+
+• IMAP Server Support: The IMAP ID command is an extension (RFC 2971) and may not be supported by all IMAP servers. If your server does not support it, the command will be ignored, and no error will be displayed.
+
+• IPv6 Support: The plugin automatically handles both IPv4 and IPv6 addresses correctly when IPv6 support is enabled in settings.
+
+Troubleshooting
+---------------
+
+Wrong IP Address Detected:
+
+If the plugin is detecting the wrong IP (e.g., showing Cloudflare's IP or Nginx's IP):
+
+1. Verify your Nginx/Apache configuration includes the proxy headers
+2. Restart your web server after configuration changes
+3. Use the test file above to check which headers are being received
+4. Check that set_real_ip_from includes your proxy's IP ranges
+5. Ensure "Trust Proxy Headers" is enabled in plugin settings
+
+Plugin Not Working:
+
+1. Verify the plugin is enabled in SnappyMail admin panel
+2. Check file permissions on the plugin directory (should be readable by web server)
+3. Review SnappyMail error logs for any plugin errors
+4. Ensure the plugin file is named exactly index.php
+5. Check that your SnappyMail version meets the minimum requirement (2.36.0+)
+
+IMAP ID Not Sent:
+
+1. Verify "Enable IMAP IP Passthrough" is enabled in plugin settings
+2. Check if your IMAP server supports the ID extension (RFC 2971)
+3. Review SnappyMail logs for "Client IP Passthrough" messages
+4. Some IMAP servers may silently ignore the ID command if not supported
+
+SMTP EHLO Not Modified:
+
+1. Verify "Enable SMTP IP Passthrough" is enabled in plugin settings
+2. Check SMTP server logs to see what EHLO message is received
+3. Review SnappyMail logs for "Client IP Passthrough" messages
+4. Ensure proxy headers are being passed correctly (test with the PHP snippet above)
+
+License
+-------
+
+MIT License - See LICENSE file for details
+
+Support
+-------
+
+For issues, questions, or contributions, please visit:
+https://github.com/the-djmaze/snappymail
