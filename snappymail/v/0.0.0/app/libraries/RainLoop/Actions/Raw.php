@@ -219,14 +219,21 @@ trait Raw
 						\header('Content-Transfer-Encoding: binary');
 					}
 
+					// https://github.com/the-djmaze/snappymail/security/advisories/GHSA-cjq6-6gwv-qxjj
+					$bSVG = ('image/svg+xml' === $sContentType) || ('.svg' === \substr($sFileName, -4));
+
 					$sLoadedData = null;
-					if ($bIsRangeRequest || !$bDownload) {
+					if ($bIsRangeRequest || !$bDownload || $bSVG) {
 						$sLoadedData = \stream_get_contents($rResource);
 					}
 
 					\MailSo\Base\Utils::ResetTimeLimit();
 
 					if ($sLoadedData) {
+						if ($bSVG) {
+							$sLoadedData = \str_replace('foreignObject' ,'foreign-Object', $sLoadedData);
+						}
+
 						if ($bIsRangeRequest && (\strlen($sRangeStart) || \strlen($sRangeEnd))) {
 							$iFullContentLength = \strlen($sLoadedData);
 
