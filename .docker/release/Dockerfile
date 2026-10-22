@@ -23,7 +23,9 @@ RUN set -eux; \
     rm -v /snappymail/README.md /snappymail/_include.php
 
 # Inspired by the original Rainloop dockerfile from youtous on GitLab
-FROM php:8.2-fpm-alpine AS final
+# PHP is pinned to a patch release so each image ships a known PHP version.
+# 8.2.35 fixes CVE-2026-109618 and CVE-2026-109619. Bump this on new PHP security releases.
+FROM php:8.2.35-fpm-alpine AS final
 
 LABEL org.label-schema.description="SnappyMail webmail client image using nginx, php-fpm on Alpine"
 

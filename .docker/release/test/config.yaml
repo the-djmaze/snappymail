@@ -2,6 +2,12 @@
 # See: https://github.com/GoogleContainerTools/container-structure-test/issues/78
 schemaVersion: 2.0.0
 commandTests:
+  - name: PHP version includes fixes for CVE-2026-109618 and CVE-2026-109619
+    command: php
+    args:
+      - -r
+      - 'echo PHP_VERSION, PHP_EOL; exit(version_compare(PHP_VERSION, "8.2.35", ">=") ? 0 : 1);'
+    exitCode: 0
   - name: Integration test
     command: /bin/sh
     args:
