@@ -7,6 +7,9 @@ abstract class Repository
 	// snappyMailRepo
 	const BASE_URL = 'https://snappymail.eu/repository/v2/';
 
+	const KEY = 'https://snappymail.eu/repository/releases.asc';
+	const KEY_FINGERPRINT = '1016 E470 7914 5542 F8BA  1335 4820 8BA1 3290 F3EB';
+
 	private static function get(string $path) : string
 	{
 		$oHTTP = HTTP\Request::factory(/*'socket' or 'curl'*/);
@@ -264,7 +267,7 @@ abstract class Repository
 		$sRealFile = '';
 
 		$bResult = false;
-		$sTmp = null;
+		$sTmp = $sTmpSignature = null;
 		try {
 			if ('plugin' === $sType) {
 				$bReal = false;
@@ -276,6 +279,39 @@ abstract class Repository
 				if (isset($aList[$sId]) && (!$sFile || $sFile === $aList[$sId]['file'])) {
 					$sRealFile = $aList[$sId]['file'];
 					$sTmp = static::download($aList[$sId]['file']);
+
+					// https://github.com/the-djmaze/snappymail/security/advisories/GHSA-j9c4-gf64-rph2
+					$sTmpSignature = static::download($aList[$sId]['file'] . '.asc');
+					if (!$sTmpSignature) {
+						throw new \Exception('PGP signature is missing');
+					}
+/*
+					if ($aList[$sId]['pgp_sig'] !== \trim(\preg_replace('/-----(BEGIN|END) PGP SIGNATURE-----/', '', $sTmpSignature))) {
+						throw new \Exception('PGP signature invalid');
+					}
+*/
+/*
+					// TODO: verify signature
+					$gnupg = PGP\GnuPG::getInstance('');
+					$sKey = ''; // static::KEY;
+					if (!$sKey) {
+						$sKey = PGP\Keyservers::get('4820 8BA1 3290 F3EB');
+						if (!$sKey) {
+							$aKeys = PGP\Keyservers::index('releases@snappymail.eu');
+							if ($aKeys) {
+								$sKey = PGP\Keyservers::get($aKeys[0]['keyid']);
+							}
+						}
+					}
+					if (!$sKey) {
+						throw new \Exception('PGP public key is missing');
+					}
+					$gnupg->import($sKey);
+					// TODO: check KEY_FINGERPRINT ?
+
+					// Verify signature
+					$gnupg->verify($sTmp, $sTmpSignature);
+*/
 				}
 			}
 
