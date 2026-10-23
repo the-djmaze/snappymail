@@ -12,6 +12,7 @@ abstract class Repository
 		$oHTTP = HTTP\Request::factory(/*'socket' or 'curl'*/);
 		$oHTTP->proxy = \RainLoop\Api::Config()->Get('labs', 'curl_proxy', '');
 		$oHTTP->proxy_auth = \RainLoop\Api::Config()->Get('labs', 'curl_proxy_auth', '');
+		$oHTTP->verify_peer = \RainLoop\Api::Config()->Get('labs', 'curl_verify_peer', true);
 		$oHTTP->max_response_kb = 0;
 		$oHTTP->timeout = 15; // timeout in seconds.
 		$oResponse = $oHTTP->doRequest('GET', static::BASE_URL . $path);
@@ -37,6 +38,7 @@ abstract class Repository
 		$oHTTP = HTTP\Request::factory(/*'socket' or 'curl'*/);
 		$oHTTP->proxy = \RainLoop\Api::Config()->Get('labs', 'curl_proxy', '');
 		$oHTTP->proxy_auth = \RainLoop\Api::Config()->Get('labs', 'curl_proxy_auth', '');
+		$oHTTP->verify_peer = \RainLoop\Api::Config()->Get('labs', 'curl_verify_peer', true);
 		$oHTTP->max_response_kb = 0;
 		$oHTTP->timeout = 15; // timeout in seconds.
 		$oHTTP->streamBodyTo($pDest);
