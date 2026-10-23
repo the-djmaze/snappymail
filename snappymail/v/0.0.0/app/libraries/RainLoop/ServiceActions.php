@@ -276,6 +276,30 @@ class ServiceActions
 		return $this->privateUpload('UploadBackground', 1);
 	}
 
+	// https://github.com/the-djmaze/snappymail/security/advisories/GHSA-xpr6-5vj6-wq26
+	private static function allowedProxyUri($uri) : bool
+	{
+		if (!\preg_match('#^https?://([^/:]+)#i', $uri, $m)) {
+			return false;
+		}
+		$host = $m[1];
+		// Validate direct IP or resolve hostname
+		$ips = \filter_var($host, \FILTER_VALIDATE_IP) ? [$host] : \gethostbynamel($host);
+		if (!$ips || !\is_array($ips)) {
+			return false;
+		}
+		foreach ($ips as $ip) {
+			if (!\filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE)) {
+				return false;
+			}
+			// Explicitly reject loopback, link-local, and cloud metadata addresses
+			if (\str_starts_with($ip, '127.') || \str_starts_with($ip, '169.254.') || '::1' === $ip || '0.0.0.0' === $ip) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public function ServiceProxyExternal() : string
 	{
 		$sData = empty($this->aPaths[1]) ? '' : $this->aPaths[1];
@@ -285,7 +309,7 @@ class ServiceActions
 		) {
 			$this->oActions->verifyCacheByKey($sData);
 			$sUrl = \MailSo\Base\Utils::UrlSafeBase64Decode($sData);
-			if (!empty($sUrl)) {
+			if (!empty($sUrl) && static::allowedProxyUri($sUrl)) {
 				\header('X-Content-Location: '.$sUrl);
 				$tmp = \tmpfile();
 				$HTTP = \SnappyMail\HTTP\Request::factory();
