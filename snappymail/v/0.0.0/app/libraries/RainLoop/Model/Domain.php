@@ -104,27 +104,25 @@ class Domain implements \JsonSerializable
 		$this->aliasName = \strtolower(\idn_to_ascii($sAliasName));
 	}
 
-	public function ValidateWhiteList(string $sEmail, string $sLogin) : bool
+	public function ValidateWhiteList(string $sEmail) : bool
 	{
-		$sW = \trim($this->whiteList);
-		if ($sW) {
-			$sEmail = $this->IMAP->fixUsername($sEmail);
-			$sLogin = $this->IMAP->fixUsername($sLogin);
-			$sUserPart = \MailSo\Base\Utils::getEmailAddressLocalPart($sLogin ?: $sEmail);
-			$sItem = \strtok($sW, " ;,\n");
-			while (false !== $sItem) {
-				$sItem = $this->IMAP->fixUsername(\trim($sItem));
-				if ($sItem && (
-					$sLogin === $sItem || $sEmail === $sItem
-					|| $sUserPart === $sItem || \str_starts_with($sItem, "{$sUserPart}@")
-				)) {
-					return true;
-				}
-				$sItem = \strtok(" ;,\n");
-			}
-			return false;
+		$sW = $this->whiteList;
+		if (!$sW) {
+			return true;
 		}
-		return true;
+		$sEmail = \SnappyMail\IDN::emailToAscii(\mb_strtolower($sEmail));
+		$iPos = \strrpos($sEmail, '@');
+		$sUserPart = \substr($sEmail, 0, $iPos);
+		$sUserDomain = \substr($sEmail, $iPos);
+		$sItem = \strtok($sW, " ;,\n");
+		while (false !== $sItem) {
+			$sItem = \SnappyMail\IDN::emailToAscii(\mb_strtolower(\trim($sItem)));
+			if ($sItem === $sEmail || $sItem === $sUserPart || $sItem === $sUserDomain) {
+				return true;
+			}
+			$sItem = \strtok(" ;,\n");
+		}
+		return false;
 	}
 
 	public function ImapSettings() : \MailSo\Imap\Settings
@@ -200,7 +198,7 @@ class Domain implements \JsonSerializable
 			$oDomain->IMAP->shortLogin = !empty($aDomain['imap_short_login']);
 
 			$oDomain->Sieve->enabled = !empty($aDomain['sieve_use']);
-			$oDomain->Sieve->host = $aDomain['sieve_host'];
+			$oDomain->Sieve->host = $aDomain['sieve_host'] ?: '';
 			$oDomain->Sieve->port = (int) ($aDomain['sieve_port'] ?? 4190);;
 			$oDomain->Sieve->type = self::StrConnectionSecurityTypeToCons($aDomain['sieve_secure'] ?? '');
 
@@ -212,7 +210,7 @@ class Domain implements \JsonSerializable
 			$oDomain->SMTP->setSender = !empty($aDomain['smtp_set_sender']);
 			$oDomain->SMTP->usePhpMail = !empty($aDomain['smtp_php_mail']);
 
-			$oDomain->whiteList = \trim($aDomain['white_list'] ?? '');
+			$oDomain->whiteList = $aDomain['white_list'] ?? '';
 
 			$oDomain->Normalize();
 		}
@@ -224,17 +222,14 @@ class Domain implements \JsonSerializable
 	 */
 	public static function StrConnectionSecurityTypeToCons(string $sType) : int
 	{
-		$iSecurityType = ConnectionSecurityType::NONE;
 		switch (\strtoupper($sType))
 		{
 			case 'SSL':
-				$iSecurityType = ConnectionSecurityType::SSL;
-				break;
+				return ConnectionSecurityType::SSL;
 			case 'TLS':
-				$iSecurityType = ConnectionSecurityType::STARTTLS;
-				break;
+				return ConnectionSecurityType::STARTTLS;
 		}
-		return $iSecurityType;
+		return ConnectionSecurityType::NONE;
 	}
 
 	#[\ReturnTypeWillChange]

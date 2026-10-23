@@ -10,7 +10,7 @@ export class AdminSettingsConfig /*extends AbstractViewSettings*/ {
 
 	constructor() {
 		this.config = ko.observableArray();
-		this.search = ko.observableArray();
+		this.search = ko.observable('');
 		this.saved = ko.observable(false).extend({ falseTimeout: 5000 });
 
 		this.search.subscribe(value => {

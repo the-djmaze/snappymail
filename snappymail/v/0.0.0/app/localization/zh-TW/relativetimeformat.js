@@ -13,7 +13,7 @@
 	},
 	day: {
 		past: "{0} 天前",
-		future: "{0}天後"
+		future: "{0} 天後"
 	},
 	hour: {
 		past: "{0} 小時前",
@@ -27,5 +27,5 @@
 		past: "{0} 秒前",
 		future: "{0} 秒後"
 	},
-	plural: n => 1 == n ? 'one' : 'other'
+	plural: n => 'other'
 }

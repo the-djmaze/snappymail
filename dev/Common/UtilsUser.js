@@ -18,14 +18,20 @@ import { AccountUserStore } from 'Stores/User/Account';
 import { IdentityUserStore } from 'Stores/User/Identity';
 import { isArray } from 'Common/Utils';
 
+import { showScreenPopup } from 'Knoin/Knoin';
+import { IdentityPopupView } from 'View/Popup/Identity';
+
 export const
 
-moveAction = ko.observable(false),
+// 1 = move, 2 = copy
+moveAction = ko.observable(0),
 
 dropdownsDetectVisibility = (() =>
 	dropdownVisibility(!!dropdowns.find(item => item.classList.contains('show')))
 ).debounce(50),
 
+
+editIdentity = Identity => showScreenPopup(IdentityPopupView, [Identity]),
 
 loadAccountsAndIdentities = () => {
 	AccountUserStore.loading(true);
@@ -48,6 +54,11 @@ loadAccountsAndIdentities = () => {
 				? items.map(identityData => IdentityModel.reviveFromJson(identityData))
 				: []
 			);
+
+			// Invoke "Update Identity" pop up right after login
+			// https://github.com/the-djmaze/snappymail/issues/1689
+			const main = IdentityUserStore.main();
+			main && !main.exists() && setTimeout(()=>editIdentity(main), 1000);
 		}
 	});
 },
@@ -121,7 +132,7 @@ computedPaginatorHelper = (koCurrentPage, koPageCount) => {
 			next = 0,
 			limit = 2;
 
-		if (1 < pageCount || (0 < pageCount && pageCount < currentPage)) {
+		if (1 < pageCount) {
 			if (pageCount < currentPage) {
 				fAdd(pageCount);
 				prev = pageCount;
@@ -359,5 +370,5 @@ populateMessageBody = (oMessage, popup) => {
 	}
 };
 
-leftPanelDisabled.subscribe(value => value && moveAction(false));
+leftPanelDisabled.subscribe(value => value && moveAction(0));
 moveAction.subscribe(value => value && leftPanelDisabled(false));

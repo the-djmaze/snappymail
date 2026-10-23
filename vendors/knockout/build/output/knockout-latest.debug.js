@@ -7,11 +7,10 @@
 (window => {
     // (0, eval)('this') is a robust way of getting a reference to the global object
     // For details, see http://stackoverflow.com/questions/14119988/return-this-0-evalthis/14120023#14120023
-    var document = window['document'],
-        koExports = {};
+    var document = window['document'];
 // Internally, all KO objects are attached to koExports (even the non-exported ones whose names will be minified by the closure compiler).
 // In the future, the following "ko" variable may be made distinct from "koExports" so that private objects are not externally reachable.
-var ko = typeof koExports !== 'undefined' ? koExports : {};
+const ko = {};
 // Google Closure Compiler helpers (used only to make the minified file smaller)
 ko.exportSymbol = (koPath, object) => {
     var tokens = koPath.split(".");
@@ -51,6 +50,7 @@ ko.utils = {
             : node => node.cloneNode(true)),
 
     setDomNodeChildren: (domNode, childNodes) => {
+//        domNode.replaceChildren(...childNodes);
         ko.utils.emptyDomNode(domNode);
         childNodes && domNode.append(...childNodes);
     },
@@ -121,7 +121,7 @@ ko.utils = {
         element.textContent = ko.utils.unwrapObservable(textContent)
 };
 
-ko.exportSymbol('utils', ko.utils);
+//ko.exportSymbol('utils', ko.utils);
 ko.exportSymbol('unwrap', ko.utils.unwrapObservable); // Convenient shorthand, because this is used so commonly
 (() => {
 
@@ -195,7 +195,7 @@ ko.utils.domNodeDisposal = (() => {
     };
 
     return {
-        'addDisposeCallback' : (node, callback) => {
+        addDisposeCallback : (node, callback) => {
             if (typeof callback != "function")
                 throw Error("Callback must be a function");
             getDisposeCallbacksCollection(node, 1).add(callback);
@@ -232,7 +232,8 @@ ko.utils.domNodeDisposal = (() => {
 })();
 ko.cleanNode = ko.utils.domNodeDisposal.cleanNode; // Shorthand name for convenience
 ko.removeNode = ko.utils.domNodeDisposal.removeNode; // Shorthand name for convenience
-ko.exportSymbol('utils.domNodeDisposal', ko.utils.domNodeDisposal);
+//ko.exportSymbol('utils.domNodeDisposal', ko.utils.domNodeDisposal);
+ko.exportSymbol('addDisposeCallback', ko.utils.domNodeDisposal.addDisposeCallback);
 ko['extenders'] = {
     'debounce': (target, timeout) => target.limit(callback => debounce(callback, timeout)),
 
@@ -295,7 +296,7 @@ class koSubscription
     disposeWhenNodeIsRemoved(node) {
         // MutationObserver ?
         this._node = node;
-        ko.utils.domNodeDisposal['addDisposeCallback'](node, this._domNodeDisposalCallback = this['dispose'].bind(this));
+        ko.utils.domNodeDisposal.addDisposeCallback(node, this._domNodeDisposalCallback = this['dispose'].bind(this));
     }
 }
 
@@ -530,7 +531,7 @@ ko.observable = initialValue => {
     observable[observableLatestValue] = initialValue;
 
     Object.defineProperty(observable, length, {
-        get: () => null == observable[observableLatestValue] ? undefined : observable[observableLatestValue][length]
+        get: () => observable[observableLatestValue]?.[length]
     });
 
     // Inherit from 'subscribable'
@@ -881,7 +882,7 @@ ko.computed = (evaluatorFunctionOrOptions, options) => {
     // Attach a DOM node disposal callback so that the computed will be proactively disposed as soon as the node is
     // removed using ko.removeNode. But skip if isActive is false (there will never be any dependencies to dispose).
     if (state.disposeWhenNodeIsRemoved && computedObservable.isActive()) {
-        ko.utils.domNodeDisposal['addDisposeCallback'](state.disposeWhenNodeIsRemoved, state.domNodeDisposalCallback = () => {
+        ko.utils.domNodeDisposal.addDisposeCallback(state.disposeWhenNodeIsRemoved, state.domNodeDisposalCallback = () => {
             computedObservable['dispose']();
         });
     }
@@ -1264,7 +1265,7 @@ ko.selectExtensions = {
         switch (element.nodeName) {
             case 'OPTION':
                 return (element[hasDomDataExpandoProperty] === true)
-                    ? ko.utils.domData.get(element, ko.bindingHandlers.options.optionValueDomDataKey)
+                    ? ko.utils.domData.get(element, ko.bindingHandlers['options'].optionValueDomDataKey)
                     : element.value;
             case 'SELECT':
                 return element.selectedIndex >= 0
@@ -1279,13 +1280,13 @@ ko.selectExtensions = {
         switch (element.nodeName) {
             case 'OPTION':
                 if (typeof value === "string") {
-                    ko.utils.domData.set(element, ko.bindingHandlers.options.optionValueDomDataKey, undefined);
+                    ko.utils.domData.set(element, ko.bindingHandlers['options'].optionValueDomDataKey, undefined);
                     delete element[hasDomDataExpandoProperty];
                     element.value = value;
                 }
                 else {
                     // Store arbitrary object using DomData
-                    ko.utils.domData.set(element, ko.bindingHandlers.options.optionValueDomDataKey, value);
+                    ko.utils.domData.set(element, ko.bindingHandlers['options'].optionValueDomDataKey, value);
                     element[hasDomDataExpandoProperty] = true;
 
                     // Special treatment of numbers is just for backward compatibility. KO 1.2.1 wrote numerical values to element.value.
@@ -1294,7 +1295,7 @@ ko.selectExtensions = {
                 break;
             case 'SELECT':
                 // A blank string or null value will select the caption
-                var selection = -1, noValue = ("" === value || null == value),
+                var selection = -1, noValue = ("" === (value ?? "")),
                     i = element.options.length, optionValue;
                 while (i--) {
                     optionValue = ko.selectExtensions.readValue(element.options[i]);
@@ -1309,7 +1310,7 @@ ko.selectExtensions = {
                 }
                 break;
             default:
-                element.value = (value == null) ? "" : value;
+                element.value = value ?? "";
                 break;
         }
     }
@@ -1361,9 +1362,9 @@ ko.expressionRewriting = (() => {
         divisionLookBehind = /[\])"'A-Za-z0-9_$]+$/,
         keywordRegexLookBehind = {'in':1,'return':1,'typeof':1},
 
-        parseObjectLiteral = objectLiteralString => {
+        preProcessBindings = bindingsStringOrKeyValueArray => {
             // Trim leading and trailing spaces from the string
-            var str = ko.utils.stringTrim(objectLiteralString);
+            var str = ko.utils.stringTrim(bindingsStringOrKeyValueArray);
 
             // Trim braces '{' surrounding the whole object literal
             if (str.charCodeAt(0) === 123) str = str.slice(1, -1);
@@ -1382,9 +1383,10 @@ ko.expressionRewriting = (() => {
                     // A comma signals the end of a key/value pair if depth is zero
                     if (c === 44) { // ","
                         if (depth <= 0) {
-                            result.push((key && values.length)
-                                ? {key: key, value: values.join('')}
-                                : {'unknown': key || values.join('')});
+                            if (key && values.length) {
+                                // Values are wrapped in a function so that each value can be accessed independently
+                                result.push("'" + key + "':()=>(" + values.join('') + ")");
+                            }
                             key = depth = 0;
                             values = [];
                             continue;
@@ -1425,40 +1427,20 @@ ko.expressionRewriting = (() => {
                     throw Error("Unbalanced parentheses, braces, or brackets");
                 }
             }
-            return result;
-        },
 
-        preProcessBindings = (bindingsStringOrKeyValueArray) => {
+            result.push("'$data':()=>$data");
 
-            var resultStrings = [],
-//                propertyAccessorResultStrings = [],
-                keyValueArray = parseObjectLiteral(bindingsStringOrKeyValueArray),
-
-                processKeyValue = (key, val) => {
-                    // Values are wrapped in a function so that each value can be accessed independently
-                    val = 'function(){return ' + val + ' }';
-                    resultStrings.push("'" + key + "':" + val);
-                };
-
-            keyValueArray.forEach(keyValue =>
-                processKeyValue(keyValue.key || keyValue['unknown'], keyValue.value)
-            );
-/*
-            if (propertyAccessorResultStrings.length)
-                processKeyValue('_ko_property_writers', "{" + propertyAccessorResultStrings.join(",") + " }");
-*/
-            return resultStrings.join(",");
+            return result.join(",");
         };
 
     return {
-        parseObjectLiteral: parseObjectLiteral,
-
         preProcessBindings: preProcessBindings,
 
         keyValueArrayContainsKey: (keyValueArray, key) =>
             -1 < keyValueArray.findIndex(v => v['key'] == key),
 
         // Internal, private KO utility for updating model properties from within bindings
+        // element:             the HTML element it belongs to
         // property:            If the property being updated is (or might be) an observable, pass it here
         //                      If it turns out to be a writable observable, it will be written to directly
         // allBindings:         An object with a get method to retrieve bindings in the current execution context.
@@ -1467,10 +1449,11 @@ ko.expressionRewriting = (() => {
         // value:               The value to be written
         // checkIfDifferent:    If true, and if the property being written is a writable observable, the value will only be written if
         //                      it is !== existing value on that writable observable
-        writeValueToProperty: (property, allBindings, key, value, checkIfDifferent) => {
+        writeValueToProperty: (element, property, allBindings, key, value, checkIfDifferent) => {
             if (!property || !ko.isObservable(property)) {
-                throw Error(`${key} , must be observable`);
-//                allBindings.get('_ko_property_writers')?.[key]?.(value);
+                console.log(`"${key}" should contain observable in ${element.outerHTML.replace(/>.+/,'>')}`);
+//                ko.dataFor(element).key = value;
+                allBindings.get('$data')[key] = value;
             } else if (ko.isWriteableObservable(property) && (!checkIfDifferent || property.peek() !== value)) {
                 property(value);
             }
@@ -1555,17 +1538,15 @@ ko.expressionRewriting = (() => {
                 ko.utils.setDomNodeChildren(node, childNodes);
         },
 
-        prepend: (containerNode, nodeToPrepend) => {
-            // Start comments must always have a parent and at least one following sibling (the end comment)
-            isStartComment(containerNode)
-                ? containerNode.nextSibling.before(nodeToPrepend)
-                : containerNode.prepend(nodeToPrepend);
-        },
-
         insertAfter: (containerNode, nodeToInsert, insertAfterNode) => {
             insertAfterNode
                 ? insertAfterNode.after(nodeToInsert)
-                : ko.virtualElements.prepend(containerNode, nodeToInsert);
+                : (
+                    // Start comments must always have a parent and at least one following sibling (the end comment)
+                    isStartComment(containerNode)
+                        ? containerNode.nextSibling.before(nodeToInsert)
+                        : containerNode.prepend(nodeToInsert)
+                );
         },
 
         firstChild: node => {
@@ -1635,16 +1616,38 @@ ko.bindingProvider = new class
             try {
                 let cacheKey = bindingsString,
                     bindingFunction = bindingCache.get(cacheKey);
+/*
                 if (!bindingFunction) {
                     // Build the source for a function that evaluates "expression"
                     // For each scope variable, add an extra level of "with" nesting
                     // Example result: with(sc1) { with(sc0) { return (expression) } }
+                    // Deprecated: with is no longer recommended
                     var rewrittenBindings = ko.expressionRewriting.preProcessBindings(bindingsString),
-                        functionBody = "with($context){with($data||{}){return{" + rewrittenBindings + "}}}";
-                    bindingFunction = new Function("$context", "$element", functionBody);
+                        functionBody = "with($data){return{" + rewrittenBindings + "}}";
+                    bindingFunction = new Function("$context", "$root", "$parent", "$data", functionBody);
                     bindingCache.set(cacheKey, bindingFunction);
                 }
-                return bindingFunction(bindingContext, node);
+                return bindingFunction(bindingContext,
+                    bindingContext["$root"], bindingContext["$parent"], bindingContext["$data"] || {}
+                );
+*/
+                if (!bindingFunction) {
+                    // Build the source for a function that evaluates "expression"
+                    // Use one "with" that has one secure scope handling Proxy
+                    // Deprecated: with is no longer recommended
+                    bindingFunction = new Function("$context",
+                        "with($context){return{" + ko.expressionRewriting.preProcessBindings(bindingsString) + "}}");
+                    bindingCache.set(cacheKey, bindingFunction);
+                }
+                bindingContext = new Proxy(
+                    bindingContext,
+                    {
+                        has: () => true,
+//                        get: (target, key) => target['$data'][key] || target[key]
+                        get: (target, key) => Reflect.has(target['$data'], key) ? target['$data'][key] : target[key]
+                    }
+                );
+                return bindingFunction(bindingContext);
             } catch (ex) {
                 ex.message = "Unable to parse bindings.\nBindings value: " + bindingsString
                     + "\nMessage: " + ex.message;
@@ -1699,11 +1702,6 @@ ko.bindingContext = class {
                 }
             } else {
                 self['$root'] = dataItem;
-
-                // Export 'ko' in the binding context so it will be available in bindings and templates
-                // even if 'ko' isn't exported as a global, such as when using an AMD loader.
-                // See https://github.com/SteveSanderson/knockout/issues/490
-                self['ko'] = ko;
             }
 
             self[contextSubscribable] = subscribable;
@@ -1776,14 +1774,14 @@ ko.bindingContext = class {
     }
 };
 
-function asyncContextDispose(node) {
+const asyncContextDispose = node => {
     var bindingInfo = ko.utils.domData.get(node, boundElementDomDataKey),
         asyncContext = bindingInfo?.asyncContext;
     if (asyncContext) {
         bindingInfo.asyncContext = null;
         asyncContext.notifyAncestor();
     }
-}
+};
 
 class AsyncCompleteContext {
     constructor(node, bindingInfo, ancestorBindingInfo) {
@@ -1792,7 +1790,7 @@ class AsyncCompleteContext {
         this.asyncDescendants = new Set;
         this.childrenComplete = false;
 
-        bindingInfo.asyncContext || ko.utils.domNodeDisposal['addDisposeCallback'](node, asyncContextDispose);
+        bindingInfo.asyncContext || ko.utils.domNodeDisposal.addDisposeCallback(node, asyncContextDispose);
 
         if (ancestorBindingInfo?.asyncContext) {
             ancestorBindingInfo.asyncContext.asyncDescendants.add(node);
@@ -1867,7 +1865,7 @@ ko.bindingEvent = {
     }
 };
 
-function applyBindingsToDescendantsInternal(bindingContext, elementOrVirtualElement) {
+const applyBindingsToDescendantsInternal = (bindingContext, elementOrVirtualElement) => {
     var currentChild, nextInQueue = ko.virtualElements.firstChild(elementOrVirtualElement);
 
     while (currentChild = nextInQueue) {
@@ -1876,17 +1874,15 @@ function applyBindingsToDescendantsInternal(bindingContext, elementOrVirtualElem
         applyBindingsToNodeAndDescendantsInternal(bindingContext, currentChild);
     }
     ko.bindingEvent.notify(elementOrVirtualElement, ko.bindingEvent.childrenComplete);
-}
+};
 
-function applyBindingsToNodeAndDescendantsInternal(bindingContext, nodeVerified) {
+const applyBindingsToNodeAndDescendantsInternal = (bindingContext, nodeVerified) => {
     var bindingContextForDescendants = bindingContext;
-
-    var isElement = (nodeVerified.nodeType === 1);
 
     // Perf optimisation: Apply bindings only if...
     // (1) We need to store the binding info for the node (all element nodes)
     // (2) It might have bindings (e.g., it has a data-bind attribute, or it's a marker for a containerless template)
-    if (isElement || ko.bindingProvider.nodeHasBindings(nodeVerified))
+    if ((1 === nodeVerified.nodeType) || ko.bindingProvider.nodeHasBindings(nodeVerified))
         bindingContextForDescendants = applyBindingsToNodeInternal(nodeVerified, null, bindingContext);
 
     // Don't want bindings that operate on text nodes to mutate <script> and <textarea> contents,
@@ -1897,41 +1893,42 @@ function applyBindingsToNodeAndDescendantsInternal(bindingContext, nodeVerified)
     if (bindingContextForDescendants && !nodeVerified.matches?.('SCRIPT,TEXTAREA,TEMPLATE')) {
         applyBindingsToDescendantsInternal(bindingContextForDescendants, nodeVerified);
     }
-}
+};
 
-function topologicalSortBindings(bindings) {
+const topologicalSortBindings = bindings => {
     // Depth-first sort
     var result = [],                // The list of key/handler pairs that we will return
         bindingsConsidered = {},    // A temporary record of which bindings are already in 'result'
-        cyclicDependencyStack = []; // Keeps track of a depth-search so that, if there's a cycle, we know which bindings caused it
-    ko.utils.objectForEach(bindings, function pushBinding(bindingKey) {
-        if (!bindingsConsidered[bindingKey]) {
-            var binding = ko.bindingHandlers[bindingKey];
-            if (binding) {
-                // First add dependencies (if any) of the current binding
-                if (binding['after']) {
-                    cyclicDependencyStack.push(bindingKey);
-                    binding['after'].forEach(bindingDependencyKey => {
-                        if (bindings[bindingDependencyKey]) {
-                            if (cyclicDependencyStack.includes(bindingDependencyKey)) {
-                                throw Error("Cannot combine the following bindings, because they have a cyclic dependency: " + cyclicDependencyStack.join(", "));
+        cyclicDependencyStack = [], // Keeps track of a depth-search so that, if there's a cycle, we know which bindings caused it
+        pushBinding = bindingKey => {
+            if (!bindingsConsidered[bindingKey]) {
+                var binding = ko.bindingHandlers[bindingKey];
+                if (binding) {
+                    // First add dependencies (if any) of the current binding
+                    if (binding['after']) {
+                        cyclicDependencyStack.push(bindingKey);
+                        binding['after'].forEach(bindingDependencyKey => {
+                            if (bindings[bindingDependencyKey]) {
+                                if (cyclicDependencyStack.includes(bindingDependencyKey)) {
+                                    throw Error("Cannot combine the following bindings, because they have a cyclic dependency: " + cyclicDependencyStack.join(", "));
+                                }
+                                pushBinding(bindingDependencyKey);
                             }
-                            pushBinding(bindingDependencyKey);
-                        }
-                    });
-                    cyclicDependencyStack.length--;
+                        });
+                        cyclicDependencyStack.length--;
+                    }
+                    // Next add the current binding
+                    result.push({ key: bindingKey, handler: binding });
                 }
-                // Next add the current binding
-                result.push({ key: bindingKey, handler: binding });
+                bindingsConsidered[bindingKey] = true;
             }
-            bindingsConsidered[bindingKey] = true;
-        }
-    });
+        };
+    ko.utils.objectForEach(bindings, pushBinding);
 
     return result;
-}
+};
 
-function applyBindingsToNodeInternal(node, sourceBindings, bindingContext) {
+const applyBindingsToNodeInternal = (node, sourceBindings, bindingContext) => {
     var bindingInfo = ko.utils.domData.getOrSet(node, boundElementDomDataKey, {});
 
     // Prevent multiple applyBindings calls for the same node, except when a binding value is specified
@@ -1950,13 +1947,13 @@ function applyBindingsToNodeInternal(node, sourceBindings, bindingContext) {
     }
 
     // Use bindings if given, otherwise fall back on asking the bindings provider to give us some bindings
-    var bindings;
+    var bindings, bindingsUpdater;
     if (sourceBindings && typeof sourceBindings !== 'function') {
         bindings = sourceBindings;
     } else {
         // Get the binding from the provider within a computed observable so that we can update the bindings whenever
         // the binding context is updated or if the binding provider accesses observables.
-        var bindingsUpdater = ko.computed(
+        bindingsUpdater = ko.computed(
             () => {
                 bindings = sourceBindings ? sourceBindings(bindingContext, node) : ko.bindingProvider.getBindingAccessors(node, bindingContext);
                 // Register a dependency on the binding context to support observable view models.
@@ -2054,49 +2051,33 @@ function applyBindingsToNodeInternal(node, sourceBindings, bindingContext) {
     }
 
     return bindingHandlerThatControlsDescendantBindings === undefined && contextToExtend;
-}
+};
 
-ko.storedBindingContextForNode = node => {
-    var bindingInfo = ko.utils.domData.get(node, boundElementDomDataKey);
-    return bindingInfo && bindingInfo.context;
-}
+ko.storedBindingContextForNode = node =>
+    ko.utils.domData.get(node, boundElementDomDataKey)?.context;
 
-function getBindingContext(viewModelOrBindingContext, extendContextCallback) {
-    return viewModelOrBindingContext && (viewModelOrBindingContext instanceof ko.bindingContext)
+const getBindingContext = (viewModelOrBindingContext) =>
+    viewModelOrBindingContext && (viewModelOrBindingContext instanceof ko.bindingContext)
         ? viewModelOrBindingContext
-        : new ko.bindingContext(viewModelOrBindingContext, null, extendContextCallback);
-}
+        : new ko.bindingContext(viewModelOrBindingContext);
 
 ko['applyBindingAccessorsToNode'] = (node, bindings, viewModelOrBindingContext) =>
     applyBindingsToNodeInternal(node, bindings, getBindingContext(viewModelOrBindingContext));
 
-ko.applyBindingsToDescendants = (viewModelOrBindingContext, rootNode) => {
-    if (rootNode.nodeType === 1 || rootNode.nodeType === 8)
-        applyBindingsToDescendantsInternal(getBindingContext(viewModelOrBindingContext), rootNode);
-};
+ko.applyBindingsToDescendants = (viewModelOrBindingContext, rootNode) =>
+    (rootNode.nodeType === 1 || rootNode.nodeType === 8)
+    && applyBindingsToDescendantsInternal(getBindingContext(viewModelOrBindingContext), rootNode);
 
-ko.applyBindings = function (viewModelOrBindingContext, rootNode, extendContextCallback) {
-    if (arguments.length < 2) {
-        rootNode = document.body;
-        if (!rootNode) {
-            throw Error("ko.applyBindings: could not find document.body; has the document been loaded?");
-        }
-    } else if (!rootNode || (rootNode.nodeType !== 1 && rootNode.nodeType !== 8)) {
-        throw Error("ko.applyBindings: first parameter should be your view model; second parameter should be a DOM node");
-    }
-
-    applyBindingsToNodeAndDescendantsInternal(getBindingContext(viewModelOrBindingContext, extendContextCallback), rootNode);
-};
+ko.applyBindings = (viewModelOrBindingContext, rootNode) =>
+    applyBindingsToNodeAndDescendantsInternal(getBindingContext(viewModelOrBindingContext), rootNode);
 
 // Retrieving binding context from arbitrary nodes
-ko['dataFor'] = node => {
+ko['dataFor'] = node =>
     // We can only do something meaningful for elements and comment nodes (in particular, not text nodes, as IE can't store domdata for them)
-    var context = node && [1,8].includes(node.nodeType) && ko.storedBindingContextForNode(node);
-    return context ? context['$data'] : undefined;
-};
+    ([1,8].includes(node?.nodeType) && ko.storedBindingContextForNode(node))?.['$data'];
 
 ko.exportSymbol('bindingHandlers', ko.bindingHandlers);
-ko.exportSymbol('applyBindings', ko.applyBindings);
+//ko.exportSymbol('applyBindings', ko.applyBindings);
 (() => {
     var loadingSubscribablesCache = Object.create(null), // Tracks component loads that are currently in flight
         loadedDefinitionsCache = new Map();    // Tracks component loads that have already completed
@@ -2209,23 +2190,18 @@ ko.exportSymbol('applyBindings', ko.applyBindings);
         'init': (element, valueAccessor, ignored1, ignored2, bindingContext) => {
             var currentViewModel,
                 currentLoadingOperationId,
-                afterRenderSub,
                 disposeAssociatedComponentViewModel = () => {
                     var currentViewModelDispose = currentViewModel && currentViewModel['dispose'];
                     if (typeof currentViewModelDispose === 'function') {
                         currentViewModelDispose.call(currentViewModel);
                     }
-                    if (afterRenderSub) {
-                        afterRenderSub['dispose']();
-                    }
-                    afterRenderSub = null;
                     currentViewModel = null;
                     // Any in-flight loading operation is no longer relevant, so make sure we ignore its completion
                     currentLoadingOperationId = null;
                 };
 
             ko.virtualElements.emptyNode(element);
-            ko.utils.domNodeDisposal['addDisposeCallback'](element, disposeAssociatedComponentViewModel);
+            ko.utils.domNodeDisposal.addDisposeCallback(element, disposeAssociatedComponentViewModel);
 
             ko.computed(() => {
                 var componentName = ko.utils.unwrapObservable(valueAccessor()),
@@ -2369,7 +2345,7 @@ ko.bindingHandlers['checked'] = {
                             elemValue = undefined;
                         }
                     }
-                    ko.expressionRewriting.writeValueToProperty(modelValue, allBindings, 'checked', elemValue, true);
+                    ko.expressionRewriting.writeValueToProperty(element, modelValue, allBindings, 'checked', elemValue, true);
                 }
             }
 
@@ -2530,7 +2506,7 @@ ko.bindingHandlers['hasfocus'] = {
             // Discussion at https://github.com/SteveSanderson/knockout/pull/352
             element[hasfocusUpdatingProperty] = true;
             isFocused = (element.ownerDocument.activeElement === element);
-            ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'hasfocus', isFocused, true);
+            ko.expressionRewriting.writeValueToProperty(element, valueAccessor(), allBindings, 'hasfocus', isFocused, true);
 
             //cache the latest value, so we can avoid unnecessarily calling focus/blur in the update function
             element[hasfocusLastValue] = isFocused;
@@ -2660,7 +2636,6 @@ ko.bindingHandlers['options'] = {
             previousScrollTop = (!selectWasPreviouslyEmpty && multiple) ? element.scrollTop : null,
             unwrappedArray = ko.utils.unwrapObservable(valueAccessor()),
             arrayToDomNodeChildrenOptions = {},
-            captionValue,
             filteredArray,
             previousSelectedValues = [],
 
@@ -2701,7 +2676,7 @@ ko.bindingHandlers['options'] = {
                 unwrappedArray = [unwrappedArray];
 
             // Filter out any entries marked as destroyed
-            filteredArray = unwrappedArray.filter(item => item || item == null);
+            filteredArray = unwrappedArray.filter(item => item ?? 1);
         } else {
             // If a falsy value is provided (e.g. null), we'll simply empty the select element
         }
@@ -2839,19 +2814,15 @@ ko.bindingHandlers['textInput'] = {
             elementValueBeforeEvent = timeoutHandle = undefined;
 
             var elementValue = element.value;
-            if (previousElementValue !== elementValue) {
+            if (element.checkValidity() && previousElementValue !== elementValue) {
                 // Provide a way for tests to know exactly which event was processed
                 previousElementValue = elementValue;
-                ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'textInput', elementValue);
+                ko.expressionRewriting.writeValueToProperty(element, valueAccessor(), allBindings, 'textInput', elementValue);
             }
         };
 
         var updateView = () => {
-            var modelValue = ko.utils.unwrapObservable(valueAccessor());
-
-            if (modelValue == null) {
-                modelValue = '';
-            }
+            var modelValue = ko.utils.unwrapObservable(valueAccessor()) ?? '';
 
             if (elementValueBeforeEvent !== undefined && modelValue === elementValueBeforeEvent) {
                 setTimeout(updateView, 4);
@@ -2899,7 +2870,7 @@ ko.bindingHandlers['value'] = {
                 elementValueBeforeEvent = null;
                 var modelValue = valueAccessor();
                 var elementValue = ko.selectExtensions.readValue(element);
-                ko.expressionRewriting.writeValueToProperty(modelValue, allBindings, 'value', elementValue);
+                ko.expressionRewriting.writeValueToProperty(element, modelValue, allBindings, 'value', elementValue);
             };
 
         if (requestedEventsToCatch) {
@@ -3111,10 +3082,9 @@ makeEventHandlerShortcut('click');
 
                 // Need to applyBindings *before* unmemoziation, because unmemoization might introduce extra nodes (that we don't want to re-bind)
                 // whereas a regular applyBindings won't introduce new memoized nodes
-                invokeForEachNodeInContinuousRange(firstNode, lastNode, node => {
-                    if (node.nodeType === 1 || node.nodeType === 8)
-                        ko.applyBindings(bindingContext, node);
-                });
+                invokeForEachNodeInContinuousRange(firstNode, lastNode, node =>
+                    (node.nodeType === 1 || node.nodeType === 8) && ko.applyBindings(bindingContext, node)
+                );
 
                 // Make sure any changes done by applyBindings or unmemoize are reflected in the array
                 ko.utils.fixUpContinuousNodeArray(continuousNodeArray, parentNode);
@@ -3556,10 +3526,10 @@ ko.utils.compareArrays = (() => {
 
         // Try to reduce overall moved nodes by first moving the ones that were marked as moved by the edit script
         if (itemsToMoveFirstIndexes.length) {
-            while ((i = itemsToMoveFirstIndexes.shift()) != undefined) {
+            while ((i = itemsToMoveFirstIndexes.shift()) != null) {
                 mapData = newMappingResult[i];
-                for (lastNode = undefined; i; ) {
-                    mappedNodes = newMappingResult[--i].mappedNodes;
+                while (i--) {
+                    mappedNodes = newMappingResult[i].mappedNodes;
                     if (mappedNodes?.length) {
                         lastNode = mappedNodes[mappedNodes.length - 1];
                         break;
@@ -3597,5 +3567,5 @@ ko.utils.compareArrays = (() => {
         itemsForBeforeRemoveCallbacks.forEach(callback => callback && (callback.arrayEntry = deletedItemDummyValue));
     }
 })();
-	window['ko'] = koExports;
+    window['ko'] = ko;
 })(this);

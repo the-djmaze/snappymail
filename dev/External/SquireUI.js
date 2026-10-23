@@ -3,10 +3,6 @@
 (doc => {
 
 const
-	removeElements = 'HEAD,LINK,META,NOSCRIPT,SCRIPT,TEMPLATE,TITLE',
-	allowedElements = 'A,B,BLOCKQUOTE,BR,DIV,FONT,H1,H2,H3,H4,H5,H6,HR,IMG,LI,OL,P,SPAN,STRONG,TABLE,TD,TH,TR,U,UL',
-	allowedAttributes = 'abbr,align,background,bgcolor,border,cellpadding,cellspacing,class,color,colspan,dir,face,frame,height,href,hspace,id,lang,rowspan,rules,scope,size,src,style,target,type,usemap,valign,vspace,width'.split(','),
-
 	i18n = (str, def) => rl.i18n(str) || def,
 
 	ctrlKey = shortcuts.getMetaKey() + ' + ',
@@ -21,38 +17,17 @@ const
 
 	forEachObjectValue = (obj, fn) => Object.values(obj).forEach(fn),
 
-	getFragmentOfChildren = parent => {
-		let frag = doc.createDocumentFragment();
-		frag.append(...parent.childNodes);
-		return frag;
-	},
-
 	SquireDefaultConfig = {
 /*
 		addLinks: true // allow_smart_html_links
 */
 		sanitizeToDOMFragment: (html, isPaste/*, squire*/) => {
-			tpl.innerHTML = (html||'')
+			html = (html||'')
 				.replace(/<\/?(BODY|HTML)[^>]*>/gi,'')
 				.replace(/<!--[^>]+-->/g,'')
 				.replace(/<span[^>]*>\s*<\/span>/gi,'')
 				.trim();
-			tpl.querySelectorAll('a:empty,span:empty').forEach(el => el.remove());
-			if (isPaste) {
-				tpl.querySelectorAll(removeElements).forEach(el => el.remove());
-				tpl.querySelectorAll('*').forEach(el => {
-					if (!el.matches(allowedElements)) {
-						el.replaceWith(getFragmentOfChildren(el));
-					} else if (el.hasAttributes()) {
-						[...el.attributes].forEach(attr => {
-							let name = attr.name.toLowerCase();
-							if (!allowedAttributes.includes(name)) {
-								el.removeAttribute(name);
-							}
-						});
-					}
-				});
-			}
+			tpl.innerHTML =  isPaste ? rl.Utils.cleanHtml(html).html : html;
 			return tpl.content;
 		}
 	};
@@ -109,13 +84,13 @@ class SquireUI
 						cmd: s => squire.setStyle({ fontFamily: s.value })
 					},
 					fontSize: {
-						select: ['11px','13px','16px','20px','24px','30px'],
-						defaultValueIndex: 2,
+						select: [[i18n('GLOBAL/DEFAULT'),''],'11px','13px','16px','20px','24px','30px'],
+						defaultValueIndex: 0,
 						cmd: s => squire.setStyle({ fontSize: s.value })
 						// TODO: maybe consider using https://developer.mozilla.org/en-US/docs/Web/CSS/font-size#values
 						// example:
-						// select: ['xx-small', 'x-small',' small',' medium', 'large', 'x-large', 'xx-large', 'xxx-large'],
-						// defaultValueIndex: 3,
+						// select: ['','xx-small', 'x-small',' small',' medium', 'large', 'x-large', 'xx-large', 'xxx-large'],
+						// defaultValueIndex: 0,
 					},
 // 					dir: {
 // 						select: [
@@ -133,11 +108,11 @@ class SquireUI
 				dir: {
 					dir_ltr: {
 						html: '⁋',
-						cmd: () => squire.bidi('ltr')
+						cmd: () => squire.setTextDirection('ltr')
 					},
 					dir_rtl: {
 						html: '¶',
-						cmd: () => squire.bidi('rtl')
+						cmd: () => squire.setTextDirection('rtl')
 					}
 				},
 				colors: {
@@ -155,7 +130,7 @@ class SquireUI
 						html: 'B',
 						cmd: () => this.doAction('bold'),
 						key: 'B',
-						matches: 'B,STRONT'
+						matches: 'B,STRONG'
 					},
 					italic: {
 						html: 'I',
@@ -237,7 +212,7 @@ class SquireUI
 						cmd: () => {
 							let node = squire.getSelectionClosest('IMG'),
 								src = prompt("Image", node?.src || "https://");
-							src?.length ? squire.insertImage(src) : (node && squire.detach(node));
+							src?.length ? squire.insertImage(src) : node?.remove();
 						},
 						matches: 'IMG'
 					},
@@ -355,6 +330,7 @@ class SquireUI
 							input.append(option);
 						});
 					} else {
+						input.add(new Option(i18n('GLOBAL/DEFAULT'), ''));
 						Object.entries(cfg.select).forEach(([label, options]) => {
 							let group = createElement('optgroup');
 							group.label = label;
@@ -363,7 +339,7 @@ class SquireUI
 								option.style[action] = value;
 								group.append(option);
 							});
-							input.append(group);
+							input.add(group);
 						});
 					}
 					ev = 'input';
@@ -405,9 +381,47 @@ class SquireUI
 
 		let changes = actions.changes;
 		changes.undo.input.disabled = changes.redo.input.disabled = true;
-		squire.addEventListener('undoStateChange', state => {
-			changes.undo.input.disabled = !state.canUndo;
-			changes.redo.input.disabled = !state.canRedo;
+		squire.addEventListener('undoStateChange', e => {
+			changes.undo.input.disabled = !e.detail.canUndo;
+			changes.redo.input.disabled = !e.detail.canRedo;
+		});
+
+		squire.addEventListener('pasteImage', e => {
+			const items = e.detail.clipboardData.items;
+			let l = items.length;
+			while (l--) {
+				const item = items[l];
+				if (/^image\/(png|jpeg|webp)/.test(item.type)) {
+					let reader = new FileReader();
+					reader.onload = event => {
+						let img = createElement("img"),
+							canvas = createElement("canvas"),
+							ctx = canvas.getContext('2d');
+						img.onload = ()=>{
+							ctx.drawImage(img, 0, 0);
+							let width = img.width, height = img.height;
+							if (width > height) {
+								// Landscape
+								if (width > 1024) {
+									height = height * 1024 / width;
+									width = 1024;
+								}
+							} else if (height > 1024) {
+								// Portrait
+								width = width * 1024 / height;
+								height = 1024;
+							}
+							canvas.width = width;
+							canvas.height = height;
+							ctx.drawImage(img, 0, 0, width, height);
+							squire.insertHTML('<img alt="" style="width:100%;max-width:'+width+'px" src="'+canvas.toDataURL()+'">', true);
+						};
+						img.src = event.target.result;
+					}
+					reader.readAsDataURL(item.getAsFile());
+					break;
+				}
+			}
 		});
 
 		actions.font.fontSize.input.selectedIndex = actions.font.fontSize.defaultValueIndex;
@@ -477,24 +491,31 @@ class SquireUI
 
 		// -----
 
-		squire.addEventListener('pathChange', e => {
+		squire.addEventListener('pathChange', () => {
 
 			const squireRoot = squire.getRoot();
-
+			let range = squire.getSelection(),
+				collapsed = range.collapsed,
+				elm = collapsed ? range.endContainer : range?.commonAncestorContainer;
+			if (elm && !(elm instanceof Element)) {
+				elm = elm.parentElement;
+			}
 			forEachObjectValue(actions, entries => {
 				forEachObjectValue(entries, cfg => {
-//					cfg.matches && cfg.input.classList.toggle('active', e.element && e.element.matches(cfg.matches));
-					cfg.matches && cfg.input.classList.toggle('active', e.element && e.element.closestWithin(cfg.matches, squireRoot));
+					// Check if selection has a matching parent or contains a matching element
+					cfg.matches && cfg.input.classList.toggle('active', !!(elm && (
+						(!collapsed && [...elm.querySelectorAll(cfg.matches)].some(node => range.intersectsNode(node)))
+						 || elm.closestWithin(cfg.matches, squireRoot)
+					)));
 				});
 			});
 
-			if (e.element) {
+			if (elm) {
 				// try to find font-family and/or font-size and set "select" elements' values
 
 				let sizeSelectedIndex = actions.font.fontSize.defaultValueIndex;
 				let familySelectedIndex = defaultFontFamilyIndex;
 
-				let elm = e.element;
 				let familyFound = false;
 				let sizeFound = false;
 				do {
@@ -526,10 +547,10 @@ class SquireUI
 		});
 /*
 		squire.addEventListener('cursor', e => {
-			console.dir({cursor:e.range});
+			console.dir({cursor:e.detail.range});
 		});
 		squire.addEventListener('select', e => {
-			console.dir({select:e.range});
+			console.dir({select:e.detail.range});
 		});
 */
 	}

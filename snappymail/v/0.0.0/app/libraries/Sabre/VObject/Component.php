@@ -2,7 +2,6 @@
 
 namespace Sabre\VObject;
 
-use Sabre\VObject;
 use Sabre\Xml;
 
 /**
@@ -15,7 +14,7 @@ use Sabre\Xml;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  *
- * @property VObject\Property\FlatText UID
+ * @property Property\FlatText UID
  */
 class Component extends Node
 {
@@ -141,7 +140,7 @@ class Component extends Node
             // If there's no dot in the name, it's an exact property name,
             // we can just wipe out all those properties.
             //
-            if (false === strpos($item, '.')) {
+            if (!str_contains($item, '.')) {
                 unset($this->children[strtoupper($item)]);
 
                 return;
@@ -211,8 +210,8 @@ class Component extends Node
     {
         $group = null;
         $name = strtoupper($name);
-        if (false !== strpos($name, '.')) {
-            list($group, $name) = explode('.', $name, 2);
+        if (str_contains($name, '.')) {
+            [$group, $name] = explode('.', $name, 2);
         }
         if ('' === $name) {
             $name = null;
@@ -223,16 +222,14 @@ class Component extends Node
 
             if (is_null($group)) {
                 return $result;
-            } else {
-                // If we have a group filter as well, we need to narrow it down
-                // more.
-                return array_filter(
-                    $result,
-                    function ($child) use ($group) {
-                        return $child instanceof Property && (null !== $child->group ? strtoupper($child->group) : '') === $group;
-                    }
-                );
             }
+
+            // If we have a group filter as well, we need to narrow it down
+            // more.
+            return array_filter(
+                $result,
+                fn ($child) => $child instanceof Property && (null !== $child->group ? strtoupper($child->group) : '') === $group
+            );
         }
 
         // If we got to this point, it means there was no 'name' specified for
@@ -369,7 +366,7 @@ class Component extends Node
 
         $writer->startElement(strtolower($this->name));
 
-        if (!empty($properties)) {
+        if ([] !== $properties) {
             $writer->startElement('properties');
 
             foreach ($properties as $property) {
@@ -379,7 +376,7 @@ class Component extends Node
             $writer->endElement();
         }
 
-        if (!empty($components)) {
+        if ([] !== $components) {
             $writer->startElement('components');
 
             foreach ($components as $component) {
@@ -423,13 +420,12 @@ class Component extends Node
         $matches = $this->select($name);
         if (0 === count($matches)) {
             return null;
-        } else {
-            $firstMatch = current($matches);
-            /* @var $firstMatch Property */
-            $firstMatch->setIterator(new ElementList(array_values($matches)));
-
-            return $firstMatch;
         }
+        $firstMatch = current($matches);
+        /* @var $firstMatch Property */
+        $firstMatch->setIterator(new ElementList(array_values($matches)));
+
+        return $firstMatch;
     }
 
     /**
@@ -543,7 +539,7 @@ class Component extends Node
         $messages = [];
 
         foreach ($this->children() as $child) {
-            $name = strtoupper($child->name);
+            $name = strtoupper((string) $child->name);
             if (!isset($propertyCounters[$name])) {
                 $propertyCounters[$name] = 1;
             } else {

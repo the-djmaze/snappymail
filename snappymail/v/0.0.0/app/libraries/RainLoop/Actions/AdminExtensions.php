@@ -69,7 +69,20 @@ trait AdminExtensions
 					'id' => $sId,
 					'name' => $oPlugin->Name(),
 					'readme' => $oPlugin->Description(),
-					'config' => array()
+					'config' => array(),
+
+					'author' => $oPlugin::AUTHOR,
+					'url' => $oPlugin::URL,
+					'version' => $oPlugin::VERSION,
+					'released' => $oPlugin::RELEASE
+/*
+					$oPlugin::NAME
+					$oPlugin::REQUIRED
+					$oPlugin::DEPRECATED
+					$oPlugin::CATEGORY
+					$oPlugin::LICENSE
+					$oPlugin::DESCRIPTION
+*/
 				);
 
 				$aMap = $oPlugin->ConfigMap();

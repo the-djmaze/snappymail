@@ -5,6 +5,7 @@
 
 import {
 	ControlCommand,
+	GrammarCommands,
 	GrammarStringList,
 	GrammarQuotedString
 } from 'Sieve/Grammar';
@@ -16,37 +17,55 @@ import {
  *    elsif <test2: test> <block2: block>
  *    else <block3: block>
  */
-export class ConditionalCommand extends ControlCommand
+export /*abstract*/ class ConditionalCommand extends ControlCommand
 {
-	constructor(identifier)
+	constructor()
 	{
-		super(identifier);
-		this.test = null;
-	}
-
-	toString()
-	{
-		return this.identifier + ' ' + this.test + ' ' + this.commands;
-	}
 /*
-	public function pushArguments(array $args): void
-	{
-		args.forEach((arg, i) => {
-			if (i && ':' === args[i-1][0]) {
-				this[args[i-1].replace(':','_')].value = arg.value;
-			}
-		});
-		print_r($args);
-		exit;
-	}
+		if (this.constructor == ConditionalCommand) {
+			throw Error("Abstract class can't be instantiated.");
+		}
 */
+		super();
+		this.commands = new GrammarCommands;
+	}
 }
 
 export class IfCommand extends ConditionalCommand
 {
+	constructor()
+	{
+		super();
+		this._test = null; // must be descendent instanceof TestCommand
+	}
+
+	get test()
+	{
+		return this._test;
+	}
+
+	set test(value)
+	{
+/*
+		if (!value instanceof TestCommand) {
+			throw Error("test must be descendent instanceof TestCommand.");
+		}
+*/
+		this._test = value;
+	}
+
+	toString()
+	{
+/*
+		if (!this._test instanceof TestCommand) {
+			throw Error("test must be descendent instanceof TestCommand.");
+		}
+*/
+		return this.identifier + ' ' + this._test + ' ' + this.commands;
+	}
 }
 
-export class ElsIfCommand extends ConditionalCommand
+export class ElsIfCommand extends IfCommand
 {
 }
 

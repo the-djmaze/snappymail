@@ -15,7 +15,6 @@ import {
 } from 'Sieve/Commands/Actions';
 
 import {
-	ConditionalCommand,
 	ElsIfCommand,
 	ElseCommand,
 	IfCommand,
@@ -49,6 +48,7 @@ import { NotifyCommand, ValidNotifyMethodTest, NotifyMethodCapabilityTest } from
 import { IHaveTest, ErrorCommand } from 'Sieve/Extensions/rfc5463';
 import { MailboxExistsTest, MetadataTest, MetadataExistsTest } from 'Sieve/Extensions/rfc5490';
 import { ForEveryPartCommand, BreakCommand, ReplaceCommand, EncloseCommand, ExtractTextCommand } from 'Sieve/Extensions/rfc5703';
+import { ValidExtListTest } from 'Sieve/Extensions/rfc6134';
 import { IncludeCommand, ReturnCommand, GlobalCommand } from 'Sieve/Extensions/rfc6609';
 
 export const
@@ -67,7 +67,6 @@ export const
 		IfCommand,
 		ElsIfCommand,
 		ElseCommand,
-		ConditionalCommand,
 		RequireCommand,
 		StopCommand,
 		// Action commands
@@ -129,6 +128,8 @@ export const
 		ReplaceCommand,
 		EncloseCommand,
 		ExtractTextCommand,
+		// rfc6134
+		ValidExtListTest,
 		// rfc6609
 		IncludeCommand,
 		ReturnCommand,
@@ -141,6 +142,17 @@ export const
 			id = getIdentifier(cmd);
 			if (id) {
 				commands[id] = cmd;
+			}
+		});
+		return commands;
+	},
+
+	unavailableCommands = () => {
+		let commands = {};
+		AllCommands.forEach(cmd => {
+			const obj = new cmd, requires = obj.require;
+			if (requires && !(Array.isArray(requires) ? requires : [requires]).every(string => capa.includes(string))) {
+				commands[obj.identifier] = cmd;
 			}
 		});
 		return commands;

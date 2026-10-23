@@ -29,8 +29,8 @@ export class SMimeImportPopupView extends AbstractViewPopup {
 				(iError, oData) => {
 					if (iError) {
 						this.pemError(true);
-						this.pemErrorMessage(getNotification(iError, oData?.ErrorMessage));
-//						oData?.ErrorMessageAdditional;
+						this.pemErrorMessage(getNotification(iError, oData?.message));
+//						oData?.messageAdditional;
 					} else {
 						this.close();
 					}

@@ -17,6 +17,7 @@ namespace MailSo\Imap\Responses;
  */
 class ACL implements \JsonSerializable
 {
+	public bool $mine = false;
 	private string
 		$identifier,
 		$rights;
@@ -52,8 +53,11 @@ class ACL implements \JsonSerializable
 	public function jsonSerialize()
 	{
 		return [
+			'@Object' => 'Object/FolderACLRights',
 			'identifier' => $this->identifier,
 			'rights' => $this->rights,
+			'mine' => $this->mine,
+/*
 			'mayReadItems'   => ($this->hasRight('l') && $this->hasRight('r')),
 			'mayAddItems'    => $this->hasRight('i'),
 			'mayRemoveItems' => ($this->hasRight('t') && $this->hasRight('e')),
@@ -63,6 +67,7 @@ class ACL implements \JsonSerializable
 			'mayRename'      => $this->hasRight('x'),
 			'mayDelete'      => $this->hasRight('x'),
 			'maySubmit'      => $this->hasRight('p')
+*/
 		];
 	}
 

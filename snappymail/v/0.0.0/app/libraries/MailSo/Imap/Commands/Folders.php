@@ -184,7 +184,7 @@ trait Folders
 			 */
 /*
 			if ($this->hasCapability('ESEARCH') && !isset($oFolderInfo->UNSEEN)) {
-				$oFolderInfo->UNSEEN = $this->MessageSimpleESearch('UNSEEN', ['COUNT'])['COUNT'];
+				$oFolderInfo->UNSEEN = $this->MessageESearch('UNSEEN', ['COUNT'])['COUNT'];
 			}
 			return $oFolderInfo;
 */
@@ -214,8 +214,7 @@ trait Folders
 //			$oFolderInfo->SIZE = \max($oFolderInfo->SIZE, $oInfo->SIZE);
 //			$oFolderInfo->RECENT = \max(0, $oFolderInfo->RECENT, $oInfo->RECENT);
 			$oFolderInfo->hasStatus = $oInfo->hasStatus;
-			$oFolderInfo->generateETag($this);
-			return $oFolderInfo;
+			$oInfo = $oFolderInfo;
 		}
 
 		$oInfo->generateETag($this);
@@ -286,7 +285,7 @@ trait Folders
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function FolderExpunge(SequenceSet $oUidRange = null) : void
+	public function FolderExpunge(?SequenceSet $oUidRange = null) : void
 	{
 		$sCmd = 'EXPUNGE';
 		$aArguments = array();
@@ -435,7 +434,7 @@ trait Folders
 		$oResult->UNSEEN = null;
 /*
 		if ($this->hasCapability('ESEARCH')) {
-			$oResult->UNSEEN = $this->MessageSimpleESearch('UNSEEN', ['COUNT'])['COUNT'];
+			$oResult->UNSEEN = $this->MessageESearch('UNSEEN', ['COUNT'])['COUNT'];
 		}
 */
 		$this->oCurrentFolderInfo = $oResult;

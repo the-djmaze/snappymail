@@ -35,21 +35,16 @@ trait User
 	 */
 	public function DoLogin() : array
 	{
-		$sEmail = \MailSo\Base\Utils::Trim($this->GetActionParam('Email', ''));
-		$oPassword = new \SnappyMail\SensitiveString($this->GetActionParam('Password', ''));
-
 		try {
-			$oAccount = $this->LoginProcess($sEmail, $oPassword);
+			$oAccount = $this->LoginProcess(
+				\MailSo\Base\Utils::Trim($this->GetActionParam('Email', '')),
+				new \SnappyMail\SensitiveString($this->GetActionParam('Password', ''))
+			);
 		} catch (\Throwable $oException) {
 			$this->loginErrorDelay();
 			throw $oException;
 		}
 
-		// Must be here due to bug #1241
-		$this->SetMainAuthAccount($oAccount);
-		$this->Plugins()->RunHook('login.success', array($oAccount));
-
-		$this->SetAuthToken($oAccount);
 		empty($this->GetActionParam('signMe', 0)) || $this->SetSignMeToken($oAccount);
 
 		$sLanguage = $this->GetActionParam('language', '');
@@ -79,8 +74,6 @@ trait User
 
 	public function DoAppDelayStart() : array
 	{
-		$this->Plugins()->RunHook('service.app-delay-start-begin');
-
 		Utils::UpdateConnectionToken();
 
 		$bMainCache = false;
@@ -130,8 +123,6 @@ trait User
 			$this->logWrite('Files GC: End');
 		}
 
-		$this->Plugins()->RunHook('service.app-delay-start-end');
-
 		return $this->TrueResponse();
 	}
 
@@ -166,7 +157,7 @@ trait User
 		}
 
 		$this->setSettingsFromParams($oSettings, 'MessagesPerPage', 'int', function ($iValue) {
-			return \min(50, \max(10, $iValue));
+			return \min(100, \max(10, $iValue));
 		});
 
 		$this->setSettingsFromParams($oSettings, 'Layout', 'int', function ($iValue) {
@@ -192,6 +183,7 @@ trait User
 		$this->setSettingsFromParams($oSettings, 'ListInlineAttachments', 'bool');
 		$this->setSettingsFromParams($oSettings, 'CollapseBlockquotes', 'bool');
 		$this->setSettingsFromParams($oSettings, 'MaxBlockquotesLevel', 'int');
+		$this->setSettingsFromParams($oSettings, 'minFontSize', 'int');
 		$this->setSettingsFromParams($oSettings, 'simpleAttachmentsList', 'bool');
 		$this->setSettingsFromParams($oSettings, 'listGrouped', 'bool');
 		$this->setSettingsFromParams($oSettings, 'ContactsAutosave', 'bool');
@@ -201,17 +193,21 @@ trait User
 		$this->setSettingsFromParams($oSettings, 'UseCheckboxesInList', 'bool');
 		$this->setSettingsFromParams($oSettings, 'AllowDraftAutosave', 'bool');
 		$this->setSettingsFromParams($oSettings, 'AutoLogout', 'int');
+		$this->setSettingsFromParams($oSettings, 'keyPassForget', 'int');
 		$this->setSettingsFromParams($oSettings, 'messageNewWindow', 'bool');
 		$this->setSettingsFromParams($oSettings, 'messageReadAuto', 'bool');
 		$this->setSettingsFromParams($oSettings, 'MessageReadDelay', 'int');
 		$this->setSettingsFromParams($oSettings, 'MsgDefaultAction', 'int');
 		$this->setSettingsFromParams($oSettings, 'showNextMessage', 'bool');
+		$this->setSettingsFromParams($oSettings, 'markdown', 'bool');
 
 		$this->setSettingsFromParams($oSettings, 'Resizer4Width', 'int');
 		$this->setSettingsFromParams($oSettings, 'Resizer5Width', 'int');
 		$this->setSettingsFromParams($oSettings, 'Resizer5Height', 'int');
 
+		$this->setSettingsFromParams($oSettingsLocal, 'defaultSort', 'string');
 		$this->setSettingsFromParams($oSettingsLocal, 'UseThreads', 'bool');
+		$this->setSettingsFromParams($oSettingsLocal, 'threadAlgorithm', 'string');
 		$this->setSettingsFromParams($oSettingsLocal, 'ReplySameFolder', 'bool');
 		$this->setSettingsFromParams($oSettingsLocal, 'HideUnsubscribed', 'bool');
 		$this->setSettingsFromParams($oSettingsLocal, 'HideDeleted', 'bool');

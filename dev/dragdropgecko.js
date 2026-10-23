@@ -75,8 +75,8 @@
 				// create drag image from custom element or drag source
 				img = src.cloneNode(true);
 				copyStyle(src, img);
-				img._x = xOffset == null ? src.clientWidth / 2 : xOffset;
-				img._y = yOffset == null ? src.clientHeight / 2 : yOffset;
+				img._x = xOffset ?? src.clientWidth / 2;
+				img._y = yOffset ?? src.clientHeight / 2;
 			}
 		},
 

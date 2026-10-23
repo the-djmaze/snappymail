@@ -13,6 +13,19 @@
 			}
 		}"></div>
 	</div>
+	<div class="control-group">
+		<label data-i18n="SETTINGS_SECURITY/FORGET_KEY_PASS"></label>
+		<div data-bind="component: {
+			name: 'Select',
+			params: {
+				options: autoLogoutOptions,
+				value: keyPassForget,
+				trigger: keyPassForgetTrigger,
+				optionsText: 'name',
+				optionsValue: 'id'
+			}
+		}"></div>
+	</div>
 </div>
 
 <div class="legend">OpenPGP</div>
@@ -43,6 +56,20 @@
 			</td>
 			<td>
 				<span class="delete-key fontastic" data-bind="visible: !askDelete(), click: openForDeletion">🗑</span>
+			</td>
+		</tr>
+		<tr data-bind="visible: hasStoredPass">
+			<td>
+				<span class="fontastic" data-i18n="[title]SETTINGS_OPENPGP/TITLE_PRIVATE">🔒</span>
+				<span class="key-id" data-bind="text: id"></span>
+				<span>🔑</span><span class="key-user" data-i18n="SETTINGS_SECURITY/LABEL_STORED_PASS"></span>
+			</td>
+			<td>
+				<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askForgetPass()}, click: forgetPass"
+					 data-i18n="GLOBAL/ARE_YOU_SURE"></a>
+			</td>
+			<td>
+				<span class="delete-key fontastic" data-bind="visible: !askForgetPass(), click: openForPassForget">🗑</span>
 			</td>
 		</tr>
 	</tbody>
@@ -90,6 +117,20 @@
 			</td>
 			<td>
 				<span class="delete-key fontastic" data-bind="visible: !askDelete(), click: openForDeletion">🗑</span>
+			</td>
+		</tr>
+		<tr data-bind="visible: hasStoredPass">
+			<td>
+				<span class="fontastic" data-i18n="[title]SETTINGS_OPENPGP/TITLE_PRIVATE">🔒</span>
+				<span class="key-id" data-bind="text: id"></span>
+				<span>🔑</span><span class="key-user" data-i18n="SETTINGS_SECURITY/LABEL_STORED_PASS"></span>
+			</td>
+			<td>
+				<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askForgetPass()}, click: forgetPass"
+					 data-i18n="GLOBAL/ARE_YOU_SURE"></a>
+			</td>
+			<td>
+				<span class="delete-key fontastic" data-bind="visible: !askForgetPass(), click: openForPassForget">🗑</span>
 			</td>
 		</tr>
 	</tbody>

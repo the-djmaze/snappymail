@@ -10,12 +10,12 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME     = 'Avatars',
 		AUTHOR   = 'SnappyMail',
 		URL      = 'https://snappymail.eu/',
-		VERSION  = '1.16',
-		RELEASE  = '2024-03-12',
-		REQUIRED = '2.25.0',
+		VERSION  = '1.22',
+		RELEASE  = '2025-03-10',
+		REQUIRED = '2.33.0',
 		CATEGORY = 'Contacts',
 		LICENSE  = 'MIT',
-		DESCRIPTION = 'Show graphic of sender in message and messages list (supports BIMI, Gravatar and identicon, Contacts is still TODO)';
+		DESCRIPTION = 'Show graphic of sender in message and messages list (supports Contacts, BIMI, Gravatar, favicon and identicon)';
 
 	public function Init() : void
 	{
@@ -28,7 +28,12 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 			$this->addJs("{$identicon}.js");
 		}
 		// https://github.com/the-djmaze/snappymail/issues/714
-		if ($this->Config()->Get('plugin', 'service', true) || !$this->Config()->Get('plugin', 'delay', true)) {
+		if ($this->Config()->Get('plugin', 'service', true)
+//		 || !$this->Config()->Get('plugin', 'delay', true)
+		 || $this->Config()->Get('plugin', 'gravatar', false)
+		 || $this->Config()->Get('plugin', 'bimi', false)
+		 || $this->Config()->Get('plugin', 'favicon', false)
+		) {
 			$this->addHook('json.after-message', 'JsonMessage');
 			$this->addHook('json.after-messagelist', 'JsonMessageList');
 		}
@@ -69,15 +74,13 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 			$mFrom = $mFrom->jsonSerialize();
 		}
 		if (\is_array($mFrom)) {
-			if (!$this->Config()->Get('plugin', 'delay', true)
-			 && ($this->Config()->Get('plugin', 'gravatar', false)
+			if (/*!$this->Config()->Get('plugin', 'delay', true)
+			 && */($this->Config()->Get('plugin', 'gravatar', false)
 				|| ($this->Config()->Get('plugin', 'bimi', false) && 'pass' == $mFrom['dkimStatus'])
+				|| ($this->Config()->Get('plugin', 'favicon', false) && 'pass' == $mFrom['dkimStatus'])
 			 )
-			) try {
-				// Base64Url
-				return \SnappyMail\Crypt::EncryptUrlSafe($mFrom['email']);
-			} catch (\Throwable $e) {
-				\SnappyMail\Log::error('Crypt', $e->getMessage());
+			) {
+				return 'remote';
 			}
 			if ('pass' == $mFrom['dkimStatus'] && $this->Config()->Get('plugin', 'service', true)) {
 				// 'data:image/png;base64,[a-zA-Z0-9+/=]'
@@ -106,16 +109,20 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 	}
 
 	/**
-	 * GET /?Avatar/${bimi}/Encrypted(${from.email})
-	 * Nextcloud Mail uses insecure unencrypted 'index.php/apps/mail/api/avatars/url/local%40example.com'
+	 * GET /?Avatar/${bimi}/Encoded(${from.email})
+	 * Nextcloud Mail uses insecure unencoded 'index.php/apps/mail/api/avatars/url/local%40example.com'
 	 */
 //	public function ServiceAvatar(...$aParts)
-	public function ServiceAvatar(string $sServiceName, string $sBimi, string $sEmail)
+	public function ServiceAvatar(string $sServiceName, string $sBimi, string $sEncodedEmail)
 	{
-		$sEmail = \SnappyMail\Crypt::DecryptUrlSafe($sEmail);
+		$maxAge = 86400;
+		$sEmail = \MailSo\Base\Utils::UrlSafeBase64Decode($sEncodedEmail);
 		$aBimi = \explode('-', $sBimi, 2);
 		$sBimiSelector = isset($aBimi[1]) ? $aBimi[1] : 'default';
+//		$sEmail && \MailSo\Base\Http::setETag("{$sBimiSelector}-{$sEncodedEmail}");
 		if ($sEmail && ($aResult = $this->getAvatar($sEmail, !empty($aBimi[0]), $sBimiSelector))) {
+			\header("Cache-Control: max-age={$maxAge}, private");
+			\header('Expires: '.\gmdate('D, j M Y H:i:s', $maxAge + \time()).' UTC');
 			\header('Content-Type: '.$aResult[0]);
 			echo $aResult[1];
 		} else {
@@ -132,14 +139,20 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 				->SetAllowedInJs(true)
 				->SetDefaultValue(true),
+			\RainLoop\Plugins\Property::NewInstance('contacts')->SetLabel('Contacts')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
+				->SetDescription('Use the PHOTO stored on a matching address book contact')
+				->SetDefaultValue(true),
 			\RainLoop\Plugins\Property::NewInstance('bimi')->SetLabel('BIMI')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
-//				->SetAllowedInJs(true)
 				->SetDefaultValue(false)
 				->SetDescription('https://bimigroup.org/ (DKIM header must be valid)'),
+			\RainLoop\Plugins\Property::NewInstance('favicon')->SetLabel('Favicon')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
+				->SetDefaultValue(false)
+				->SetDescription('Fetch favicon from domain (DKIM header must be valid)'),
 			\RainLoop\Plugins\Property::NewInstance('gravatar')->SetLabel('Gravatar')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
-//				->SetAllowedInJs(true)
 				->SetDefaultValue(false)
 				->SetDescription('https://wikipedia.org/wiki/Gravatar'),
 		]);
@@ -147,7 +160,6 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 			defined('RainLoop\\Enumerations\\PluginPropertyType::SELECT')
 				? \RainLoop\Plugins\Property::NewInstance('identicon')->SetLabel('Identicon')
 					->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECT)
-//					->SetAllowedInJs(true)
 					->SetDefaultValue([
 						['id' => '', 'name' => 'Name characters else silhouette'],
 						['id' => 'identicon', 'name' => 'Name characters else squares'],
@@ -156,7 +168,6 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 					->SetDescription('https://wikipedia.org/wiki/Identicon')
 				: \RainLoop\Plugins\Property::NewInstance('identicon')->SetLabel('Identicon')
 					->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECTION)
-//					->SetAllowedInJs(true)
 					->SetDefaultValue(['','identicon','jdenticon'])
 					->SetDescription('empty = default, identicon = squares, jdenticon = Triangles shape')
 				,
@@ -178,11 +189,8 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		return $aResult;
 	}
 
-	// Only allow service icon when DKIM is valid. $bBimi is true when DKIM is valid.
-	private static function getServiceIcon(string $sEmail) : ?string
+	private static function getServicePng(string $sDomain) : ?string
 	{
-		$sDomain = \explode('@', $sEmail);
-		$sDomain = \array_pop($sDomain);
 		$aServices = [
 			"services/{$sDomain}",
 			'services/' . static::serviceDomain($sDomain)
@@ -190,8 +198,19 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		foreach ($aServices as $service) {
 			$file = __DIR__ . "/images/{$service}.png";
 			if (\file_exists($file)) {
-				return 'data:image/png;base64,' . \base64_encode(\file_get_contents($file));
+				return $file;
 			}
+		}
+		return null;
+	}
+
+	// Only allow service icon when DKIM is valid. $bBimi is true when DKIM is valid.
+	private static function getServiceIcon(string $sEmail) : ?string
+	{
+		$aParts = \explode('@', $sEmail);
+		$file = static::getServicePng(\array_pop($aParts));
+		if ($file) {
+			return 'data:image/png;base64,' . \base64_encode(\file_get_contents($file));
 		}
 
 		$aResult = static::getCachedImage($sEmail);
@@ -215,30 +234,23 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		\header('Cache-Control: private');
 //		\header('Expires: '.\gmdate('D, j M Y H:i:s', \time() + 86400).' UTC');
 
+		// A photo stored on the contact is authoritative, so it is consulted
+		// before the cache and before any network lookup: it beats a guessed
+		// avatar and replaces up to five remote round-trips. Deliberately not
+		// written to the avatars cache, which has no expiry - a cached copy
+		// would shadow later edits to the contact.
+		if ($this->Config()->Get('plugin', 'contacts', true)) {
+			$aResult = static::getContactPhoto($sAsciiEmail);
+			if ($aResult) {
+				return $aResult;
+			}
+		}
+
 		$aResult = static::getCachedImage($sEmail);
 		if ($aResult) {
 			return $aResult;
 		}
 
-		// TODO: lookup contacts vCard and return PHOTO value
-		/*
-		if (!$aResult) {
-			$oActions = \RainLoop\Api::Actions();
-			$oAccount = $oActions->getAccountFromToken();
-			if ($oAccount) {
-				$oAddressBookProvider = $oActions->AddressBookProvider($oAccount);
-				if ($oAddressBookProvider) {
-					$oContact = $oAddressBookProvider->GetContactByEmail($sEmail);
-					if ($oContact && $oContact->vCard && $oContact->vCard['PHOTO']) {
-						$aResult = [
-							'text/vcard',
-							$oContact->vCard
-						];
-					}
-				}
-			}
-		}
-		*/
 
 		if (!$aResult) {
 			$sDomain = \explode('@', $sEmail);
@@ -258,7 +270,7 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 			}
 
 			if ($this->Config()->Get('plugin', 'gravatar', false)) {
-				$aUrls[] = 'https://gravatar.com/avatar/'.\md5(\strtolower($sAsciiEmail)).'?s=80&d=404';
+				$aUrls[] = 'https://gravatar.com/avatar/'.\hash('sha256', \strtolower($sAsciiEmail)).'?s=80&d=404';
 			}
 
 			foreach ($aUrls as $sUrl) {
@@ -274,26 +286,18 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 		// Only allow service icon when DKIM is valid. $bBimi is true when DKIM is valid.
 		if ($bBimi && !$aResult) {
-			$aServices = [
-				"services/{$sDomain}",
-				'services/' . static::serviceDomain($sDomain)
-			];
-			foreach ($aServices as $service) {
-				$file = __DIR__ . "/images/{$service}.png";
-				if (\file_exists($file)) {
-					\MailSo\Base\Http::setLastModified(\filemtime($file));
-					$aResult = [
-						'image/png',
-						\file_get_contents($file)
-					];
-					break;
-				}
+			$file = static::getServicePng($sDomain);
+			if ($file) {
+				\MailSo\Base\Http::setLastModified(\filemtime($file));
+				$aResult = [
+					'image/png',
+					\file_get_contents($file)
+				];
 			}
-/*
-			if (!$aResult) {
-				$aResult = static::getFavicon($sEmail, $sDomain);
+
+			if (!$aResult && $this->Config()->Get('plugin', 'favicon', false)) {
+				$aResult = static::getFavicon($sDomain);
 			}
-*/
 		}
 
 		return $aResult;
@@ -304,15 +308,90 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$sDomain = \preg_replace('/^(.+\\.)?(paypal\\.[a-z][a-z])$/D', 'paypal.com', $sDomain);
 		$sDomain = \preg_replace('/^facebookmail.com$/D', 'facebook.com', $sDomain);
 		$sDomain = \preg_replace('/^dhlparcel.nl$/D', 'dhl.com', $sDomain);
+		$sDomain = \preg_replace('/^amazon.nl$/D', 'amazon.com', $sDomain);
 		$sDomain = \preg_replace('/^.+\\.([^.]+\\.[^.]+)$/D', '$1', $sDomain);
 		return $sDomain;
 	}
 
+	/**
+	 * Return the PHOTO of the address book contact owning this address.
+	 *
+	 * vCard 4.0 stores it as a data: URI, vCard 3.0 as ENCODING=b with a TYPE
+	 * parameter, and either version may point at an external URL instead.
+	 */
+	private static function getContactPhoto(string $sEmail) : ?array
+	{
+		try {
+			$oActions = \RainLoop\Api::Actions();
+			$oAccount = $oActions->getAccountFromToken(false);
+			if (!$oAccount) {
+				return null;
+			}
+			$oProvider = $oActions->AddressBookProvider($oAccount);
+			if (!$oProvider || !$oProvider->IsActive()) {
+				return null;
+			}
+			// Several contacts can share an address - a synced card, a manual
+			// entry, an auto-collected one - and only one of them may carry the
+			// photo. GetContactByEmail() returns whichever matches first, so
+			// fall back to scanning the matches for one that actually has it.
+			$oPhoto = null;
+			$oContact = $oProvider->GetContactByEmail($sEmail);
+			if ($oContact && $oContact->vCard && isset($oContact->vCard->PHOTO)) {
+				$oPhoto = $oContact->vCard->PHOTO;
+			} else {
+				$iCount = 0;
+				foreach ($oProvider->GetContacts(0, 20, $sEmail, $iCount) as $oCandidate) {
+					if ($oCandidate->vCard && isset($oCandidate->vCard->PHOTO)) {
+						$oPhoto = $oCandidate->vCard->PHOTO;
+						break;
+					}
+				}
+			}
+			if (!$oPhoto) {
+				return null;
+			}
+
+			$sValue = \trim((string) $oPhoto);
+			if (!\strlen($sValue)) {
+				return null;
+			}
+
+			// vCard 4.0: data:image/jpeg;base64,...
+			if (\preg_match('#^data:(image/[a-z0-9.+-]+);base64,(.+)$#si', $sValue, $aMatch)) {
+				$sBinary = \base64_decode(\preg_replace('#\s+#', '', $aMatch[2]), true);
+				return $sBinary ? [\strtolower($aMatch[1]), $sBinary] : null;
+			}
+
+			// vCard 3.0: PHOTO;ENCODING=b;TYPE=JPEG:<base64>
+			$sEncoding = \strtolower((string) ($oPhoto['ENCODING'] ?? ''));
+			if ('b' === $sEncoding || 'base64' === $sEncoding) {
+				$sBinary = \base64_decode(\preg_replace('#\s+#', '', $sValue), true);
+				if ($sBinary) {
+					$sType = \strtolower((string) ($oPhoto['TYPE'] ?? '')) ?: 'jpeg';
+					return [\str_starts_with($sType, 'image/') ? $sType : "image/{$sType}", $sBinary];
+				}
+				return null;
+			}
+
+			// Either version may reference the image instead of embedding it.
+			if (\preg_match('#^https?://#i', $sValue)) {
+				return static::getUrl($sValue);
+			}
+		} catch (\Throwable $oException) {
+			\SnappyMail\Log::notice('Avatar', 'contact photo lookup failed: ' . $oException->getMessage());
+		}
+		return null;
+	}
+
 	private static function cacheImage(string $sEmail, array $aResult) : void
 	{
-		$sEmailId = \sha1(\mb_strtolower(\SnappyMail\IDN::emailToAscii($sEmail)));
 		if (!\is_dir(\APP_PRIVATE_DATA . 'avatars')) {
 			\mkdir(\APP_PRIVATE_DATA . 'avatars', 0700);
+		}
+		$sEmailId = \mb_strtolower(\SnappyMail\IDN::emailToAscii($sEmail));
+		if (\str_contains($sEmail, '@')) {
+			$sEmailId = \sha1($sEmailId);
 		}
 		\file_put_contents(
 			\APP_PRIVATE_DATA . 'avatars/' . $sEmailId . \SnappyMail\File\MimeType::toExtension($aResult[0]),
@@ -325,33 +404,61 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 	{
 		$sEmail = \mb_strtolower(\SnappyMail\IDN::emailToAscii($sEmail));
 		$aFiles = \glob(\APP_PRIVATE_DATA . "avatars/{$sEmail}.*");
+		if (!$aFiles && \str_contains($sEmail, '@')) {
+			$sEmailId = \sha1($sEmail);
+			$aFiles = \glob(\APP_PRIVATE_DATA . "avatars/{$sEmailId}.*");
+			if (!$aFiles) {
+				$sDomain = \explode('@', $sEmail);
+				$sDomain = \array_pop($sDomain);
+				$aFiles = \glob(\APP_PRIVATE_DATA . "avatars/{$sDomain}.*");
+			}
+		}
 		if ($aFiles) {
-			\MailSo\Base\Http::setLastModified(\filemtime($aFiles[0]));
 			return [
 				\SnappyMail\File\MimeType::fromFile($aFiles[0]),
-				\file_get_contents($aFiles[0])
-			];
-		}
-		$sEmailId = \sha1($sEmail);
-		$aFiles = \glob(\APP_PRIVATE_DATA . "avatars/{$sEmailId}.*");
-		if ($aFiles) {
-			\MailSo\Base\Http::setLastModified(\filemtime($aFiles[0]));
-			return [
-				\mime_content_type($aFiles[0]),
 				\file_get_contents($aFiles[0])
 			];
 		}
 		return null;
 	}
 
-	private static function getFavicon(string $sEmail, string $sDomain) : ?array
+	private static function getFavicon(string $sDomain) : ?array
 	{
 		$aResult = static::getUrl('https://' . $sDomain . '/favicon.ico')
 			?: static::getUrl('https://' . static::serviceDomain($sDomain) . '/favicon.ico')
-			?: static::getUrl('https://www.' . static::serviceDomain($sDomain) . '/favicon.ico');
-		// Also detect <link rel="shortcut icon" href="...">
+			?: static::getUrl('https://www.' . static::serviceDomain($sDomain) . '/favicon.ico')
+			?: static::getUrl("https://www.google.com/s2/favicons?sz=48&domain_url={$sDomain}")
+			?: static::getUrl("https://api.faviconkit.com/{$sDomain}/48")
+//			?: static::getUrl("https://api.statvoo.com/favicon/{$sDomain}")
+		;
+/*
+		Also detect the following?
+
+		<link sizes="16x16" rel="shortcut icon" type="image/x-icon" href="/..." />
+		<link sizes="16x16" rel="shortcut icon" type="image/png" href="/..." />
+		<link sizes="32x32" rel="shortcut icon" type="image/png" href="/..." />
+		<link sizes="96x96" rel="shortcut icon" type="image/png" href="/..." />
+
+		<link sizes="36x36" rel="icon" type="image/png" href="/..." />
+		<link sizes="48x48" rel="icon" type="image/png" href="/..." />
+		<link sizes="72x72" rel="icon" type="image/png" href="/..." />
+		<link sizes="96x96" rel="icon" type="image/png" href="/..." />
+		<link sizes="144x144" rel="icon" type="image/png" href="/..." />
+		<link sizes="192x192" rel="icon" type="image/png" href="/..." />
+
+		<link sizes="57x57" rel="apple-touch-icon" type="image/png" href="/..." />
+		<link sizes="60x60" rel="apple-touch-icon" type="image/png" href="/..." />
+		<link sizes="72x72" rel="apple-touch-icon" type="image/png" href="/..." />
+		<link sizes="76x76" rel="apple-touch-icon" type="image/png" href="/..." />
+		<link sizes="114x114" rel="apple-touch-icon" type="image/png" href="/..." />
+		<link sizes="120x120" rel="apple-touch-icon" type="image/png" href="/..." />
+		<link sizes="144x144" rel="apple-touch-icon" type="image/png" href="/..." />
+		<link sizes="152x152" rel="apple-touch-icon" type="image/png" href="/" />
+		<link sizes="180x180" rel="apple-touch-icon" type="image/png" href="/..." />
+		<link sizes="192x192" rel="apple-touch-icon" type="image/png" href="/..." />
+*/
 		if ($aResult) {
-			static::cacheImage($sEmail, $aResult);
+			static::cacheImage($sDomain, $aResult);
 		}
 		return $aResult;
 	}

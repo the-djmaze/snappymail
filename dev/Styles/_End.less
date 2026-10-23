@@ -16,7 +16,7 @@
 	text-align: var(--left, left);
 	top: 100%;
 	transition: opacity 0.2s ease-in-out;
-	white-space: nowrap;
+	white-space: pre;
 	z-index: 2001;
 }
 @media screen and (max-width: @maxMobileWidth) {
@@ -31,6 +31,11 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
 	transition: color 9999s ease-out, background-color 9999s ease-out;
+}
+
+.btn-rotate,
+[data-icon].rotate::before {
+	transform: rotate(-180deg);
 }
 
 /*

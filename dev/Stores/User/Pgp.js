@@ -61,7 +61,7 @@ export const
 						if (gnuPG && oData?.Result/* && (oData.Result.imported || oData.Result.secretimported)*/) {
 							GnuPGUserStore.loadKeyrings();
 						}
-						iError && alert(oData.ErrorMessage);
+						iError && alert(oData.message);
 					}, {
 						key, gnuPG, backup
 					}

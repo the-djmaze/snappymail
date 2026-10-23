@@ -38,14 +38,14 @@ export const
 
 	/**
 	 * @param {string} download
-	 * @param {string=} customSpecSuffix
 	 * @returns {string}
 	 */
-	attachmentDownload = (download, customSpecSuffix) =>
-		serverRequestRaw('Download', download, customSpecSuffix),
+	attachmentDownload = (download) =>
+		serverRequestRaw('Download', download),
 
 	proxy = url =>
 		BASE + '?/ProxyExternal/'
+//			+ btoa(JSON.stringify([token,url]).replace(/ /g, '%20')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
 			+ btoa(url.replace(/ /g, '%20')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
 //			+ b64EncodeJSONSafe(url.replace(/ /g, '%20')),
 

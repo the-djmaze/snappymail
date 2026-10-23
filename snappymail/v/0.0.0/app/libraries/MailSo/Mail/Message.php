@@ -253,8 +253,10 @@ class Message implements \JsonSerializable
 				else if (\preg_match('@([\\d\\.]+)/([\\d\\.]+)@', $spam, $value)
 				  || \preg_match('@([\\d\\.]+)/([\\d\\.]+)@', $oHeaders->ValueByName(MimeHeader::X_SPAM_INFO), $value)
 				) {
-					$oMessage->sSpamResult = "{$value[1]} / {$value[2]}";
-					$oMessage->setSpamScore(100 * \floatval($value[1]) / \floatval($value[2]));
+					if ($threshold = \floatval($value[2])) {
+						$oMessage->setSpamScore(100 * \floatval($value[1]) / $threshold);
+						$oMessage->sSpamResult = "{$value[1]} / {$value[2]}";
+					}
 				}
 
 				$oMessage->bIsSpam = 'Yes' === \substr($spam, 0, 3)
@@ -506,8 +508,9 @@ class Message implements \JsonSerializable
 			'spamScore' => $this->bIsSpam ? 100 : $this->SpamScore,
 			'spamResult' => $this->sSpamResult,
 			'isSpam' => $this->bIsSpam,
+			// RainLoop had the date_from_headers option
 			'dateTimestamp' => $this->iHeaderTimeStampInUTC ?: $this->iInternalTimeStampInUTC,
-			'internalTimestamp' => $this->iInternalTimeStampInUTC,
+			'dateTimestampSource' => $this->iHeaderTimeStampInUTC ? 'header' : 'internal',
 
 			// \MailSo\Mime\EmailCollection
 			'from' => $this->oFrom,
@@ -548,6 +551,7 @@ class Message implements \JsonSerializable
 		}
 		if ($this->References) {
 			$result['references'] = $this->References;
+//			$result['references'] = \explode(' ', $this->References);
 		}
 		if ($this->sHtml || $this->sPlain) {
 			$result['html'] = $this->sHtml;

@@ -38,15 +38,15 @@
 				</div>
 			</p>
 			<br />
-<!-- DISABLED https://github.com/the-djmaze/snappymail/issues/1420#issuecomment-1933045917
+
 			<p>
-				<input id="snappymail-autologin-oidc" name="snappymail-autologin-oidc" type="checkbox" class="checkbox" <php if ($_['snappymail-autologin-oidc']) echo 'checked="checked"'; ?>>
+				<input id="snappymail-autologin-oidc" name="snappymail-autologin-oidc" type="checkbox" class="checkbox" <?php if ($_['snappymail-autologin-oidc']) echo 'checked="checked"'; ?>>
 				<label for="snappymail-autologin-oidc">
-					<php echo($l->t('Attempt to automatically login with OIDC when active')); ?>
+					<?php echo($l->t('Attempt to automatically login with OIDC when active')); ?>
 				</label>
 			</p>
 			<br />
--->
+
 			<p>
 				<input id="snappymail-no-embed" name="snappymail-no-embed" type="checkbox" class="checkbox" <?php if ($_['snappymail-no-embed']) echo 'checked="checked"'; ?>>
 				<label for="snappymail-no-embed">
@@ -70,6 +70,22 @@
 			</p>
 			<br />
 			<?php } ?>
+
+			<p>
+				<input id="snappymail-nc-lang" name="snappymail-nc-lang" type="checkbox" class="checkbox" <?php if ($_['snappymail-nc-lang']) echo 'checked="checked"'; ?>>
+				<label for="snappymail-nc-lang">
+					<?php echo($l->t('Force Nextcloud personal language')); ?>
+				</label>
+			</p>
+			<br />
+			<p>
+				<label for="snappymail-app_path">
+					<?php echo($l->t('app_path')); ?>
+				</label>
+				<input id="snappymail-app_path" name="snappymail-app_path" type="text" <?php echo 'value="'.\htmlspecialchars($_['snappymail-app_path']).'"'; ?> style="width:20em">
+			</p>
+			<br />
+
 			<p>
 				<button id="snappymail-save-button" name="snappymail-save-button"><?php echo($l->t('Save')); ?></button>
 				<div class="snappymail-result-desc" style="white-space: pre"></div>

@@ -16,24 +16,30 @@ export class AddHeaderCommand extends ActionCommand
 	{
 		super();
 		this.last       = false;
-		this.field_name = new GrammarQuotedString;
-		this.value      = new GrammarQuotedString;
+		this._field_name = new GrammarQuotedString;
+		this._value      = new GrammarQuotedString;
 	}
 
 	get require() { return 'editheader'; }
+
+	get field_name() { return this._field_name.value; }
+	set field_name(v) { this._field_name.value = v; }
+
+	get value() { return this._value.value; }
+	set value(v) { this._value.value = v; }
 
 	toString()
 	{
 		return this.identifier
 			+ (this.last ? ' :last' : '')
-			+ ' ' + this.field_name
-			+ ' ' + this.value + ';';
+			+ ' ' + this._field_name
+			+ ' ' + this._value + ';';
 	}
 
 	pushArguments(args)
 	{
-		this.value = args.pop();
-		this.field_name = args.pop();
+		this._value = args.pop();
+		this._field_name = args.pop();
 		this.last = args.includes(':last');
 	}
 }
@@ -47,11 +53,14 @@ export class DeleteHeaderCommand extends ActionCommand
 		this.last           = false;
 		this.comparator     = '',
 		this.match_type     = ':is',
-		this.field_name     = new GrammarQuotedString;
+		this._field_name    = new GrammarQuotedString;
 		this.value_patterns = new GrammarStringList;
 	}
 
 	get require() { return 'editheader'; }
+
+	get field_name() { return this._field_name.value; }
+	set field_name(v) { this._field_name.value = v; }
 
 	toString()
 	{
@@ -59,7 +68,7 @@ export class DeleteHeaderCommand extends ActionCommand
 			+ (this.last ? ' :last' : (this.index.value ? ' :index ' + this.index : ''))
 			+ (this.comparator ? ' :comparator ' + this.comparator : '')
 			+ ' ' + this.match_type
-			+ ' ' + this.field_name
+			+ ' ' + this._field_name
 			+ ' ' + this.value_patterns + ';';
 	}
 
@@ -76,10 +85,10 @@ export class DeleteHeaderCommand extends ActionCommand
 		});
 
 		if (l && args[l-1] instanceof GrammarString) {
-			this.field_name = args[l-1];
+			this._field_name = args[l-1];
 			this.value_patterns = args[l];
 		} else {
-			this.field_name = args[l];
+			this._field_name = args[l];
 		}
 	}
 }

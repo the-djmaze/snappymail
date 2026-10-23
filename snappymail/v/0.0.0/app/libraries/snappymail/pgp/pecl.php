@@ -56,7 +56,8 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 
 	public static function isSupported() : bool
 	{
-		return \class_exists('gnupg') && \version_compare(\phpversion('gnupg'), '1.5', '>=');
+		// Disabled due to failures with "no passphrase" while a passphrase does exist
+		return false && \class_exists('gnupg') && \version_compare(\phpversion('gnupg'), '1.5', '>=');
 	}
 
 	public function gnupgError()
@@ -364,7 +365,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Verifies a signed text
 	 */
-	public function verify(string $signed_text, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verify(string $signed_text, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		$result = $this->GnuPG->verify($signed_text, $signature ?: false, $plaintext) ?: $this->gnupgError();
 		if (!$result) {
@@ -377,7 +378,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyFile(string $filename, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		return $this->GnuPG->verify(\file_get_contents($filename), $signature, $plaintext) ?: $this->gnupgError();
 	}
@@ -385,7 +386,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Verifies a given resource
 	 */
-	public function verifyStream(/*resource*/ $fp, string $signature, string &$plaintext = null) /*: array|false */
+	public function verifyStream(/*resource*/ $fp, string $signature, ?string &$plaintext = null) /*: array|false */
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');

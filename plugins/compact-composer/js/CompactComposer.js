@@ -14,40 +14,38 @@
 
 	const doc = win.document;
 
-	// If a user (or admin) selected the CompactComposer we need to
-	// replace PopupsCompose template with PopupsCompactCompose template.
-	// --
-	// This might break some plugins if they query/change PopupsCompose template
-	// before this code is called. They should instead listen for
-	// 'rl-view-model.create' to work properly.
-	if (rl.settings.get('editorWysiwyg') === 'CompactComposer') {
-		const compactTemplate = doc.getElementById('PopupsCompactCompose');
-		if (!compactTemplate) {
-			console.error('CompactComposer: PopupsCompactCompose template not found');
-			return;
-		}
-		const originalTemplate = doc.getElementById('PopupsCompose');
-		if (originalTemplate) {
-			originalTemplate.id = 'PopupsCompose_replaced';
-		} else {
-			console.warn('CompactComposer: PopupsCompose template not found');
-		}
-		compactTemplate.id = 'PopupsCompose';
+	addEventListener('rl-view-model', e => {
+		const vm = e.detail;
+		if ('PopupsCompose' === vm.viewModelTemplateID && rl.settings.get('editorWysiwyg') === 'CompactComposer') {
+			// add visible binding to the label
+			const bodyLabel = vm.querySelector('.tabs label[for="tab-body"]');
+			bodyLabel.dataset.bind = 'visible: canMailvelope';
+			// re-apply the binding
+			const labelNext = bodyLabel.nextElementSibling;
+			ko.removeNode(bodyLabel);
+			labelNext.parentElement.insertBefore(bodyLabel, labelNext);
+			ko.applyBindingAccessorsToNode(bodyLabel, null, vm);
 
-		addEventListener('rl-view-model.create', e => {
-			if (e.detail.viewModelTemplateID === 'PopupsCompose') {
-				// There is a better way to do this probably,
-				// but we need this for drag and drop to work
-				e.detail.attachmentsArea = e.detail.bodyArea;
-			}
-		});
-	}
+			// Now move the attachments tab to the bottom of the screen
+			const area = vm.querySelector('.tabs .attachmentAreaParent');
+			vm.querySelector('.tabs input[value="attachments"]').remove();
+			vm.querySelector('.tabs label[for="tab-attachments"]').remove();
+			area.querySelector('.no-attachments-desc').remove();
+			area.classList.add('compact');
+			vm.viewModelDom.append(area);
+			// Add and re-apply the bindings for the attachment-place
+			const place = area.querySelector('.b-attachment-place');
+			ko.removeNode(place);
+			area.insertBefore(place, area.firstElementChild);
+			place.dataset.bind = 'visible: addAttachmentEnabled(), css: {dragAndDropOver: dragAndDropVisible}';
+			ko.applyBindingAccessorsToNode(place, null, vm);
+			// There is a better way to do this probably,
+			// but we need this for drag and drop to work
+			e.detail.attachmentsArea = e.detail.bodyArea;
+		}
+	});
 
 	const
-		removeElements = 'HEAD,LINK,META,NOSCRIPT,SCRIPT,TEMPLATE,TITLE',
-		allowedElements = 'A,B,BLOCKQUOTE,BR,DIV,EM,FONT,H1,H2,H3,H4,H5,H6,HR,I,IMG,LI,OL,P,SPAN,STRONG,TABLE,TD,TH,TR,U,UL',
-		allowedAttributes = 'abbr,align,background,bgcolor,border,cellpadding,cellspacing,class,color,colspan,dir,face,frame,height,href,hspace,id,lang,rowspan,rules,scope,size,src,style,target,type,usemap,valign,vspace,width'.split(','),
-
 		// TODO: labels translations
 		i18n = (str, def) => rl.i18n(str) || def,
 
@@ -102,24 +100,6 @@
 			}
 		},
 
-		pasteSanitizer = (event) => {
-			const frag = event.detail.fragment;
-			frag.querySelectorAll('a:empty,span:empty').forEach(el => el.remove());
-			frag.querySelectorAll(removeElements).forEach(el => el.remove());
-			frag.querySelectorAll('*').forEach(el => {
-				if (!el.matches(allowedElements)) {
-					el.replaceWith(getFragmentOfChildren(el));
-				} else if (el.hasAttributes()) {
-					[...el.attributes].forEach(attr => {
-						let name = attr.name.toLowerCase();
-						if (!allowedAttributes.includes(name)) {
-							el.removeAttribute(name);
-						}
-					});
-				}
-			});
-		},
-
 		pasteImageHandler = (e, squire) => {
 
 			const items = [...e.detail.clipboardData.items];
@@ -144,6 +124,7 @@
 				squire = new win.Squire2(wysiwyg, SquireDefaultConfig);
 
 			this.container = container;
+			container.classList.add('CompactComposer');
 
 			plain.className = 'squire-plain';
 			wysiwyg.className = 'squire-wysiwyg';
@@ -155,11 +136,30 @@
 			this.toolbar = toolbar;
 
 			toolbar.className = 'squire-toolbar btn-toolbar';
-			const actions = this.#makeActions(squire, toolbar);
+			const actions = this.makeActions(squire, toolbar);
 
-			this.squire.addEventListener('willPaste', pasteSanitizer);
+			this.squire.addEventListener('willPaste', (event) => {
+				// https://github.com/fastmail/Squire?tab=readme-ov-file#addeventlistener
+				// The content that will be inserted is available as either the fragment property, or the text property for plain text, on the detail property of the event. You can modify this text/fragment in your event handler to change what will be pasted
+				tpl.innerHTML = rl.Utils.cleanHtml(event.detail.html).html;
+				event.detail.fragment = tpl.content;
+			});
 			this.squire.addEventListener('pasteImage', (e) => {
 				pasteImageHandler(e, squire);
+			});
+
+			wysiwyg.addEventListener('focus', () => {
+				const range = this.squire.getSelection();
+				if (range.collapsed && range.startContainer === wysiwyg) {
+					// when the caret is directly in the wysiwyg a bunch of stuff
+					// (like lists, blockquotes, etc...) do not work,
+					// so we need to place it inside the nearest element
+					if (wysiwyg.children[range.startOffset] !== undefined) {
+						const newRange = document.createRange();
+						newRange.setStart(wysiwyg.children[range.startOffset], 0);
+						this.squire.setSelection(newRange);
+					}
+				}
 			});
 
 //		squire.addEventListener('focus', () => shortcuts.off());
@@ -300,16 +300,18 @@
 		 * @param {Squire} squire
 		 * @param {HTMLDivElement} toolbar
 		 * @returns {Array}
+		 * @private
 		 */
-		#makeActions(squire, toolbar) {
+		makeActions(squire, toolbar) {
 
-			const clr = this.#makeClr();
+			const clr = this.makeClr();
 			const doClr = name => input => {
 				// https://github.com/the-djmaze/snappymail/issues/826
 				clr.style.left = (input.offsetLeft + input.parentNode.offsetLeft) + 'px';
 				clr.style.width = input.offsetWidth + 'px';
 
-				clr.value = '';
+				// firefox does not call "onchange" for #000 if we use clr.value=''
+				clr.value = '#00ff0c';
 				clr.onchange = () => {
 					switch (name) {
 						case 'color':
@@ -604,7 +606,7 @@
 							type: 'menu_item',
 							label: 'HTML Mode',
 							id: 'menu-item-mode-wysiwyg',
-							cmd: () => this.setMode('wysiwyg'),
+							cmd: () => this.setModeCmd('wysiwyg'),
 							showInPlainMode: true,
 							icon: '<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="m2 2v3h1v-2h2v-1zm13 0v1h2v2h1v-3zm-9 3v10h2v-4h4v4h2v-10h-2v4h-4v-4zm-4 10v3h3v-1h-2v-2zm15 0v2h-2v1h3v-3z"/></svg>'
 						},
@@ -612,7 +614,7 @@
 							type: 'menu_item',
 							label: 'Edit Source',
 							id: 'menu-item-mode-source',
-							cmd: () => this.setMode('source'),
+							cmd: () => this.setModeCmd('source'),
 							showInPlainMode: true,
 							icon: '<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="m12 2.83c-0.478-0.138-0.976 0.141-1.11 0.619l-3.6 12.6c-0.138 0.478 0.141 0.976 0.619 1.11 0.478 0.138 0.976-0.141 1.11-0.619l3.6-12.6c0.138-0.478-0.141-0.976-0.619-1.11zm2.27 4.65 2.51 2.51-2.51 2.51c-0.352 0.352-0.352 0.923 0 1.27 0.352 0.352 0.923 0.352 1.27 0l3.15-3.15c0.352-0.352 0.352-0.923 0-1.27l-3.15-3.15c-0.352-0.352-0.923-0.352-1.27-0.00141-0.35 0.35-0.35 0.921 0.00141 1.27zm-8.63-1.27c-0.352-0.352-0.923-0.352-1.27 0l-3.15 3.15c-0.352 0.352-0.352 0.923 0 1.27l3.15 3.15c0.352 0.352 0.923 0.352 1.27 0 0.352-0.352 0.352-0.923 0-1.27l-2.51-2.51 2.51-2.51c0.352-0.352 0.352-0.923 0-1.27z"/></svg>'
 						},
@@ -620,7 +622,7 @@
 							type: 'menu_item',
 							label: 'Plain Text Mode',
 							id: 'menu-item-mode-plain',
-							cmd: () => this.setMode('plain'),
+							cmd: () => this.setModeCmd('plain'),
 							showInPlainMode: true,
 							icon: '<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="m2 2v3h1v-2h2v-1zm13 0v1h2v2h1v-3zm-9 3v2h3v8h2v-8h3v-2zm-4 10v3h3v-1h-2v-2zm15 0v2h-2v1h3v-3z"/></svg>'
 						}
@@ -640,11 +642,14 @@
 					actions: actions
 				}
 			}));
-			this.indicators = this.#addActionsToParent(actions, toolbar);
+			this.indicators = this.addActionsToParent(actions, toolbar);
 			return actions;
 		}
 
-		#makeClr() {
+		/**
+		 * @private
+		 */
+		makeClr() {
 			/**@type {HTMLInputElement} clr*/
 			const clr = createElement('input');
 			clr.type = 'color';
@@ -675,8 +680,9 @@
 		/**
 		 * @param {Array} items
 		 * @param {HTMLElement} parent
+		 * @private
 		 */
-		#addActionsToParent(items, parent) {
+		addActionsToParent(items, parent) {
 			const indicators = [];
 			items.forEach(item => {
 				let element, event;
@@ -688,7 +694,7 @@
 							group.className += ' squire-html-mode-item';
 						}
 						if (item.items) {
-							indicators.push(...this.#addActionsToParent(item.items, group));
+							indicators.push(...this.addActionsToParent(item.items, group));
 						}
 						parent.append(group);
 						return indicators;
@@ -720,7 +726,7 @@
 						menu.setAttribute('role', 'menu');
 
 						if (item.items) {
-							indicators.push(...this.#addActionsToParent(item.items, menu));
+							indicators.push(...this.addActionsToParent(item.items, menu));
 						}
 						menuWrap.appendChild(menu);
 						parent.append(menuWrap);
@@ -873,6 +879,12 @@
 				return validation.test(this.squire.getPath()) || this.squire.hasFormat(format);
 			}
 		*/
+
+		setModeCmd(mode) {
+			this.setMode(mode);
+			setTimeout(() => this.focus(), 1);
+		}
+
 		setMode(mode) {
 			if (this.mode !== mode) {
 				let cl = this.container.classList,
@@ -896,7 +908,6 @@
 				this.mode = mode;
 				cl.add('squire2-mode-' + mode);
 				this.onModeChange?.();
-				setTimeout(() => this.focus(), 1);
 			}
 		}
 

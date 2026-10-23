@@ -14,16 +14,22 @@ class MainAccount extends Account
 
 	public function resealCryptKey(SensitiveString $oOldPass) : bool
 	{
-		$sKey = $this->CryptKey();
+		$oStorage = \RainLoop\Api::Actions()->StorageProvider();
+		$sKey = $oStorage->Get($this, StorageType::ROOT, '.cryptkey');
 		if ($sKey) {
-			$sKey = \SnappyMail\Crypt::EncryptToJSON(\bin2hex($sKey), $this->IncPassword());
+			$sKey = \SnappyMail\Crypt::DecryptFromJSON($sKey, $oOldPass);
+			if (!$sKey) {
+				throw new ClientException(Notifications::CryptKeyError);
+			}
+			$sPass = \RainLoop\Api::Config()->Get('security', 'insecure_cryptkey', false)
+				? $this->Email()
+				: $this->ImapPass();
+			$sKey = \SnappyMail\Crypt::EncryptToJSON($sKey, $sPass);
 			if ($sKey) {
-				\RainLoop\Api::Actions()->StorageProvider()->Put($this, StorageType::ROOT, '.cryptkey', $sKey);
-				$sKey = \SnappyMail\Crypt::DecryptFromJSON($sKey, $this->IncPassword());
-				if ($sKey) {
-					$this->sCryptKey = new SensitiveString(\hex2bin($sKey));
+				$this->sCryptKey = null;
+				if (\RainLoop\Api::Actions()->StorageProvider()->Put($this, StorageType::ROOT, '.cryptkey', $sKey)) {
+					return true;
 				}
-				return true;
 			}
 		}
 		return false;
@@ -36,19 +42,21 @@ class MainAccount extends Account
 			// can use the old password to re-seal the cryptkey
 			$oStorage = \RainLoop\Api::Actions()->StorageProvider();
 			$sKey = $oStorage->Get($this, StorageType::ROOT, '.cryptkey');
+			$sPass = \RainLoop\Api::Config()->Get('security', 'insecure_cryptkey', false)
+				? $this->Email()
+				: $this->ImapPass();
 			if (!$sKey) {
 				$sKey = \SnappyMail\Crypt::EncryptToJSON(
-					\sha1($this->IncPassword() . APP_SALT),
-					$this->IncPassword()
+					\sha1($this->ImapPass() . APP_SALT),
+					$sPass
 				);
 				$oStorage->Put($this, StorageType::ROOT, '.cryptkey', $sKey);
 			}
-			$sKey = \SnappyMail\Crypt::DecryptFromJSON($sKey, $this->IncPassword());
-			if ($sKey) {
-				$this->sCryptKey = new SensitiveString(\hex2bin($sKey));
-			} else {
+			$sKey = \SnappyMail\Crypt::DecryptFromJSON($sKey, $sPass);
+			if (!$sKey) {
 				throw new ClientException(Notifications::CryptKeyError);
 			}
+			$this->sCryptKey = new SensitiveString(\hex2bin($sKey));
 		}
 		return $this->sCryptKey;
 	}

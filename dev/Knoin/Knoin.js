@@ -74,13 +74,17 @@ const
 //					vmDom.addEventListener('close', () => vm.modalVisible(false));
 
 					// show/hide popup/modal
+					// transitionend is called for each property, so we only listen to `opacity`
+					// as defined in CSS by `dialog:not(.animate)`
 					const endShowHide = e => {
-						if (e.target === vmDom) {
+						if (e.target === vmDom && 'opacity' === e.propertyName) {
 							if (vmDom.classList.contains('animate')) {
 								vm.afterShow?.();
+								fireEvent('rl-vm-visible', vm);
 							} else {
 								vmDom.close();
 								vm.afterHide?.();
+//								fireEvent('rl-vm-hidden', vm);
 							}
 						}
 					};
@@ -163,7 +167,7 @@ const
 		if (screenName && fireEvent('sm-show-screen', screenName + (subPart ?  '/' + subPart : ''), 1)) {
 			// Close all popups
 			for (let vm of visiblePopups) {
-				(false === vm.onClose()) || vm.close();
+				vm.tryToClose();
 			}
 
 			let vmScreen = screen(screenName);

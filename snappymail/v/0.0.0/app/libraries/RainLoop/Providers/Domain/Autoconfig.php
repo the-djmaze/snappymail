@@ -13,55 +13,26 @@ abstract class Autoconfig
 		$domain = \MailSo\Base\Utils::getEmailAddressDomain($emailaddress);
 //		$domain = \SnappyMail\IDN::toAscii($domain);
 		$domain = \strtolower(\idn_to_ascii($domain));
-		// First try
-		$autoconfig = static::resolve($domain, $emailaddress);
-		if ($autoconfig) {
-			return $autoconfig;
-		}
-		// Else try MX
-		$suffixes = static::publicsuffixes();
-		$hostnames = [];
-		foreach (\SnappyMail\DNS::MX($domain) as $hostname) {
-			// Extract only the second-level domain from the MX hostname
-			$mxbasedomain = \explode('.', $hostname);
-			$i = -2;
-			while (\in_array(\implode('.', \array_slice($mxbasedomain, $i)), $suffixes)) {
-				--$i;
-			}
-			$mxbasedomain = \implode('.', \array_slice($mxbasedomain, $i));
-			if ($mxbasedomain) {
-				$mxfulldomain = $mxbasedomain;
-				if (\substr_count($hostname, '.') > \substr_count($mxbasedomain, '.')) {
-					// Remove the first component from the MX hostname
-					$mxfulldomain = \explode('.', $hostname, 2)[1];
-				}
-				$hostnames[$mxfulldomain] = $mxbasedomain;
-			}
-		}
-		foreach ($hostnames as $mxfulldomain => $mxbasedomain) {
-			if ($domain != $mxfulldomain) {
-				$autoconfig = static::resolve($mxfulldomain, $emailaddress);
-				if (!$autoconfig && $mxfulldomain != $mxbasedomain && $domain != $mxbasedomain) {
-					$autoconfig = static::resolve($mxbasedomain, $emailaddress);
-				}
-				if ($autoconfig) {
-					return $autoconfig;
-				}
-			}
-		}
-		// Else try Microsoft autodiscover
-		return static::autodiscover($domain);
+		return
+			// First try autoconfig
+			static::resolve($domain, $emailaddress)
+			// Else try MX, but it is mostly useless
+//			?: static::mx($domain, $emailaddress)
+			// Else try Microsoft autodiscover
+			?: static::autodiscover($domain)
+			// Else try DNS SRV
+			?: static::srv($domain);
 	}
 
 	private static function resolve(string $domain, string $emailaddress) : ?array
 	{
 		$emailaddress = \urlencode($emailaddress);
 		foreach ([
-			// 4.1. Mail provider
+			// Mail provider https://www.ietf.org/archive/id/draft-bucksch-autoconfig-02.html#section-4.1
 			"https://autoconfig.{$domain}/.well-known/mail-v1.xml?emailaddress={$emailaddress}",
 			"https://{$domain}/.well-known/autoconfig/mail/config-v1.1.xml",
 			"http://autoconfig.{$domain}/mail/config-v1.1.xml",
-			// 4.2. Central database
+			// Central database https://www.ietf.org/archive/id/draft-bucksch-autoconfig-02.html#section-4.2
 			"https://autoconfig.thunderbird.net/v1.1/{$domain}"
 		] as $url) {
 			$data = \file_get_contents($url);
@@ -117,20 +88,86 @@ abstract class Autoconfig
 	}
 
 	/**
-	 * This is Microsoft
+	 * https://www.ietf.org/archive/id/draft-bucksch-autoconfig-02.html#section-4.3
 	 */
-	private static function autodiscover(string $domain) : ?array
+	private static function mx(string $domain, string $emailaddress) : ?array
 	{
-		foreach ([
-			"https://{$domain}",
-			"https://autodiscover.{$domain}",
-			"http://autodiscover.{$domain}"
-		] as $host) {
-			$result = static::autodiscover_resolve($host, $domain);
-			if ($result) {
+		$suffixes = static::publicsuffixes();
+		foreach (\SnappyMail\DNS::MX($domain) as $hostname) {
+			// Extract only the second-level domain from the MX hostname
+			$mxbasedomain = \explode('.', $hostname);
+			$i = -2;
+			while (\in_array(\implode('.', \array_slice($mxbasedomain, $i)), $suffixes)) {
+				--$i;
+			}
+			$mxbasedomain = \implode('.', \array_slice($mxbasedomain, $i));
+			if ($mxbasedomain) {
+				$mxfulldomain = $mxbasedomain;
+				if (\substr_count($hostname, '.') > \substr_count($mxbasedomain, '.')) {
+					// Remove the first component from the MX hostname
+					$mxfulldomain = \explode('.', $hostname, 2)[1];
+				}
+				$hostnames[$mxfulldomain] = $mxbasedomain;
+			}
+		}
+		foreach ($hostnames as $mxfulldomain => $mxbasedomain) {
+			if ($domain != $mxfulldomain) {
+				$autoconfig = static::resolve($mxfulldomain, $emailaddress);
+				if (!$autoconfig && $mxfulldomain != $mxbasedomain && $domain != $mxbasedomain) {
+					$autoconfig = static::resolve($mxbasedomain, $emailaddress);
+				}
+				if ($autoconfig) {
+					return $autoconfig;
+				}
+			}
+		}
+	}
+
+	/**
+	 * https://datatracker.ietf.org/doc/html/rfc6186
+	 * https://datatracker.ietf.org/doc/html/rfc8314
+	 */
+	private static function srv(string $domain) : ?array
+	{
+		$srv = \SnappyMail\DNS::SRV('_submissions._tcp.'.$domain);
+		if (empty($srv[0]['target'])) {
+			$srv = \SnappyMail\DNS::SRV('_submission._tcp.'.$domain);
+		}
+		if (!empty($srv[0]['target'])) {
+			$result = [
+				'incomingServer' => [],
+				'outgoingServer' => [
+					'hostname' => $srv[0]['target'],
+					'port' => $srv[0]['port'],
+					'socketType' => (587 == $srv[0]['port']) ? 'STARTTLS' : (465 == $srv[0]['port'] ? 'SSL' : ''),
+					'authentication' => 'password-cleartext',
+					'username' => '%EMAILADDRESS%'
+				]
+			];
+			$srv = \SnappyMail\DNS::SRV('_imaps._tcp.'.$domain);
+			if (empty($srv[0]['target'])) {
+				$srv = \SnappyMail\DNS::SRV('_imap._tcp.'.$domain);
+			}
+			if (!empty($srv[0]['target'])) {
+				$result['incomingServer'][] = [
+					'hostname' => $srv[0]['target'],
+					'port' => $srv[0]['port'],
+					'socketType' => 993 == $srv[0]['port'] ? 'SSL' : '',
+					'authentication' => 'password-cleartext',
+					'username' => '%EMAILADDRESS%'
+				];
 				return $result;
 			}
 		}
+		return null;
+	}
+
+	/**
+	 * This is Microsoft
+	 * https://learn.microsoft.com/en-us/exchange/client-developer/web-service-reference/pox-autodiscover-web-service-reference-for-exchange
+	 */
+	private static function autodiscover(string $domain) : ?array
+	{
 		foreach (\SnappyMail\DNS::SRV("_autodiscover._tcp.{$domain}") as $record) {
 			if (443 == $record['port']) {
 				$result = static::autodiscover_resolve("https://{$record['target']}", $domain);
@@ -139,6 +176,16 @@ abstract class Autoconfig
 			} else {
 				$result = static::autodiscover_resolve("https://{$record['target']}:{$record['port']}", $domain);
 			}
+			if ($result) {
+				return $result;
+			}
+		}
+		foreach ([
+			"https://{$domain}",
+			"https://autodiscover.{$domain}",
+			"http://autodiscover.{$domain}"
+		] as $host) {
+			$result = static::autodiscover_resolve($host, $domain);
 			if ($result) {
 				return $result;
 			}

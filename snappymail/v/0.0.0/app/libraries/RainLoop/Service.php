@@ -251,7 +251,7 @@ abstract class Service
 		return true;
 	}
 
-	private static function setCSP(string $sScriptNonce = null) : void
+	private static function setCSP(?string $sScriptNonce = null) : void
 	{
 		Api::getCSP($sScriptNonce)->setHeaders();
 	}

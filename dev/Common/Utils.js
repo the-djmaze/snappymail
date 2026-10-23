@@ -10,7 +10,7 @@ export const
 
 	pInt = (value, defaultValue = 0) => {
 		value = parseInt(value, 10);
-		return isNaN(value) || !isFinite(value) ? defaultValue : value;
+		return isFinite(value) ? value : defaultValue;
 	},
 
 	defaultOptionsAfterRender = (domItem, item) =>

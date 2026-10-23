@@ -6,7 +6,7 @@ export class CheckboxComponent {
 			: ko.observable(!!params.value);
 
 		this.enable = ko.isObservable(params.enable) ? params.enable
-			: ko.observable(undefined === params.enable || !!params.enable);
+			: ko.observable(params.enable ?? 1);
 
 		this.label = params.label;
 	}

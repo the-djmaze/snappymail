@@ -116,7 +116,7 @@ export class ContactsPopupView extends AbstractViewPopup {
 			Remote.request('ContactsDelete',
 				(iError, oData) => {
 					if (iError) {
-						alert(oData?.ErrorMessage || getNotification(iError));
+						alert(oData?.message || getNotification(iError));
 					} else {
 						const page = this.contactsPage();
 						if (page > Math.max(1, Math.ceil((this.contactsCount() - count) / CONTACTS_PER_PAGE))) {
@@ -181,7 +181,7 @@ export class ContactsPopupView extends AbstractViewPopup {
 			Remote.request('ContactSave',
 				(iError, oData) => {
 					if (iError) {
-						alert(oData?.ErrorMessage || getNotification(iError));
+						alert(oData?.message || getNotification(iError));
 					} else if (oData.Result.ResultID) {
 						if (contact.id()) {
 							contact.id(oData.Result.ResultID);
@@ -245,7 +245,7 @@ export class ContactsPopupView extends AbstractViewPopup {
 
 				if (iError) {
 //					console.error(data);
-					alert(data?.ErrorMessage || getNotification(iError));
+					alert(data?.message || getNotification(iError));
 				} else if (arrayLength(data.Result.List)) {
 					data.Result.List.forEach(item => {
 						item = ContactModel.reviveFromJson(item);
@@ -312,10 +312,6 @@ export class ContactsPopupView extends AbstractViewPopup {
 				});
 			}
 		}
-	}
-
-	tryToClose() {
-		(false === this.onClose()) || this.close();
 	}
 
 	onClose() {

@@ -59,9 +59,7 @@ trait Pgp
 			\RainLoop\Providers\Storage\Enumerations\StorageType::ROOT
 		), '/') . '/.gnupg';
 
-		if (!\is_dir($homedir)) {
-			\mkdir($homedir, 0700, true);
-		}
+		\MailSo\Base\Utils::mkdir($homedir);
 		if (!\is_writable($homedir)) {
 			throw new \Exception("gpg homedir '{$homedir}' not writable");
 		}
@@ -287,6 +285,14 @@ trait Pgp
 		$key = $this->GetActionParam('key', '');
 		$keyId = $this->GetActionParam('keyId', '');
 		return $this->DefaultResponse(($key && $keyId && Backup::PGPKey($key, $keyId)));
+	}
+
+	public function DoDeletePGPKey(): array
+	{
+		$key = $this->GetActionParam('key', '');
+		$keyId = $this->GetActionParam('keyId', '');
+		$success = $key && Backup::PGPKey($key, $keyId, true);
+		return $this->DefaultResponse($success, ['code' => (int)!$success]);
 	}
 
 	/**

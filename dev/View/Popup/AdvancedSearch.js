@@ -18,7 +18,7 @@ export class AdvancedSearchPopupView extends AbstractViewPopup {
 			text: '',
 			keyword: '',
 			repliedValue: -1,
-			selectedDateValue: -1,
+			selectedDateValue: 0,
 			selectedTreeValue: '',
 
 			hasAttachment: false,
@@ -32,14 +32,12 @@ export class AdvancedSearchPopupView extends AbstractViewPopup {
 			// Almost the same as MessageModel.tagOptions
 			keywords: () => {
 				const keywords = [{value:'',label:''}];
-				FolderUserStore.currentFolder().permanentFlags.forEach(value => {
-					if (isAllowedKeyword(value)) {
-						let lower = value.toLowerCase();
-						keywords.push({
-							value: value,
-							label: i18n('MESSAGE_TAGS/'+lower, 0, lower)
-						});
-					}
+				FolderUserStore.currentFolder().optionalTags().forEach(value => {
+					let lower = value.toLowerCase();
+					keywords.push({
+						value: value,
+						label: i18n('MESSAGE_TAGS/'+lower, 0, lower)
+					});
 				});
 				return keywords
 			},
@@ -57,15 +55,25 @@ export class AdvancedSearchPopupView extends AbstractViewPopup {
 
 			selectedDates: () => {
 				translateTrigger();
-				let prefix = 'SEARCH/DATE_';
+				// We should think about migrating all SEARCH/DATE_ to either SEARCH/SINCE_DATE or SEARCH/BEFORE_DATE
+				// and adjust the prefix accordingly
+				// let prefix_since = 'SEARCH/SINCE_DATE_';
+				let prefix = 'SEARCH/SINCE_';
+				let prefix_before = 'SEARCH/BEFORE_';
 				return [
-					{ id: -1, name: i18n(prefix + 'ALL') },
+					{ id: 0, name: i18n('SEARCH/DATE_ALL') },
 					{ id: 3, name: i18n(prefix + '3_DAYS') },
 					{ id: 7, name: i18n(prefix + '7_DAYS') },
 					{ id: 30, name: i18n(prefix + 'MONTH') },
 					{ id: 90, name: i18n(prefix + '3_MONTHS') },
 					{ id: 180, name: i18n(prefix + '6_MONTHS') },
-					{ id: 365, name: i18n(prefix + 'YEAR') }
+					{ id: 365, name: i18n(prefix + 'YEAR') },
+					{ id: -3, name: i18n(prefix_before + '3_DAYS') },
+					{ id: -7, name: i18n(prefix_before + '7_DAYS') },
+					{ id: -30, name: i18n(prefix_before + 'MONTH') },
+					{ id: -90, name: i18n(prefix_before + '3_MONTHS') },
+					{ id: -180, name: i18n(prefix_before + '6_MONTHS') },
+					{ id: -365, name: i18n(prefix_before + 'YEAR') }
 				];
 			},
 
@@ -102,10 +110,15 @@ export class AdvancedSearchPopupView extends AbstractViewPopup {
 		append('text', self.text().trim());
 		append('keyword', self.keyword());
 		append('in', self.selectedTreeValue());
-		if (-1 < self.selectedDateValue()) {
+		if (0 < self.selectedDateValue()) {
 			let d = new Date();
 			d.setDate(d.getDate() - self.selectedDateValue());
 			append('since', d.toISOString().split('T')[0]);
+		}
+		else if (-1 > self.selectedDateValue()) {
+			let d = new Date();
+			d.setDate(d.getDate() + self.selectedDateValue());
+			append('before', d.toISOString().split('T')[0]);
 		}
 
 		let result = decodeURIComponent(new URLSearchParams(data).toString());
@@ -138,8 +151,7 @@ export class AdvancedSearchPopupView extends AbstractViewPopup {
 		self.text(pString(params.get('text')));
 		self.keyword(pString(params.get('keyword')));
 		self.selectedTreeValue(pString(params.get('in')));
-//		self.selectedDateValue(params.get('since'));
-		self.selectedDateValue(-1);
+		self.selectedDateValue(0);
 		self.hasAttachment(params.has('attachment'));
 		self.starred(params.has('flagged'));
 		self.unseen(params.has('unseen'));

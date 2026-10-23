@@ -13,6 +13,8 @@ class DemoAccountPlugin extends \RainLoop\Plugins\AbstractPlugin
 	 */
 	public function Init() : void
 	{
+		$this->addJs('demo.js');
+
 		$this->addHook('filter.app-data', 'FilterAppData');
 		$this->addHook('filter.action-params', 'FilterActionParams');
 		$this->addHook('json.before-accountsetup', 'BeforeAccountSetup');

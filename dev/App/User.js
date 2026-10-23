@@ -1,7 +1,7 @@
 import 'External/User/ko';
 
 import { SMAudio } from 'Common/Audio';
-import { pInt } from 'Common/Utils';
+import { arrayLength } from 'Common/Utils';
 import { mailToHelper, setLayoutResizer, dropdownsDetectVisibility, loadAccountsAndIdentities } from 'Common/UtilsUser';
 
 import {
@@ -27,7 +27,7 @@ import {
 	getFolderFromCacheList
 } from 'Common/Cache';
 
-import { i18n, reloadTime } from 'Common/Translator';
+import { i18n, reloadTime, getErrorMessage } from 'Common/Translator';
 
 import { SettingsUserStore } from 'Stores/User/Settings';
 import { NotificationUserStore } from 'Stores/User/Notification';
@@ -88,6 +88,8 @@ export class AppUser extends AbstractApp {
 		this.messageList = MessagelistUserStore;
 
 		this.ask = AskPopupView;
+
+		this.loadAccountsAndIdentities = loadAccountsAndIdentities;
 	}
 
 	/**
@@ -112,7 +114,7 @@ export class AppUser extends AbstractApp {
 			case FolderType.Trash:
 				oMoveFolder = getFolderFromCacheList(FolderUserStore.trashFolder());
 				nSetSystemFoldersNotification = iFolderType;
-				bDelete = bDelete || UNUSED_OPTION_VALUE === FolderUserStore.trashFolder()
+				bDelete = bDelete/* || UNUSED_OPTION_VALUE === FolderUserStore.trashFolder()*/
 					|| sFromFolderFullName === FolderUserStore.spamFolder()
 					|| sFromFolderFullName === FolderUserStore.trashFolder();
 				break;
@@ -147,8 +149,10 @@ export class AppUser extends AbstractApp {
 	}
 
 	logout() {
-		localStorage.removeItem('register_protocol_offered');
-		Remote.request('Logout', () => rl.logoutReload(Settings.app('customLogoutLink')));
+		Remote.request('Logout', (iError, data) =>
+			iError ? alert('Logout error: ' + getErrorMessage(iError, data))
+				: rl.logoutReload(Settings.app('customLogoutLink'))
+		);
 	}
 
 	bootstart() {
@@ -180,15 +184,15 @@ export class AppUser extends AbstractApp {
 			SettingsUserStore.init();
 			ContactUserStore.init();
 
-			loadFolders(value => {
+			loadFolders((success, error) => {
 				try {
-					if (value) {
+					if (success) {
 						startScreens([
 							MailBoxUserScreen,
 							SettingsUserScreen
 						]);
 
-						setRefreshFoldersInterval(pInt(SettingsGet('CheckMailInterval')));
+						setRefreshFoldersInterval(SettingsGet('CheckMailInterval'));
 
 						loadAccountsAndIdentities();
 
@@ -222,19 +226,9 @@ export class AppUser extends AbstractApp {
 						SMimeUserStore.loadCertificates();
 
 						setTimeout(() => mailToHelper(SettingsGet('mailToEmail')), 500);
-
-						if (!localStorage.getItem('register_protocol_offered')) {
-							// When auto-login is active
-							navigator.registerProtocolHandler?.(
-								'mailto',
-								location.protocol + '//' + location.host + location.pathname + '?mailto&to=%s',
-								(SettingsGet('title') || 'SnappyMail')
-							);
-							localStorage.setItem('register_protocol_offered', '1');
-						}
-
 					} else {
 						this.logout();
+						alert('Folders error: ' + getErrorMessage(0, error))
 					}
 				} catch (e) {
 					console.error(e);
@@ -247,18 +241,31 @@ export class AppUser extends AbstractApp {
 
 	showMessageComposer(params = [])
 	{
-		showScreenPopup(ComposePopupView, params);
+		let msg = params[1];
+		if (1 == arrayLength(msg)) {
+			msg = msg[0];
+		}
+		if (msg) {
+			msg.decrypt().then((/*success*/)=>showScreenPopup(ComposePopupView, params));
+		} else {
+			showScreenPopup(ComposePopupView, params);
+		}
 	}
 }
 
-AskPopupView.password = function(sAskDesc, btnText) {
+AskPopupView.password = function(sAskDesc, btnText, ask) {
 	return new Promise(resolve => {
 		this.showModal([
 			sAskDesc,
-			view => resolve({password:view.passphrase(), remember:view.remember()}),
+			view => resolve({
+				password:view.passphrase(),
+				username:/*ask & 2 ? */view.username(),
+				remember:/*ask & 4 ? */view.remember(),
+				rememberPermanent: view.rememberPermanent(),
+			}),
 			() => resolve(null),
 			true,
-			5,
+			ask || 1,
 			btnText
 		]);
 	});

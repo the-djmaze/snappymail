@@ -23,7 +23,7 @@ try {
 	data = data ? decodeURIComponent(data[2]) : null;
 	data = data ? JSON.parse(data) : {};
 	win[sName] = {
-		getItem: key => data[key] == null ? null : data[key],
+		getItem: key => data[key] ?? null,
 		setItem: (key, value) => {
 			data[key] = ''+value; // forces the value to a string
 			document.cookie = sName+'='+encodeURIComponent(JSON.stringify(data))

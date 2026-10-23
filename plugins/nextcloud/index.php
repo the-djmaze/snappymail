@@ -4,11 +4,11 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Nextcloud',
-		VERSION = '2.34',
-		RELEASE  = '2024-03-16',
+		VERSION = '2.38.1',
+		RELEASE  = '2024-10-08',
 		CATEGORY = 'Integrations',
 		DESCRIPTION = 'Integrate with Nextcloud v20+',
-		REQUIRED = '2.35.4';
+		REQUIRED = '2.38.0';
 
 	public function Init() : void
 	{
@@ -35,12 +35,12 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 			$this->addTemplate('templates/PopupsNextcloudFiles.html');
 			$this->addTemplate('templates/PopupsNextcloudCalendars.html');
-/*
-			// DISABLED https://github.com/the-djmaze/snappymail/issues/1420#issuecomment-1933045917
-			$this->addHook('imap.before-login', 'oidcLogin');
-			$this->addHook('smtp.before-login', 'oidcLogin');
-			$this->addHook('sieve.before-login', 'oidcLogin');
-*/
+
+//			$this->addHook('login.credentials.step-2', 'loginCredentials2');
+//			$this->addHook('login.credentials', 'loginCredentials');
+			$this->addHook('imap.before-login', 'beforeLogin');
+			$this->addHook('smtp.before-login', 'beforeLogin');
+			$this->addHook('sieve.before-login', 'beforeLogin');
 		} else {
 			\SnappyMail\Log::debug('Nextcloud', 'NOT integrated');
 			// \OC::$server->getConfig()->getAppValue('snappymail', 'snappymail-no-embed');
@@ -70,19 +70,36 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 		return static::IsIntegrated() && \OC::$server->getUserSession()->isLoggedIn();
 	}
 
-	// https://apps.nextcloud.com/apps/oidc_login
-	// DISABLED https://github.com/the-djmaze/snappymail/issues/1420#issuecomment-1933045917
-	public function oidcLogin(\RainLoop\Model\Account $oAccount, \MailSo\Net\NetClient $oClient, \MailSo\Net\ConnectSettings $oSettings) : void
+	public function loginCredentials(string &$sEmail, string &$sLogin, ?string &$sPassword = null) : void
 	{
-		if (\OC::$server->getConfig()->getAppValue('snappymail', 'snappymail-autologin-oidc', false)
-		 && \OC::$server->getSession()->get('is_oidc')
+		/**
+		 * This has an issue.
+		 * When user changes email address, all settings are gone as the new
+		 * _data_/_default_/storage/{domain}/{local-part} is used
+		 */
+//		$ocUser = \OC::$server->getUserSession()->getUser();
+//		$sEmail = $ocUser->getEMailAddress() ?: $ocUser->getPrimaryEMailAddress() ?: $sEmail;
+	}
+
+	public function loginCredentials2(string &$sEmail, ?string &$sPassword = null) : void
+	{
+		$ocUser = \OC::$server->getUserSession()->getUser();
+		$sEmail = $ocUser->getEMailAddress() ?: $ocUser->getPrimaryEMailAddress() ?: $sEmail;
+	}
+
+	public function beforeLogin(\RainLoop\Model\Account $oAccount, \MailSo\Net\NetClient $oClient, \MailSo\Net\ConnectSettings $oSettings) : void
+	{
+		// Only login with OIDC access token if
+		// it is enabled in config, the user is currently logged in with OIDC,
+		// the current snappymail account is the OIDC account and no account defined explicitly
+		if ($oAccount instanceof \RainLoop\Model\MainAccount
+		 && \OCA\SnappyMail\Util\SnappyMailHelper::isOIDCLogin()
 //		 && $oClient->supportsAuthType('OAUTHBEARER') // v2.28
+		 && \str_starts_with($oSettings->passphrase, 'oidc_login|')
 		) {
-			$sAccessToken = \OC::$server->getSession()->get('oidc_access_token');
-			if ($sAccessToken) {
-				$oSettings->passphrase = $sAccessToken;
-				\array_unshift($oSettings->SASLMechanisms, 'OAUTHBEARER');
-			}
+//			$oSettings->passphrase = \OC::$server->getSession()->get('snappymail-passphrase');
+			$oSettings->passphrase = \OC::$server->getSession()->get('oidc_access_token');
+			\array_unshift($oSettings->SASLMechanisms, 'OAUTHBEARER');
 		}
 	}
 
@@ -227,7 +244,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 				}
 				if (!$sEmail) {
 					$sEmail = $ocUser->getEMailAddress();
-//						?: $oc->user->getPrimaryEMailAddress();
+//						?: $ocUser->getPrimaryEMailAddress();
 				}
 /*
 				if ($config->getAppValue('snappymail', 'snappymail-autologin-oidc', false)) {
@@ -282,9 +299,10 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			$aResultLang = \SnappyMail\L10n::getLanguages($bAdmin);
 			$userId = \OC::$server->getUserSession()->getUser()->getUID();
 			$userLang = \OC::$server->getConfig()->getUserValue($userId, 'core', 'lang', 'en');
+			$userLang = \strtr($userLang, '_', '-');
 			$sLanguage = $this->determineLocale($userLang, $aResultLang);
 			// Check if $sLanguage is null
-			if ($sLanguage === null) {
+			if (!$sLanguage) {
 				$sLanguage = 'en'; // Assign 'en' if $sLanguage is null
 			}
 		}
@@ -305,17 +323,18 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			return $langCode;
 		}
 
+		// Check without country code
+		if (\str_contains($langCode, '-')) {
+			$langCode = \explode('-', $langCode)[0];
+			if (\in_array($langCode, $languagesArray)) {
+				return $langCode;
+			}
+		}
+
 		// Check with uppercase country code
 		$langCodeWithUpperCase = $langCode . '-' . \strtoupper($langCode);
 		if (\in_array($langCodeWithUpperCase, $languagesArray)) {
 			return $langCodeWithUpperCase;
-		}
-
-		// Iterating to find a match starting with langCode
-		foreach ($languagesArray as $localeValue) {
-			if (\str_starts_with($localeValue, $langCode)) {
-				return $localeValue;
-			}
 		}
 
 		// If no match is found

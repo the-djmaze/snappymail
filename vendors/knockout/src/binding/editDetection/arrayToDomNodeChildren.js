@@ -160,10 +160,10 @@
 
         // Try to reduce overall moved nodes by first moving the ones that were marked as moved by the edit script
         if (itemsToMoveFirstIndexes.length) {
-            while ((i = itemsToMoveFirstIndexes.shift()) != undefined) {
+            while ((i = itemsToMoveFirstIndexes.shift()) != null) {
                 mapData = newMappingResult[i];
-                for (lastNode = undefined; i; ) {
-                    mappedNodes = newMappingResult[--i].mappedNodes;
+                while (i--) {
+                    mappedNodes = newMappingResult[i].mappedNodes;
                     if (mappedNodes?.length) {
                         lastNode = mappedNodes[mappedNodes.length - 1];
                         break;

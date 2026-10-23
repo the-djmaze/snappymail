@@ -5,23 +5,18 @@
         'init': (element, valueAccessor, ignored1, ignored2, bindingContext) => {
             var currentViewModel,
                 currentLoadingOperationId,
-                afterRenderSub,
                 disposeAssociatedComponentViewModel = () => {
                     var currentViewModelDispose = currentViewModel && currentViewModel['dispose'];
                     if (typeof currentViewModelDispose === 'function') {
                         currentViewModelDispose.call(currentViewModel);
                     }
-                    if (afterRenderSub) {
-                        afterRenderSub['dispose']();
-                    }
-                    afterRenderSub = null;
                     currentViewModel = null;
                     // Any in-flight loading operation is no longer relevant, so make sure we ignore its completion
                     currentLoadingOperationId = null;
                 };
 
             ko.virtualElements.emptyNode(element);
-            ko.utils.domNodeDisposal['addDisposeCallback'](element, disposeAssociatedComponentViewModel);
+            ko.utils.domNodeDisposal.addDisposeCallback(element, disposeAssociatedComponentViewModel);
 
             ko.computed(() => {
                 var componentName = ko.utils.unwrapObservable(valueAccessor()),

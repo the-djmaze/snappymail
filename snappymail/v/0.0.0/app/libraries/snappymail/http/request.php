@@ -111,7 +111,7 @@ abstract class Request
 
 	abstract protected function __doRequest(string &$method, string &$request_url, &$body, array $extra_headers) : Response;
 
-	public function doRequest($method, $request_url, $body = null, array $extra_headers = array()) : ?Response
+	public function doRequest($method, $request_url, /*string|array*/$body = null, array $extra_headers = array()) : ?Response
 	{
 		$method = \strtoupper($method);
 		$url    = $request_url;

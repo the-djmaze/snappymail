@@ -41,18 +41,21 @@ export class ErrorCommand extends ControlCommand
 	constructor()
 	{
 		super();
-		this.message = new GrammarQuotedString;
+		this._message = new GrammarQuotedString;
 	}
 
 	get require() { return 'ihave'; }
 
+	get message() { return this._message.value; }
+	set message(v) { this._message.value = v; }
+
 	toString()
 	{
-		return 'error ' + this.message + ';';
+		return 'error ' + this._message + ';';
 	}
 
 	pushArguments(args)
 	{
-		this.message = args.pop();
+		this._message = args.pop();
 	}
 }

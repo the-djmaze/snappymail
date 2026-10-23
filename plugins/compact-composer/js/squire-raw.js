@@ -1,5 +1,5 @@
 "use strict";
-// v2.2.7
+// v2.3.2
 (() => {
   // source/node/TreeIterator.ts
   var SHOW_ELEMENT = 1;
@@ -1130,11 +1130,12 @@
       frag.appendChild(node);
       node = next;
     }
-    if (startContainer instanceof Text && endContainer instanceof Text) {
-      startContainer.appendData(endContainer.data);
+    node = endContainer && endContainer.previousSibling;
+    if (node && node instanceof Text && endContainer instanceof Text) {
+      endOffset = node.length;
+      node.appendData(endContainer.data);
       detach(endContainer);
-      endContainer = startContainer;
-      endOffset = startOffset;
+      endContainer = node;
     }
     range.setStart(startContainer, startOffset);
     if (endContainer) {
@@ -1243,7 +1244,7 @@
     const firstBlockInFrag = getNextBlock(frag, frag);
     const replaceBlock = !firstInFragIsInline && !!block && isEmptyBlock(block);
     if (block && firstBlockInFrag && !replaceBlock && // Don't merge table cells or PRE elements into block
-    !getNearest(firstBlockInFrag, frag, "PRE") && !getNearest(firstBlockInFrag, frag, "TABLE")) {
+      !getNearest(firstBlockInFrag, frag, "PRE") && !getNearest(firstBlockInFrag, frag, "TABLE")) {
       moveRangeBoundariesUpTree(range, block, block, root);
       range.collapse(true);
       let container = range.endContainer;
@@ -1360,7 +1361,7 @@
       }
       node = walker.nextNode();
     }
-    textContent = textContent.replace(/ /g, " ");
+    textContent = textContent.replace(/ /g, " ");
     return textContent;
   };
 
@@ -1399,7 +1400,7 @@
     }
     let html;
     if (contents.childNodes.length === 1 && contents.childNodes[0] instanceof Text) {
-      text = contents.childNodes[0].data.replace(/ /g, " ");
+      text = contents.childNodes[0].data.replace(/ /g, " ");
       plainTextOnly = true;
     } else {
       const node = createElement("DIV");
@@ -1416,6 +1417,7 @@
       text = text.replace(/\r?\n/g, "\r\n");
     }
     if (!plainTextOnly && html && text !== html) {
+      html = "<!-- squire -->" + html;
       clipboardData.setData("text/html", html);
     }
     clipboardData.setData("text/plain", text);
@@ -1910,6 +1912,10 @@
     }
     let key = event.key;
     let modifiers = "";
+    const code = event.code;
+    if (/^Digit\d$/.test(code)) {
+      key = code.slice(-1);
+    }
     if (key !== "Backspace" && key !== "Delete") {
       if (event.altKey) {
         modifiers += "Alt-";
@@ -2045,10 +2051,13 @@
     event.preventDefault();
     self.undo();
   };
-  keyHandlers[ctrlKey + "y"] = keyHandlers[ctrlKey + "Shift-z"] = (self, event) => {
-    event.preventDefault();
-    self.redo();
-  };
+  keyHandlers[ctrlKey + "y"] = // Depending on platform, the Shift may cause the key to come through as
+    // upper case, but sometimes not. Just add both as shortcuts — the browser
+    // will only ever fire one or the other.
+    keyHandlers[ctrlKey + "Shift-z"] = keyHandlers[ctrlKey + "Shift-Z"] = (self, event) => {
+      event.preventDefault();
+      self.redo();
+    };
 
   // source/Editor.ts
   var Squire = class {
@@ -2147,6 +2156,7 @@
       this.addEventListener("mousedown", this._disableRestoreSelection);
       this.addEventListener("touchstart", this._disableRestoreSelection);
       this.addEventListener("focus", this._restoreSelection);
+      this.addEventListener("blur", this._removeZWS);
       this._isShiftDown = false;
       this.addEventListener("cut", _onCut);
       this.addEventListener("copy", _onCopy);
@@ -2227,11 +2237,6 @@
     }
     _beforeInput(event) {
       switch (event.inputType) {
-        case "insertText":
-          if (isAndroid && event.data && event.data.includes("\n")) {
-            event.preventDefault();
-          }
-          break;
         case "insertLineBreak":
           event.preventDefault();
           this.splitBlock(true);
@@ -2590,7 +2595,7 @@
         this._lastAnchorNode = anchor;
         this._lastFocusNode = focus;
         newPath = anchor && focus ? anchor === focus ? this._getPath(focus) : "(selection)" : "";
-        if (this._path !== newPath) {
+        if (this._path !== newPath || anchor !== focus) {
           this._path = newPath;
           this.fireEvent("pathChange", {
             path: newPath
@@ -2867,6 +2872,7 @@
           const event = new CustomEvent("willPaste", {
             cancelable: true,
             detail: {
+              html,
               fragment: frag
             }
           });
@@ -3021,6 +3027,7 @@
       if (!range) {
         range = this.getSelection();
       }
+      moveRangeBoundariesDownTree(range);
       let seenAttributes = 0;
       let element = range.commonAncestorContainer;
       if (range.collapsed || element instanceof Text) {
@@ -3543,7 +3550,7 @@
           this.decreaseListLevel(range);
           return this;
         } else if (getNearest(block, root, "BLOCKQUOTE")) {
-          this.removeQuote(range);
+          this.replaceWithBlankLine(range);
           return this;
         }
       }
@@ -3894,6 +3901,17 @@
       return this.focus();
     }
     removeQuote(range) {
+      this.modifyBlocks((frag) => {
+        Array.from(frag.querySelectorAll("blockquote")).forEach(
+          (el) => {
+            replaceWith(el, empty(el));
+          }
+        );
+        return frag;
+      }, range);
+      return this.focus();
+    }
+    replaceWithBlankLine(range) {
       this.modifyBlocks(
         () => this.createDefaultBlock([
           createElement("INPUT", {
@@ -3945,7 +3963,7 @@
           }
           const textWalker = new TreeIterator(output, SHOW_TEXT);
           while (node = textWalker.nextNode()) {
-            node.data = node.data.replace(/ /g, " ");
+            node.data = node.data.replace(/ /g, " ");
           }
           output.normalize();
           return fixCursor(

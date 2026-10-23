@@ -64,7 +64,7 @@ class ActionsAdmin extends Actions
 			return $self->ValidateTheme($sTheme);
 		});
 
-		$this->setConfigFromParams($oConfig, 'useLocalProxyForExternalImages', 'labs', 'use_local_proxy_for_external_images', 'bool');
+		$this->setConfigFromParams($oConfig, 'proxyExternalImages', 'labs', 'use_local_proxy_for_external_images', 'bool');
 		$this->setConfigFromParams($oConfig, 'autoVerifySignatures', 'security', 'auto_verify_signatures', 'bool');
 
 		$this->setConfigFromParams($oConfig, 'allowLanguagesOnSettings', 'webmail', 'allow_languages_on_settings', 'bool');
@@ -219,7 +219,7 @@ class ActionsAdmin extends Actions
 			$this->IsAdminLoggined();
 			$file = \SnappyMail\Upgrade::backup();
 			\header('Content-Type: application/gzip');
-			\header('Content-Disposition: attachment; filename="' . \basename($file) . '"');
+			\MailSo\Base\Http::setContentDisposition('attachment', ['filename' => \basename($file)]);
 			\header('Content-Transfer-Encoding: binary');
 			\header('Content-Length: ' . \filesize($file));
 			$fp = \fopen($file, 'rb');
@@ -456,6 +456,9 @@ class ActionsAdmin extends Actions
 			$aResult['Admin']['language'] = $oActions->ValidateLanguage($oConfig->Get('admin_panel', 'language', 'en'), '', true);
 			$aResult['Admin']['languages'] = \SnappyMail\L10n::getLanguages(true);
 			$aResult['Admin']['clientLanguage'] = $oActions->ValidateLanguage($oActions->detectClientLanguage(true), '', true, true);
+
+			$gnupg = \SnappyMail\PGP\GnuPG::getInstance('');
+			$aResult['gnupg'] = $gnupg ? $gnupg->getEngineInfo()['version'] : null;
 		} else {
 			$passfile = APP_PRIVATE_DATA.'admin_password.txt';
 			$sPassword = $oConfig->Get('security', 'admin_password', '');

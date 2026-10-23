@@ -13,7 +13,11 @@ import { OpenPgpKeyPopupView } from 'View/Popup/OpenPgpKey';
 
 import { Passphrases } from 'Storage/Passphrases';
 
+import { baseCollator, getNotification } from 'Common/Translator';
+
 const
+	loaded = () => !!window.openpgp,
+
 	findOpenPGPKey = (keys, query/*, sign*/) =>
 		keys.find(key =>
 			key.for(query) || query == key.id || query == key.fingerprint
@@ -34,12 +38,12 @@ const
 					privateKey: privateKey.key,
 					passphrase
 				});
-			result && pass.remember && Passphrases.set(privateKey, passphrase);
+			result && pass.remember && Passphrases.handle(privateKey, passphrase);
 			return result;
 		}
 	},
 
-	collator = new Intl.Collator(undefined, {sensitivity: 'base'}),
+	collator = baseCollator(),
 	sort = keys => keys.sort(
 //		(a, b) => collator.compare(a.emails[0], b.emails[0]) || collator.compare(a.fingerprint, b.fingerprint)
 		(a, b) => collator.compare(a.emails[0], b.emails[0]) || collator.compare(a.id, b.id)
@@ -54,10 +58,9 @@ const
 	 */
 	publicKeysItem = 'openpgp-public-keys',
 	privateKeysItem = 'openpgp-private-keys',
-	storage = window.localStorage,
 	loadOpenPgpKeys = async itemname => {
 		let keys = [], key,
-			armoredKeys = JSON.parse(storage.getItem(itemname)),
+			armoredKeys = JSON.parse(localStorage.getItem(itemname)),
 			i = arrayLength(armoredKeys);
 		while (i--) try {
 			key = await openpgp.readKey({armoredKey:armoredKeys[i]});
@@ -70,9 +73,9 @@ const
 	storeOpenPgpKeys = (keys, section) => {
 		let armoredKeys = keys.map(item => item.armor);
 		if (armoredKeys.length) {
-			storage.setItem(section, JSON.stringify(armoredKeys));
+			localStorage.setItem(section, JSON.stringify(armoredKeys));
 		} else {
-			storage.removeItem(section);
+			localStorage.removeItem(section);
 		}
 	};
 
@@ -87,6 +90,9 @@ class OpenPgpKeyModel {
 		this.armor = armor;
 		this.askDelete = ko.observable(false);
 		this.openForDeletion = ko.observable(null).askDeleteHelper();
+		this.hasStoredPass = ko.observable(Passphrases.hasInLocalStorage(this));
+		this.askForgetPass = ko.observable(false);
+		this.openForPassForget = ko.observable(null).askDeleteHelper('askForgetPass');
 //		key.getUserIDs()
 //		key.getPrimaryUser()
 	}
@@ -112,11 +118,28 @@ class OpenPgpKeyModel {
 			if (this.key.isPrivate()) {
 				OpenPGPUserStore.privateKeys.remove(this);
 				storeOpenPgpKeys(OpenPGPUserStore.privateKeys, privateKeysItem);
+				this.forgetPass()
 			} else {
 				OpenPGPUserStore.publicKeys.remove(this);
 				storeOpenPgpKeys(OpenPGPUserStore.publicKeys, publicKeysItem);
 			}
+			Remote.request('DeletePGPKey',
+				(iError, oData) => {
+					if (oData) {
+						if (iError || oData.Result === false) {
+							alert(oData.message || getNotification(iError));
+						}
+					}
+				}, {
+					key: this.armor
+				}
+			);
 		}
+	}
+
+	forgetPass() {
+		Passphrases.delete(this);
+		this.hasStoredPass(false);
 	}
 /*
 	toJSON() {
@@ -132,23 +155,36 @@ export const OpenPGPUserStore = new class {
 	}
 
 	loadKeyrings() {
-		if (window.openpgp) {
-			loadOpenPgpKeys(publicKeysItem).then(keys => {
+		if (loaded()) {
+			loadOpenPgpKeys(publicKeysItem)
+			.then(keys => {
 				this.publicKeys(dedup(keys));
 				console.log('openpgp.js public keys loaded');
-			});
-			loadOpenPgpKeys(privateKeysItem).then(keys => {
-				this.privateKeys(dedup(keys));
-				console.log('openpgp.js private keys loaded');
+			})
+			.finally(() => {
+				loadOpenPgpKeys(privateKeysItem)
+				.then(keys => {
+					this.privateKeys(dedup(keys));
+					console.log('openpgp.js private keys loaded');
+				})
+				.finally(() => {
+					/*SettingsGet('loadBackupKeys') && */this.loadBackupKeys();
+				});
 			});
 		}
+	}
+
+	loadBackupKeys() {
+		Remote.request('GetPGPKeys',
+			(iError, oData) => !iError && oData.Result && this.importKeys(oData.Result)
+		);
 	}
 
 	/**
 	 * @returns {boolean}
 	 */
 	isSupported() {
-		return !!window.openpgp;
+		return loaded();
 	}
 
 	importKey(armoredKey) {
@@ -156,7 +192,7 @@ export const OpenPGPUserStore = new class {
 	}
 
 	async importKeys(keys) {
-		if (window.openpgp) {
+		if (loaded()) {
 			const privateKeys = this.privateKeys(),
 				publicKeys = this.publicKeys();
 			for (const armoredKey of keys) try {
@@ -183,7 +219,7 @@ export const OpenPGPUserStore = new class {
 		keyPair.revocationCertificate
 	 */
 	storeKeyPair(keyPair) {
-		if (window.openpgp) {
+		if (loaded()) {
 			openpgp.readKey({armoredKey:keyPair.publicKey}).then(key => {
 				this.publicKeys.push(new OpenPgpKeyModel(keyPair.publicKey, key));
 				storeOpenPgpKeys(this.publicKeys, publicKeysItem);

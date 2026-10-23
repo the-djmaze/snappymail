@@ -46,7 +46,7 @@ let terserConfig = {
 	},
 	keep_classnames: true, // Required for AbstractModel and AbstractCollectionModel
 	compress:{
-		ecma: 6,
+		ecma: 2020,
 		drop_console: true
 /*
 		,hoist_props: false

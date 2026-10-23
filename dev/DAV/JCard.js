@@ -124,7 +124,7 @@ export class JCard {
 		// VCardProperty argument
 		else if (arg instanceof VCardProperty) {
 			let propArray = this.props.get(arg.getField());
-			if (!(propArray === null || propArray === void 0 ? void 0 : propArray.includes(arg)))
+			if (!propArray?.includes(arg))
 				throw Error("Attempted to remove VCardProperty VCard does not have: ".concat(arg));
 			propArray.splice(propArray.indexOf(arg), 1);
 			if (propArray.length === 0)

@@ -85,7 +85,7 @@ class Http
 	{
 		$sServerKey = 'HTTP_'.\strtoupper(\str_replace('-', '_', $sHeader));
 		$sResultHeader = static::GetServer($sServerKey, '');
-		if (!\strlen($sResultHeader) && \MailSo\Base\Utils::FunctionCallable('apache_request_headers')) {
+		if (!\strlen($sResultHeader) && Utils::FunctionCallable('apache_request_headers')) {
 			$sHeaders = \apache_request_headers();
 			if (isset($sHeaders[$sHeader])) {
 				$sResultHeader = $sHeaders[$sHeader];
@@ -237,6 +237,25 @@ class Http
 	{
 		static::StatusHeader($iStatus);
 		\header('Location: ' . $sUrl);
+	}
+
+	public static function setContentDisposition(string $type /* inline|attachment */, array $params)
+	{
+		$parms = array($type);
+		if (isset($params['filename'])) {
+			if (\preg_match('#^[\x01-\x7F]*$#D', $params['filename'])) {
+				$parms[] = "filename=\"{$params['filename']}\"";
+			} else {
+				// RFC 5987
+//				$parms[] = Utils::EncodeHeaderUtf8AttributeValue('filename', $sFileNameOut);
+				$parms[] = "filename*=utf-8''" . \rawurlencode($params['filename']);
+			}
+		}
+		if (isset($params['creation-date'])) $parms[] = 'creation-date=' . \date(DATE_RFC822, $params['creation-date']);
+		if (isset($params['modification-date'])) $parms[] = 'modification-date=' . \date(DATE_RFC822, $params['modification-date']);
+		if (isset($params['read-date'])) $parms[] = 'read-date=' . \date(DATE_RFC822, $params['read-date']);
+		if (isset($params['size'])) $parms[] = 'size=' . \intval($params['size']);
+		\header('Content-Disposition: ' . \implode('; ', $parms));
 	}
 
 	public function GetPath() : string

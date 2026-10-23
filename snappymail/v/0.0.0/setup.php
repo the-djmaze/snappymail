@@ -23,10 +23,12 @@ if (defined('APP_VERSION')) {
 	is_file($sCheckFilePath) && unlink($sCheckFilePath);
 	is_dir($sCheckFolder) && rmdir($sCheckFolder);
 
-	if (!is_dir(APP_DATA_FOLDER_PATH)) {
-		mkdir(APP_DATA_FOLDER_PATH, 0700, true);
-	} else {
-		chmod(APP_DATA_FOLDER_PATH, 0700);
+	if (is_writable(dirname(APP_DATA_FOLDER_PATH))) {
+		if (is_dir(APP_DATA_FOLDER_PATH)) {
+			chmod(APP_DATA_FOLDER_PATH, 0700);
+		} else {
+			mkdir(APP_DATA_FOLDER_PATH, 0700, true);
+		}
 	}
 
 	$sTest = '';

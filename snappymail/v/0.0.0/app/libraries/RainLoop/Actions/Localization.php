@@ -30,55 +30,15 @@ trait Localization
 
 	public function ValidateLanguage(string $sLanguage, string $sDefault = '', bool $bAdmin = false, bool $bAllowEmptyResult = false): string
 	{
-		$aLang = \SnappyMail\L10n::getLanguages($bAdmin);
+		$sResult = \SnappyMail\L10n::validLanguage($sLanguage, $bAdmin)
+		?: \SnappyMail\L10n::validLanguage($sDefault, $bAdmin);
 
-		$aHelper = array(
-			'ar' => 'ar-SA',
-			'cn' => 'zh-CN',
-			'cs' => 'cs-CZ',
-			'da' => 'da-DK',
-			'el' => 'el-GR',
-			'et' => 'et-EE',
-			'fa' => 'fa-IR',
-			'ja' => 'ja-JP',
-			'ko' => 'ko-KR',
-			'nb' => 'nb-NO',
-			'no' => 'nb-NO',
-			'sl' => 'sl-SI',
-			'sv' => 'sv-SE',
-			'tw' => 'zh-TW',
-			'ua' => 'uk-UA',
-			'uk' => 'uk-UA',
-			'vi' => 'vi-VN',
-			'zh' => 'zh-CN'
-		);
-
-		$sLanguage = isset($aHelper[$sLanguage]) ? $aHelper[$sLanguage] : \strtr($sLanguage, '_', '-');
-		$sDefault  = isset($aHelper[$sDefault])  ? $aHelper[$sDefault]  : \strtr($sDefault, '_', '-');
-
-		if (\in_array($sLanguage, $aLang)) {
-			return $sLanguage;
-		}
-
-		$sLanguage = \preg_replace('/^([a-zA-Z]{2})$/', '\1-\1', $sLanguage);
-
-		$sLanguage = \preg_replace_callback('/-([a-zA-Z]{2})$/', function ($aData) {
-			return \strtoupper($aData[0]);
-		}, $sLanguage);
-		if (\in_array($sLanguage, $aLang)) {
-			return $sLanguage;
-		}
-
-		if (\in_array($sDefault, $aLang)) {
-			return $sDefault;
-		}
-
-		if ($bAllowEmptyResult) {
-			return '';
+		if ($sResult || $bAllowEmptyResult) {
+			return $sResult ?: '';
 		}
 
 		$sResult = $this->Config()->Get($bAdmin ? 'admin_panel' : 'webmail', 'language', 'en');
-		return \in_array($sResult, $aLang) ? $sResult : 'en';
+		return \SnappyMail\L10n::validLanguage($sResult, $bAdmin) ? $sResult : 'en';
 	}
 
 	public function detectClientLanguage(bool $bAdmin): string

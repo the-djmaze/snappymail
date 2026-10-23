@@ -9,7 +9,7 @@ import {
 	MULTILINE_DOTSTART
 } from 'Sieve/RegEx';
 
-import { arrayToString, getMatchTypes } from 'Sieve/Utils';
+import { arrayToString, getMatchTypes, getComparators } from 'Sieve/Utils';
 
 /**
  * abstract
@@ -18,7 +18,7 @@ export class GrammarString /*extends String*/
 {
 	constructor(value = '')
 	{
-		this._value = value;
+		this._value = value.toString ? value.toString() : value;
 	}
 
 	toString()
@@ -45,41 +45,41 @@ export class GrammarString /*extends String*/
 /**
  * abstract
  */
-export class GrammarComment extends GrammarString
+export /*abstract*/ class GrammarComment extends GrammarString
 {
+/*
+	constructor()
+	{
+		if (this.constructor == GrammarComment) {
+			throw Error("Abstract class can't be instantiated.");
+		}
+	}
+*/
 }
 
 /**
  * https://tools.ietf.org/html/rfc5228#section-2.9
  */
-export class GrammarCommand
+const cmdNameSuffix = /(test|command|action)$/;
+export /*abstract*/ class GrammarCommand
 {
 	constructor(identifier)
 	{
-		this.identifier = identifier || this.constructor.name.toLowerCase().replace(/(test|command|action)$/, '');
-		this.arguments = [];
-		this.commands = new GrammarCommands;
+/*
+		if (this.constructor == GrammarCommand) {
+			throw Error("Abstract class can't be instantiated.");
+		}
+*/
+		this.identifier = identifier || this.constructor.name.toLowerCase().replace(cmdNameSuffix, '');
 	}
 
 	toString()
 	{
 		let result = this.identifier;
-		if (this.arguments.length) {
+		if (this.arguments?.length) {
 			result += ' ' + arrayToString(this.arguments, ' ');
 		}
-		return result + (
-			this.commands.length ? ' ' + this.commands : ';'
-		);
-	}
-
-	getComparators()
-	{
-		return ['i;ascii-casemap'];
-	}
-
-	getMatchTypes()
-	{
-		return [':is', ':contains', ':matches'];
+		return result + ';';
 	}
 
 	pushArguments(args)
@@ -108,78 +108,107 @@ export class GrammarCommands extends Array
 /**
  * https://tools.ietf.org/html/rfc5228#section-3
  */
-export class ControlCommand extends GrammarCommand
+export /*abstract*/ class ControlCommand extends GrammarCommand
 {
+/*
 	constructor(identifier)
 	{
-		super(identifier);
-		this.commands = new GrammarCommands;
-	}
-
-	toString()
-	{
-		let result = this.identifier;
-		if (this.arguments.length) {
-			result += ' ' + arrayToString(this.arguments, ' ');
+		if (this.constructor == ControlCommand) {
+			throw Error("Abstract class can't be instantiated.");
 		}
-		return result + (
-			this.commands.length ? ' ' + this.commands : ';'
-		);
+		super(identifier);
 	}
-
-	getComparators()
-	{
-		return ['i;ascii-casemap'];
-	}
-
-	getMatchTypes()
-	{
-		return [':is', ':contains', ':matches'];
-	}
+*/
 }
 
 /**
  * https://tools.ietf.org/html/rfc5228#section-4
  */
-export class ActionCommand extends GrammarCommand
+export /*abstract*/ class ActionCommand extends GrammarCommand
 {
+/*
 	constructor(identifier)
 	{
+		if (this.constructor == ActionCommand) {
+			throw Error("Abstract class can't be instantiated.");
+		}
 		super(identifier);
 	}
-
-	toString()
-	{
-		let result = this.identifier;
-		if (this.arguments.length) {
-			result += ' ' + arrayToString(this.arguments, ' ');
-		}
-		return result + ';'
-	}
+*/
 }
 
 /**
  * https://tools.ietf.org/html/rfc5228#section-5
  */
-export class TestCommand extends GrammarCommand
+export /*abstract*/ class TestCommand extends GrammarCommand
 {
 	constructor(identifier)
 	{
+/*
+		if (this.constructor == TestCommand) {
+			throw Error("Abstract class can't be instantiated.");
+		}
+*/
 		super(identifier);
 		// Almost every test has a comparator and match_type, so define them here
-		this.comparator = '';
-		this.match_type = ':is';
+		this._comparator = '';
+		this._match_type = '';
+		this.relational_match = ''; // GrammarQuotedString DQUOTE ( "gt" / "ge" / "lt" / "le" / "eq" / "ne" ) DQUOTE
+	}
+
+	get require() { return /:value|:count/.test(this._match_type) ? 'relational' : ''; }
+
+	get match_type()
+	{
+		return this._match_type;
+	}
+	set match_type(value)
+	{
+		// default?
+		if (':is' == value) {
+			value = '';
+		}
+		if (value.length && !getMatchTypes(0).includes(value)) {
+			throw 'Unsupported match-type ' + value;
+		}
+		if (':list' == value) {
+			this._comparator = '';
+		}
+		if (':count' != value && ':value' != value) {
+			this.relational_match = '';
+		}
+		this._match_type = value;
+	}
+
+	get comparator()
+	{
+		return this._comparator;
+	}
+	set comparator(value)
+	{
+		if (!(value instanceof GrammarQuotedString)) {
+			value = new GrammarQuotedString(value);
+		}
+		// default?
+		if (value.length && 'i;ascii-casemap' != value.value) {
+			if (':list' == this._match_type) {
+				throw 'Comparator not allowed when using :list';
+			}
+			if (!getComparators().includes(value.value)) {
+				throw 'Unsupported comparator ' + value;
+			}
+			this._comparator = value;
+		} else {
+			this._comparator = '';
+		}
 	}
 
 	toString()
 	{
-		// https://datatracker.ietf.org/doc/html/rfc6134#section-2.3
-		if (!getMatchTypes().includes(this.match_type)) {
-			throw 'Unsupported match-type ' + this.match_type;
-		}
 		return (this.identifier
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ (this.match_type ? ' ' + this.match_type : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + arrayToString(this.arguments, ' ')).trim();
 	}
 }
@@ -251,6 +280,7 @@ export class GrammarStringList extends Array
 {
 	toString()
 	{
+		// if there is only a single string, the brackets are optional
 		if (1 < this.length) {
 			return '[' + this.join(',') + ']';
 		}
@@ -259,7 +289,7 @@ export class GrammarStringList extends Array
 
 	push(value)
 	{
-		if (!(value instanceof GrammarString)) {
+		if (!(value instanceof GrammarQuotedString)) {
 			value = new GrammarQuotedString(value);
 		}
 		super.push(value);
@@ -286,10 +316,14 @@ GrammarStringList.fromString = list => {
 
 export class GrammarQuotedString extends GrammarString
 {
+	constructor(value = '')
+	{
+		super(value instanceof GrammarQuotedString ? value.value : value);
+	}
+
 	toString()
 	{
 		return '"' + this._value.replace(/[\\"]/g, '\\$&') + '"';
-//		return '"' + super.toString().replace(/[\\"]/g, '\\$&') + '"';
 	}
 }
 
@@ -323,4 +357,24 @@ GrammarMultiLine.fromString = string => {
 		return new GrammarMultiLine(string[2].replace(/\r\n$/, ''), string[1]);
 	}
 	return new GrammarMultiLine();
+}
+
+export class UnknownCommand extends GrammarCommand
+{
+	constructor(identifier)
+	{
+		super(identifier);
+		this.commands = new GrammarCommands;
+	}
+
+	toString()
+	{
+		let result = this.identifier;
+		if (this.arguments?.length) {
+			result += ' ' + arrayToString(this.arguments, ' ');
+		}
+		return result + (
+			this.commands?.length ? ' ' + this.commands : ';'
+		);
+	}
 }

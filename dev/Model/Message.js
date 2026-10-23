@@ -8,7 +8,7 @@ import { forEachObjectEntry, b64EncodeJSONSafe } from 'Common/Utils';
 import { serverRequestRaw, proxy } from 'Common/Links';
 import { addObservablesTo, addComputablesTo } from 'External/ko';
 
-import { FolderUserStore, isAllowedKeyword } from 'Stores/User/Folder';
+import { FolderUserStore } from 'Stores/User/Folder';
 import { SettingsUserStore } from 'Stores/User/Settings';
 
 import { FileInfo, RFC822 } from 'Common/File';
@@ -18,15 +18,73 @@ import { MimeHeaderCollectionModel } from 'Model/MimeHeaderCollection';
 //import { MimeHeaderAutocryptModel } from 'Model/MimeHeaderAutocrypt';
 import { AbstractModel } from 'Knoin/AbstractModel';
 
-import PreviewHTML from 'Html/PreviewMessage.html';
-
 import { LanguageStore } from 'Stores/Language';
 
 import Remote from 'Remote/User/Fetch';
 
 import { MimeToMessage } from 'Mime/Utils';
 
+import { PgpUserStore } from 'Stores/User/Pgp';
+import { IdentityUserStore } from 'Stores/User/Identity';
+import { Passphrases } from 'Storage/Passphrases';
+
 const
+	PreviewHTML = `<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style>
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+header {
+	background: rgba(125,128,128,0.3);
+	border-bottom: 1px solid #888;
+}
+
+header h1 {
+	font-size: 120%;
+}
+
+header * {
+	margin: 5px 0;
+}
+
+header time {
+	float: right;
+}
+
+blockquote {
+	border-left: 2px solid rgba(125,128,128,0.5);
+	margin: 0;
+	padding: 0 0 0 10px;
+}
+
+pre {
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	word-break: normal;
+}
+
+body > * {
+	padding: 0.5em 1em;
+}
+
+#attachments > * {
+	border: 1px solid rgba(125,128,128,0.5);
+	padding: 0.25em;
+	margin-right: 1em;
+}
+#attachments > *::before {
+	content: '📎 ';
+}
+	</style>
+</head>
+<body></body>
+</html>`,
+
 	msgHtml = msg => cleanHtml(msg.html(), msg.attachments(), '#rl-msg-' + msg.hash),
 
 	toggleTag = (message, keyword) => {
@@ -81,7 +139,6 @@ export class MessageModel extends AbstractModel {
 //			autocrypt: ko.observableArray(),
 			hasVirus: null, // or boolean when scanned
 			priority: 3, // Normal
-			internalTimestamp: 0,
 			senderEmailsString: '',
 			senderClearEmailsString: '',
 			isSpam: false,
@@ -104,8 +161,7 @@ export class MessageModel extends AbstractModel {
 			plain: '',
 			html: '',
 			dateTimestamp: 0,
-
-			deleted: false,
+			dateTimestampSource: 0,
 
 			// Also used by Selector
 			focused: false,
@@ -152,22 +208,21 @@ export class MessageModel extends AbstractModel {
 
 			isUnseen: () => !this.flags().includes('\\seen'),
 			isFlagged: () => this.flags().includes('\\flagged'),
+			isDeleted: () => this.flags().includes('\\deleted'),
 //			isJunk: () => this.flags().includes('$junk') && !this.flags().includes('$nonjunk'),
 //			isPhishing: () => this.flags().includes('$phishing'),
 
 			tagOptions: () => {
 				const tagOptions = [];
-				FolderUserStore.currentFolder().permanentFlags.forEach(value => {
-					if (isAllowedKeyword(value)) {
-						let lower = value.toLowerCase();
-						tagOptions.push({
-							css: 'msgflag-' + lower,
-							value: value,
-							checked: this.flags().includes(lower),
-							label: i18n('MESSAGE_TAGS/'+lower, 0, value),
-							toggle: (/*obj*/) => toggleTag(this, value)
-						});
-					}
+				FolderUserStore.currentFolder().optionalTags().forEach(value => {
+					let lower = value.toLowerCase();
+					tagOptions.push({
+						css: 'msgflag-' + lower,
+						value: value,
+						checked: this.flags().includes(lower),
+						label: i18n('MESSAGE_TAGS/'+lower, 0, value),
+						toggle: (/*obj*/) => toggleTag(this, value)
+					});
 				});
 				return tagOptions
 			},
@@ -311,7 +366,6 @@ export class MessageModel extends AbstractModel {
 	lineAsCss(flags=1) {
 		let classes = [];
 		forEachObjectEntry({
-			deleted: this.deleted(),
 			selected: this.selected(),
 			checked: this.checked(),
 			unseen: this.isUnseen(),
@@ -513,7 +567,7 @@ export class MessageModel extends AbstractModel {
 					hasImages = true;
 				},
 				attr = 'data-x-src',
-				src, useProxy = !!SettingsGet('useLocalProxyForExternalImages');
+				src, useProxy = !!SettingsGet('proxyExternalImages');
 			body.querySelectorAll('img[' + attr + ']').forEach(node => {
 				src = node.getAttribute(attr);
 				if (isValid(src)) {
@@ -548,4 +602,140 @@ export class MessageModel extends AbstractModel {
 		return result.html || plainToHtml(this.plain());
 	}
 
+	async decrypt() {
+		const msg = this;
+		if (msg.pgpEncrypted() && !msg.pgpDecrypted()) {
+			return await msg.pgpDecrypt().then(()=>msg.pgpDecrypted());
+		}
+		if (msg.smimeEncrypted() && !msg.smimeDecrypted()) {
+			return await msg.smimeDecrypt().then(()=>msg.smimeDecrypted());
+		}
+		return true;
+	}
+/*
+	async decrypted() {
+		return msg.pgpDecrypted() || msg.smimeDecrypted());
+	}
+*/
+	async pgpDecrypt() {
+		const oMessage = this,
+			data = oMessage.pgpEncrypted();
+		delete data.error;
+		await PgpUserStore.decrypt(oMessage).then(result => {
+			if (!result) {
+				// TODO: translate
+				throw Error('Decryption failed, canceled or not possible');
+			}
+			oMessage.pgpDecrypted(true);
+			if (result.data) {
+				MimeToMessage(result.data, oMessage);
+				oMessage.html() ? oMessage.viewHtml() : oMessage.viewPlain();
+				if (result.signatures?.length) {
+					oMessage.pgpSigned({
+						signatures: result.signatures,
+						success: !!result.signatures.length
+					});
+				}
+			}
+		})
+		.catch(e => {
+			data.error = e.message;
+		})
+		.finally(() => {
+			oMessage.pgpEncrypted(data);
+		});
+	}
+
+	pgpVerify(/*self, event*/) {
+		const oMessage = this;
+		PgpUserStore.verify(oMessage).then(result => {
+			if (result) {
+				oMessage.pgpSigned(result);
+			} else {
+				alert('Verification failed or no valid public key found');
+			}
+/*
+			if (result?.success) {
+				i18n('CRYPTO/GOOD_SIGNATURE', {
+					USER: validKey.user + ' (' + validKey.id + ')'
+				});
+				message.getText()
+			} else {
+				const keyIds = arrayLength(signingKeyIds) ? signingKeyIds : null,
+					additional = keyIds
+						? keyIds.map(item => item?.toHex?.()).filter(v => v).join(', ')
+						: '';
+
+				i18n('CRYPTO/ERROR', {
+					TYPE: 'OpenPGP',
+					ERROR: 'message'
+				}) + (additional ? ' (' + additional + ')' : '');
+			}
+*/
+		});
+	}
+
+	async smimeDecrypt() {
+		const message = this;
+		const addresses = message.from.concat(message.to, message.cc, message.bcc).map(item => item.email),
+			identity = IdentityUserStore.find(item => addresses.includes(item.email)),
+			data = message.smimeEncrypted(); // { partId: "1" }
+		if (data && identity) {
+			delete data.error;
+			let pass, params = { ...data }; // clone
+			params.folder = message.folder;
+			params.uid = message.uid;
+//			params.bodyPart = params.bodyPart?.raw;
+			params.certificate = identity.smimeCertificate();
+			params.privateKey = identity.smimeKey();
+			if (identity.smimeKeyEncrypted()) {
+				pass = await Passphrases.ask(identity,
+					i18n('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email}),
+					'CRYPTO/DECRYPT'
+				);
+				if (!pass) {
+					return;
+				}
+				params.passphrase = pass?.password;
+			}
+			await Remote.post('SMimeDecryptMessage', null, params).then(response => {
+				if (response?.Result?.data) {
+					message.smimeDecrypted(true);
+					MimeToMessage(response.Result.data, message);
+					message.html() ? message.viewHtml() : message.viewPlain();
+					pass && pass.remember && Passphrases.handle(identity, pass.password);
+					if ('signed' in response.Result) {
+						message.smimeSigned(response.Result.signed);
+					}
+				}
+			}).catch(e => {
+				data.error = e.message
+			})
+			.finally(() => {
+				message.smimeEncrypted(data);
+			});
+		}
+	}
+
+	smimeVerify(/*self, event*/) {
+		const message = this,
+			data = message.smimeSigned(); // { partId: "1", micAlg: "pgp-sha256" }
+		if (data) {
+			const params = { ...data }; // clone
+			params.folder = message.folder;
+			params.uid = message.uid;
+			params.bodyPart = data.bodyPart?.raw;
+			params.sigPart = data.sigPart?.bodyRaw;
+			Remote.post('SMimeVerifyMessage', null, params).then(response => {
+				if (response?.Result) {
+					if (response.Result.body) {
+						MimeToMessage(response.Result.body, message);
+						message.html() ? message.viewHtml() : message.viewPlain();
+					}
+					data.success = response.Result.success;
+					message.smimeSigned(data);
+				}
+			});
+		}
+	}
 }

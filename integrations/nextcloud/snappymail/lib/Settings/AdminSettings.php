@@ -22,9 +22,8 @@ class AdminSettings implements ISettings
 		$keys = [
 			'snappymail-autologin',
 			'snappymail-autologin-with-email',
-			'snappymail-no-embed'
-			// DISABLED https://github.com/the-djmaze/snappymail/issues/1420#issuecomment-1933045917
-//			'snappymail-autologin-oidc'
+			'snappymail-no-embed',
+			'snappymail-autologin-oidc'
 		];
 		$parameters = [];
 		foreach ($keys as $k) {
@@ -62,6 +61,17 @@ class AdminSettings implements ISettings
 				\SnappyMail\Repository::installPackage('plugin', 'nextcloud');
 			}
 		}
+
+		// Prevent "Failed loading /nextcloud/snappymail/v/2.N.N/static/js/min/libs.min.js"
+		$app_path = $oConfig->Get('webmail', 'app_path');
+		if (!$app_path) {
+			$app_path = \OC::$server->getAppManager()->getAppWebPath('snappymail') . '/app/';
+			$oConfig->Set('webmail', 'app_path', $app_path);
+			$oConfig->Set('webmail', 'theme', 'NextcloudV25+');
+			$oConfig->Save();
+		}
+		$parameters['snappymail-app_path'] = $oConfig->Get('webmail', 'app_path', false);
+		$parameters['snappymail-nc-lang'] = !$oConfig->Get('webmail', 'allow_languages_on_settings', true);
 
 		\OCP\Util::addScript('snappymail', 'snappymail');
 		return new TemplateResponse('snappymail', 'admin-local', $parameters);

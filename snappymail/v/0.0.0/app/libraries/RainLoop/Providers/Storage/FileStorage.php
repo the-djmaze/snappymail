@@ -8,15 +8,9 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 {
 	use \MailSo\Log\Inherit;
 
-	/**
-	 * @var string
-	 */
-	protected $sDataPath;
+	protected string $sDataPath;
 
-	/**
-	 * @var bool
-	 */
-	private $bLocal;
+	private bool $bLocal;
 
 	public function __construct(string $sStoragePath, bool $bLocal = false)
 	{
@@ -143,10 +137,7 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 			}
 		}
 
-		if ($bMkDir && !empty($sFilePath) && !\is_dir($sFilePath) && !\mkdir($sFilePath, 0700, true))
-		{
-			throw new \RuntimeException('Can\'t make storage directory "'.$sFilePath.'"');
-		}
+		$bMkDir && !empty($sFilePath) && \MailSo\Base\Utils::mkdir($sFilePath);
 
 		return $sFilePath;
 	}

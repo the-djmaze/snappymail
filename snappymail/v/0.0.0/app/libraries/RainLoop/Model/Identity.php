@@ -27,8 +27,11 @@ class Identity implements \JsonSerializable
 	private bool $pgpEncrypt = false;
 	private bool $pgpSign = false;
 
+	public bool $exists = true;
+
 	private ?SensitiveString $smimeKey = null;
 	private string $smimeCertificate = '';
+	private string $smimeCertificateChain = '';
 
 	function __construct(string $sId = '', string $sEmail = '')
 	{
@@ -112,6 +115,7 @@ class Identity implements \JsonSerializable
 			$this->pgpSign = !empty($aData['pgpSign']);
 			$this->smimeKey = new SensitiveString(isset($aData['smimeKey']) ? $aData['smimeKey'] : '');
 			$this->smimeCertificate = isset($aData['smimeCertificate']) ? $aData['smimeCertificate'] : '';
+			$this->smimeCertificateChain = isset($aData['smimeCertificateChain']) ? $aData['smimeCertificateChain'] : '';
 			return true;
 		}
 
@@ -134,7 +138,8 @@ class Identity implements \JsonSerializable
 			'pgpEncrypt' => $this->pgpEncrypt,
 			'pgpSign' => $this->pgpSign,
 			'smimeKey' => (string) $this->smimeKey,
-			'smimeCertificate' => $this->smimeCertificate
+			'smimeCertificate' => $this->smimeCertificate,
+			'smimeCertificateChain' => $this->smimeCertificateChain
 		);
 	}
 
@@ -155,7 +160,9 @@ class Identity implements \JsonSerializable
 			'pgpEncrypt' => $this->pgpEncrypt,
 			'pgpSign' => $this->pgpSign,
 			'smimeKey' => (string) $this->smimeKey,
-			'smimeCertificate' => $this->smimeCertificate
+			'smimeCertificate' => $this->smimeCertificate,
+			'smimeCertificateChain' => $this->smimeCertificateChain,
+			'exists' => $this->exists
 		);
 	}
 

@@ -60,10 +60,9 @@ export class AbstractViewPopup extends AbstractView
 		this.keyScope.scope = name;
 		this.modalVisible = ko.observable(false).extend({ rateLimit: 0 });
 		this.close = () => this.modalVisible(false);
+		this.tryToClose = () => (false === this.onClose()) || this.close();
 		addShortcut('escape,close', '', name, () => {
-			if (this.modalVisible() && false !== this.onClose()) {
-				this.close();
-			}
+			this.modalVisible() && this.tryToClose();
 			return false;
 //			return true; Issue with supported modal close
 		});
@@ -116,6 +115,11 @@ export class AbstractViewSettings
 	onHide() {}
 	viewModelDom
 */
+	/**
+	 * When this[name] does not exists, create as observable with value of SettingsGet(name)
+	 * When this[name+'Trigger'] does not exists, create as observable
+	 * Subscribe to this[name], and handle saving the setting
+	 */
 	addSetting(name, valueCb)
 	{
 		let prop = name[0].toLowerCase() + name.slice(1),
@@ -131,6 +135,7 @@ export class AbstractViewSettings
 				rl.app.Remote.saveSetting(name, value,
 					iError => {
 						this[trigger](iError ? SaveSettingStatus.Failed : SaveSettingStatus.Success);
+//						iError || Settings.set(name, value);
 						setTimeout(() => this[trigger](SaveSettingStatus.Idle), 1000);
 					}
 				);
@@ -138,6 +143,10 @@ export class AbstractViewSettings
 		});
 	}
 
+	/**
+	 * Foreach name if this[name] does not exists, create as observable with value of SettingsGet(name)
+	 * Subscribe to this[name], for saving the setting
+	 */
 	addSettings(names)
 	{
 		names.forEach(name => {

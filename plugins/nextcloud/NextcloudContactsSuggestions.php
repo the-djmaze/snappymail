@@ -2,10 +2,7 @@
 
 class NextcloudContactsSuggestions implements \RainLoop\Providers\Suggestions\ISuggestions
 {
-	/**
-	 * @var \MailSo\Log\Logger
-	 */
-	private $oLogger = null;
+	use \MailSo\Log\Inherit;
 
 	private bool $ignoreSystemAddressbook;
 
@@ -75,16 +72,9 @@ class NextcloudContactsSuggestions implements \RainLoop\Providers\Suggestions\IS
 		}
 		catch (\Exception $oException)
 		{
-			if ($this->oLogger) {
-				$this->oLogger->WriteException($oException);
-			}
+			$this->logException($oException);
 		}
 
 		return [];
-	}
-
-	public function SetLogger(\MailSo\Log\Logger $oLogger)
-	{
-		$this->oLogger = $oLogger;
 	}
 }

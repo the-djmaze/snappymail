@@ -59,7 +59,7 @@ abstract class Utils
 				return 'iso-8859-8';
 		}
 
-		return \preg_replace('/^(cp-?|windows?)(12[\d])/', 'windows-$1', $sEncoding);
+		return \preg_replace('/^(cp|windows)-?(12[\d]*)/i', 'windows-$2', $sEncoding);
 	}
 
 	public static function NormalizeCharsetByValue(string $sCharset, string $sValue) : string
@@ -369,7 +369,7 @@ abstract class Utils
 
 	public static function AttributeRfc2231Encode(string $sAttrName, string $sValue, string $sCharset = 'utf-8', string $sLang = '', int $iLen = 1000) : string
 	{
-		$sValue = \strtoupper($sCharset).'\''.$sLang.'\''.
+		$sValue = \strtoupper($sCharset)."'{$sLang}'".
 			\preg_replace_callback('/[\x00-\x20*\'%()<>@,;:\\\\"\/[\]?=\x80-\xFF]/', function ($match) {
 				return \rawurlencode($match[0]);
 			}, $sValue);
@@ -721,5 +721,20 @@ abstract class Utils
 		}
 		$aParts[] = $sDomain;
 		return \implode('@', $aParts);
+	}
+
+	public static function mkdir(string $directory) : void
+	{
+		if (!\is_dir($directory)) {
+			if (!\mkdir($directory, 0700, true)) {
+				throw new \RuntimeException("Failed to create directory {$directory}");
+			}
+			\clearstatcache();
+		}
+/*
+		if (!\is_writable($directory)) {
+			throw new \Exception("Failed to access directory {$directory}");
+		}
+*/
 	}
 }

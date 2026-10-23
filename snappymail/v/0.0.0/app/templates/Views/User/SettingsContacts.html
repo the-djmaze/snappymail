@@ -39,4 +39,9 @@
 		<input type="password" autocomplete="current-password" autocorrect="off" autocapitalize="off"
 			spellcheck="false" data-bind="value: syncPass">
 	</div>
+	<div class="control-group" data-bind="hidden: !syncUrl()">
+		<label></label>
+		<button class="btn" data-i18n="GLOBAL/TEST" data-bind="click: test"></button>
+	</div>
+	<div class="alert alert-error" data-bind="visible: syncError, text: syncError"></div>
 </form>

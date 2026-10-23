@@ -35,7 +35,7 @@ export class OpenPgpImportPopupView extends AbstractViewPopup {
 		const fn = () => Remote.request('PgpSearchKey',
 			(iError, oData) => {
 				if (iError) {
-					this.key(oData.ErrorMessage);
+					this.key(oData.message);
 				} else {
 					this.key(oData.Result);
 				}

@@ -34,6 +34,18 @@ abstract class L10n
 		return $aCache[$bAdmin];
 	}
 
+	public static function validLanguage(string $sLanguage, bool $bAdmin) : ?string
+	{
+		$aLang = static::getLanguages($bAdmin);
+		$sLanguage = \strtr($sLanguage, '_', '-');
+		if (!\in_array($sLanguage, $aLang)) {
+			if (\str_contains($sLanguage, '-')) {
+				$sLanguage = \strtok($sLanguage, '-');
+			}
+		}
+		return \in_array($sLanguage, $aLang) ? $sLanguage : null;
+	}
+
 	/**
 	 * When $sLanguage is like 'sv-SE', it tries to load and merge (in order): en, sv and sv-SE
 	 * $sFile is either 'admin', 'static' or 'user'

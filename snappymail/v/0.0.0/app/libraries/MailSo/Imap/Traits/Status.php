@@ -96,6 +96,7 @@ trait Status
 			return;
 		}
 		if (!isset($this->MESSAGES, $this->UIDNEXT)) {
+			\error_log("{$this->FullName} MESSAGES or UIDNEXT missing " . \print_r(\debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),true));
 			return;
 		}
 		$this->etag = \md5('FolderHash/'. \implode('-', [
@@ -118,7 +119,13 @@ trait Status
 		}
 		if (\property_exists(__TRAIT__, $name)) {
 			if ('MAILBOXID' === $name) {
-				$this->MAILBOXID = \base64_encode(\is_array($value) ? $value[0] : $value);
+				$value = \is_array($value) ? \reset($value) : $value;
+				if (\is_string($value)) {
+					$this->MAILBOXID = \base64_encode($value);
+				} else {
+					// Cyrus bug https://github.com/the-djmaze/snappymail/issues/1640
+					\error_log("{$this->FullName} invalid MAILBOXID value. Disable the OBJECTID capability.");
+				}
 			} else {
 				$this->$name = (int) $value;
 			}
@@ -146,10 +153,8 @@ trait Status
 		$bResult = false;
 
 		// OK untagged responses
-		if (\is_array($oResponse->OptionalResponse)) {
-			if (\count($oResponse->OptionalResponse) > 1) {
-				$bResult = $this->setStatusItem($oResponse->OptionalResponse[0], $oResponse->OptionalResponse[1]);
-			}
+		if (\is_array($oResponse->OptionalResponse) && \count($oResponse->OptionalResponse) > 1) {
+			$bResult = $this->setStatusItem($oResponse->OptionalResponse[0], $oResponse->OptionalResponse[1]);
 		}
 
 		// untagged responses
@@ -157,13 +162,19 @@ trait Status
 			// LIST or STATUS command
 			if ('STATUS' === $oResponse->ResponseList[1]
 			 && isset($oResponse->ResponseList[3])
-			 && \is_array($oResponse->ResponseList[3])) {
-				$c = \count($oResponse->ResponseList[3]);
+			 && \is_array($oResponse->ResponseList[3])
+			) {
+				$c = \count($oResponse->ResponseList[3]) - 1;
 				for ($i = 0; $i < $c; $i += 2) {
-					$bResult |= $this->setStatusItem(
-						$oResponse->ResponseList[3][$i],
-						$oResponse->ResponseList[3][$i+1]
-					);
+					if ($c > $i) {
+						$bResult |= $this->setStatusItem(
+							$oResponse->ResponseList[3][$i],
+							$oResponse->ResponseList[3][$i+1]
+						);
+					} else {
+						// https://github.com/the-djmaze/snappymail/issues/1640
+						\error_log("{$this->FullName} STATUS missing value for {$oResponse->ResponseList[3][$i]}");
+					}
 				}
 				$this->hasStatus = $bResult;
 			}

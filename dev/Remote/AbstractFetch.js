@@ -8,11 +8,11 @@ let iJsonErrorCount = 0;
 const getURL = (add = '') => serverRequest('Json') + pString(add),
 
 checkResponseError = data => {
-	const err = data ? data.ErrorCode : null;
+	const err = data ? data.code : null;
 	if (Notifications.InvalidToken === err) {
-		console.error(getNotification(err));
+		console.error(getNotification(err) + ` (${data.messageAdditional})`);
 //		alert(getNotification(err));
-		rl.logoutReload();
+		setTimeout(rl.logoutReload, 5000);
 	} else if ([
 			Notifications.AuthError,
 			Notifications.ConnectionError,
@@ -131,7 +131,7 @@ export class AbstractFetchRemote
 
 		fetchJSON(sAction, getURL(sGetAdd),
 			sGetAdd ? null : (params || {}),
-			undefined === iTimeout ? 30000 : pInt(iTimeout),
+			pInt(iTimeout ?? 30000),
 			async data => {
 				let iError = 0;
 				if (data) {
@@ -144,7 +144,7 @@ export class AbstractFetchRemote
 						iJsonErrorCount = 0;
 					} else {
 						checkResponseError(data);
-						iError = data.ErrorCode || Notifications.UnknownError
+						iError = data.code || Notifications.UnknownError
 					}
 				}
 
@@ -196,7 +196,7 @@ export class AbstractFetchRemote
 					return Promise.reject(new FetchError(Notifications.JsonParse));
 				}
 
-				if (111 === data?.ErrorCode && rl.app.ask && await rl.app.ask.cryptkey()) {
+				if (111 === data?.code && rl.app.ask && await rl.app.ask.cryptkey()) {
 					return this.post(action, fTrigger, params, timeOut);
 				}
 /*
@@ -222,8 +222,8 @@ export class AbstractFetchRemote
 				if (!data.Result || action !== data.Action) {
 					checkResponseError(data);
 					return Promise.reject(new FetchError(
-						data ? data.ErrorCode : 0,
-						data ? (data.ErrorMessageAdditional || data.ErrorMessage) : ''
+						data ? data.code : 0,
+						data ? (data.messageAdditional || data.message) : ''
 					));
 				}
 

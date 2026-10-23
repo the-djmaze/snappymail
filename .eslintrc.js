@@ -3,7 +3,7 @@ module.exports = {
 //	extends: ['eslint:recommended', 'plugin:prettier/recommended'],
 	extends: ['eslint:recommended'],
 	parserOptions: {
-		ecmaVersion: 6,
+		ecmaVersion: 11,
 		sourceType: 'module'
 	},
 	env: {
@@ -37,7 +37,11 @@ module.exports = {
 		// Mailvelope
 		'mailvelope': "readonly",
 		// Punycode
-		'IDN': "readonly"
+		'IDN': "readonly",
+		// Turndown
+		'TurndownService': "readonly",
+		// Marked
+		'marked': "readonly"
 	},
 	// http://eslint.org/docs/rules/
 	rules: {

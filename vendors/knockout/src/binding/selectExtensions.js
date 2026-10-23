@@ -9,7 +9,7 @@ ko.selectExtensions = {
         switch (element.nodeName) {
             case 'OPTION':
                 return (element[hasDomDataExpandoProperty] === true)
-                    ? ko.utils.domData.get(element, ko.bindingHandlers.options.optionValueDomDataKey)
+                    ? ko.utils.domData.get(element, ko.bindingHandlers['options'].optionValueDomDataKey)
                     : element.value;
             case 'SELECT':
                 return element.selectedIndex >= 0
@@ -24,13 +24,13 @@ ko.selectExtensions = {
         switch (element.nodeName) {
             case 'OPTION':
                 if (typeof value === "string") {
-                    ko.utils.domData.set(element, ko.bindingHandlers.options.optionValueDomDataKey, undefined);
+                    ko.utils.domData.set(element, ko.bindingHandlers['options'].optionValueDomDataKey, undefined);
                     delete element[hasDomDataExpandoProperty];
                     element.value = value;
                 }
                 else {
                     // Store arbitrary object using DomData
-                    ko.utils.domData.set(element, ko.bindingHandlers.options.optionValueDomDataKey, value);
+                    ko.utils.domData.set(element, ko.bindingHandlers['options'].optionValueDomDataKey, value);
                     element[hasDomDataExpandoProperty] = true;
 
                     // Special treatment of numbers is just for backward compatibility. KO 1.2.1 wrote numerical values to element.value.
@@ -39,7 +39,7 @@ ko.selectExtensions = {
                 break;
             case 'SELECT':
                 // A blank string or null value will select the caption
-                var selection = -1, noValue = ("" === value || null == value),
+                var selection = -1, noValue = ("" === (value ?? "")),
                     i = element.options.length, optionValue;
                 while (i--) {
                     optionValue = ko.selectExtensions.readValue(element.options[i]);
@@ -54,7 +54,7 @@ ko.selectExtensions = {
                 }
                 break;
             default:
-                element.value = (value == null) ? "" : value;
+                element.value = value ?? "";
                 break;
         }
     }

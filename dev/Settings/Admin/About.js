@@ -16,6 +16,7 @@ export class AdminSettingsAbout /*extends AbstractViewSettings*/ {
 			coreWarning: false,
 			coreVersion: '',
 			coreVersionCompare: -2,
+			php64: true,
 			load1: 0,
 			load5: 0,
 			load15: 0,
@@ -69,6 +70,7 @@ export class AdminSettingsAbout /*extends AbstractViewSettings*/ {
 				this.coreWarning(!!data.core.warning);
 				this.coreVersion(data.core.version || '');
 				this.coreVersionCompare(data.core.versionCompare);
+				this.php64(data.php[1].loaded);
 			} else {
 				this.coreReal(false);
 				this.coreWarning(false);
@@ -76,6 +78,10 @@ export class AdminSettingsAbout /*extends AbstractViewSettings*/ {
 				this.coreVersionCompare(-2);
 			}
 		});
+	}
+
+	clearCache() {
+		Remote.request('AdminClearCache');
 	}
 
 	updateCoreData() {

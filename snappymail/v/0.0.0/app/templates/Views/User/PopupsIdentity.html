@@ -1,5 +1,5 @@
 <header class="g-ui-user-select-none">
-	<a href="#" class="close" data-bind="click: close">×</a>
+	<a href="#" class="close" data-bind="click: tryToClose">×</a>
 	<h3 data-bind="visible: !edit()" data-i18n="POPUPS_IDENTITY/TITLE_ADD_IDENTITY"></h3>
 	<h3 data-bind="visible: edit" data-i18n="POPUPS_IDENTITY/TITLE_UPDATE_IDENTITY"></h3>
 </header>
@@ -14,12 +14,10 @@
 		<label data-i18n="SETTINGS_LABELS/GENERAL" for="tab-identity" role="tab" aria-selected="true" aria-controls="panel1" tabindex="0"></label>
 		<div class="form-horizontal tab-content" role="tabpanel" aria-hidden="false">
 			<div class="control-group">
-				<label data-i18n="POPUPS_IDENTITY/LABEL"></label>
-				<div>
-					<input name="Label" type="text" class="input-xlarge" autofocus=""
-						autocomplete="off" autocorrect="off" autocapitalize="off"
-						data-bind="value: label, hasfocus: $root.labelFocused">
-				</div>
+				<label data-i18n="GLOBAL/NAME"></label>
+				<input name="Name" type="text" class="input-xlarge"
+					autocomplete="off" autocorrect="off" autocapitalize="off"
+					data-bind="value: name, hasfocus: $root.nameFocused">
 			</div>
 			<div class="control-group">
 				<label data-i18n="GLOBAL/EMAIL"></label>
@@ -27,14 +25,16 @@
 					<div class="textEmail" data-bind="text: email, visible: !id()"></div>
 					<input name="Email" type="email" class="input-xlarge" autofocus=""
 						autocomplete="off" autocorrect="off" autocapitalize="off"
-						data-bind="visible: id, value: email, attr: {required: id}">
+						data-bind="visible: id, value: email, attr: {required: !!id()}">
 				</div>
 			</div>
 			<div class="control-group">
-				<label data-i18n="GLOBAL/NAME"></label>
-				<input name="Name" type="text" class="input-xlarge"
-					autocomplete="off" autocorrect="off" autocapitalize="off"
-					data-bind="value: name, hasfocus: $root.nameFocused">
+				<label data-i18n="POPUPS_IDENTITY/LABEL"></label>
+				<div>
+					<input name="Label" type="text" class="input-xlarge" autofocus=""
+						autocomplete="off" autocorrect="off" autocapitalize="off"
+						data-bind="value: label, hasfocus: $root.labelFocused">
+				</div>
 			</div>
 		</div>
 
@@ -92,9 +92,18 @@
 					<label data-i18n="CRYPTO/PRIVATE_KEY"></label>
 					<textarea name="smimeKey" class="input-xxlarge" rows="14" autofocus="" autocomplete="off" data-bind="value: smimeKey"></textarea>
 				</div>
+<!--				<div class="control-group" data-bind="visible:smimeKeyValid() && !smimeKeyEncrypted()"> -->
+				<div class="control-group" data-bind="visible:smimeKeyValid">
+					<label></label>
+					<button type="button" data-bind="click: $root.setSMimeKeyPass" data-i18n="CRYPTO/CHANGE_PASS"></button>
+				</div>
 				<div class="control-group" data-bind="css: {'error': smimeCertificate() && !smimeCertificateValid()}">
 					<label data-i18n="SMIME/CERTIFICATE"></label>
 					<textarea name="smimeCertificate" class="input-xxlarge" rows="14" autofocus="" autocomplete="off" data-bind="value: smimeCertificate"></textarea>
+				</div>
+				<div class="control-group" data-bind="css: {'error': smimeCertificateChain() && !smimeCertificateChainValid()}">
+					<label data-i18n="SMIME/CERTIFICATECHAIN"></label>
+					<textarea name="smimeCertificateChain" class="input-xxlarge" rows="14" autofocus="" autocomplete="off" data-bind="value: smimeCertificateChain"></textarea>
 				</div>
 				<div class="control-group" data-bind="hidden:smimeCertificate">
 					<label></label>
@@ -131,6 +140,6 @@
 		<i data-bind="visible: !edit(), css: {'icon-user-add': !submitRequest(), 'icon-spinner': submitRequest()}"></i>
 		<span data-bind="visible: !edit()" data-i18n="POPUPS_IDENTITY/BUTTON_ADD_IDENTITY"></span>
 		<i data-bind="visible: edit, css: {'icon-ok': !submitRequest(), 'icon-spinner': submitRequest()}"></i>
-		<span data-bind="visible: edit" data-i18n="POPUPS_IDENTITY/BUTTON_UPDATE_IDENTITY"></span>
+		<span data-bind="visible: edit" data-i18n="GLOBAL/SAVE"></span>
 	</button>
 </footer>

@@ -76,17 +76,15 @@
                 ko.utils.setDomNodeChildren(node, childNodes);
         },
 
-        prepend: (containerNode, nodeToPrepend) => {
-            // Start comments must always have a parent and at least one following sibling (the end comment)
-            isStartComment(containerNode)
-                ? containerNode.nextSibling.before(nodeToPrepend)
-                : containerNode.prepend(nodeToPrepend);
-        },
-
         insertAfter: (containerNode, nodeToInsert, insertAfterNode) => {
             insertAfterNode
                 ? insertAfterNode.after(nodeToInsert)
-                : ko.virtualElements.prepend(containerNode, nodeToInsert);
+                : (
+                    // Start comments must always have a parent and at least one following sibling (the end comment)
+                    isStartComment(containerNode)
+                        ? containerNode.nextSibling.before(nodeToInsert)
+                        : containerNode.prepend(nodeToInsert)
+                );
         },
 
         firstChild: node => {

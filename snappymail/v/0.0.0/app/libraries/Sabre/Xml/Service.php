@@ -107,16 +107,23 @@ class Service
      *
      * @throws ParseException
      */
-    public function parse($input, string $contextUri = null, string &$rootElementName = null)
+    public function parse($input, ?string $contextUri = null, ?string &$rootElementName = null)
     {
-        if (is_resource($input)) {
+        if (!is_string($input)) {
             // Unfortunately the XMLReader doesn't support streams. When it
             // does, we can optimize this.
-            $input = (string) stream_get_contents($input);
+            if (is_resource($input)) {
+                $input = (string) stream_get_contents($input);
+            } else {
+                // Input is not a string and not a resource.
+                // Therefore, it has to be a closed resource.
+                // Effectively empty input has been passed in.
+                $input = '';
+            }
         }
 
         // If input is empty, then it's safe to throw an exception
-        if (empty($input)) {
+        if ('' === $input) {
             throw new ParseException('The input element to parse is empty. Do not attempt to parse');
         }
 
@@ -151,16 +158,23 @@ class Service
      *
      * @throws ParseException
      */
-    public function expect($rootElementName, $input, string $contextUri = null)
+    public function expect($rootElementName, $input, ?string $contextUri = null)
     {
-        if (is_resource($input)) {
+        if (!is_string($input)) {
             // Unfortunately the XMLReader doesn't support streams. When it
             // does, we can optimize this.
-            $input = (string) stream_get_contents($input);
+            if (is_resource($input)) {
+                $input = (string) stream_get_contents($input);
+            } else {
+                // Input is not a string and not a resource.
+                // Therefore, it has to be a closed resource.
+                // Effectively empty input has been passed in.
+                $input = '';
+            }
         }
 
         // If input is empty, then it's safe to throw an exception
-        if (empty($input)) {
+        if ('' === $input) {
             throw new ParseException('The input element to parse is empty. Do not attempt to parse');
         }
 
@@ -200,7 +214,7 @@ class Service
      *
      * @param string|array<int|string, mixed>|object|XmlSerializable $value
      */
-    public function write(string $rootElementName, $value, string $contextUri = null): string
+    public function write(string $rootElementName, $value, ?string $contextUri = null): string
     {
         $w = $this->getWriter();
         $w->openMemory();
@@ -240,15 +254,12 @@ class Service
      */
     public function mapValueObject(string $elementName, string $className): void
     {
-        list($namespace) = self::parseClarkNotation($elementName);
-        $namespace = $namespace ?? '';
+        [$namespace] = self::parseClarkNotation($elementName);
 
         require_once __DIR__ . '/Deserializer/functions.php';
-        $this->elementMap[$elementName] = function (Reader $reader) use ($className, $namespace) {
-            return \Sabre\Xml\Deserializer\valueObject($reader, $className, $namespace);
-        };
+        $this->elementMap[$elementName] = (fn (Reader $reader) => \Sabre\Xml\Deserializer\valueObject($reader, $className, $namespace));
         require_once __DIR__ . '/Serializer/functions.php';
-        $this->classMap[$className] = function (Writer $writer, $valueObject) use ($namespace) {
+        $this->classMap[$className] = function (Writer $writer, $valueObject) use ($namespace): void {
             \Sabre\Xml\Serializer\valueObject($writer, $valueObject, $namespace);
         };
         $this->valueObjectMap[$className] = $elementName;
@@ -265,14 +276,14 @@ class Service
      *
      * @throws \InvalidArgumentException
      */
-    public function writeValueObject(object $object, string $contextUri = null): string
+    public function writeValueObject(object $object, ?string $contextUri = null): string
     {
-        if (!isset($this->valueObjectMap[get_class($object)])) {
-            throw new \InvalidArgumentException('"'.get_class($object).'" is not a registered value object class. Register your class with mapValueObject.');
+        if (!isset($this->valueObjectMap[$object::class])) {
+            throw new \InvalidArgumentException('"'.$object::class.'" is not a registered value object class. Register your class with mapValueObject.');
         }
 
         return $this->write(
-            $this->valueObjectMap[get_class($object)],
+            $this->valueObjectMap[$object::class],
             $object,
             $contextUri
         );
@@ -284,7 +295,7 @@ class Service
      *
      * If the string was invalid, it will throw an InvalidArgumentException.
      *
-     * @return array{string|null, string}
+     * @return array{string, string}
      *
      * @throws \InvalidArgumentException
      */
@@ -293,7 +304,7 @@ class Service
         static $cache = [];
 
         if (!isset($cache[$str])) {
-            if (!preg_match('/^{([^}]*)}(.*)$/', $str, $matches)) {
+            if (1 !== preg_match('/^{([^}]*)}(.*)$/', $str, $matches)) {
                 throw new \InvalidArgumentException('\''.$str.'\' is not a valid clark-notation formatted string');
             }
 

@@ -43,7 +43,7 @@ class SMIME extends Base
 		// How to use gpgme-json ?
 		$this->binary = static::findBinary('gpgsm');
 
-		$info = \preg_replace('/\R +/', ' ', `$this->binary --version`);
+		$info = \preg_replace('/\R +/', ' ', \shell_exec("{$this->binary} --version"));
 		if (\preg_match('/gpgsm.+([0-9]+\\.[0-9]+\\.[0-9]+)/', $info, $match)) {
 			$this->version = $match[1];
 		}
@@ -55,20 +55,6 @@ class SMIME extends Base
 		}
 		if (\preg_match('/Hash:(.+)/', $info, $match)) {
 			$this->hashes = \array_map('trim', \explode(',', $match[1]));
-		}
-	}
-
-	function __destruct()
-	{
-		$this->proc_close();
-
-		$gpgconf = static::findBinary('gpgconf');
-		if ($gpgconf) {
-			$env = ['GNUPGHOME' => $this->options['homedir']];
-			$pipes = [];
-			if ($process = \proc_open($gpgconf . ' --kill gpg-agent --homedir ' . \escapeshellarg($this->options['homedir']), [], $pipes, null, $env)) {
-				\proc_close($process);
-			}
 		}
 	}
 
@@ -603,7 +589,7 @@ class SMIME extends Base
 	/**
 	 * Verifies a signed text
 	 */
-	public function verify(string $signed_text, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verify(string $signed_text, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		return $this->_verify($signed_text, $signature);
 	}
@@ -611,7 +597,7 @@ class SMIME extends Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyFile(string $filename, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		$fp = \fopen($filename, 'rb');
 		try {
@@ -627,7 +613,7 @@ class SMIME extends Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyStream($fp, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verifyStream($fp, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');

@@ -69,21 +69,26 @@ class Utils
 	public static function GetConnectionToken() : string
 	{
 		$oActions = \RainLoop\Api::Actions();
-		$oAccount = $oActions->getAccountFromToken(false) ?: $oActions->getMainAccountFromToken(false);
+		$oAccount = $oActions->getAccountFromToken(false);
+//		$oAccount = $oActions->getMainAccountFromToken(false);
 		if ($oAccount) {
-			return $oAccount->Hash();
+			if ($oAccount instanceof \RainLoop\Model\AdditionalAccount) {
+				return '2-' . \sha1(APP_SALT.$oAccount->Hash());
+			}
+			return '1-' . \sha1(APP_SALT.$oAccount->Hash());
 		}
 		$sToken = \SnappyMail\Cookies::get(self::CONNECTION_TOKEN);
 		if (!$sToken) {
 			$sToken = \MailSo\Base\Utils::Sha1Rand(APP_SALT);
 			\SnappyMail\Cookies::set(self::CONNECTION_TOKEN, $sToken, \time() + 3600 * 24 * 30);
 		}
-		return \sha1('Connection'.APP_SALT.$sToken.'Token'.APP_SALT);
+		return '0-' . \sha1('Connection'.APP_SALT.$sToken.'Token'.APP_SALT);
 	}
 
 	public static function GetCsrfToken() : string
 	{
-		return \sha1('Csrf'.APP_SALT.self::GetConnectionToken().'Token'.APP_SALT);
+		return self::GetConnectionToken();
+//		return \sha1('Csrf'.APP_SALT.self::GetConnectionToken().'Token'.APP_SALT);
 	}
 
 	public static function UpdateConnectionToken() : void
@@ -97,7 +102,7 @@ class Utils
 	public static function ClearHtmlOutput(string $sHtml) : string
 	{
 //		return $sHtml;
-		return \preg_replace('/>\\s+</', '><', \preg_replace(
+		return \preg_replace('/>\\s+</', '> <', \preg_replace(
 			['@\\s*/>@', '/\\s*&nbsp;/i', '/&nbsp;\\s*/i', '/[\\r\\n\\t]+/'],
 			['>', "\xC2\xA0", "\xC2\xA0", ' '],
 			\trim($sHtml)
@@ -134,11 +139,7 @@ class Utils
 	{
 		static $open_basedir;
 		if (null === $open_basedir) {
-			$open_basedir = \ini_get('open_basedir');
-			if ($open_basedir) {
-				\SnappyMail\Log::warning('OpenBasedir', "open_basedir restriction in effect. Allowed path(s): {$open_basedir}");
-			}
-			$open_basedir = \array_filter(\explode(PATH_SEPARATOR, $open_basedir));
+			$open_basedir = \array_filter(\explode(PATH_SEPARATOR, \ini_get('open_basedir')));
 		}
 		if ($open_basedir) {
 			foreach ($open_basedir as $dir) {

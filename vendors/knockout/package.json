@@ -20,10 +20,10 @@
     "preprocess": "build/build.sh",
     "html": "spec/runner.html?src=build/output/knockout-latest.js&testling=true",
     "browsers": [
-      "chrome/69..latest",
-      "firefox/69..latest",
-      "safari/12..latest",
-      "opera/56..latest"
+      "chrome/80..latest",
+      "firefox/78..latest",
+      "safari/13..latest",
+      "opera/67..latest"
     ]
   },
   "licenses": [

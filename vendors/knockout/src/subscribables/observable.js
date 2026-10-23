@@ -23,7 +23,7 @@ ko.observable = initialValue => {
     observable[observableLatestValue] = initialValue;
 
     Object.defineProperty(observable, length, {
-        get: () => null == observable[observableLatestValue] ? undefined : observable[observableLatestValue][length]
+        get: () => observable[observableLatestValue]?.[length]
     });
 
     // Inherit from 'subscribable'

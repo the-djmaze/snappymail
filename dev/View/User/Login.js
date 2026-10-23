@@ -20,7 +20,6 @@ const
 	SignMeOn = 1,
 	SignMeUnused = 2;
 
-
 export class LoginUserView extends AbstractViewLogin {
 	constructor() {
 		super();
@@ -119,9 +118,9 @@ export class LoginUserView extends AbstractViewLogin {
 						if (Notifications.InvalidInputArgument == iError) {
 							iError = Notifications.AuthError;
 						}
-						this.submitError(getNotification(iError, oData?.ErrorMessage,
+						this.submitError(getNotification(iError, oData?.message,
 							Notifications.UnknownError));
-						this.submitErrorAdditional(oData?.ErrorMessageAdditional);
+						this.submitErrorAdditional(oData?.messageAdditional || oData?.message);
 					} else {
 						rl.setData(oData.Result);
 					}

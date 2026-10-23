@@ -413,11 +413,12 @@ trait Folders
 	public function DoFolderACL() : array
 	{
 		$this->initMailClientConnection();
-		return $this->DefaultResponse(
-			$this->ImapClient()->FolderGetACL(
+		return $this->DefaultResponse([
+			'@Object' => 'Collection/FolderACL',
+			'@Collection' => $this->ImapClient()->FolderGetACL(
 				$this->GetActionParam('folder', '')
 			)
-		);
+		]);
 	}
 
 	public function DoFolderDeleteACL() : array

@@ -39,7 +39,7 @@ ContactUserStore.sync = fResultFunc => {
 				line = JSON.parse(line);
 				if ('ContactsSync' === line.Action) {
 					ContactUserStore.syncing(false);
-					fResultFunc?.(line.ErrorCode, line);
+					fResultFunc?.(line.code, line);
 				}
 			} catch (e) {
 				ContactUserStore.syncing(false);

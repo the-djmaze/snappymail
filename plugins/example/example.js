@@ -1,4 +1,55 @@
 (rl => {
+	/**
+	 * ViewModel class                    | class.viewModelTemplateID
+	 *   User & Admin:
+	 *     AskPopupView                   | PopupsAsk
+	 *     LanguagesPopupView             | PopupsLanguages
+	 *   User:
+	 *     LoginUserView                  | Login
+	 *     SystemDropDownUserView         | SystemDropDown
+	 *     MailFolderList                 | MailFolderList
+	 *     MailMessageList                | MailMessageList
+	 *     MailMessageView                | MailMessageView
+	 *     SettingsMenuUserView           | SettingsMenu
+	 *     SettingsPaneUserView           | SettingsPane
+	 *     UserSettingsAccounts           | SettingsAccounts
+	 *     UserSettingsContacts           | SettingsContacts
+	 *     UserSettingsFilters            | SettingsFilters
+	 *     UserSettingsFolders            | SettingsFolders
+	 *     UserSettingsGeneral            | SettingsGeneral
+	 *     UserSettingsSecurity           | SettingsSecurity
+	 *     UserSettingsThemes             | SettingsThemes
+	 *     AccountPopupView               | PopupsAccount
+	 *     AdvancedSearchPopupView        | PopupsAdvancedSearch
+	 *     ComposePopupView               | PopupsCompose
+	 *     ContactsPopupView              | PopupsContacts
+	 *     FolderPopupView                | PopupsFolder
+	 *     FolderClearPopupView           | PopupsFolderClear
+	 *     FolderCreatePopupView          | PopupsFolderCreate
+	 *     FolderSystemPopupView          | PopupsFolderSystem
+	 *     IdentityPopupView              | PopupsIdentity
+	 *     KeyboardShortcutsHelpPopupView | PopupsKeyboardShortcutsHelp
+	 *     OpenPgpGeneratePopupView       | PopupsOpenPgpGenerate
+	 *     OpenPgpImportPopupView         | PopupsOpenPgpImport
+	 *     OpenPgpKeyPopupView            | PopupsOpenPgpKey
+	 *     SMimeImportPopupView           | PopupsSMimeImport
+	 *   Admin:
+	 *     AdminLoginView                 | AdminLogin
+	 *     MenuSettingsAdminView          | AdminMenu
+	 *     PaneSettingsAdminView          | AdminPane
+	 *     AdminSettingsAbout             | AdminSettingsAbout
+	 *     AdminSettingsBranding          | AdminSettingsBranding
+	 *     AdminSettingsConfig            | AdminSettingsConfig
+	 *     AdminSettingsContacts          | AdminSettingsContacts
+	 *     AdminSettingsDomains           | AdminSettingsDomains
+	 *     AdminSettingsGeneral           | AdminSettingsGeneral
+	 *     AdminSettingsLogin             | AdminSettingsLogin
+	 *     AdminSettingsPackages          | AdminSettingsPackages
+	 *     AdminSettingsSecurity          | AdminSettingsSecurity
+	 *     DomainPopupView                | PopupsDomain
+	 *     DomainAliasPopupView           | PopupsDomainAlias
+	 *     PluginPopupView                | PopupsPlugin
+	 */
 
 	/**
 	 * Happens immediately after the ViewModel constructor

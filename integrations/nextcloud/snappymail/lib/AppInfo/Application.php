@@ -7,6 +7,7 @@ use OCA\SnappyMail\Controller\FetchController;
 use OCA\SnappyMail\Controller\PageController;
 use OCA\SnappyMail\Dashboard\UnreadMailWidget;
 use OCA\SnappyMail\Search\Provider;
+use OCA\SnappyMail\Listeners\AccessTokenUpdatedListener;
 
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -16,6 +17,7 @@ use OCP\IL10N;
 use OCP\IUser;
 use OCP\User\Events\PostLoginEvent;
 use OCP\User\Events\BeforeUserLoggedOutEvent;
+use OCA\OIDCLogin\Events\AccessTokenUpdatedEvent;
 
 class Application extends App implements IBootstrap
 {
@@ -62,6 +64,7 @@ class Application extends App implements IBootstrap
 		);
 
 		$context->registerSearchProvider(Provider::class);
+		$context->registerEventListener(AccessTokenUpdatedEvent::class, AccessTokenUpdatedListener::class);
 
 		// TODO: Not working yet, needs a Vue UI
 //		$context->registerDashboardWidget(UnreadMailWidget::class);

@@ -22,8 +22,9 @@ export class BodyTest extends TestCommand
 	toString()
 	{
 		return 'body'
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ ' ' + this.match_type
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ (this._match_type ? ' ' + this._match_type : '')
+			+ (this.relational_match ? ' ' + this.relational_match : '')
 			+ ' ' + this.body_transform
 			+ ' ' + this.key_list;
 	}

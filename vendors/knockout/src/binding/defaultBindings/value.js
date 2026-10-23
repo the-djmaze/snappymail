@@ -20,7 +20,7 @@ ko.bindingHandlers['value'] = {
                 elementValueBeforeEvent = null;
                 var modelValue = valueAccessor();
                 var elementValue = ko.selectExtensions.readValue(element);
-                ko.expressionRewriting.writeValueToProperty(modelValue, allBindings, 'value', elementValue);
+                ko.expressionRewriting.writeValueToProperty(element, modelValue, allBindings, 'value', elementValue);
             };
 
         if (requestedEventsToCatch) {

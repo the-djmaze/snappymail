@@ -135,8 +135,7 @@ trait Raw
 			}
 			$sFileNameOut = $this->clearFileName($sFileNameIn, $sContentTypeIn, $sMimeIndex);
 			\header('Content-Type: '.$sContentTypeOut);
-			\header('Content-Disposition: attachment; '.
-				\trim(\MailSo\Base\Utils::EncodeHeaderUtf8AttributeValue('filename', $sFileNameOut)));
+			\MailSo\Base\Http::setContentDisposition('attachment', ['filename' => $sFileNameOut]);
 			\header('Accept-Ranges: none');
 			\header('Content-Transfer-Encoding: binary');
 			\MailSo\Base\Utils::FpassthruWithTimeLimitReset($rResource);
@@ -193,15 +192,13 @@ trait Raw
 						{
 							if ($bThumbnail) {
 								$oImage = static::loadImage($rResource, $bDetectImageOrientation, 48);
-								\header('Content-Disposition: inline; '.
-									\trim(\MailSo\Base\Utils::EncodeHeaderUtf8AttributeValue('filename', $sFileName.'_thumb60x60.png')));
+								\MailSo\Base\Http::setContentDisposition('inline', ['filename' => $sFileName.'_thumb60x60.png']);
 								$oImage->show('png');
 //								$oImage->show('webp'); // Little Britain: "Safari says NO"
 								exit;
 							} else if ($bDetectImageOrientation) {
 								$oImage = static::loadImage($rResource, $bDetectImageOrientation);
-								\header('Content-Disposition: inline; '.
-									\trim(\MailSo\Base\Utils::EncodeHeaderUtf8AttributeValue('filename', $sFileName)));
+								\MailSo\Base\Http::setContentDisposition('inline', ['filename' => $sFileName]);
 								$oImage->show();
 //								$oImage->show('webp'); // Little Britain: "Safari says NO"
 								exit;
@@ -217,9 +214,7 @@ trait Raw
 
 					if (!\headers_sent()) {
 						\header('Content-Type: '.$sContentType);
-						\header('Content-Disposition: '.($bDownload ? 'attachment' : 'inline').'; '.
-							\trim(\MailSo\Base\Utils::EncodeHeaderUtf8AttributeValue('filename', $sFileName)));
-
+						\MailSo\Base\Http::setContentDisposition($bDownload ? 'attachment' : 'inline', ['filename' => $sFileName]);
 						\header('Accept-Ranges: bytes');
 						\header('Content-Transfer-Encoding: binary');
 					}

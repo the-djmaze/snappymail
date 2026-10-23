@@ -78,7 +78,7 @@ export class SieveScriptPopupView extends rl.pluginPopupView {
 
 					if (iError) {
 						self.saveError(true);
-						self.errorText(data?.ErrorMessageAdditional || getNotification(iError));
+						self.errorText(data?.messageAdditional || getNotification(iError));
 					} else {
 						script.exists() || scripts.push(script);
 						script.exists(true);

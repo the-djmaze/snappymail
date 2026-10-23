@@ -11,6 +11,8 @@ use MailSo\Mime\Message as MimeMessage;
 
 class ExamplePlugin extends \RainLoop\Plugins\AbstractPlugin
 {
+//	use \MailSo\Log\Inherit;
+
 	const
 		NAME     = 'Example',
 		AUTHOR   = 'SnappyMail',
@@ -453,7 +455,6 @@ class ExamplePlugin extends \RainLoop\Plugins\AbstractPlugin
 	$this->Manager()->ReadLang(string $sLang, array &$aLang) : self
 	$this->Manager()->IsEnabled() : bool
 	$this->Manager()->Count() : int
-	$this->Manager()->SetLogger(\MailSo\Log\Logger $oLogger) : self
 	$this->Manager()->WriteLog(string $sDesc, int $iType = \LOG_INFO) : void
 	$this->Manager()->WriteException(string $sDesc, int $iType = \LOG_INFO) : void
 */

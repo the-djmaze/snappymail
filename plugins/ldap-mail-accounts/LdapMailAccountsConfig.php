@@ -21,6 +21,7 @@ class LdapMailAccountsConfig
 	public const CONFIG_FIELD_MAIL_ADDRESS_ADDITIONAL_ACCOUNT = "field_mail_address_additional_account";
 	public const CONFIG_BOOL_OVERWRITE_MAIL_ADDRESS_MAIN_ACCOUNT = "bool_overwrite_mail_address_main_account";
 	public const CONFIG_FIELD_MAIL_ADDRESS_MAIN_ACCOUNT = "field_mail_address_main_account";
+	public const CONFIG_BOOL_OVERWRITE_CRYPTKEY = "bool_overwrite_cryptkey";
 
 	public $server;
 	public $protocol;
@@ -36,6 +37,7 @@ class LdapMailAccountsConfig
 	public $field_mail_address_main_account;
 	public $field_mail_address_additional_account;
 	public $bool_overwrite_mail_address_main_account;
+	public $bool_overwrite_cryptkey;
 
 	public static function MakeConfig(Plugin $config): LdapMailAccountsConfig
 	{
@@ -54,6 +56,7 @@ class LdapMailAccountsConfig
 		$ldap->field_mail_address_additional_account = trim($config->Get("plugin", self::CONFIG_FIELD_MAIL_ADDRESS_ADDITIONAL_ACCOUNT));
 		$ldap->bool_overwrite_mail_address_main_account = $config->Get("plugin", self::CONFIG_BOOL_OVERWRITE_MAIL_ADDRESS_MAIN_ACCOUNT);
 		$ldap->field_mail_address_main_account = trim($config->Get("plugin", self::CONFIG_FIELD_MAIL_ADDRESS_MAIN_ACCOUNT));
+		$ldap->bool_overwrite_cryptkey = $config->Get("plugin", self::CONFIG_BOOL_OVERWRITE_CRYPTKEY);
 
 		return $ldap;
 	}

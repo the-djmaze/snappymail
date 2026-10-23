@@ -10,6 +10,48 @@ import { folderListOptionsBuilder, sortFolders } from 'Common/Folders';
 import { initOnStartOrLangChange, i18n, getNotification } from 'Common/Translator';
 import { defaultOptionsAfterRender } from 'Common/Utils';
 
+import { FolderACLPopupView } from 'View/Popup/FolderAcl';
+import { showScreenPopup } from 'Knoin/Knoin';
+
+import { AbstractCollectionModel } from 'Model/AbstractCollection';
+export class FolderACLModel extends AbstractCollectionModel
+{
+	static reviveFromJson(json) {
+		return super.reviveFromJson(json, rights => FolderACLRightsModel.reviveFromJson(rights));
+	}
+}
+
+import { AbstractModel } from 'Knoin/AbstractModel';
+export class FolderACLRightsModel extends AbstractModel {
+	constructor() {
+		super();
+		addObservablesTo(this, {
+			identifier: '',
+			mine: false
+		});
+		// The "RIGHTS=" capability MUST NOT include any of the rights defined in RFC 2086.
+		// That way we know it supports RFC 4314
+//		this.rights = ko.observableArray(/*'alrswipcd'.split('')*/);
+		this.rights = ko.observableArray(/*'alrswipkxte'.split('')*/);
+	}
+
+	static reviveFromJson(json) {
+		json.rights = json.rights.split('');
+		return super.reviveFromJson(json);
+	}
+/*
+	get mayReadItems()   { return this.rights.includes('l') && this.rights.includes('r'); }
+	get mayAddItems()    { return this.rights.includes('i'); }
+	get mayRemoveItems() { return this.rights.includes('t') && this.rights.includes('e'); }
+	get maySetSeen()     { return this.rights.includes('s'); }
+	get maySetKeywords() { return this.rights.includes('w'); }
+	get mayCreateChild() { return this.rights.includes('k'); }
+	get mayRename()      { return this.rights.includes('x'); }
+	get mayDelete()      { return this.rights.includes('x'); }
+	get maySubmit()      { return this.rights.includes('p'); }
+*/
+}
+
 export class FolderPopupView extends AbstractViewPopup {
 	constructor() {
 		super('Folder');
@@ -17,10 +59,10 @@ export class FolderPopupView extends AbstractViewPopup {
 			folder: null, // FolderModel
 			parentFolder: '',
 			name: '',
-			editing: false
+			editing: false,
+			adminACL: false
 		});
 		this.ACLAllowed = FolderUserStore.hasCapability('ACL');
-		this.ACL = ko.observableArray();
 
 		this.parentFolderSelectList = koComputable(() =>
 			folderListOptionsBuilder(
@@ -51,6 +93,8 @@ export class FolderPopupView extends AbstractViewPopup {
 		});
 
 		this.defaultOptionsAfterRender = defaultOptionsAfterRender;
+		this.editACL = this.editACL.bind(this);
+		this.deleteACL = this.deleteACL.bind(this);
 	}
 
 	afterHide() {
@@ -135,11 +179,35 @@ export class FolderPopupView extends AbstractViewPopup {
 		this.close();
 	}
 
+	createACL()
+	{
+		showScreenPopup(FolderACLPopupView, [this.folder(), new FolderACLRightsModel]);
+	}
+
+	editACL(acl)
+	{
+		showScreenPopup(FolderACLPopupView, [this.folder(), acl]);
+	}
+
+	deleteACL(acl)
+	{
+		Remote.request('FolderDeleteACL',
+			(iError, data) => !iError && data.Result && this.folder().ACL.remove(acl),
+			{
+				folder: this.folder().fullName,
+				identifier: acl.identifier
+			}
+		);
+	}
+
 	beforeShow(folder) {
-		this.ACL([]);
+		folder.ACL || (folder.ACL = ko.observableArray());
+		this.adminACL(false);
 		this.ACLAllowed && Remote.request('FolderACL', (iError, data) => {
 			if (!iError && data.Result) {
-				this.ACL(Object.values(data.Result));
+				folder.ACL(FolderACLModel.reviveFromJson(data.Result));
+//				data.Result.map(aItem => FolderACLRightsModel.reviveFromJson(aItem)).filter(v => v)
+				this.adminACL(folder.ACL()[0].rights.includes('a'));
 			}
 		}, {
 			folder: folder.fullName

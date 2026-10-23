@@ -1,4 +1,9 @@
-.squire-toolbar {
+/* Prevent collapse of empty elements so that the caret can be placed in there */
+.CompactComposer *:empty::before {
+    content: "\200B";
+}
+
+.CompactComposer .squire-toolbar {
     padding-top: 4px;
     padding-bottom: 0;
     overflow: visible;
@@ -7,13 +12,13 @@
     min-height: auto;
 }
 
-.squire-toolbar > .btn-group {
+.CompactComposer .squire-toolbar > .btn-group {
     margin-bottom: 4px;
 }
 
-.squire-toolbar > .btn-group > a.btn,
-.squire-toolbar button.btn,
-.squire-toolbar select.btn {
+.CompactComposer .squire-toolbar > .btn-group > a.btn,
+.CompactComposer .squire-toolbar button.btn,
+.CompactComposer .squire-toolbar select.btn {
     line-height: 20px;
     padding-top: 4px;
     padding-bottom: 4px;
@@ -41,6 +46,10 @@
     display: block;
     fill: var(--dialog-clr, #333);
 }
+.squire-toolbar-menu .squire-toolbar-svg-icon {
+    display: block;
+    fill: var(--dropdown-menu-color, inherit);
+}
 
 .squire2-mode-wysiwyg .squire-plain,
 .squire2-mode-source .squire-wysiwyg,
@@ -53,11 +62,11 @@
     display: block;
 }
 
-.squire-toolbar > .squire-toolbar-menu-wrap:last-child {
+.CompactComposer .squire-toolbar > .squire-toolbar-menu-wrap:last-child {
     float: right;
 }
 
-.squire-toolbar.mode-plain .squire-html-mode-item {
+.CompactComposer .squire-toolbar.mode-plain .squire-html-mode-item {
     display: none;
 }
 

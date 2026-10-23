@@ -29,7 +29,7 @@ class TAR
 		}
 
 		if ($files) {
-			$files = '/^(' . \implode('|', \array_map('preg_quote', \is_array($files) ? $files : [$files])) . ')/u';
+			$files = '#^(' . \implode('|', \array_map('preg_quote', \is_array($files) ? $files : [$files])) . ')#u';
 		}
 
 		\clearstatcache(true);

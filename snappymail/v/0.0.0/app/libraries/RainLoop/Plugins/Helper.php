@@ -4,7 +4,7 @@ namespace RainLoop\Plugins;
 
 class Helper
 {
-	static public function ValidateWildcardValues(string $sString, string $sWildcardValues, string &$sFoundValue = null) : bool
+	static public function ValidateWildcardValues(string $sString, string $sWildcardValues, ?string &$sFoundValue = null) : bool
 	{
 		$sFoundValue = '';
 

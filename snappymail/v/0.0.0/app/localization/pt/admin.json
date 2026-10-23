@@ -8,11 +8,12 @@
 		"USERNAME": "Nome de utilizador",
 		"PASSWORD": "Palavra-passe",
 		"CANCEL": "Cancelar",
-		"SEARCH": "Pesquisar"
+		"SEARCH": "Pesquisar",
+		"YES": "Sim",
+		"NO": "Não"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Utilizador",
-		"LABEL_PASSWORD": "Palavra-passe",
 		"LABEL_TOTP": "Código TOTP",
 		"BUTTON_LOGIN": "Entrar no painel de admin"
 	},
@@ -39,7 +40,7 @@
 		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Permitir personalização da interface nas definições",
 		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Permitir alterar a imagem de fundo nas definições",
 		"LABEL_SHOW_THUMBNAILS": "Mostrar miniaturas (anexos)",
-		"LEGEND_MAIN": "Prinicpal",
+		"LEGEND_MAIN": "Principal",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Tamanho limite dos anexos",
 		"LABEL_ALLOW_ADDITIONAL_ACCOUNTS": "Permitir contas adicionais",
 		"LABEL_ALLOW_IDENTITIES": "Permitir múltiplas identidades",
@@ -132,7 +133,6 @@
 		"LIMITS": "Limites",
 		"FOLDERS": "Pastas",
 		"MESSAGES": "Mensagens",
-		"LABEL_WHITE_LIST": "Lista Branca",
 		"SECURE_OPTION_NONE": "Nenhuma",
 		"LABEL_ALLOW_SIEVE_SCRIPTS": "Permitir scripts sieve",
 		"LABEL_USE_SHORT_LOGIN": "Usar nome de utilizador curto",
@@ -142,20 +142,16 @@
 		"LABEL_AUTH_PLAIN_LINE": "Forçar comando AUTH PLAIN único para autenticar",
 		"LABEL_USE_PHP_MAIL": "Usar a função php mail()",
 		"BUTTON_WHITE_LIST": "Lista Branca",
-		"BUTTON_SIEVE_CONFIGURATION": "Configuração SIEVE",
-		"BUTTON_BACK_TO_IMAP": "Voltar à configuração IMAP",
-		"BUTTON_BACK": "Voltar",
-		"BUTTON_UPDATE": "Atualizar",
 		"NEW_DOMAIN_DESC": "Esta configuração de domínio vai permitir trabalhar com endereços email <strong>%NAME%<\/strong>.",
-		"WHITE_LIST_ALERT": "Lista de utilizadores do domínio aos quais o webmail terá permissão para aceder.\nUsar espaços para delimitar.\n"
+		"WHITE_LIST_ALERT": "Lista de utilizadores do domínio aos quais o webmail terá permissão para aceder.\nUsar espaços para delimitar.\n",
+		"VALID_SPAM_HEADERS": "Cabeçalhos de SPAM válidos",
+		"VALID_VIRUS_HEADERS": "Cabeçalhos de vírus válidos"
 	},
 	"POPUPS_PLUGIN": {
 		"TITLE_PLUGIN": "Extensão",
 		"DESC_NOTHING_TO_CONFIGURE": "Nada para configurar"
 	},
 	"POPUPS_ASK": {
-		"BUTTON_YES": "Sim",
-		"BUTTON_NO": "Não",
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Quer mesmo fechar esta janela?"
 	},
 	"POPUPS_LANGUAGES": {

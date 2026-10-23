@@ -36,7 +36,7 @@ class Folder implements \JsonSerializable
 	/**
 	 * @throws \ValueError
 	 */
-	function __construct(string $sFullName, string $sDelimiter = null, array $aAttributes = array())
+	function __construct(string $sFullName, ?string $sDelimiter = null, array $aAttributes = array())
 	{
 		if (!\strlen($sFullName)) {
 			throw new \ValueError;

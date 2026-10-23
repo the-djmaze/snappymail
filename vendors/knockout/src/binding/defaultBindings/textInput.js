@@ -10,19 +10,15 @@ ko.bindingHandlers['textInput'] = {
             elementValueBeforeEvent = timeoutHandle = undefined;
 
             var elementValue = element.value;
-            if (previousElementValue !== elementValue) {
+            if (element.checkValidity() && previousElementValue !== elementValue) {
                 // Provide a way for tests to know exactly which event was processed
                 previousElementValue = elementValue;
-                ko.expressionRewriting.writeValueToProperty(valueAccessor(), allBindings, 'textInput', elementValue);
+                ko.expressionRewriting.writeValueToProperty(element, valueAccessor(), allBindings, 'textInput', elementValue);
             }
         };
 
         var updateView = () => {
-            var modelValue = ko.utils.unwrapObservable(valueAccessor());
-
-            if (modelValue == null) {
-                modelValue = '';
-            }
+            var modelValue = ko.utils.unwrapObservable(valueAccessor()) ?? '';
 
             if (elementValueBeforeEvent !== undefined && modelValue === elementValueBeforeEvent) {
                 setTimeout(updateView, 4);

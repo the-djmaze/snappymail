@@ -2,7 +2,7 @@ import ko from 'ko';
 
 //import { koComputable } from 'External/ko';
 import { SettingsCapa, SettingsGet } from 'Common/Globals';
-import { loadAccountsAndIdentities } from 'Common/UtilsUser';
+import { loadAccountsAndIdentities, editIdentity } from 'Common/UtilsUser';
 
 import { AccountUserStore } from 'Stores/User/Account';
 import { IdentityUserStore } from 'Stores/User/Identity';
@@ -12,7 +12,6 @@ import Remote from 'Remote/User/Fetch';
 import { showScreenPopup } from 'Knoin/Knoin';
 
 import { AccountPopupView } from 'View/Popup/Account';
-import { IdentityPopupView } from 'View/Popup/Identity';
 
 export class UserSettingsAccounts /*extends AbstractViewSettings*/ {
 	constructor() {
@@ -44,11 +43,11 @@ export class UserSettingsAccounts /*extends AbstractViewSettings*/ {
 	}
 
 	addNewIdentity() {
-		showScreenPopup(IdentityPopupView);
+		editIdentity();
 	}
 
 	editIdentity(identity) {
-		showScreenPopup(IdentityPopupView, [identity]);
+		editIdentity(identity);
 	}
 
 	/**
@@ -89,7 +88,7 @@ export class UserSettingsAccounts /*extends AbstractViewSettings*/ {
 
 	accountsAndIdentitiesAfterMove() {
 		Remote.request('AccountsAndIdentitiesSortOrder', null, {
-			Accounts: AccountUserStore.getEmailAddresses().filter(v => v != SettingsGet('mainEmail')),
+			Accounts: AccountUserStore.filter(item => item.isAdditional()).map(item => item.email),
 			Identities: IdentityUserStore.map(item => (item ? item.id() : ""))
 		});
 	}

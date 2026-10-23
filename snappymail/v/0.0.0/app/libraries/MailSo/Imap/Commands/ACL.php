@@ -91,6 +91,7 @@ trait ACL
 	private function FolderACLRequest(string $sFolderName, string $sCommand, array $aParams) : \MailSo\Imap\ResponseCollection
 	{
 		if ($this->ACLAllow($sFolderName, $sCommand)) try {
+//			\array_unshift($aParams, $this->EscapeFolderName($sFolderName));
 			return $this->SendRequestGetResponse($sCommand, $aParams);
 		} catch (\Throwable $oException) {
 			// Error in IMAP command $sCommand: ACLs disabled
@@ -119,21 +120,29 @@ trait ACL
 	public function FolderGetACL(string $sFolderName) : array
 	{
 		$aResult = array();
-		$oResponses = $this->FolderACLRequest($sFolderName, 'GETACL', array($this->EscapeFolderName($sFolderName)));
-		foreach ($oResponses as $oResponse) {
-			// * ACL INBOX.shared demo@snappymail.eu akxeilprwtscd foobar@snappymail.eu akxeilprwtscd demo2@snappymail.eu lrwstipekxacd
-			if (\MailSo\Imap\Enumerations\ResponseType::UNTAGGED === $oResponse->ResponseType
-				&& isset($oResponse->ResponseList[4])
-				&& 'ACL' === $oResponse->ResponseList[1]
-				&& $sFolderName === $oResponse->ResponseList[2]
-			)
-			{
-				$c = \count($oResponse->ResponseList);
-				for ($i = 3; $i < $c; $i += 2) {
-					$aResult[] = new ACLResponse(
-						$oResponse->ResponseList[$i],
-						$oResponse->ResponseList[$i+1]
-					);
+		$response = $this->FolderMyRights($sFolderName);
+		$aResult[] = $response;
+		if ($response->hasRight('a')) {
+			// Else error: "NOPERM You lack administrator privileges on this mailbox."
+			$oResponses = $this->FolderACLRequest($sFolderName, 'GETACL', array($this->EscapeFolderName($sFolderName)));
+			foreach ($oResponses as $oResponse) {
+				// * ACL INBOX.shared demo@snappymail.eu akxeilprwtscd demo2@snappymail.eu lrwstipekxacd
+				if (\MailSo\Imap\Enumerations\ResponseType::UNTAGGED === $oResponse->ResponseType
+					&& isset($oResponse->ResponseList[4])
+					&& 'ACL' === $oResponse->ResponseList[1]
+					&& $sFolderName === $oResponse->ResponseList[2]
+				)
+				{
+					$c = \count($oResponse->ResponseList);
+					for ($i = 3; $i < $c; $i += 2) {
+						$response = new ACLResponse(
+							$oResponse->ResponseList[$i],
+							$oResponse->ResponseList[$i+1]
+						);
+						if ($response->identifier() != $this->Settings->username) {
+							$aResult[] = $response;
+						}
+					}
 				}
 			}
 		}
@@ -163,9 +172,10 @@ trait ACL
 		return null;
 	}
 
-	public function FolderMyRights(string $sFolderName) : ?ACLResponse
+	public function FolderMyRights(string $sFolderName) : ACLResponse
 	{
 		$oResponses = $this->FolderACLRequest($sFolderName, 'MYRIGHTS', array($this->EscapeFolderName($sFolderName)));
+		$rights = '';
 		foreach ($oResponses as $oResponse) {
 			if (\MailSo\Imap\Enumerations\ResponseType::UNTAGGED === $oResponse->ResponseType
 				&& isset($oResponse->ResponseList[3])
@@ -173,9 +183,12 @@ trait ACL
 				&& $sFolderName === $oResponse->ResponseList[2]
 			)
 			{
-				return new ACLResponse('', $oResponse->ResponseList[3]);
+				$rights = $oResponse->ResponseList[3];
+				break;
 			}
 		}
-		return null;
+		$response = new ACLResponse($this->Settings->username, $rights);
+		$response->mine = true;
+		return $response;
 	}
 }

@@ -12,11 +12,11 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 {
 	const
 		NAME     = 'LDAP Mail Accounts',
-		VERSION  = '2.1.1',
+		VERSION  = '2.2.1',
 		AUTHOR   = 'cm-schl',
 		URL      = 'https://github.com/cm-sch',
-		RELEASE  = '2024-03-16',
-		REQUIRED = '2.35.3',
+		RELEASE  = '2024-09-20',
+		REQUIRED = '2.36.1',
 		CATEGORY = 'Accounts',
 		DESCRIPTION = 'Add additional mail accounts the SnappyMail user has access to by a LDAP query. Basing on the work of FWest98 (https://github.com/FWest98).';
 
@@ -40,11 +40,13 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 	 * Overwrite the MainAccount mail address by looking up the new one in the ldap directory
 	 *
 	 * @param string &$sEmail
-	 * @param string &$sLogin
+	 * @param string &$sImapUser
+	 * @param string &$sPassword
+	 * @param string &$sSmtpUser
 	 */
-	public function overwriteMainAccountEmail(&$sEmail, &$sLogin)
+	public function overwriteMainAccountEmail(string &$sEmail, string &$sImapUser, string &$sPassword, string &$sSmtpUser)
 	{
-		$this->Manager()->Actions()->Logger()->Write("Login DATA: login: $sLogin email: $sEmail", \LOG_WARNING, "LDAP MAIL ACCOUNTS PLUGIN");
+		$this->Manager()->Actions()->Logger()->Write("Login DATA: login: $sImapUser email: $sEmail", \LOG_WARNING, "LDAP MAIL ACCOUNTS PLUGIN");
 
 		// Set up config
 		$config = LdapMailAccountsConfig::MakeConfig($this->Config());
@@ -52,10 +54,10 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 		if ($config->bool_overwrite_mail_address_main_account)
 		{
 			$oldapMailAccounts = new LdapMailAccounts($config, $this->Manager()->Actions()->Logger());
-			$oldapMailAccounts->overwriteEmail($sEmail, $sLogin);
+			$oldapMailAccounts->overwriteEmail($sEmail);
 		}
 
-		$this->Manager()->Actions()->Logger()->Write("Login DATA: login: $sLogin email: $sEmail", \LOG_WARNING, "LDAP MAIL ACCOUNTS PLUGIN");
+		$this->Manager()->Actions()->Logger()->Write("Login DATA: login: $sImapUser email: $sEmail", \LOG_WARNING, "LDAP MAIL ACCOUNTS PLUGIN");
 	}
 
 	// Function gets called by RainLoop/Actions/User.php
@@ -90,6 +92,17 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 					\nThe value found inside ldap will overwrite the mail address of the SnappyMail main account (the account the user logged in at SnappyMail)
 					\nThe mail address used at login will still be used to login to the servers.")
 				->SetDefaultValue("mail"),
+		]);
+
+		$groupAdditionalSettings = new \RainLoop\Plugins\PropertyCollection('Additional settings');
+		$groupAdditionalSettings->exchangeArray([
+			\RainLoop\Plugins\Property::NewInstance(LdapMailAccountsConfig::CONFIG_BOOL_OVERWRITE_CRYPTKEY)->SetLabel('Overwrite user cryptkey')
+			->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
+			->SetDescription("SnappyMail saves the passwords of the additional accounts by encrypting them using a cryptkey that is saved in the file \".cryptkey\". When the password of the main account changes, SnappyMail asks the user for the old password to reencrypt the keys with the new userpassword.
+				\nOn a password change using ldap (or when the password has been forgotten by the user) this makes problems and asks the user to insert the old password. Therefore activating this option overwrites the .cryptkey file on login in order to always accept the actual ldap password of the user.
+				\nATTENTION: This has side effects on pgp keys because these are also secured by the cryptkey and could therefore not be accessible anymore!
+				\nSee https://github.com/the-djmaze/snappymail/issues/1570#issuecomment-2085528061")
+			->SetDefaultValue(false),
 		]);
 
 		return [
@@ -171,8 +184,9 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 				->SetDescription("The field containing the default sender name of the found additional mail account.")
 				->SetDefaultValue("displayName"),
 
-			$groupOverwriteMainAccount
+			$groupOverwriteMainAccount,
 
+			$groupAdditionalSettings
 		];
 	}
 }

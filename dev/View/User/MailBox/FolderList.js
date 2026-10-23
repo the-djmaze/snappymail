@@ -77,13 +77,14 @@ export class MailFolderList extends AbstractViewLeft {
 				const folder = ko.dataFor(el);
 				if (folder) {
 					if (moveAction()) {
-						moveAction(false);
-						let messages = MessagelistUserStore.listCheckedOrSelectedUidsWithSubMails();
+						const copy = event.ctrlKey || 2 === moveAction(),
+							messages = MessagelistUserStore.listCheckedOrSelectedUidsWithSubMails();
+						moveAction(0);
 						messages.size && MessagelistUserStore.moveMessages(
 							messages.folder,
 							messages,
 							folder.fullName,
-							event.ctrlKey
+							copy
 						);
 					} else {
 						if (!SettingsUserStore.usePreviewPane()) {
@@ -160,7 +161,7 @@ export class MailFolderList extends AbstractViewLeft {
 //		addShortcut('tab', 'shift', ScopeFolderList, () => {
 		addShortcut('escape,tab,arrowright', '', ScopeFolderList, () => {
 			AppUserStore.focusedState(ScopeMessageList);
-			moveAction(false);
+			moveAction(0);
 			return false;
 		});
 	}

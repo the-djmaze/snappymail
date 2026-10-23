@@ -10,18 +10,20 @@ export class MimeHeaderAutocryptModel/* extends AbstractModel*/
 
 		if (value) {
 			value.split(';').forEach(entry => {
-				entry = entry.split('=');
+				entry = entry.match(/^([^=]+)=(.*)$/);
 				const trim = str => (str || '').trim().replace(/^["']|["']+$/g, '');
-				this[trim(entry[0]).replace('-', '_')] = trim(entry[1]);
+				this[trim(entry[1]).replace('-', '_')] = trim(entry[2]);
 			});
+			this.keydata = this.keydata.replace(/\s+/g, '\n');
 		}
 	}
 
 	toString() {
+		let result = `addr=${this.addr}; `;
 		if ('mutual' === this.prefer_encrypt) {
-			return `addr=${this.addr}; prefer-encrypt=mutual; keydata=${this.keydata}`;
+			result += 'prefer-encrypt=mutual; ';
 		}
-		return `addr=${this.addr}; keydata=${this.keydata}`;
+		return result + 'keydata=' + this.keydata.replace(/\n/g, '\n ');
 	}
 
 	pem() {

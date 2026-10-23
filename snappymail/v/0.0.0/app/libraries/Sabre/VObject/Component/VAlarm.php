@@ -32,20 +32,14 @@ class VAlarm extends VObject\Component
     public function getEffectiveTriggerTime(): \DateTimeImmutable
     {
         $trigger = $this->TRIGGER;
-        if (!isset($trigger['VALUE']) || ($trigger['VALUE'] && 'DURATION' === strtoupper($trigger['VALUE']))) {
+        if (!isset($trigger['VALUE']) || ($trigger['VALUE'] && 'DURATION' === strtoupper((string) $trigger['VALUE']))) {
             $triggerDuration = VObject\DateTimeParser::parseDuration($this->TRIGGER);
-            $related = (isset($trigger['RELATED']) && 'END' == strtoupper($trigger['RELATED'])) ? 'END' : 'START';
+            $related = (isset($trigger['RELATED']) && 'END' === strtoupper($trigger['RELATED'])) ? 'END' : 'START';
 
             /** @var VEvent|VTodo $parentComponent */
             $parentComponent = $this->parent;
             if ('START' === $related) {
-                if ('VTODO' === $parentComponent->name) {
-                    $propName = 'DUE';
-                } else {
-                    $propName = 'DTSTART';
-                }
-
-                $effectiveTrigger = $parentComponent->$propName->getDateTime();
+                $effectiveTrigger = $parentComponent->DTSTART->getDateTime();
             } else {
                 if ('VTODO' === $parentComponent->name) {
                     $endProp = 'DUE';
@@ -102,9 +96,9 @@ class VAlarm extends VObject\Component
             }
 
             return false;
-        } else {
-            return $start <= $effectiveTrigger && $end > $effectiveTrigger;
         }
+
+        return $start <= $effectiveTrigger && $end > $effectiveTrigger;
     }
 
     /**

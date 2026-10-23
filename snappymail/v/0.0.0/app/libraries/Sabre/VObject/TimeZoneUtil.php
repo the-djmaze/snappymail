@@ -41,9 +41,7 @@ class TimeZoneUtil
 
     private static function getInstance(): self
     {
-        if (null === self::$instance) {
-            self::$instance = new self();
-        }
+        self::$instance ??= new self();
 
         return self::$instance;
     }
@@ -72,7 +70,7 @@ class TimeZoneUtil
      * Alternatively, if $failIfUncertain is set to true, it will throw an
      * exception if we cannot accurately determine the timezone.
      */
-    private function findTimeZone(string $tzid, Component $vcalendar = null, bool $failIfUncertain = false): \DateTimeZone
+    private function findTimeZone(string $tzid, ?Component $vcalendar = null, bool $failIfUncertain = false): \DateTimeZone
     {
         foreach ($this->timezoneFinders as $timezoneFinder) {
             $timezone = $timezoneFinder->find($tzid, $failIfUncertain);
@@ -117,7 +115,7 @@ class TimeZoneUtil
         self::getInstance()->addFinder($key, $finder);
     }
 
-    public static function getTimeZone(string $tzid, Component $vcalendar = null, bool $failIfUncertain = false): \DateTimeZone
+    public static function getTimeZone(string $tzid, ?Component $vcalendar = null, bool $failIfUncertain = false): \DateTimeZone
     {
         return self::getInstance()->findTimeZone($tzid, $vcalendar, $failIfUncertain);
     }

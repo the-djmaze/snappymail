@@ -110,7 +110,7 @@ trait ContextStackTrait
             $this->elementMap,
             $this->contextUri,
             $this->namespaceMap,
-            $this->classMap
+            $this->classMap,
         ) = array_pop($this->contextStack);
     }
 }

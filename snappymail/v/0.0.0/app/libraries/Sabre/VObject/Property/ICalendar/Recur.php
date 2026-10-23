@@ -29,14 +29,14 @@ class Recur extends Property
     /**
      * Reference to the parent object, if this is not the top object.
      */
-    public ?Node $parent;
+    public ?Node $parent = null;
 
     /**
      * Updates the current value.
      *
      * This may be either a single, or multiple strings in an array.
      *
-     * @param string|array $value
+     * @param string|array|object $value
      */
     public function setValue($value): void
     {
@@ -52,17 +52,17 @@ class Recur extends Property
                     $v = strtoupper($v);
 
                     // The value had multiple sub-values
-                    if (false !== strpos($v, ',')) {
+                    if (str_contains($v, ',')) {
                         $v = explode(',', $v);
                     }
-                    if (0 === strcmp($k, 'until')) {
+                    if (0 === strcmp((string) $k, 'until')) {
                         $v = strtr($v, [':' => '', '-' => '']);
                     }
                 } elseif (is_array($v)) {
-                    $v = array_map('strtoupper', $v);
+                    $v = array_map(strtoupper(...), $v);
                 }
 
-                $newVal[strtoupper($k)] = $v;
+                $newVal[strtoupper((string) $k)] = $v;
             }
             $this->value = $newVal;
         } elseif (is_string($value)) {
@@ -151,13 +151,13 @@ class Recur extends Property
     {
         $values = [];
         foreach ($this->getParts() as $k => $v) {
-            if (0 === strcmp($k, 'UNTIL')) {
+            if (0 === strcmp((string) $k, 'UNTIL')) {
                 $date = new DateTime($this->root, null, $v);
-                $values[strtolower($k)] = $date->getJsonValue()[0];
-            } elseif (0 === strcmp($k, 'COUNT')) {
-                $values[strtolower($k)] = intval($v);
+                $values[strtolower((string) $k)] = $date->getJsonValue()[0];
+            } elseif (0 === strcmp((string) $k, 'COUNT')) {
+                $values[strtolower((string) $k)] = intval($v);
             } else {
-                $values[strtolower($k)] = $v;
+                $values[strtolower((string) $k)] = $v;
             }
         }
 
@@ -186,13 +186,20 @@ class Recur extends Property
         $newValue = [];
         foreach (explode(';', $value) as $part) {
             // Skipping empty parts.
-            if (empty($part)) {
+            if ('' === $part) {
                 continue;
             }
-            list($partName, $partValue) = explode('=', $part);
+
+            $parts = explode('=', $part);
+
+            if (2 !== count($parts)) {
+                throw new InvalidDataException('The supplied iCalendar RRULE part is incorrect: '.$part);
+            }
+
+            [$partName, $partValue] = $parts;
 
             // The value itself had multiple values..
-            if (false !== strpos($partValue, ',')) {
+            if (str_contains($partValue, ',')) {
                 $partValue = explode(',', $partValue);
             }
             $newValue[$partName] = $partValue;
@@ -236,7 +243,7 @@ class Recur extends Property
                 if ($repair) {
                     unset($values[$key]);
                 }
-            } elseif ('BYMONTH' == $key) {
+            } elseif ('BYMONTH' === $key) {
                 $byMonth = (array) $value;
                 foreach ($byMonth as $i => $v) {
                     if (!is_numeric($v) || (int) $v < 1 || (int) $v > 12) {
@@ -255,13 +262,13 @@ class Recur extends Property
                     }
                 }
                 // if there is no valid entry left, remove the whole value
-                if (is_array($value) && empty($values[$key])) {
+                if (is_array($value) && ([] === $values[$key])) {
                     unset($values[$key]);
                 }
-            } elseif ('BYWEEKNO' == $key) {
+            } elseif ('BYWEEKNO' === $key) {
                 $byWeekNo = (array) $value;
                 foreach ($byWeekNo as $i => $v) {
-                    if (!is_numeric($v) || (int) $v < -53 || 0 == (int) $v || (int) $v > 53) {
+                    if (!is_numeric($v) || (int) $v < -53 || 0 === (int) $v || (int) $v > 53) {
                         $warnings[] = [
                             'level' => $repair ? 1 : 3,
                             'message' => 'BYWEEKNO in RRULE must have value(s) from -53 to -1, or 1 to 53!',
@@ -277,13 +284,13 @@ class Recur extends Property
                     }
                 }
                 // if there is no valid entry left, remove the whole value
-                if (is_array($value) && empty($values[$key])) {
+                if (is_array($value) && ([] === $values[$key])) {
                     unset($values[$key]);
                 }
-            } elseif ('BYYEARDAY' == $key) {
+            } elseif ('BYYEARDAY' === $key) {
                 $byYearDay = (array) $value;
                 foreach ($byYearDay as $i => $v) {
-                    if (!is_numeric($v) || (int) $v < -366 || 0 == (int) $v || (int) $v > 366) {
+                    if (!is_numeric($v) || (int) $v < -366 || 0 === (int) $v || (int) $v > 366) {
                         $warnings[] = [
                             'level' => $repair ? 1 : 3,
                             'message' => 'BYYEARDAY in RRULE must have value(s) from -366 to -1, or 1 to 366!',
@@ -299,7 +306,7 @@ class Recur extends Property
                     }
                 }
                 // if there is no valid entry left, remove the whole value
-                if (is_array($value) && empty($values[$key])) {
+                if (is_array($value) && ([] === $values[$key])) {
                     unset($values[$key]);
                 }
             }

@@ -2,7 +2,7 @@
 const gulp = require('gulp');
 
 const concat = require('gulp-concat'),
-	header = require('gulp-header'),
+	gap = require('gulp-append-prepend'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace'),
 	terser = require('gulp-terser'),
@@ -13,11 +13,13 @@ const concat = require('gulp-concat'),
 	size = require('gulp-size');
 
 const { config } = require('./config');
-const { del, getHead } = require('./common');
+const { del } = require('./common');
 
 const { rollupJS } = require('./rollup');
 
 const jsClean = () => del(config.paths.staticJS + '/**/*.{js,map}');
+
+const prepend = () => gap.prependText(config.head.agpl + '\n');
 
 // boot
 const jsBoot = () => {
@@ -56,7 +58,7 @@ const jsLibs = () => {
 const jsSieve = async () =>
 	(await rollupJS(config.paths.js.sieve.name))
 //		.pipe(sourcemaps.write('.'))
-		.pipe(header(getHead() + '\n'))
+		.pipe(prepend())
 		.pipe(eol('\n', true))
 		.pipe(gulp.dest(config.paths.staticJS));
 
@@ -64,14 +66,14 @@ const jsSieve = async () =>
 const jsApp = async () =>
 	(await rollupJS(config.paths.js.app.name))
 //		.pipe(sourcemaps.write('.'))
-		.pipe(header(getHead() + '\n'))
+		.pipe(prepend())
 		.pipe(eol('\n', true))
 		.pipe(gulp.dest(config.paths.staticJS));
 
 const jsAdmin = async () =>
 	(await rollupJS(config.paths.js.admin.name))
 //		.pipe(sourcemaps.write('.'))
-		.pipe(header(getHead() + '\n'))
+		.pipe(prepend())
 		.pipe(eol('\n', true))
 		.pipe(gulp.dest(config.paths.staticJS));
 

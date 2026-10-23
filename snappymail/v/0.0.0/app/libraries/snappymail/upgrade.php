@@ -17,6 +17,7 @@ abstract class Upgrade
 				$sNewDir = $sDataPath
 					.'/'.\MailSo\Base\Utils::SecureFileName($sDomain ?: 'unknown.tld')
 					.'/'.\MailSo\Base\Utils::SecureFileName(\implode('@', $aEmail) ?: '.unknown');
+//				\MailSo\Base\Utils::mkdir($sNewDir)
 				if (\is_dir($sNewDir) || \mkdir($sNewDir, 0700, true)) {
 					foreach (\glob("{$sDomainDir}/*") as $sItem) {
 						$sName = \basename($sItem);

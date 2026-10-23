@@ -22,9 +22,7 @@ trait SMime
 				\RainLoop\Providers\Storage\Enumerations\StorageType::ROOT
 			), '/') . '/.smime';
 
-			if (!\is_dir($homedir)) {
-				\mkdir($homedir, 0700, true);
-			}
+			\MailSo\Base\Utils::mkdir($homedir);
 			if (!\is_writable($homedir)) {
 				throw new \Exception("smime homedir '{$homedir}' not writable");
 			}
@@ -66,6 +64,20 @@ trait SMime
 		$cert->distinguishedName['emailAddress'] = $this->GetActionParam('email', '') ?: $oAccount->Email();
 		$result = $cert->createSelfSigned($oPassphrase, $this->GetActionParam('privateKey', ''));
 		return $this->DefaultResponse($result ?: false);
+	}
+
+	public function DoSMimeExportPrivateKey() : array
+	{
+		$SMIME = $this->SMIME();
+		$SMIME->setPrivateKey(
+			$this->GetActionParam('privateKey'),
+			new \SnappyMail\SensitiveString($this->GetActionParam('oldPassphrase', ''))
+		);
+		$result = $SMIME->exportPrivateKey(
+			new \SnappyMail\SensitiveString($this->GetActionParam('newPassphrase', ''))
+		);
+
+		return $this->DefaultResponse($result);
 	}
 
 	public function DoSMimeDecryptMessage() : array

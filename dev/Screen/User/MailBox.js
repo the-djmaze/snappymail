@@ -109,7 +109,7 @@ export class MailBoxUserScreen extends AbstractScreen {
 	 */
 	onBuild() {
 		doc.addEventListener('click', event =>
-			event.target.closest('#rl-right') && moveAction(false)
+			event.target.closest('#rl-right') && moveAction(0)
 		);
 	}
 

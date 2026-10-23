@@ -31,16 +31,38 @@ ko.bindingProvider = new class
             try {
                 let cacheKey = bindingsString,
                     bindingFunction = bindingCache.get(cacheKey);
+/*
                 if (!bindingFunction) {
                     // Build the source for a function that evaluates "expression"
                     // For each scope variable, add an extra level of "with" nesting
                     // Example result: with(sc1) { with(sc0) { return (expression) } }
+                    // Deprecated: with is no longer recommended
                     var rewrittenBindings = ko.expressionRewriting.preProcessBindings(bindingsString),
-                        functionBody = "with($context){with($data||{}){return{" + rewrittenBindings + "}}}";
-                    bindingFunction = new Function("$context", "$element", functionBody);
+                        functionBody = "with($data){return{" + rewrittenBindings + "}}";
+                    bindingFunction = new Function("$context", "$root", "$parent", "$data", functionBody);
                     bindingCache.set(cacheKey, bindingFunction);
                 }
-                return bindingFunction(bindingContext, node);
+                return bindingFunction(bindingContext,
+                    bindingContext["$root"], bindingContext["$parent"], bindingContext["$data"] || {}
+                );
+*/
+                if (!bindingFunction) {
+                    // Build the source for a function that evaluates "expression"
+                    // Use one "with" that has one secure scope handling Proxy
+                    // Deprecated: with is no longer recommended
+                    bindingFunction = new Function("$context",
+                        "with($context){return{" + ko.expressionRewriting.preProcessBindings(bindingsString) + "}}");
+                    bindingCache.set(cacheKey, bindingFunction);
+                }
+                bindingContext = new Proxy(
+                    bindingContext,
+                    {
+                        has: () => true,
+//                        get: (target, key) => target['$data'][key] || target[key]
+                        get: (target, key) => Reflect.has(target['$data'], key) ? target['$data'][key] : target[key]
+                    }
+                );
+                return bindingFunction(bindingContext);
             } catch (ex) {
                 ex.message = "Unable to parse bindings.\nBindings value: " + bindingsString
                     + "\nMessage: " + ex.message;

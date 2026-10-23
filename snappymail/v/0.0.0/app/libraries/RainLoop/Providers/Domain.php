@@ -2,17 +2,14 @@
 
 namespace RainLoop\Providers;
 
+use RainLoop\Notifications;
+use RainLoop\Exceptions\ClientException;
+
 class Domain extends AbstractProvider
 {
-	/**
-	 * @var Domain\DomainInterface
-	 */
-	private $oDriver;
+	private Domain\DomainInterface $oDriver;
 
-	/**
-	 * @var \RainLoop\Plugins\Manager
-	 */
-	private $oPlugins;
+	private \RainLoop\Plugins\Manager $oPlugins;
 
 	public function __construct(Domain\DomainInterface $oDriver, \RainLoop\Plugins\Manager $oPlugins)
 	{
@@ -35,7 +32,7 @@ class Domain extends AbstractProvider
 	public function SaveAlias(string $sName, string $sAlias) : bool
 	{
 		if ($this->Load($sName, false, false)) {
-			throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::DomainAlreadyExists);
+			throw new ClientException(\RainLoop\Notifications::DomainAlreadyExists);
 		}
 		return $this->oDriver->SaveAlias($sName, $sAlias);
 	}
@@ -55,7 +52,7 @@ class Domain extends AbstractProvider
 		return $this->oDriver->GetList($bIncludeAliases);
 	}
 
-	public function LoadOrCreateNewFromAction(\RainLoop\Actions $oActions, string $sNameForTest = null) : ?\RainLoop\Model\Domain
+	public function LoadOrCreateNewFromAction(\RainLoop\Actions $oActions, ?string $sNameForTest = null) : ?\RainLoop\Model\Domain
 	{
 		$sName = \mb_strtolower((string) $oActions->GetActionParam('name', ''));
 		if (\strlen($sName) && $sNameForTest && !\str_contains($sName, '*')) {
@@ -63,7 +60,7 @@ class Domain extends AbstractProvider
 		}
 		if (\strlen($sName) || $sNameForTest) {
 			if (!$sNameForTest && !empty($oActions->GetActionParam('create', 0)) && $this->Load($sName)) {
-				throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::DomainAlreadyExists);
+				throw new ClientException(\RainLoop\Notifications::DomainAlreadyExists);
 			}
 			return \RainLoop\Model\Domain::fromArray($sNameForTest ?: $sName, [
 				'IMAP' => $oActions->GetActionParam('IMAP'),
@@ -78,5 +75,17 @@ class Domain extends AbstractProvider
 	public function IsActive() : bool
 	{
 		return $this->oDriver instanceof Domain\DomainInterface;
+	}
+
+	public function getByEmailAddress(string $sEmail) : \RainLoop\Model\Domain
+	{
+		$oDomain = $this->Load(\MailSo\Base\Utils::getEmailAddressDomain($sEmail), true);
+		if (!$oDomain) {
+			throw new ClientException(Notifications::DomainNotAllowed, null, "{$sEmail} has no domain configuration");
+		}
+		if (!$oDomain->ValidateWhiteList($sEmail)) {
+			throw new ClientException(Notifications::AccountNotAllowed, null, "{$sEmail} not whitelisted");
+		}
+		return $oDomain;
 	}
 }

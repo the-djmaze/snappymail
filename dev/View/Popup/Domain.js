@@ -39,12 +39,15 @@ const
 		imapMessage_all_headers: false,
 		imapMessage_list_limit: 10000,
 		imapSearch_filter: '',
+		imapSpam_headers: '',
+		imapVirus_headers: '',
 
 		sieveEnabled: false,
 		sieveHost: '',
 		sievePort: 4190,
 		sieveType: 0,
 		sieveTimeout: 10,
+		sieveAuthLiteral: true,
 
 		smtpHost: '',
 		smtpPort: 25,
@@ -79,15 +82,17 @@ const
 			},
 			disabled_capabilities:  oDomain.imapDisabled_capabilities(),
 			folder_list_limit: pInt(oDomain.imapFolder_list_limit()),
-			message_list_limit: pInt(oDomain.imapMessage_list_limit())
+			message_list_limit: pInt(oDomain.imapMessage_list_limit()),
 /*
 			expunge_all_on_delete: ,
 			fast_simple_search: ,
 			fetch_new_messages: ,
 			force_select: ,
 			message_all_headers: ,
-			search_filter:
 */
+			search_filter: oDomain.imapSearch_filter(),
+			spam_headers: oDomain.imapSpam_headers(),
+			virus_headers: oDomain.imapVirus_headers()
 		},
 		SMTP: {
 			host: oDomain.smtpHost,
@@ -108,6 +113,7 @@ const
 		},
 		Sieve: {
 			enabled: !!oDomain.sieveEnabled(),
+			authLiteral: !!oDomain.sieveAuthLiteral(),
 			host: oDomain.sieveHost,
 			port: oDomain.sievePort,
 			secure: pInt(oDomain.sieveType()),
@@ -142,6 +148,8 @@ export class DomainPopupView extends AbstractViewPopup {
 			imapHostFocus: false,
 			sieveHostFocus: false,
 			smtpHostFocus: false,
+
+			detectingConfig: false
 		});
 		this.imapDisabled_capabilities = ko.observableArray();
 		this.imapCapabilities = ko.observableArray();
@@ -312,6 +320,7 @@ export class DomainPopupView extends AbstractViewPopup {
 	}
 
 	autoconfig() {
+		this.detectingConfig(true);
 		let domain = this.name();
 		Remote.request('AdminDomainAutoconfig', (iError, oData) => {
 			if (oData?.Result?.config) {
@@ -329,6 +338,7 @@ export class DomainPopupView extends AbstractViewPopup {
 				this.smtpUseAuth(!!server.authentication);
 				this.smtpUsePhpMail(false);
 			}
+			this.detectingConfig(false);
 		}, {domain});
 	}
 
@@ -347,7 +357,7 @@ export class DomainPopupView extends AbstractViewPopup {
 			'STATUS=SIZE',
 			'THREAD'
 		]);
-		this.imapDisabled_capabilities(['METADATA','PREVIEW','STATUS=SIZE']);
+		this.imapDisabled_capabilities(['METADATA','OBJECTID','PREVIEW','STATUS=SIZE']);
 		forEachObjectEntry(domainDefaults, (key, value) => this[key](value));
 		this.enableSmartPorts(true);
 		if (oDomain) {

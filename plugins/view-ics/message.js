@@ -7,21 +7,7 @@
 			const
 				template = document.getElementById(templateId),
 				view = e.detail,
-				attachmentsPlace = template.content.querySelector('.attachmentsPlace'),
-				dateRegEx = /(TZID=(?<tz>[^:]+):)?(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})T(?<hour>[0-9]{2})(?<minute>[0-9]{2})(?<second>[0-9]{2})(?<utc>Z?)/,
-				parseDate = str => {
-					let parts = dateRegEx.exec(str)?.groups,
-						options = {dateStyle: 'long', timeStyle: 'short'};
-					parts?.tz && (options.timeZone = parts.tz);
-					return (parts ? new Date(
-						parseInt(parts.year, 10),
-						parseInt(parts.month, 10) - 1,
-						parseInt(parts.day, 10),
-						parseInt(parts.hour, 10),
-						parseInt(parts.minute, 10),
-						parseInt(parts.second, 10)
-					) : new Date(str)).format(options);
-				};
+				attachmentsPlace = template.content.querySelector('.attachmentsPlace');
 
 			attachmentsPlace.after(Element.fromHTML(`
 			<details data-bind="if: viewICS, visible: viewICS">
@@ -65,8 +51,8 @@
 								if (item["ical:summary"]) {
 									let VEVENT = {
 										SUMMARY: item["ical:summary"],
-										DTSTART: parseDate(item["ical:dtstart"]),
-//										DTEND: parseDate(item["ical:dtend"]),
+										DTSTART: rl.ICS.parseDate(item["ical:dtstart"]),
+//										DTEND: rl.ICS.parseDate(item["ical:dtend"]),
 //										TRANSP: item["ical:transp"],
 //										LOCATION: item["ical:location"],
 										ATTENDEE: []
@@ -85,58 +71,8 @@
 						rl.fetch(ics.linkDownload())
 						.then(response => (response.status < 400) ? response.text() : Promise.reject(new Error({ response })))
 						.then(text => {
-							let VEVENT,
-								VALARM,
-								multiple = ['ATTACH','ATTENDEE','CATEGORIES','COMMENT','CONTACT','EXDATE',
-									'EXRULE','RSTATUS','RELATED','RESOURCES','RDATE','RRULE'],
-								lines = text.split(/\r?\n/),
-								i = lines.length;
-							while (i--) {
-								let line = lines[i];
-								if (VEVENT) {
-									while (line.startsWith(' ') && i--) {
-										line = lines[i] + line.slice(1);
-									}
-									if (line.startsWith('END:VALARM')) {
-										VALARM = {};
-										continue;
-									} else if (line.startsWith('BEGIN:VALARM')) {
-										VEVENT.VALARM || (VEVENT.VALARM = []);
-										VEVENT.VALARM.push(VALARM);
-										VALARM = null;
-										continue;
-									} else if (line.startsWith('BEGIN:VEVENT')) {
-										break;
-									}
-									line = line.match(/^([^:;]+)[:;](.+)$/);
-									if (line) {
-										if (VALARM) {
-											VALARM[line[1]] = line[2];
-										} else if (multiple.includes(line[1]) || 'X-' == line[1].slice(0,2)) {
-											VEVENT[line[1]] || (VEVENT[line[1]] = []);
-											VEVENT[line[1]].push(line[2]);
-										} else {
-											if ('DTSTART' === line[1] || 'DTEND' === line[1]) {
-												line[2] = parseDate(line[2]);
-											}
-											VEVENT[line[1]] = line[2];
-										}
-									}
-								} else if (line.startsWith('END:VEVENT')) {
-									VEVENT = {};
-								}
-							}
-//							METHOD:REPLY || METHOD:REQUEST
-//							console.dir({VEVENT:VEVENT});
+							let VEVENT = rl.ICS.parseEvent(text);
 							if (VEVENT) {
-								VEVENT.rawText = text;
-								VEVENT.isCancelled = () => VEVENT.STATUS?.includes('CANCELLED');
-								VEVENT.isConfirmed = () => VEVENT.STATUS?.includes('CONFIRMED');
-								VEVENT.shouldReply = () => VEVENT.METHOD?.includes('REPLY');
-								console.dir({
-									isCancelled: VEVENT.isCancelled(),
-									shouldReply: VEVENT.shouldReply()
-								});
 								view.viewICS(VEVENT);
 							}
 						});

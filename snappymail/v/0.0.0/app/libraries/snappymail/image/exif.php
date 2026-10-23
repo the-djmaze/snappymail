@@ -16,7 +16,7 @@ class Exif
 		ORIENTATION_RIGHTBOTTOM = 7,
 		ORIENTATION_LEFTBOTTOM  = 8;
 */
-	public static function getImageOrientation(string &$data, array $image_info = null) : int
+	public static function getImageOrientation(string &$data, ?array $image_info = null) : int
 	{
 		$image_info = empty($image_info['mime']) ? \getimagesizefromstring($data) : $image_info;
 		if (!empty($image_info['mime']) && \IMG_JPG == $image_info[2] && \is_callable('exif_read_data')) {

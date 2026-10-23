@@ -30,8 +30,9 @@ If applicable, add screenshots to help explain your problem.
 - SnappyMail Version:
 - Mode: [e.g. standalone, nextcloud, cyberpanel, docker]
 
-**[Debug/logging information](https://github.com/the-djmaze/snappymail/wiki/FAQ#how-do-i-enable-logging)**
-Place them here (few lines) or as attachments (many lines)
+**Debug/logging information**
+[Read here how to log](https://github.com/the-djmaze/snappymail/wiki/FAQ#how-do-i-enable-logging)
+- [ ] I've placed them here (few lines) or as attachments (many lines)
 
 **Additional context**
 Add any other context about the problem here.

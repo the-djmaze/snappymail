@@ -99,8 +99,8 @@ export class UserSettingsThemes /*extends AbstractViewSettings*/ {
 					themeBackground.hash(data?.Result?.hash || '');
 					if (!themeBackground.name() || !themeBackground.hash()) {
 						let errorMsg = '';
-						if (data.ErrorCode) {
-							switch (data.ErrorCode) {
+						if (data.code) {
+							switch (data.code) {
 								case UploadErrorCode.FileIsTooBig:
 									errorMsg = i18n('SETTINGS_THEMES/ERROR_FILE_IS_TOO_BIG');
 									break;
@@ -111,7 +111,7 @@ export class UserSettingsThemes /*extends AbstractViewSettings*/ {
 							}
 						}
 
-						themeBackground.error(errorMsg || data.ErrorMessage || i18n('SETTINGS_THEMES/ERROR_UNKNOWN'));
+						themeBackground.error(errorMsg || data.message || i18n('SETTINGS_THEMES/ERROR_UNKNOWN'));
 					}
 				});
 		}

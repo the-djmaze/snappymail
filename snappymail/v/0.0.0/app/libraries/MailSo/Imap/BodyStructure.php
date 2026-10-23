@@ -118,7 +118,10 @@ class BodyStructure implements \JsonSerializable
 
 	public function isText() : bool
 	{
-		return 'text/html' === $this->sContentType || 'text/plain' === $this->sContentType;
+		return 'text/html' === $this->sContentType
+			|| 'text/plain' === $this->sContentType
+			// Also the useless AMP content
+			|| 'text/x-amp-html' === $this->sContentType;
 	}
 
 	// https://datatracker.ietf.org/doc/html/rfc3156#section-4
@@ -169,9 +172,10 @@ class BodyStructure implements \JsonSerializable
 		);
 	}
 
-	public function IsAttachment() : bool
+	protected function IsAttachment(/*BodyStructure*/ $oParent) : bool
 	{
-		return 'application/pgp-encrypted' !== $this->sContentType
+//		return 'application/pgp-encrypted' !== $this->sContentType
+		return (!$oParent || !$oParent->isPgpEncrypted())
 		 && (
 			'attachment' === $this->sDisposition || (
 				!\str_starts_with($this->sContentType, 'multipart/')
@@ -191,8 +195,8 @@ class BodyStructure implements \JsonSerializable
 	{
 		$aParts = [];
 
-		$gParts = $this->SearchByCallback(function ($oItem) {
-			return $oItem->isText() && !$oItem->IsAttachment();
+		$gParts = $this->SearchByCallback(function ($oItem, $oParent) {
+			return $oItem->isText() && !$oItem->IsAttachment($oParent);
 		});
 		foreach ($gParts as $oPart) {
 			$aParts[] = $oPart;
@@ -229,13 +233,13 @@ class BodyStructure implements \JsonSerializable
 
 	public function SearchCharset() : string
 	{
-		$gParts = $this->SearchByCallback(function ($oPart) {
-			return $oPart->Charset() && $oPart->isText() && !$oPart->IsAttachment();
+		$gParts = $this->SearchByCallback(function ($oPart, $oParent) {
+			return $oPart->Charset() && $oPart->isText() && !$oPart->IsAttachment($oParent);
 		});
 
 		if (!$gParts->valid()) {
-			$gParts = $this->SearchByCallback(function ($oPart) {
-				return $oPart->Charset() && $oPart->IsAttachment();
+			$gParts = $this->SearchByCallback(function ($oPart, $oParent) {
+				return $oPart->Charset() && $oPart->IsAttachment($oParent);
 			});
 		}
 
@@ -256,7 +260,7 @@ class BodyStructure implements \JsonSerializable
 	{
 		return $this->SearchByCallback(function ($oItem, $oParent) {
 //			return $oItem->IsAttachment();
-			return $oItem->IsAttachment() && (!$oParent || !$oParent->isPgpEncrypted());
+			return $oItem->IsAttachment($oParent) && (!$oParent || !$oParent->isPgpEncrypted());
 		});
 	}
 

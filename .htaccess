@@ -1,7 +1,15 @@
+<FilesMatch "index\.php">
+	AcceptPathInfo On
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	# Redirect cPanel
 	RewriteRule cpsess.* https://%{HTTP_HOST}/ [L,R=301]
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^(.+)$ index.php/$1 [L,QSA]
 </IfModule>
 
 <IfModule mod_expires.c>

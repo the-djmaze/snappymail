@@ -163,7 +163,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageAppendStream(string $sFolderName, $rMessageStream, int $iStreamSize, array $aFlagsList = null, int $iDateTime = 0) : ?int
+	public function MessageAppendStream(string $sFolderName, $rMessageStream, int $iStreamSize, ?array $aFlagsList = null, int $iDateTime = 0) : ?int
 	{
 		if (!\is_resource($rMessageStream)) {
 			throw new \InvalidArgumentException('$rMessageStream must be a resource');
@@ -225,7 +225,7 @@ trait Messages
 
 	/**
 	 * RFC 3502 MULTIAPPEND
-	public function MessageAppendStreams(string $sFolderName, $rMessageAppendStream, int $iStreamSize, array $aFlagsList = null, int &$iUid = null, int $iDateTime = 0) : ?int
+	public function MessageAppendStreams(string $sFolderName, $rMessageAppendStream, int $iStreamSize, ?array $aFlagsList = null, ?int &$iUid = null, int $iDateTime = 0) : ?int
 	*/
 
 	/**
@@ -311,7 +311,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageReplaceStream(string $sFolderName, int $iUid, $rMessageStream, int $iStreamSize, array $aFlagsList = null, int $iDateTime = 0) : ?int
+	public function MessageReplaceStream(string $sFolderName, int $iUid, $rMessageStream, int $iStreamSize, ?array $aFlagsList = null, int $iDateTime = 0) : ?int
 	{
 		if (1 > $iUid || !$this->hasCapability('REPLACE')) {
 			$this->FolderSelect($sFolderName);
@@ -382,7 +382,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageSimpleSort(array $aSortTypes, string $sSearchCriterias, bool $bReturnUid = true) : array
+	public function MessageSort(array $aSortTypes, string $sSearchCriterias, bool $bReturnUid = true) : array
 	{
 		$oSort = new \MailSo\Imap\Requests\SORT($this);
 		$oSort->sCriterias = $sSearchCriterias ?: 'ALL';
@@ -411,7 +411,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageSimpleESearch(string $sSearchCriterias, array $aSearchReturn = null, bool $bReturnUid = true, string $sLimit = '') : array
+	public function MessageESearch(string $sSearchCriterias, ?array $aSearchReturn = null, bool $bReturnUid = true, string $sLimit = '') : array
 	{
 		$oESearch = new \MailSo\Imap\Requests\ESEARCH($this);
 		$oESearch->sCriterias = $sSearchCriterias ?: 'ALL';
@@ -432,7 +432,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageSimpleESort(array $aSortTypes, string $sSearchCriterias, array $aSearchReturn = ['ALL'], bool $bReturnUid = true, string $sLimit = '') : array
+	public function MessageESort(array $aSortTypes, string $sSearchCriterias, array $aSearchReturn = ['ALL'], bool $bReturnUid = true, string $sLimit = '') : array
 	{
 		$oSort = new \MailSo\Imap\Requests\SORT($this);
 		$oSort->sCriterias = $sSearchCriterias ?: 'ALL';
@@ -450,7 +450,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageSimpleSearch(string $sSearchCriterias, bool $bReturnUid = true) : array
+	public function MessageSearch(string $sSearchCriterias, bool $bReturnUid = true) : array
 	{
 		$aRequest = array();
 //		if (!$this->UTF8 && !\mb_check_encoding($sSearchCriterias, 'UTF-8')) {
@@ -501,11 +501,16 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageSimpleThread(string $sSearchCriterias, bool $bReturnUid = true) : iterable
+	public function MessageThread(string $sSearchCriterias, string $sAlgorithm = '', $bReturnUid = true) : iterable
 	{
 		$oThread = new \MailSo\Imap\Requests\THREAD($this);
 		$oThread->sCriterias = $sSearchCriterias ?: 'ALL';
 		$oThread->bUid = $bReturnUid;
+		try {
+			$sAlgorithm && $oThread->setAlgorithm($sAlgorithm);
+		} catch (\Throwable $e) {
+			// ignore
+		}
 		yield from $oThread->SendRequestIterateResponse();
 	}
 

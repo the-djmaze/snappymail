@@ -11,14 +11,15 @@
 		<a class="btn" data-bind="visible: isSpamFolder, command: notSpamCommand" data-i18n="[title]GLOBAL/NOT_SPAM">
 			<i class="icon-check-mark-circle-two"></i>
 		</a>
-		<a class="btn fontastic" data-bind="command: deleteCommand" data-i18n="[title]GLOBAL/DELETE">🗑</a>
+		<a class="btn fontastic" data-bind="visible: !canBeUndeleted(), command: deleteCommand" data-i18n="[title]GLOBAL/DELETE">🗑</a>
+		<a class="btn fontastic" data-bind="visible: canBeUndeleted, command: undeleteCommand" data-i18n="[title]GLOBAL/UNDELETE"><div class=btn-rotate>🗑</div></a>
 	</div>
 	<div class="btn-group">
 		<a class="btn btn-thin buttonUp fontastic" data-bind="command: goUpCommand">❮</a>
 		<a class="btn btn-thin buttonDown fontastic" data-bind="command: goDownCommand">❯</a>
 	</div>
 </div>
-<div class="b-content messageView">
+<div class="messageView">
 	<div class="b-message-view-backdrop" data-bind="visible: moveAction">
 		<div class="backdrop-message" data-icon="📁" data-i18n="MESSAGE/MESSAGE_VIEW_MOVE_DESC"></div>
 	</div>
@@ -80,7 +81,13 @@
 								<a href="#" tabindex="-1" data-bind="command: moveCommand" data-icon="📁" data-i18n="GLOBAL/MOVE_TO"></a>
 							</li>
 							<li role="presentation">
+								<a href="#" tabindex="-1" data-bind="command: copyCommand" data-icon="&#xE068;" data-i18n="GLOBAL/COPY_TO"></a>
+							</li>
+							<li role="presentation" data-bind="visible: !canBeUndeleted()">
 								<a href="#" tabindex="-1" data-bind="command: deleteCommand" data-icon="🗑" data-i18n="GLOBAL/DELETE"></a>
+							</li>
+							<li role="presentation" data-bind="visible: canBeUndeleted">
+								<a href="#" tabindex="-1" data-bind="command: undeleteCommand" data-icon="🗑" data-i18n="GLOBAL/UNDELETE" class="rotate"></a>
 							</li>
 							<li role="presentation">
 								<a href="#" tabindex="-1" data-bind="command: deleteWithoutMoveCommand" data-icon="🗑" data-i18n="MESSAGE_LIST/BUTTON_DELETE_WITHOUT_MOVE"></a>
@@ -135,7 +142,9 @@
 			</div>
 			<div class="informationShort">
 				<span class="from" data-bind="html: viewFromShort, attr:{ title: message().from }"></span>
-				<i data-bind="visible: viewDkimIcon, css: dkimIconClass, attr:{ title: dkimTitle }"></i>
+				<i class="fontastic" data-bind="text: dkimIcon, css: dkimIconClass, attr:{ title: dkimTitle }"></i>
+				<i class="fontastic" data-bind="text: dmarcIcon, css: dmarcIconClass, attr:{ title: dmarcTitle }"></i>
+				<i class="fontastic" data-bind="text: spfIcon, css: spfIconClass, attr:{ title: spfTitle }"></i>
 			</div>
 		</div>
 		<div id="messageItem">
@@ -161,9 +170,7 @@
 					<table>
 						<tr data-bind="visible: from.length">
 							<td data-i18n="GLOBAL/FROM"></td>
-							<td><span data-bind="text: from"></span>
-								<i data-bind="visible: $parent.viewDkimIcon, css: $parent.dkimIconClass, attr:{ title: $parent.dkimTitle }"></i>
-							</td>
+							<td data-bind="text: from"></td>
 						</tr>
 						<tr data-bind="visible: to.length">
 							<td data-i18n="GLOBAL/TO"></td>
@@ -325,7 +332,7 @@
 						</div>
 					</div>
 
-					<div class="bodyText"></div>
+					<div class="bodyText" dir="auto"></div>
 				</div>
 			</div>
 		</div>

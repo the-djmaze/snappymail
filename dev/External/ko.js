@@ -15,6 +15,7 @@ export const
 	 * based solely on the values of other observables in the application
 	 */
 	koComputable = fn => ko.computed(fn, {'pure':true}),
+//	koObservable = value => ko.observable(value),
 
 	addObservablesTo = (target, observables) =>
 		forEachObjectEntry(observables, (key, value) =>
@@ -30,7 +31,7 @@ export const
 
 	onEvent = (element, event, fn) => {
 		element.addEventListener(event, fn);
-		ko.utils.domNodeDisposal.addDisposeCallback(element, () => element.removeEventListener(event, fn));
+		ko.addDisposeCallback(element, () => element.removeEventListener(event, fn));
 	},
 
 	onKey = (key, element, fValueAccessor, fAllBindings, model) => {
@@ -175,6 +176,6 @@ ko.extenders.falseTimeout = (target, option) => {
 
 // functions
 
-ko.observable.fn.askDeleteHelper = function() {
-	return this.extend({ falseTimeout: 3000, toggleSubscribeProperty: [this, 'askDelete'] });
+ko.observable.fn.askDeleteHelper = function(prop='askDelete') {
+	return this.extend({ falseTimeout: 3000, toggleSubscribeProperty: [this, prop] });
 };

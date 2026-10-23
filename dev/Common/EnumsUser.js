@@ -71,7 +71,9 @@ MessageSetAction = {
 	SetSeen: 0,
 	UnsetSeen: 1,
 	SetFlag: 2,
-	UnsetFlag: 3
+	UnsetFlag: 3,
+	SetDeleted: 4,
+	UnsetDeleted: 5
 },
 
 /**

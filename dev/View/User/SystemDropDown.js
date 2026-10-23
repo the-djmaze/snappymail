@@ -59,7 +59,7 @@ export class SystemDropDownUserView extends AbstractViewRight {
 				(iError/*, oData*/) => {
 					if (iError) {
 						AccountUserStore.loading(false);
-						alert(getNotification(iError).replace('%EMAIL%', email));
+						alert('Account error: ' + getNotification(iError).replace('%EMAIL%', email));
 						if (account.isAdditional()) {
 							showScreenPopup(AccountPopupView, [account]);
 						}

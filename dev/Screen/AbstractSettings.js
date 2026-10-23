@@ -117,7 +117,7 @@ export class AbstractSettingsScreen extends AbstractScreen {
 			rules = {
 				subname: /^(.*)$/,
 				normalize_: (rquest, vals) => {
-					vals.subname = null == vals.subname ? defaultRoute : pString(vals.subname);
+					vals.subname = pString(vals.subname ?? defaultRoute);
 					return [vals.subname];
 				}
 			};

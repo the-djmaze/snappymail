@@ -47,6 +47,18 @@ class Cookies
 			: null;
 	}
 
+	public static function setSecure(string $sName, $data): void
+	{
+		if (\is_null($data)) {
+			static::clear($sName);
+		} else {
+			static::set(
+				$sName,
+				\MailSo\Base\Utils::UrlSafeBase64Encode(Crypt::EncryptToJSON($data))
+			);
+		}
+	}
+
 	private static function _set(string $sName, string $sValue, int $iExpire, bool $httponly = true) : bool
 	{
 		$sPath = static::$DefaultPath;
@@ -134,5 +146,11 @@ class Cookies
 	{
 		static::init();
 		static::_set($sName, '', 0);
+		// Delete 4K split cookie parts
+		foreach (\array_keys($_COOKIE) as $sCookieName) {
+			if (\strtok($sCookieName, '~') === $sName) {
+				static::_set($sCookieName, '', 0);
+			}
+		}
 	}
 }

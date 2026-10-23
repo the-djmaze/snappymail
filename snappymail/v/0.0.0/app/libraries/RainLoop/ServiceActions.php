@@ -94,14 +94,23 @@ class ServiceActions
 				throw new Exceptions\ClientException(Notifications::InvalidInputArgument, null, 'Action unknown');
 			}
 
-			$xtoken = $token = Utils::GetCsrfToken();
-			if (isset($_SERVER['HTTP_X_SM_TOKEN'])) {
-				$xtoken = $_SERVER['HTTP_X_SM_TOKEN'];
-			} else if ($this->oHttp->IsPost()) {
-				$xtoken = $_POST['XToken'] ?? '';
-			}
-			if ($xtoken !== $token) {
-				throw new Exceptions\ClientException(Notifications::InvalidToken, null, 'Token mismatch');
+			if ('Logout' !== $sAction) {
+				$token = Utils::GetCsrfToken();
+				if (isset($_SERVER['HTTP_X_SM_TOKEN'])) {
+					if ($_SERVER['HTTP_X_SM_TOKEN'] !== $token) {
+						$oAccount = $this->oActions->getAccountFromToken(false);
+						$sEmail = $oAccount ? $oAccount->Email() : 'guest';
+						$this->oActions->logWrite("{$_SERVER['HTTP_X_SM_TOKEN']} !== {$token} for {$sEmail}", \LOG_ERR, 'Token');
+						throw new Exceptions\ClientException(Notifications::InvalidToken, null, 'HTTP Token mismatch');
+					}
+				} else if ($this->oHttp->IsPost()) {
+					if (empty($_POST['XToken']) || $_POST['XToken'] !== $token) {
+						$oAccount = $this->oActions->getAccountFromToken(false);
+						$sEmail = $oAccount ? $oAccount->Email() : 'guest';
+						$this->oActions->logWrite("{$_POST['XToken']} !== {$token} for {$sEmail}", \LOG_ERR, 'XToken');
+						throw new Exceptions\ClientException(Notifications::InvalidToken, null, 'XToken mismatch');
+					}
+				}
 			}
 
 			if ($this->oActions instanceof ActionsAdmin && 0 === \stripos($sAction, 'Admin') && !\in_array($sAction, ['AdminLogin', 'AdminLogout'])) {
@@ -149,9 +158,9 @@ class ServiceActions
 		}
 		catch (\Throwable $oException)
 		{
-			\SnappyMail\Log::warning('SERVICE', "{$oException->getMessage()}\r\n{$oException->getTraceAsString()}");
+			\SnappyMail\Log::warning('SERVICE', "{$oException}");
 			if ($e = $oException->getPrevious()) {
-				\SnappyMail\Log::warning('SERVICE', "- {$e->getMessage()} @ {$e->getFile()}#{$e->getLine()}");
+				\SnappyMail\Log::warning('SERVICE', "- {$e}");
 			}
 
 			$aResponse = $this->oActions->ExceptionResponse($oException);
@@ -183,7 +192,7 @@ class ServiceActions
 				$this->oActions->logException($oException, \LOG_ERR);
 			}
 
-			$iLimit = (int) $this->Config()->Get('labs', 'log_ajax_response_write_limit', 0);
+			$iLimit = (int) $this->Config()->Get('logs', 'json_response_write_limit', 0);
 			$this->oActions->logWrite(0 < $iLimit && $iLimit < \strlen($sResult)
 					? \substr($sResult, 0, $iLimit).'...' : $sResult, \LOG_INFO, 'JSON');
 		}
@@ -270,7 +279,10 @@ class ServiceActions
 	public function ServiceProxyExternal() : string
 	{
 		$sData = empty($this->aPaths[1]) ? '' : $this->aPaths[1];
-		if ($sData && $this->Config()->Get('labs', 'use_local_proxy_for_external_images', false)) {
+		if ($sData
+		  && $this->Config()->Get('labs', 'use_local_proxy_for_external_images', false)
+		  && $this->oActions->getMainAccountFromToken()
+		) {
 			$this->oActions->verifyCacheByKey($sData);
 			$sUrl = \MailSo\Base\Utils::UrlSafeBase64Decode($sData);
 			if (!empty($sUrl)) {
@@ -327,7 +339,7 @@ class ServiceActions
 					$sMethodName = 'Raw'.$sAction;
 					if (\method_exists($this->oActions, $sMethodName)) {
 						\header('X-Raw-Action: '.$sMethodName);
-						\header('Content-Security-Policy: script-src \'none\'; child-src \'none\'');
+						\header('Content-Security-Policy: script-src \'none\'; child-src \'none\'; object-src \'none\'');
 
 						$sRawError = '';
 						$this->oActions->SetActionParams(array(
@@ -552,18 +564,16 @@ class ServiceActions
 				if (\is_array($aData) && !empty($aData['Email']) && isset($aData['Password'], $aData['Time']) &&
 					(0 === $aData['Time'] || \time() - 10 < $aData['Time']))
 				{
-					$sEmail = \trim($aData['Email']);
-					$oPassword = new \SnappyMail\SensitiveString($aData['Password']);
-
 					$aAdditionalOptions = (isset($aData['AdditionalOptions']) && \is_array($aData['AdditionalOptions']))
 						? $aData['AdditionalOptions'] : [];
-
 					try
 					{
-						$oAccount = $this->oActions->LoginProcess($sEmail, $oPassword);
-
+						$oAccount = $this->oActions->LoginProcess(
+							\trim($aData['Email']),
+							new \SnappyMail\SensitiveString($aData['Password'])
+						);
 						if ($aAdditionalOptions) {
-							$bNeedToSettings = false;
+							$bSaveSettings = false;
 
 							$oSettings = $this->SettingsProvider()->Load($oAccount);
 							if ($oSettings) {
@@ -573,19 +583,15 @@ class ServiceActions
 								if ($sLanguage) {
 									$sLanguage = $this->oActions->ValidateLanguage($sLanguage);
 									if ($sLanguage !== $oSettings->GetConf('language', '')) {
-										$bNeedToSettings = true;
+										$bSaveSettings = true;
 										$oSettings->SetConf('language', $sLanguage);
 									}
 								}
 							}
 
-							if ($bNeedToSettings) {
+							if ($bSaveSettings) {
 								$oSettings->save();
 							}
-						}
-
-						if ($oAccount instanceof Model\MainAccount) {
-							$this->oActions->SetAuthToken($oAccount);
 						}
 					}
 					catch (\Throwable $oException)
@@ -623,9 +629,7 @@ class ServiceActions
 		\header('Content-Type: application/json; charset=utf-8');
 		$this->oHttp->ServerNoCache();
 		try {
-			$sResult = Utils::jsonEncode($this->oActions->AppData($bAdmin));
-			$this->oActions->logWrite($sResult, \LOG_INFO, 'APPDATA');
-			return $sResult;
+			return Utils::jsonEncode($this->oActions->AppData($bAdmin));
 		} catch (\Throwable $oException) {
 			$this->Logger()->WriteExceptionShort($oException);
 			\MailSo\Base\Http::StatusHeader(500);

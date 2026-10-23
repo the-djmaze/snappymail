@@ -31,18 +31,45 @@ abstract class DateTimeHelper
 
 	/**
 	 * Parse date string formated as "Thu, 10 Jun 2010 08:58:33 -0700 (PDT)"
-	 * RFC 2822
+	 * https://www.rfc-editor.org/rfc/rfc2822#section-3.3
 	 */
 	public static function ParseRFC2822DateString(string $sDateTime) : int
 	{
 		$sDateTime = \trim($sDateTime);
 		if (empty($sDateTime)) {
+			\SnappyMail\Log::info('', "No RFC 2822 date to parse");
 			return 0;
 		}
 
-		$sDateTime = \trim(\preg_replace('/ \([a-zA-Z0-9]+\)$/', '', $sDateTime));
-		$oDateTime = \DateTime::createFromFormat(\DateTime::RFC2822, $sDateTime, static::GetUtcTimeZoneObject());
-		return $oDateTime ? $oDateTime->getTimestamp() : 0;
+		// Strip invalid data after zone, https://github.com/the-djmaze/snappymail/issues/1554
+		$sDateTime = \preg_replace('/\s+\([a-zA-Z0-9]+\)$/', '', $sDateTime);
+		// https://github.com/the-djmaze/snappymail/issues/1694#issuecomment-2270983942
+		// Strip day-of-week
+		$sDateTime = \preg_replace('/^[^,]+,/', '', $sDateTime);
+		// Add optional seconds
+		$sDateTime = \preg_replace('/ ([0-9]+:[0-9]+) /', ' $1:00 ', $sDateTime);
+		$sDateTime = \trim($sDateTime);
+		$oDateTime =
+			// Using O (difference to Greenwich time (GMT) without colon between hours and minutes)
+			\DateTime::createFromFormat('d M Y H:i:s O', $sDateTime, static::GetUtcTimeZoneObject())
+			// Using T (obsolete timezone abbreviation)
+			?: \DateTime::createFromFormat('d M Y H:i:s T', $sDateTime, static::GetUtcTimeZoneObject());
+
+		try {
+			$timestamp = $oDateTime->getTimestamp();
+
+			// 398045302 is 1982-08-13 00:08:22, the date RFC 822 was created
+			if (398045302 > $timestamp) {
+				\SnappyMail\Log::notice('', "Failed to parse RFC 2822 date '{$sDateTime}'");
+				return 0;
+			}
+
+			return $timestamp;
+		} catch (\Throwable $error) {
+			// Catch integer overflow or other fatal errors
+			\SnappyMail\Log::notice('', "Failed to parse RFC 2822 date '{$sDateTime}'. {$error->getMessage()}");
+			return 0;
+		}
 	}
 
 	/**

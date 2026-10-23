@@ -18,8 +18,6 @@ import { OpenPgpGeneratePopupView } from 'View/Popup/OpenPgpGenerate';
 import { SMimeUserStore } from 'Stores/User/SMime';
 import { SMimeImportPopupView } from 'View/Popup/SMimeImport';
 
-import Remote from 'Remote/User/Fetch';
-
 export class UserSettingsSecurity extends AbstractViewSettings {
 	constructor() {
 		super();
@@ -28,9 +26,9 @@ export class UserSettingsSecurity extends AbstractViewSettings {
 		this.autoLogoutOptions = koComputable(() => {
 			translateTrigger();
 			return [
-				{ id: 0, name: i18n('SETTINGS_SECURITY/AUTOLOGIN_NEVER_OPTION_NAME') },
+				{ id: 0, name: i18n('SETTINGS_SECURITY/NEVER') },
 				{ id: 5, name: relativeTime(300) },
-				{ id: 10, name: relativeTime(600) },
+				{ id: 15, name: relativeTime(900) },
 				{ id: 30, name: relativeTime(1800) },
 				{ id: 60, name: relativeTime(3600) },
 				{ id: 120, name: relativeTime(7200) },
@@ -39,6 +37,9 @@ export class UserSettingsSecurity extends AbstractViewSettings {
 			];
 		});
 		this.addSetting('AutoLogout');
+
+		this.keyPassForget = SettingsUserStore.keyPassForget;
+		this.addSetting('keyPassForget');
 
 		this.gnupgPublicKeys = GnuPGUserStore.publicKeys;
 		this.gnupgPrivateKeys = GnuPGUserStore.privateKeys;
@@ -62,9 +63,7 @@ export class UserSettingsSecurity extends AbstractViewSettings {
 	}
 
 	importToOpenPGP() {
-		OpenPGPUserStore.isSupported() && Remote.request('GetPGPKeys',
-			(iError, oData) => !iError && oData.Result && OpenPGPUserStore.importKeys(oData.Result)
-		);
+		OpenPGPUserStore.loadBackupKeys();
 	}
 
 	importToSMime() {

@@ -20,7 +20,6 @@ ko.bindingHandlers['options'] = {
             previousScrollTop = (!selectWasPreviouslyEmpty && multiple) ? element.scrollTop : null,
             unwrappedArray = ko.utils.unwrapObservable(valueAccessor()),
             arrayToDomNodeChildrenOptions = {},
-            captionValue,
             filteredArray,
             previousSelectedValues = [],
 
@@ -61,7 +60,7 @@ ko.bindingHandlers['options'] = {
                 unwrappedArray = [unwrappedArray];
 
             // Filter out any entries marked as destroyed
-            filteredArray = unwrappedArray.filter(item => item || item == null);
+            filteredArray = unwrappedArray.filter(item => item ?? 1);
         } else {
             // If a falsy value is provided (e.g. null), we'll simply empty the select element
         }

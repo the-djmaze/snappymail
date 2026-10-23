@@ -1,6 +1,7 @@
 import ko from 'ko';
 import { addObservablesTo, addComputablesTo } from 'External/ko';
 
+import { UNUSED_OPTION_VALUE } from 'Common/Consts';
 import { ScopeFolderList, ScopeMessageList, ScopeMessageView } from 'Common/Enums';
 import { ComposeType, FolderType, MessageSetAction } from 'Common/EnumsUser';
 import { doc,
@@ -110,6 +111,8 @@ export class MailMessageList extends AbstractViewRight {
 
 		this.userUsageProc = FolderUserStore.quotaPercentage;
 
+		this.hideDeleted = SettingsUserStore.hideDeleted;
+
 		addObservablesTo(this, {
 			focusSearch: false
 		});
@@ -162,11 +165,11 @@ export class MailMessageList extends AbstractViewRight {
 				let list = [], current, sort = FolderUserStore.sortMode() || 'DATE';
 				if (sort.includes('FROM')) {
 					MessagelistUserStore.forEach(msg => {
-						let email = msg.from[0].email;
+						let email = msg.from[0]?.email;
 						if (!current || email != current.id) {
 							current = {
 								id: email,
-								label: msg.from[0].toLine(),
+								label: msg.from[0]?.toLine(),
 								search: 'from=' + email,
 								messages: []
 							};
@@ -210,15 +213,19 @@ export class MailMessageList extends AbstractViewRight {
 
 			sortText: () => {
 				let mode = FolderUserStore.sortMode(),
-					desc = '' === mode || mode.includes('REVERSE');
+					has = w => mode.includes(w),
+					desc = '' === mode || has('REVERSE');
 				mode = mode.split(/\s+/);
-				if (mode.includes('FROM')) {
+				if (has('FROM')) {
 					 return '@' + (desc ? '⬆' : '⬇');
 				}
-				if (mode.includes('SUBJECT')) {
+				if (has('SUBJECT')) {
 					 return '𝐒' + (desc ? '⬆' : '⬇');
 				}
-				return (mode.includes('SIZE') ? '✉' : '📅') + (desc ? '⬇' : '⬆');
+				if (has('SIZE')) {
+					 return '✉' + (desc ? '⬇' : '⬆');
+				}
+				return (has('ARRIVAL') ? '📨' : '📅') + (desc ? '⬇' : '⬆');
 			},
 
 			downloadAsZipAllowed: () => this.attachmentsActions.includes('zip')
@@ -296,14 +303,14 @@ export class MailMessageList extends AbstractViewRight {
 				item => sFolder === item?.folder && iUid == item?.uid
 			);
 
-			if ('INBOX' === sFolder) {
+			if ('INBOX' === sFolder && 'INBOX' !== FolderUserStore.currentFolderFullName()) {
 				hasher.setHash(mailBox(sFolder));
 			}
 
 			if (message) {
 				this.selector.selectMessageItem(message);
 			} else {
-				if ('INBOX' !== sFolder) {
+				if ('INBOX' !== sFolder && sFolder !== FolderUserStore.currentFolderFullName()) {
 					hasher.setHash(mailBox(sFolder));
 				}
 				if (sFolder && iUid) {
@@ -326,11 +333,13 @@ export class MailMessageList extends AbstractViewRight {
 			downloadZipCommand: canBeMovedHelper,
 			forwardCommand: canBeMovedHelper,
 			deleteWithoutMoveCommand: canBeMovedHelper,
-			deleteCommand: canBeMovedHelper,
+			deleteCommand: () => MessagelistUserStore.hasCheckedOrSelectedAndUndeleted(),
+			undeleteCommand: () => MessagelistUserStore.hasCheckedOrSelectedAndDeleted(),
 			archiveCommand: canBeMovedHelper,
 			spamCommand: canBeMovedHelper,
 			notSpamCommand: canBeMovedHelper,
 			moveCommand: canBeMovedHelper,
+			copyCommand: canBeMovedHelper
 		});
 	}
 
@@ -399,8 +408,30 @@ export class MailMessageList extends AbstractViewRight {
 		&& moveMessagesToFolderType(FolderType.Trash, true);
 	}
 
+	// User setting hideDeleted || immediatelyMoveToTrash ??
 	deleteCommand() {
-		moveMessagesToFolderType(FolderType.Trash);
+		/**
+		 * When FolderUserStore.trashFolder is set to "Do not use",
+		 * flag as \Deleted for removal by later EXPUNGE
+		 */
+		if (UNUSED_OPTION_VALUE === FolderUserStore.trashFolder()) {
+			listAction(
+				FolderUserStore.currentFolderFullName(),
+				MessageSetAction.SetDeleted,
+				MessagelistUserStore.listCheckedOrSelected()
+			);
+		} else {
+			moveMessagesToFolderType(FolderType.Trash);
+		}
+	}
+
+	// User setting !hideDeleted && !immediatelyMoveToTrash ??
+	undeleteCommand() {
+		listAction(
+			FolderUserStore.currentFolderFullName(),
+			MessageSetAction.UnsetDeleted,
+			MessagelistUserStore.listCheckedOrSelected()
+		);
 	}
 
 	archiveCommand() {
@@ -415,16 +446,24 @@ export class MailMessageList extends AbstractViewRight {
 		moveMessagesToFolderType(FolderType.Inbox);
 	}
 
-	moveCommand(vm, event) {
+	moveOrCopy(vm, event, mode) {
 		if (canBeMovedHelper()) {
 			if (vm && event?.preventDefault) {
 				stopEvent(event);
 			}
 
-			let b = moveAction();
-			AppUserStore.focusedState(b ? ScopeMessageList : ScopeFolderList);
-			moveAction(!b);
+			let i = moveAction();
+			AppUserStore.focusedState(i ? ScopeMessageList : ScopeFolderList);
+			moveAction(i ? 0 : mode);
 		}
+	}
+
+	moveCommand(vm, event) {
+		this.moveOrCopy(vm, event, 1);
+	}
+
+	copyCommand(vm, event) {
+		this.moveOrCopy(vm, event, 2);
 	}
 
 	composeClick() {
@@ -594,8 +633,10 @@ export class MailMessageList extends AbstractViewRight {
 				}
 			},
 			dblclick: event => {
-				let el = eqs(event, '.messageListItem');
-				el && this.gotoThread(ko.dataFor(el));
+				let msg = ko.dataFor(eqs(event, '.messageListItem'));
+				if (msg) {
+					msg.threadsLen() ? this.gotoThread(msg) : toggleFullscreen();
+				}
 			}
 		});
 

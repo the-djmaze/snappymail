@@ -13,12 +13,13 @@ class OpenSSL
 	private string $homedir;
 	private array $headers = [];
 	private int $flags = 0;
-	private int $cipher_algo = \OPENSSL_CIPHER_AES_128_CBC;
+	private int $cipher_algo = \OPENSSL_CIPHER_AES_128_CBC; // \OPENSSL_CIPHER_AES_256_CBC
 	private ?string $untrusted_certificates_filename = null;
 
 	// Used for sign and decrypt
 	private $certificate; // OpenSSLCertificate|array|string
 	private $privateKey; // OpenSSLAsymmetricKey|OpenSSLCertificate|array|string
+	private ?string $certificateChain = null;
 
 	function __construct(string $homedir)
 	{
@@ -131,6 +132,15 @@ class OpenSSL
 		}
 	}
 
+	public function setCertificateChain(/*string*/$certificateChain)
+	{
+		if ($certificateChain === "") {
+			$this->certificateChain = null;
+		} else {
+			$this->certificateChain = $certificateChain;
+		}
+	}
+
 	public function setPrivateKey(/*OpenSSLAsymmetricKey|string*/$privateKey,
 		?\SnappyMail\SensitiveString $passphrase = null
 	) : void
@@ -144,6 +154,22 @@ class OpenSSL
 		}
 	}
 
+	public function exportPrivateKey(?\SnappyMail\SensitiveString $passphrase = null): string
+	{
+		if (!$this->privateKey) {
+			throw new \RuntimeException('OpenSSL exportPrivateKey: key not loaded');
+		}
+		$options = [
+			'encrypt_key' => true,
+			'encrypt_key_cipher' => \OPENSSL_CIPHER_AES_256_CBC
+		];
+		$output = '';
+		if (!\openssl_pkey_export($this->privateKey, $output, $passphrase/*, $options*/)) {
+			throw new \RuntimeException('OpenSSL exportPrivateKey: ' . \openssl_error_string());
+		}
+		return $output;
+	}
+
 /*
 	public function asn1parse(/*string|Temporary* / $input) : ?string
 	{
@@ -154,7 +180,7 @@ class OpenSSL
 			}
 			$input = $tmp;
 		}
-		`openssl asn1parse -in $input->filename()`
+		\shell_exec('openssl asn1parse -in $input->filename()');
 	}
 */
 	public function decrypt(/*string|Temporary*/ $input) : ?string
@@ -228,6 +254,13 @@ class OpenSSL
 			}
 			$input = $tmp;
 		}
+		if (\is_string($this->certificateChain)) {
+			$tmp = new Temporary('smimechain-');
+			if (!$tmp->putContents($this->certificateChain)) {
+				return null;
+			}
+			$certificateChain = $tmp;
+		}
 		$output = new Temporary('smimeout-');
 		if (!\openssl_pkcs7_sign(
 			$input->filename(),
@@ -236,7 +269,7 @@ class OpenSSL
 			$this->privateKey,
 			$this->headers,
 			$detached ? \PKCS7_DETACHED | \PKCS7_BINARY : 0, // | PKCS7_NOCERTS | PKCS7_NOATTR
-			$this->untrusted_certificates_filename
+			$certificateChain ?? null
 		)) {
 			throw new \RuntimeException('OpenSSL sign: ' . \openssl_error_string());
 		}

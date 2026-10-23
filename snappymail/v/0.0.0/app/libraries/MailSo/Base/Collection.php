@@ -64,14 +64,14 @@ abstract class Collection extends \ArrayObject implements \JsonSerializable
 		return $callable($this->getArrayCopy(), ...$arguments);
 	}
 */
-	public function Slice(int $offset, int $length = null, bool $preserve_keys = false)
+	public function Slice(int $offset, ?int $length = null, bool $preserve_keys = false)
 	{
 		return new static(
 			\array_slice($this->getArrayCopy(), $offset, $length, $preserve_keys)
 		);
 	}
 
-	public function Crop(int $length = null, int $offset = 0, bool $preserve_keys = false)
+	public function Crop(?int $length = null, int $offset = 0, bool $preserve_keys = false)
 	{
 		$this->exchangeArray(
 			\array_slice($this->getArrayCopy(), $offset, $length, $preserve_keys)

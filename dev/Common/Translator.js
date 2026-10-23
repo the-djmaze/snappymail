@@ -45,8 +45,7 @@ export const
 			}
 		}
 		if (Intl.RelativeTimeFormat) {
-			let rtf = new Intl.RelativeTimeFormat(doc.documentElement.lang);
-			return rtf.format(seconds, unit);
+			return (new Intl.RelativeTimeFormat(doc.documentElement.lang)).format(seconds, unit);
 		}
 		// Safari < 14
 		abs = Math.abs(seconds);
@@ -62,7 +61,7 @@ export const
 	 * @returns {string}
 	 */
 	i18n = (key, valueList, defaulValue) => {
-		let result = null == defaulValue ? key : defaulValue;
+		let result = defaulValue ?? key;
 		let path = key.split('/');
 		if (I18N_DATA[path[0]] && path[1]) {
 			result = I18N_DATA[path[0]][path[1]] || result;
@@ -185,6 +184,9 @@ export const
 			|| '';
 	},
 
+	getErrorMessage = (code, data) =>
+		getNotification(code) || data?.messageAdditional || data?.message || data,
+
 	/**
 	 * @param {*} code
 	 * @returns {string}
@@ -218,7 +220,6 @@ export const
 		}),
 
 	/**
-	 *
 	 * @param {string} language
 	 * @param {boolean=} isEng = false
 	 * @returns {string}
@@ -228,6 +229,8 @@ export const
 			'LANGS_NAMES' + (true === isEng ? '_EN' : '') + '/' + language,
 			null,
 			language
-		);
+		),
+
+	baseCollator = numeric => new Intl.Collator(doc.documentElement.lang, {numeric: !!numeric, sensitivity: 'base'});
 
 init();

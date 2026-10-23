@@ -9,7 +9,8 @@
 #V-PopupsCompose {
 	height: 100vh;
 	height: 100dvh;
-	max-width: 1000px;
+	max-width: min(99vw, 1600px);
+	resize: horizontal;
 	width: 99%;
 
 	.modal-body {
@@ -21,10 +22,16 @@
 
 	.tabs {
 		height: 100%;
+		max-height: 100%;
+		overflow: auto;
 	}
 
 	.tabs > label > * + * {
 		margin-left: 0.5em;
+	}
+
+	.tabs .tab-content {
+		overflow: auto;
 	}
 
 	.textAreaParent, .attachmentAreaParent {

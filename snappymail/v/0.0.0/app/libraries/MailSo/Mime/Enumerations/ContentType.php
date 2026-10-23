@@ -24,6 +24,8 @@ abstract class ContentType
 	const PGP_SIGNATURE = 'application/pgp-signature';
 	const PKCS7_SIGNATURE = 'application/pkcs7-signature';
 	const PKCS7_MIME = 'application/pkcs7-mime';
+	// RFC 3462
+	const REPORT = 'multipart/report'; // ; report-type=delivery-status;
 
 	public static function isPkcs7Mime(string $data) : bool
 	{

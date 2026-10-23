@@ -11,6 +11,7 @@ abstract class AbstractPlugin
 		VERSION  = '0.0',
 		RELEASE  = '2020-11-01',
 		REQUIRED = '2.0.0',
+//		DEPRECATED = '',
 		CATEGORY = 'General',
 		LICENSE  = 'AGPL v3',
 		DESCRIPTION = '';

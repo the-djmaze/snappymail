@@ -4,20 +4,6 @@ namespace OCA\SnappyMail\Util;
 
 class RainLoop
 {
-
-	public static function getLoginCredentials($sUID, $config) : ?array
-	{
-		$sEmail = \trim($config->getUserValue($sUID, 'rainloop', 'rainloop-email'));
-		if ($sEmail) {
-			$sPassword = $config->getUserValue($sUID, 'rainloop', 'rainloop-password', '');
-			return [
-				$sEmail,
-				$sPassword ? static::decodePassword($sPassword, \md5($sEmail)) : ''
-			];
-		}
-		return null;
-	}
-
 	/**
 	 * Imports data from RainLoop
 	 * skips: /data/rainloop-storage/_data_/_default_/configs/application.ini
@@ -81,48 +67,5 @@ class RainLoop
 		$oConfig->Save();
 
 		return $result;
-	}
-
-	/**
-	 * @param string $sPassword
-	 * @param string $sSalt
-	 *
-	 * @return string
-	 */
-	public static function decodePassword($sPassword, $sSalt)
-	{
-		$sPassword = \base64_decode(\trim($sPassword));
-
-		$method = 'AES-256-CBC';
-		if (\function_exists('openssl_encrypt')
-		 && \function_exists('openssl_decrypt')
-		 && \function_exists('openssl_random_pseudo_bytes')
-		 && \function_exists('openssl_cipher_iv_length')
-		 && \function_exists('openssl_get_cipher_methods')
-		 && \defined('OPENSSL_RAW_DATA')
-		 && \defined('OPENSSL_ZERO_PADDING')
-		 && \in_array($method, \openssl_get_cipher_methods())
-		) {
-			$aParts = \explode('|', $sPassword, 2);
-			if (\is_array($aParts) && !empty($aParts[0]) && !empty($aParts[1])) {
-				$sData = \base64_decode($aParts[0]);
-				$iv = \base64_decode($aParts[1]);
-				return \base64_decode(\trim(
-					\openssl_decrypt($sData, $method, \md5($sSalt), OPENSSL_RAW_DATA, $iv)
-				));
-			}
-		}
-
-		if (\function_exists('mcrypt_encrypt')
-		 && \function_exists('mcrypt_decrypt')
-		 && \defined('MCRYPT_RIJNDAEL_256')
-		 && \defined('MCRYPT_MODE_ECB')
-		) {
-			return \base64_decode(\trim(
-				\mcrypt_decrypt(MCRYPT_RIJNDAEL_256, \md5($sSalt), $sPassword, MCRYPT_MODE_ECB)
-			));
-		}
-
-		return $sPassword;
 	}
 }

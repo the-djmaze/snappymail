@@ -36,8 +36,13 @@ trait Messages
 				$oParams->iPrevUidNext = $aValues['uidNext'];
 			}
 			$oParams->bUseThreads = !empty($aValues['useThreads']);
-			if ($oParams->bUseThreads && isset($aValues['threadUid'])) {
-				$oParams->iThreadUid = $aValues['threadUid'];
+			if ($oParams->bUseThreads) {
+				if (isset($aValues['threadUid'])) {
+					$oParams->iThreadUid = $aValues['threadUid'];
+				}
+				if (isset($aValues['threadAlgorithm'])) {
+					$oParams->sThreadAlgorithm = $aValues['threadAlgorithm'];
+				}
 			}
 		} else {
 			// POST
@@ -50,6 +55,7 @@ trait Messages
 			$oParams->bUseThreads = !empty($this->GetActionParam('useThreads', '0'));
 			if ($oParams->bUseThreads) {
 				$oParams->iThreadUid = $this->GetActionParam('threadUid', '');
+				$oParams->sThreadAlgorithm = $this->GetActionParam('threadAlgorithm', '');
 			}
 		}
 
@@ -59,29 +65,28 @@ trait Messages
 
 		$oAccount = $this->initMailClientConnection();
 
+		$oSettingsLocal = $this->SettingsProvider(true)->Load($oAccount);
+		if ($oSettingsLocal instanceof \RainLoop\Settings) {
+			$oParams->bHideDeleted = !empty($oSettingsLocal->GetConf('HideDeleted', 1));
+		}
+
+//		$oParams->bUseSort = $this->ImapClient()->hasCapability('SORT');
+		$oParams->bUseSort = true;
+
 		if ($sHash) {
-//			$sFolderHash = $this->MailClient()->FolderHash($oParams->sFolderName);
 			$oInfo = $this->ImapClient()->FolderStatusAndSelect($oParams->sFolderName);
 			$aRequestHash = \explode('-', $sHash);
-			$sFolderHash = $oInfo->etag;
-			$sHash = $oParams->hash() . '-' . $sFolderHash;
-			if ($aRequestHash[1] == $sFolderHash) {
-				$this->verifyCacheByKey($sHash);
+			$sNewHash = $oParams->hash() . '-' . $oInfo->etag;
+			if ($aRequestHash[1] == $oInfo->etag) {
+				$this->verifyCacheByKey($sNewHash);
 			}
+			$sHash = $sNewHash;
 		}
 
 		try
 		{
 			if ($this->Config()->Get('cache', 'enable', true) && $this->Config()->Get('cache', 'server_uids', false)) {
 				$oParams->oCacher = $this->Cacher($oAccount);
-			}
-
-//			$oParams->bUseSort = $this->ImapClient()->hasCapability('SORT');
-			$oParams->bUseSort = true;
-
-			$oSettingsLocal = $this->SettingsProvider(true)->Load($oAccount);
-			if ($oSettingsLocal instanceof \RainLoop\Settings) {
-				$oParams->bHideDeleted = !empty($oSettingsLocal->GetConf('HideDeleted', 1));
 			}
 
 //			\ignore_user_abort(true);
@@ -152,7 +157,18 @@ trait Messages
 	public function DoSendMessage() : array
 	{
 		$oAccount = $this->initMailClientConnection();
-
+/*
+		$aAuth = $this->GetActionParam('auth', null);
+		if ($aAuth) {
+			$oAccount->setSmtpUser($aAuth['username']);
+			$oAccount->setSmtpPass(new \SnappyMail\SensitiveString($aAuth['password']));
+//			if ($oAccount instanceof AdditionalAccount && !empty($aAuth['remember'])) {
+//				$oMainAccount = $this->getMainAccountFromToken();
+//				$aAccounts = $this->GetAccounts($oMainAccount);
+//				$this->SetAccounts($oMainAccount, $aAccounts);
+//			}
+		}
+*/
 		$oConfig = $this->Config();
 
 		$sSaveFolder = $this->GetActionParam('saveFolder', '');
@@ -295,6 +311,10 @@ trait Messages
 				}
 			}
 		}
+		catch (\MailSo\Smtp\Exceptions\LoginBadCredentialsException $oException)
+		{
+			throw new ClientException(Notifications::AuthError, $oException);
+		}
 		catch (ClientException $oException)
 		{
 			throw $oException;
@@ -429,6 +449,11 @@ trait Messages
 		return $this->messageSetFlag(MessageFlag::FLAGGED, true);
 	}
 
+	public function DoMessageSetDeleted() : array
+	{
+		return $this->messageSetFlag(MessageFlag::DELETED, true);
+	}
+
 	public function DoMessageSetKeyword() : array
 	{
 		return $this->messageSetFlag($this->GetActionParam('keyword', ''), true);
@@ -455,6 +480,9 @@ trait Messages
 		try
 		{
 			$oMessage = $this->MailClient()->Message($sFolder, $iUid, true, $this->Cacher($oAccount));
+			if (!$oMessage) {
+				throw new \RuntimeException('Message not found');
+			}
 
 			$bAutoVerify = $this->Config()->Get('security', 'auto_verify_signatures', false);
 
@@ -547,13 +575,10 @@ trait Messages
 			throw new ClientException(Notifications::CantGetMessage, $oException);
 		}
 
-		if ($oMessage) {
-			$ETag = $oMessage->ETag($this->getAccountFromToken()->IncLogin());
-			$this->verifyCacheByKey($ETag);
-			$this->Plugins()->RunHook('filter.result-message', array($oMessage));
-			$this->cacheByKey($ETag);
-		}
-
+		$ETag = $oMessage->ETag($this->getAccountFromToken()->ImapUser());
+		$this->verifyCacheByKey($ETag);
+		$this->Plugins()->RunHook('filter.result-message', array($oMessage));
+		$this->cacheByKey($ETag);
 		return $this->DefaultResponse($oMessage);
 	}
 
@@ -772,45 +797,45 @@ trait Messages
 			$oAccount->SmtpConnectAndLogin($this->Plugins(), $oSmtpClient);
 
 			if ($oSmtpClient->Settings->usePhpMail) {
-				if (\MailSo\Base\Utils::FunctionCallable('mail')) {
-					$oToCollection = $oMessage->GetTo();
-					if ($oToCollection && $oFrom) {
-						$sRawBody = \stream_get_contents($rMessageStream);
-						if (!empty($sRawBody)) {
-							$sMailTo = \trim($oToCollection->ToString(true));
-							$sMailSubject = \trim($oMessage->GetSubject());
-							$sMailSubject = \strlen($sMailSubject) ? \MailSo\Base\Utils::EncodeHeaderValue($sMailSubject) : '';
+				if (!$sFrom || !\MailSo\Base\Utils::FunctionCallable('mail')) {
+					throw new ClientException(Notifications::CantSendMessage);
+				}
+				$oToCollection = $oMessage->GetTo();
+				if (!$oToCollection) {
+					throw new ClientException(Notifications::CantSendMessage);
+				}
+				$sRawBody = \stream_get_contents($rMessageStream);
+				if (empty($sRawBody)) {
+					throw new ClientException(Notifications::CantSendMessage);
+				}
+				$sMailTo = \trim($oToCollection->ToString(true));
+				$sMailSubject = \trim($oMessage->GetSubject());
+				$sMailSubject = \strlen($sMailSubject) ? \MailSo\Base\Utils::EncodeHeaderValue($sMailSubject) : '';
 
-							$sMailHeaders = $sMailBody = '';
-							list($sMailHeaders, $sMailBody) = \explode("\r\n\r\n", $sRawBody, 2);
-							unset($sRawBody);
+				$sMailHeaders = $sMailBody = '';
+				list($sMailHeaders, $sMailBody) = \explode("\r\n\r\n", $sRawBody, 2);
+				unset($sRawBody);
 
-							if ($this->Config()->Get('labs', 'mail_func_clear_headers', true)) {
-								$sMailHeaders = \MailSo\Base\Utils::RemoveHeaderFromHeaders($sMailHeaders, array(
-									MimeEnumHeader::TO_,
-									MimeEnumHeader::SUBJECT
-								));
-							}
+				if ($this->Config()->Get('labs', 'mail_func_clear_headers', true)) {
+					$sMailHeaders = \MailSo\Base\Utils::RemoveHeaderFromHeaders($sMailHeaders, array(
+						MimeEnumHeader::TO_,
+						MimeEnumHeader::SUBJECT
+					));
+				}
 
-							$this->Logger()->WriteDump(array(
-								$sMailTo, $sMailSubject, $sMailBody, $sMailHeaders
-							), \LOG_DEBUG);
+				$this->Logger()->WriteDump(array(
+					$sMailTo, $sMailSubject, $sMailBody, $sMailHeaders
+				), \LOG_DEBUG);
 
-							$bR = $this->Config()->Get('labs', 'mail_func_additional_parameters', false) ?
-								\mail($sMailTo, $sMailSubject, $sMailBody, $sMailHeaders, '-f'.$oFrom->GetEmail()) :
-								\mail($sMailTo, $sMailSubject, $sMailBody, $sMailHeaders);
-
-							if (!$bR) {
-								throw new ClientException(Notifications::CantSendMessage);
-							}
-						}
-					}
-				} else {
+				$bR = $this->Config()->Get('labs', 'mail_func_additional_parameters', false) ?
+					\mail($sMailTo, $sMailSubject, $sMailBody, $sMailHeaders, '-f'.$sFrom) :
+					\mail($sMailTo, $sMailSubject, $sMailBody, $sMailHeaders);
+				if (!$bR) {
 					throw new ClientException(Notifications::CantSendMessage);
 				}
 			} else if ($oSmtpClient->IsConnected()) {
 				if ($iMessageStreamSize && $oSmtpClient->maxSize() && $iMessageStreamSize * 1.33 > $oSmtpClient->maxSize()) {
-					throw new ClientException(Notifications::ClientViewError, 'Message size '. ($iMessageStreamSize * 1.33) . ' bigger then max ' . $oSmtpClient->maxSize());
+					throw new ClientException(Notifications::ClientViewError, null, 'Message size '. ($iMessageStreamSize * 1.33) . ' bigger then max ' . $oSmtpClient->maxSize());
 				}
 
 				if (!empty($sFrom)) {
@@ -1125,7 +1150,25 @@ trait Messages
 				}
 			}
 		}
-
+/*
+		// OpenPGP https://github.com/the-djmaze/snappymail/issues/1587
+		$sPublicKey = $this->GetActionParam('publicKey', '');
+		if ($sPublicKey) {
+			$oMessage->Attachments()->append(
+				new \MailSo\Mime\Attachment(
+					\fopen("data://text/plain,{$sPublicKey}", 'r'),
+					'OpenPGP_'.\md5($sPublicKey).'.asc',
+					\strlen($sPublicKey),
+					false,
+					false,
+					'',
+					array(),
+					'',
+					'application/pgp-keys'
+				)
+			);
+		}
+*/
 		foreach ($aFoundDataURL as $sCidHash => $sDataUrlString) {
 			$aMatch = array();
 			$sCID = '<'.$sCidHash.'>';
@@ -1151,9 +1194,29 @@ trait Messages
 
 		$oPassphrase = new \SnappyMail\SensitiveString($this->GetActionParam('signPassphrase', ''));
 
+		// GnuPG
 		$sFingerprint = $this->GetActionParam('signFingerprint', '');
 		if ($sFingerprint) {
 			$GPG = $this->GnuPG();
+/*
+			// https://github.com/the-djmaze/snappymail/issues/1587
+			if ($this->GetActionParam('attachPublicKey', false)) {
+				$sPublicKey = $GPG->export($sFingerprint);
+				$oMessage->Attachments()->append(
+					new \MailSo\Mime\Attachment(
+						\fopen("data://text/plain,{$sPublicKey}", 'r'),
+						"OpenPGP_0x{$sFingerprint}.asc",
+						\strlen($sPublicKey),
+						false,
+						false,
+						'',
+						array(),
+						'',
+						'application/pgp-keys'
+					)
+				);
+			}
+*/
 			$oBody = $oMessage->GetRootPart();
 			$resource = $oBody->ToStream();
 
@@ -1192,6 +1255,7 @@ trait Messages
 			$oPart->SubParts->append($oSignaturePart);
 		} else {
 			$sCertificate = $this->GetActionParam('signCertificate', '');
+			$sCertificateChain = $this->GetActionParam('signCertificateChain', '');
 			$sPrivateKey = $this->GetActionParam('signPrivateKey', '');
 			if ('S/MIME' === $this->GetActionParam('sign', '')) {
 				$sID = $this->GetActionParam('identityID', '');
@@ -1200,11 +1264,30 @@ trait Messages
 					 && ($oIdentity->Id() === $sID || $oIdentity->Email() === $oFrom->GetEmail())
 					) {
 						$sCertificate = $oIdentity->smimeCertificate;
+						$sCertificateChain = $oIdentity->smimeCertificateChain;
 						$sPrivateKey = $oIdentity->smimeKey;
 						break;
 					}
 				}
 			}
+/*
+			// https://github.com/the-djmaze/snappymail/issues/1587
+			if ($sCertificate && $this->GetActionParam('attachCertificate', false)) {
+				$oMessage->Attachments()->append(
+					new \MailSo\Mime\Attachment(
+						\fopen("data://text/plain,{$sCertificate}", 'r'),
+						'certificate.pem',
+						\strlen($sCertificate),
+						false,
+						false,
+						'',
+						array(),
+						'',
+						'application/pem-certificate-chain'
+					)
+				);
+			}
+*/
 			if ($sCertificate && $sPrivateKey) {
 				$oBody = $oMessage->GetRootPart();
 
@@ -1222,6 +1305,7 @@ trait Messages
 
 				$SMIME = $this->SMIME();
 				$SMIME->setCertificate($sCertificate);
+				$SMIME->setCertificateChain($sCertificateChain);
 				$SMIME->setPrivateKey($sPrivateKey, $oPassphrase);
 				$sSignature = $SMIME->sign($tmp, $detached);
 

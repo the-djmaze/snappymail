@@ -57,7 +57,7 @@ window.Sieve = {
 		Remote.request('FiltersScriptDelete',
 			(iError, data) =>
 				iError
-					? setError(data?.ErrorMessageAdditional || getNotification(iError))
+					? setError(data?.messageAdditional || getNotification(iError))
 					: scripts.remove(script)
 			,
 			{name:script.name()}
@@ -69,7 +69,7 @@ window.Sieve = {
 		Remote.request('FiltersScriptActivate',
 			(iError, data) =>
 				iError
-					? setError(data?.ErrorMessageAdditional || iError)
+					? setError(data?.messageAdditional || iError)
 					: scripts.forEach(script => script.active(script.name() === name))
 			,
 			{name:name}

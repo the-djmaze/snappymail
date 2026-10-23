@@ -17,6 +17,9 @@
 			<i class="icon-check-mark-circle-two"></i>
 		</a>
 		<a class="btn fontastic" data-bind="command: deleteCommand" data-i18n="[title]GLOBAL/DELETE">🗑</a>
+<!--
+		<a class="btn fontastic" data-bind="command: undeleteCommand, hidden: hideDeleted" data-i18n="[title]GLOBAL/UNDELETE" style="transform:rotate(-180deg)">🗑</a>
+-->
 	</div>
 	<div class="btn-group dropdown" data-bind="registerBootstrapDropdown: true">
 		<a id="more-list-dropdown-id" class="btn dropdown-toggle fontastic" href="#" tabindex="-1" data-i18n="[title]GLOBAL/MORE">☰</a>
@@ -40,13 +43,16 @@
 				<a href="#" tabindex="-1" data-icon="↞" data-i18n="MESSAGE_LIST/BUTTON_MULTY_FORWARD"></a>
 			</li>
 			<li role="presentation" data-bind="command: downloadAttachCommand, visible: downloadAsZipAllowed">
-				<a href="#" tabindex="-1" data-icon="" data-i18n="MESSAGE_LIST/DOWNLOAD_ALL_ATTACHMENTS"></a>
+				<a href="#" tabindex="-1" data-icon="📦" data-i18n="MESSAGE_LIST/DOWNLOAD_ALL_ATTACHMENTS"></a>
 			</li>
 			<li role="presentation" data-bind="command: downloadZipCommand, visible: downloadAsZipAllowed">
 				<a href="#" tabindex="-1" data-icon="💾" data-i18n="MESSAGE/LINK_DOWNLOAD_AS_ZIP"></a>
 			</li>
 			<li class="dividerbar" role="presentation" data-bind="command: moveCommand">
 				<a href="#" tabindex="-1" data-icon="📁" data-i18n="GLOBAL/MOVE_TO"></a>
+			</li>
+			<li class="presentation" role="presentation" data-bind="command: copyCommand">
+				<a href="#" tabindex="-1" data-icon="&#xE068;" data-i18n="GLOBAL/COPY_TO"></a>
 			</li>
 			<li role="presentation" data-bind="visible: archiveAllowed, command: archiveCommand">
 				<a href="#" tabindex="-1" data-icon="🗄" data-i18n="GLOBAL/TO_ARCHIVE">🗄</a>
@@ -59,6 +65,9 @@
 			</li>
 			<li role="presentation" data-bind="command: deleteCommand">
 				<a href="#" tabindex="-1" data-icon="🗑" data-i18n="GLOBAL/DELETE"></a>
+			</li>
+			<li role="presentation" data-bind="command: undeleteCommand, hidden: hideDeleted">
+				<a href="#" tabindex="-1" data-icon="🗑" data-i18n="GLOBAL/UNDELETE" class="rotate"></a>
 			</li>
 			<li role="presentation" data-bind="visible: allowDangerousActions, command: deleteWithoutMoveCommand">
 				<a href="#" tabindex="-1" data-icon="🗑" data-i18n="MESSAGE_LIST/BUTTON_DELETE_WITHOUT_MOVE"></a>
@@ -97,6 +106,12 @@
 			</li>
 			<li role="presentation" data-sort="REVERSE SUBJECT" data-bind="click: changeSort">
 				<a href="#" tabindex="-1" data-icon="𝐒⬆" data-i18n="MESSAGE_LIST/SORT_SUBJECT_DESC"></a>
+			</li>
+			<li class="dividerbar" role="presentation" data-sort="REVERSE ARRIVAL" data-bind="click: changeSort">
+				<a href="#" tabindex="-1" data-icon="📨⬇" data-i18n="MESSAGE_LIST/SORT_ARRIVAL_DESC"></a>
+			</li>
+			<li role="presentation" data-sort="ARRIVAL" data-bind="click: changeSort">
+				<a href="#" tabindex="-1" data-icon="📨⬆" data-i18n="MESSAGE_LIST/SORT_ARRIVAL_ASC"></a>
 			</li>
 		</menu>
 	</div>

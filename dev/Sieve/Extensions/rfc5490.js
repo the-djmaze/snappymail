@@ -42,28 +42,35 @@ export class MetadataTest extends TestCommand
 	constructor()
 	{
 		super();
-		this.mailbox = new GrammarQuotedString;
-		this.annotation_name = new GrammarQuotedString;
+		this._mailbox = new GrammarQuotedString;
+		this._annotation_name = new GrammarQuotedString;
 		this.key_list = new GrammarStringList;
 	}
 
 	get require() { return 'mboxmetadata'; }
 
+	get mailbox() { return this._mailbox.value; }
+	set mailbox(v) { this._mailbox.value = v; }
+
+	get annotation_name() { return this._annotation_name.value; }
+	set annotation_name(v) { this._annotation_name.value = v; }
+
 	toString()
 	{
 		return 'metadata '
-			+ ' ' + this.match_type
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ ' ' + this.mailbox
-			+ ' ' + this.annotation_name
+			+ ' ' + this._match_type
+			+ (this.relational_match ? ' ' + this.relational_match : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ ' ' + this._mailbox
+			+ ' ' + this._annotation_name
 			+ ' ' + this.key_list;
 	}
 
 	pushArguments(args)
 	{
 		this.key_list = args.pop();
-		this.annotation_name = args.pop();
-		this.mailbox = args.pop();
+		this._annotation_name = args.pop();
+		this._mailbox = args.pop();
 	}
 }
 
@@ -75,23 +82,26 @@ export class MetadataExistsTest extends TestCommand
 	constructor()
 	{
 		super();
-		this.mailbox = new GrammarQuotedString;
+		this._mailbox = new GrammarQuotedString;
 		this.annotation_names = new GrammarStringList;
 	}
 
 	get require() { return 'mboxmetadata'; }
 
+	get mailbox() { return this._mailbox.value; }
+	set mailbox(v) { this._mailbox.value = v; }
+
 	toString()
 	{
 		return 'metadataexists '
-			+ ' ' + this.mailbox
+			+ ' ' + this._mailbox
 			+ ' ' + this.annotation_names;
 	}
 
 	pushArguments(args)
 	{
 		this.annotation_names = args.pop();
-		this.mailbox = args.pop();
+		this._mailbox = args.pop();
 	}
 }
 
@@ -103,25 +113,29 @@ export class ServerMetadataTest extends TestCommand
 	constructor()
 	{
 		super();
-		this.annotation_name = new GrammarQuotedString;
+		this._annotation_name = new GrammarQuotedString;
 		this.key_list = new GrammarStringList;
 	}
 
 	get require() { return 'servermetadata'; }
 
+	get annotation_name() { return this._annotation_name.value; }
+	set annotation_name(v) { this._annotation_name.value = v; }
+
 	toString()
 	{
 		return 'servermetadata '
-			+ ' ' + this.match_type
-			+ (this.comparator ? ' :comparator ' + this.comparator : '')
-			+ ' ' + this.annotation_name
+			+ ' ' + this._match_type
+			+ (this.relational_match ? ' ' + this.relational_match : '')
+			+ (this._comparator ? ' :comparator ' + this._comparator : '')
+			+ ' ' + this._annotation_name
 			+ ' ' + this.key_list;
 	}
 
 	pushArguments(args)
 	{
 		this.key_list = args.pop();
-		this.annotation_name = args.pop();
+		this._annotation_name = args.pop();
 	}
 }
 

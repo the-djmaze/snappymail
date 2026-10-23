@@ -36,7 +36,7 @@ export class AccountPopupView extends AbstractViewPopup {
 					this.submitRequest(false);
 					if (iError) {
 						this.submitError(getNotification(iError));
-						this.submitErrorAdditional(data?.ErrorMessageAdditional);
+						this.submitErrorAdditional(data?.messageAdditional);
 					} else {
 						loadAccountsAndIdentities();
 						this.close();

@@ -8,11 +8,11 @@ import {
 	GrammarString
 } from 'Sieve/Grammar';
 
-class rfc5429Command extends ActionCommand
+class /*abstract*/ rfc5429Command extends ActionCommand
 {
-	constructor(identifier)
+	constructor()
 	{
-		super(identifier);
+		super();
 		this._reason = new GrammarQuotedString;
 	}
 
@@ -44,7 +44,6 @@ class rfc5429Command extends ActionCommand
  */
 export class ErejectCommand extends rfc5429Command
 {
-	constructor() { super('ereject'); }
 	get require() { return 'ereject'; }
 }
 
@@ -53,6 +52,5 @@ export class ErejectCommand extends rfc5429Command
  */
 export class RejectCommand extends rfc5429Command
 {
-	constructor() { super('reject'); }
 	get require() { return 'reject'; }
 }

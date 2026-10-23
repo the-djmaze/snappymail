@@ -165,6 +165,7 @@ class ImapClient extends \MailSo\Net\NetClient
 					$this->sendRaw($sAuth);
 				}
 				$oResponse = $this->getResponse();
+//				if ($oResponse->getLast()->ResponseType === Enumerations\ResponseType::CONTINUATION)
 				if ($SASL->hasChallenge()) {
 					$sChallenge = $SASL->challenge($this->getResponseValue($oResponse, ResponseType::CONTINUATION));
 					$this->logMask($sChallenge);
@@ -193,7 +194,9 @@ class ImapClient extends \MailSo\Net\NetClient
 			{
 				$oResponse = $this->SendRequestGetResponse('AUTHENTICATE', array($type));
 				$sB64 = $this->getResponseValue($oResponse, ResponseType::CONTINUATION);
-				$this->sendRaw($SASL->authenticate($sLogin, $sPassword, $sB64), true);
+				$sAuth = $SASL->authenticate($sLogin, $sPassword, $sB64);
+				$this->logMask($sAuth);
+				$this->sendRaw($sAuth, true);
 				$this->getResponse();
 				$sPass = $SASL->challenge(''/*UGFzc3dvcmQ6*/);
 				$this->logMask($sPass);
@@ -297,6 +300,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	private function setCapabilities(ResponseCollection $oResponseCollection) : void
 	{
 		$aList = $oResponseCollection->getCapabilityResult();
+		$this->aCapaRaw = $aList;
 		if ($aList) {
 			// Strip unused capabilities
 			$aList = \array_diff($aList, ['PREVIEW=FUZZY', 'SNIPPET=FUZZY', 'SORT=DISPLAY']);
@@ -305,7 +309,7 @@ class ImapClient extends \MailSo\Net\NetClient
 			// Set active capabilities
 			$aList = \array_diff($aList, $this->Settings->disabled_capabilities);
 			if (\in_array('THREAD', $this->Settings->disabled_capabilities)) {
-				$aList = \array_filter($aList, function ($item) { \str_starts_with($item, 'THREAD='); });
+				$aList = \array_filter($aList, function ($item) { return !\str_starts_with($item, 'THREAD='); });
 			}
 		}
 		$this->aCapa = $aList;
@@ -463,7 +467,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	protected function streamResponse(string $sEndTag = null) : void
+	protected function streamResponse(?string $sEndTag = null) : void
 	{
 		try {
 			if (\is_resource($this->ConnectionResource())) {
@@ -485,7 +489,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		}
 	}
 
-	protected function getResponse(string $sEndTag = null) : ResponseCollection
+	protected function getResponse(?string $sEndTag = null) : ResponseCollection
 	{
 		try {
 			$oResult = new ResponseCollection;

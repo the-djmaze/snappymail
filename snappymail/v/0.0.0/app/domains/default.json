@@ -24,6 +24,7 @@
         },
         "disabled_capabilities": [
             "METADATA",
+            "OBJECTID",
             "PREVIEW",
             "STATUS=SIZE"
         ],

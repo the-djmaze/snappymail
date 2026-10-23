@@ -109,7 +109,7 @@ class Binary
 	 * @return resource|bool
 	 */
 	public static function CreateStream($rStream,
-		string $sUtilsDecodeOrEncodeFunctionName = null, string $sFromEncoding = null, string $sToEncoding = null)
+		?string $sUtilsDecodeOrEncodeFunctionName = null, ?string $sFromEncoding = null, ?string $sToEncoding = null)
 	{
 		if (null === $sUtilsDecodeOrEncodeFunctionName || !\strlen($sUtilsDecodeOrEncodeFunctionName)) {
 			$sUtilsDecodeOrEncodeFunctionName = 'InlineNullDecode';

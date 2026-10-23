@@ -1,6 +1,7 @@
 import ko from 'ko';
 import { addObservablesTo, addComputablesTo, addSubscribablesTo } from 'External/ko';
 
+import { UNUSED_OPTION_VALUE } from 'Common/Consts';
 import { ScopeFolderList, ScopeMessageList, ScopeMessageView } from 'Common/Enums';
 
 import {
@@ -19,7 +20,8 @@ import {
 	fireEvent,
 	stopEvent,
 	addShortcut,
-	registerShortcut
+	registerShortcut,
+	formFieldFocused
 } from 'Common/Globals';
 
 import { arrayLength } from 'Common/Utils';
@@ -54,9 +56,6 @@ import { showScreenPopup } from 'Knoin/Knoin';
 import { OpenPgpImportPopupView } from 'View/Popup/OpenPgpImport';
 import { GnuPGUserStore } from 'Stores/User/GnuPG';
 import { OpenPGPUserStore } from 'Stores/User/OpenPGP';
-import { IdentityUserStore } from 'Stores/User/Identity';
-
-import { Passphrases } from 'Storage/Passphrases';
 
 const
 	oMessageScrollerDom = () => elementById('messageItem') || {},
@@ -99,6 +98,24 @@ export class MailMessageView extends AbstractViewRight {
 						currentMessage(null);
 						rl.app.moveMessagesToFolderType(folderType, message.folder, new Set([message.uid]), bDelete);
 					}
+				}, this.messageVisible),
+			createCommandSetHelper = action =>
+				createCommand(() => setAction(action), this.messageVisible),
+			createCommandDeleteHelper = () =>
+				createCommand(() => {
+					/**
+					 * When FolderUserStore.trashFolder is set to "Do not use",
+					 * flag as \Deleted for removal by later EXPUNGE
+					 */
+					if (UNUSED_OPTION_VALUE === FolderUserStore.trashFolder()) {
+						setAction(MessageSetAction.SetDeleted);
+					} else {
+						const message = currentMessage();
+						if (message) {
+							currentMessage(null);
+							rl.app.moveMessagesToFolderType(FolderType.Trash, message.folder, new Set([message.uid]));
+						}
+					}
 				}, this.messageVisible);
 
 		this.msgDefaultAction = SettingsUserStore.msgDefaultAction;
@@ -113,6 +130,8 @@ export class MailMessageView extends AbstractViewRight {
 			// viewer
 			viewFromShort: '',
 			dkimData: ['none', '', ''],
+			spfData: ['none', '', ''],
+			dmarcData: ['none', '', ''],
 			nowTracking: false
 		});
 
@@ -174,22 +193,52 @@ export class MailMessageView extends AbstractViewRight {
 
 			canBeRepliedOrForwarded: () => !MessagelistUserStore.isDraftFolder() && this.messageVisible(),
 
-			viewDkimIcon: () => 'none' !== this.dkimData()[0],
-
-			dkimIconClass:() => {
+			dkimIcon: () => {
 				switch (this.dkimData()[0]) {
 					case 'none':
-						return '';
+						return '🚫︎';
 					case 'pass':
-						return 'icon-ok iconcolor-green'; // ✔️
+						return '✔';
 					default:
-						return 'icon-cross iconcolor-red'; // ✖ ❌
+						return '✖';
 				}
 			},
-
+			dkimIconClass: () => 'pass' === this.dkimData()[0] ? 'iconcolor-green' : 'iconcolor-red',
 			dkimTitle:() => {
 				const dkim = this.dkimData();
 				return dkim[0] ? dkim[2] || 'DKIM: ' + dkim[0] : '';
+			},
+
+			spfIcon: () => {
+				switch (this.spfData()[0]) {
+					case 'none':
+						return '🚫︎';
+					case 'pass':
+						return '✔';
+					default:
+						return '✖';
+				}
+			},
+			spfIconClass: () => 'pass' === this.spfData()[0] ? 'iconcolor-green' : 'iconcolor-red',
+			spfTitle:() => {
+				const spf = this.spfData();
+				return spf[0] ? spf[2] || 'SPF: ' + spf[0] : '';
+			},
+
+			dmarcIcon: () => {
+				switch (this.dmarcData()[0]) {
+					case 'none':
+						return '🚫︎';
+					case 'pass':
+						return '✔';
+					default:
+						return '✖';
+				}
+			},
+			dmarcIconClass: () => 'pass' === this.dmarcData()[0] ? 'iconcolor-green' : 'iconcolor-red',
+			dmarcTitle:() => {
+				const dmarc = this.dmarcData();
+				return dmarc[0] ? dmarc[2] || 'DMARC: ' + dmarc[0] : '';
 			},
 
 			showWhitelistOptions: () => 'match' === SettingsUserStore.viewImages(),
@@ -197,6 +246,8 @@ export class MailMessageView extends AbstractViewRight {
 			firstUnsubsribeLink: () => currentMessage()?.unsubsribeLinks()[0] || '',
 
 			pgpSupported: () => currentMessage() && PgpUserStore.isSupported(),
+
+			canBeUndeleted: () => currentMessage()?.isDeleted(),
 
 			messageListOrViewLoading:
 				() => MessagelistUserStore.isLoading() | MessageUserStore.loading()
@@ -212,6 +263,8 @@ export class MailMessageView extends AbstractViewRight {
 					// TODO: make first param a user setting #683
 					this.viewFromShort(message.from.toString(false, true));
 					this.dkimData(message.dkim[0] || ['none', '', '']);
+					this.spfData(message.spf[0] || ['none', '', '']);
+					this.dmarcData(message.dmarc[0] || ['none', '', '']);
 					this.nowTracking(false);
 				} else {
 					MessagelistUserStore.selectedMessage(null);
@@ -232,7 +285,11 @@ export class MailMessageView extends AbstractViewRight {
 		this.forwardAsAttachmentCommand = createCommandReplyHelper(ComposeType.ForwardAsAttachment);
 		this.editAsNewCommand = createCommandReplyHelper(ComposeType.EditAsNew);
 
-		this.deleteCommand = createCommandActionHelper(FolderType.Trash);
+//		this.deleteCommand = createCommandActionHelper(FolderType.Trash);
+		// User setting hideDeleted || immediatelyMoveToTrash ??
+		this.deleteCommand = createCommandDeleteHelper();
+		// User setting !hideDeleted && !immediatelyMoveToTrash ??
+		this.undeleteCommand = createCommandSetHelper(MessageSetAction.UnsetDeleted);
 		this.deleteWithoutMoveCommand = createCommandActionHelper(FolderType.Trash, true);
 		this.archiveCommand = createCommandActionHelper(FolderType.Archive);
 		this.spamCommand = createCommandActionHelper(FolderType.Junk);
@@ -241,6 +298,7 @@ export class MailMessageView extends AbstractViewRight {
 		decorateKoCommands(this, {
 			editCommand: self => self.messageVisible(),
 			moveCommand: self => self.messageVisible(),
+			copyCommand: self => self.messageVisible(),
 			goUpCommand: self => !self.messageListOrViewLoading(),
 			goDownCommand: self => !self.messageListOrViewLoading()
 		});
@@ -258,13 +316,21 @@ export class MailMessageView extends AbstractViewRight {
 		currentMessage() && showMessageComposer([ComposeType.Draft, currentMessage()]);
 	}
 
-	moveCommand(vm, event) {
+	moveOrCopy(vm, event, mode) {
 		if (vm && event?.preventDefault) {
 			stopEvent(event);
 		}
 		this.actionsMenu().ddBtn.hide();
 		AppUserStore.focusedState(ScopeFolderList);
-		moveAction(true);
+		moveAction(mode);
+	}
+
+	moveCommand(vm, event) {
+		this.moveOrCopy(vm, event, 1);
+	}
+
+	copyCommand(vm, event) {
+		this.moveOrCopy(vm, event, 2);
 	}
 
 	setUnseen() {
@@ -433,6 +499,13 @@ export class MailMessageView extends AbstractViewRight {
 			}
 		});
 
+		addShortcut('b', 'shift', [ScopeMessageList, ScopeMessageView], () => {
+			if (!formFieldFocused()) {
+				currentMessage()?.swapColors?.();
+				return false;
+			}
+		});
+
 		addShortcut('arrowup,arrowleft', 'meta', [ScopeMessageList, ScopeMessageView], () => {
 			this.goUpCommand();
 			return false;
@@ -541,20 +614,19 @@ export class MailMessageView extends AbstractViewRight {
 	 * @returns {void}
 	 */
 	readReceipt() {
-		let oMessage = currentMessage()
+		let oMessage = currentMessage();
 		if (oMessage.readReceipt) {
-			Remote.request('SendReadReceiptMessage', iError => {
-				if (!iError) {
-					oMessage.flags.push('$mdnsent');
-//					oMessage.flags.valueHasMutated();
+			oMessage.flags.push('$mdnsent');
+			Remote.request('SendReadReceiptMessage',
+				iError => iError && oMessage.flags.remove('$mdnsent'),
+				{
+					messageFolder: oMessage.folder,
+					messageUid: oMessage.uid,
+					readReceipt: oMessage.readReceipt,
+					subject: i18n('READ_RECEIPT/SUBJECT', { SUBJECT: oMessage.subject() }),
+					plain: i18n('READ_RECEIPT/BODY', { 'READ-RECEIPT': AccountUserStore.email() })
 				}
-			}, {
-				messageFolder: oMessage.folder,
-				messageUid: oMessage.uid,
-				readReceipt: oMessage.readReceipt,
-				subject: i18n('READ_RECEIPT/SUBJECT', { SUBJECT: oMessage.subject() }),
-				plain: i18n('READ_RECEIPT/BODY', { 'READ-RECEIPT': AccountUserStore.email() })
-			});
+			);
 		}
 	}
 
@@ -570,125 +642,19 @@ export class MailMessageView extends AbstractViewRight {
 	}
 
 	pgpDecrypt() {
-		const oMessage = currentMessage(),
-			data = oMessage.pgpEncrypted();
-		delete data.error;
-		PgpUserStore.decrypt(oMessage).then(result => {
-			if (!result) {
-				// TODO: translate
-				throw Error('Decryption failed, canceled or not possible');
-			}
-			oMessage.pgpDecrypted(true);
-			if (result.data) {
-				MimeToMessage(result.data, oMessage);
-				oMessage.html() ? oMessage.viewHtml() : oMessage.viewPlain();
-				if (result.signatures?.length) {
-					oMessage.pgpSigned({
-						signatures: result.signatures,
-						success: !!result.signatures.length
-					});
-				}
-			}
-		})
-		.catch(e => {
-			data.error = e.message;
-		})
-		.finally(() => {
-			oMessage.pgpEncrypted(data);
-		});
+		currentMessage().decrypt();
 	}
 
 	pgpVerify(/*self, event*/) {
-		const oMessage = currentMessage()/*, ctrl = event.target.closest('.openpgp-control')*/;
-		PgpUserStore.verify(oMessage).then(result => {
-			if (result) {
-				oMessage.pgpSigned(result);
-			} else {
-				alert('Verification failed or no valid public key found');
-			}
-/*
-			if (result?.success) {
-				i18n('CRYPTO/GOOD_SIGNATURE', {
-					USER: validKey.user + ' (' + validKey.id + ')'
-				});
-				message.getText()
-			} else {
-				const keyIds = arrayLength(signingKeyIds) ? signingKeyIds : null,
-					additional = keyIds
-						? keyIds.map(item => item?.toHex?.()).filter(v => v).join(', ')
-						: '';
-
-				i18n('CRYPTO/ERROR', {
-					TYPE: 'OpenPGP',
-					ERROR: 'message'
-				}) + (additional ? ' (' + additional + ')' : '');
-			}
-*/
-		});
+		currentMessage().pgpVerify();
 	}
 
 	async smimeDecrypt() {
-		const message = currentMessage();
-		const addresses = message.from.concat(message.to, message.cc, message.bcc).map(item => item.email),
-			identity = IdentityUserStore.find(item => addresses.includes(item.email())),
-			data = message.smimeEncrypted(); // { partId: "1" }
-		if (data && identity) {
-			delete data.error;
-			let pass, params = { ...data }; // clone
-			params.folder = message.folder;
-			params.uid = message.uid;
-//			params.bodyPart = params.bodyPart?.raw;
-			params.certificate = identity.smimeCertificate();
-			params.privateKey = identity.smimeKey();
-			if (identity.smimeKeyEncrypted()) {
-				pass = await Passphrases.ask(identity,
-					i18n('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email()}),
-					'CRYPTO/DECRYPT'
-				);
-				if (!pass) {
-					return;
-				}
-				params.passphrase = pass?.password;
-			}
-			Remote.post('SMimeDecryptMessage', null, params).then(response => {
-				if (response?.Result?.data) {
-					message.smimeDecrypted(true);
-					MimeToMessage(response.Result.data, message);
-					message.html() ? message.viewHtml() : message.viewPlain();
-					pass && pass.remember && Passphrases.set(identity, pass.password);
-					if ('signed' in response.Result) {
-						message.smimeSigned(response.Result.signed);
-					}
-				}
-			}).catch(e => {
-				data.error = e.message
-			})
-			.finally(() => {
-				message.smimeEncrypted(data);
-			});
-		}
+		currentMessage().decrypt();
 	}
 
 	smimeVerify(/*self, event*/) {
-		const message = currentMessage(),
-			data = message.smimeSigned(); // { partId: "1", micAlg: "pgp-sha256" }
-		if (data) {
-			const params = { ...data }; // clone
-			params.folder = message.folder;
-			params.uid = message.uid;
-			params.bodyPart = data.bodyPart?.raw;
-			params.sigPart = data.sigPart?.bodyRaw;
-			Remote.post('SMimeVerifyMessage', null, params).then(response => {
-				if (response?.Result) {
-					if (response.Result.body) {
-						MimeToMessage(response.Result.body, message);
-						message.html() ? message.viewHtml() : message.viewPlain();
-					}
-					data.success = response.Result.success;
-					message.smimeSigned(data);
-				}
-			});
-		}
+		currentMessage().smimeVerify();
 	}
 
 }

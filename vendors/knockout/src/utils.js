@@ -25,6 +25,7 @@ ko.utils = {
             : node => node.cloneNode(true)),
 
     setDomNodeChildren: (domNode, childNodes) => {
+//        domNode.replaceChildren(...childNodes);
         ko.utils.emptyDomNode(domNode);
         childNodes && domNode.append(...childNodes);
     },
@@ -95,5 +96,5 @@ ko.utils = {
         element.textContent = ko.utils.unwrapObservable(textContent)
 };
 
-ko.exportSymbol('utils', ko.utils);
+//ko.exportSymbol('utils', ko.utils);
 ko.exportSymbol('unwrap', ko.utils.unwrapObservable); // Convenient shorthand, because this is used so commonly

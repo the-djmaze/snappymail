@@ -83,7 +83,7 @@ export function ParseMime(text)
 		get body() {
 			let body = this.bodyRaw,
 				charset = this.header('content-type')?.params.charset,
-				encoding = this.headerValue('content-transfer-encoding');
+				encoding = this.headerValue('content-transfer-encoding')?.toLowerCase();
 			if ('quoted-printable' == encoding) {
 				body = QPDecode(body);
 			} else if ('base64' == encoding) {
@@ -94,7 +94,7 @@ export function ParseMime(text)
 
 		get dataUrl() {
 			let body = this.bodyRaw,
-				encoding = this.headerValue('content-transfer-encoding');
+				encoding = this.headerValue('content-transfer-encoding')?.toLowerCase();
 			if ('base64' == encoding) {
 				body = body.replace(/\r?\n/g, '');
 			} else {
@@ -112,7 +112,7 @@ export function ParseMime(text)
 		}
 
 		getByContentType(type) {
-			if (type == this.headerValue('content-type')) {
+			if (type == this.headerValue('content-type')?.toLowerCase()) {
 				return this;
 			}
 			let i = 0, p = this.parts, part;

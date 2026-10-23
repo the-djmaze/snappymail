@@ -12,6 +12,8 @@ import { OpenPgpKeyPopupView } from 'View/Popup/OpenPgpKey';
 
 import { Passphrases } from 'Storage/Passphrases';
 
+import { baseCollator } from 'Common/Translator';
+
 const
 	findGnuPGKey = (keys, query/*, sign*/) =>
 		keys.find(key =>
@@ -49,13 +51,20 @@ export const GnuPGUserStore = new class {
 						key.for = email => aEmails.includes(IDN.toASCII(email));
 						key.askDelete = ko.observable(false);
 						key.openForDeletion = ko.observable(null).askDeleteHelper();
+						key.askForgetPass = ko.observable(false);
+						key.openForPassForget = ko.observable(null).askDeleteHelper('askForgetPass');
+						key.forgetPass = () => {
+							Passphrases.delete(key);
+							key.hasStoredPass(false);
+						};
+						key.hasStoredPass = ko.observable(Passphrases.hasInLocalStorage(key));
 						key.remove = () => {
 							if (key.askDelete()) {
 								Remote.request('GnupgDeleteKey',
 									(iError, oData) => {
 										if (oData) {
 											if (iError) {
-												alert(oData.ErrorMessage);
+												alert(oData.message);
 											} else if (oData.Result) {
 												isPrivate
 													? this.privateKeys.remove(key)
@@ -67,6 +76,7 @@ export const GnuPGUserStore = new class {
 										isPrivate: isPrivate
 									}
 								);
+								isPrivate && key.forgetPass();
 							}
 						};
 						if (isPrivate) {
@@ -75,7 +85,7 @@ export const GnuPGUserStore = new class {
 									'GnuPG key<br>' + key.id + ' ' + key.emails[0],
 									btnTxt
 								);
-								pass && pass.remember && Passphrases.set(key, pass.password);
+								pass && pass.remember && Passphrases.handle(key, pass.password);
 								return pass?.password;
 							};
 						}
@@ -106,7 +116,7 @@ export const GnuPGUserStore = new class {
 						key.view = () => key.fetch(() => showScreenPopup(OpenPgpKeyPopupView, [key]));
 						return key;
 					},
-					collator = new Intl.Collator(undefined, {sensitivity: 'base'}),
+					collator = baseCollator(),
 					sort = keys => keys.sort(
 						(a, b) => collator.compare(a.emails[0], b.emails[0]) || collator.compare(a.id, b.id)
 					);
@@ -163,8 +173,8 @@ export const GnuPGUserStore = new class {
 		return fingerprints;
 	}
 
-	getPrivateKeyFor(query, sign) {
-		return findGnuPGKey(this.privateKeys, query, sign);
+	getPrivateKeyFor(query/*, sign*/) {
+		return findGnuPGKey(this.privateKeys, query/*, sign*/);
 	}
 
 	async decrypt(message) {

@@ -33,7 +33,9 @@ class Settings extends \MailSo\Net\ConnectSettings
 		$message_all_headers = false;
 
 	public string
-		$search_filter = '';
+		$search_filter = '',
+		$spam_headers = 'rspamd,spamassassin,bogofilter',
+		$virus_headers = 'rspamd,clamav';
 
 	public array
 		$disabled_capabilities = [];
@@ -41,6 +43,8 @@ class Settings extends \MailSo\Net\ConnectSettings
 	public static function fromArray(array $aSettings) : self
 	{
 		$object = parent::fromArray($aSettings);
+
+		// Boolean options
 		$options = [
 			'expunge_all_on_delete',
 			'fast_simple_search',
@@ -53,6 +57,8 @@ class Settings extends \MailSo\Net\ConnectSettings
 				$object->$option = !empty($aSettings[$option]);
 			}
 		}
+
+		// Integer options
 		$options = [
 //			'body_text_limit',
 //			'folder_list_limit',
@@ -62,6 +68,18 @@ class Settings extends \MailSo\Net\ConnectSettings
 		foreach ($options as $option) {
 			if (isset($aSettings[$option])) {
 				$object->$option = \intval($aSettings[$option]);
+			}
+		}
+
+		// String options
+		$options = [
+			'search_filter',
+			'spam_headers',
+			'virus_headers',
+		];
+		foreach ($options as $option) {
+			if (isset($aSettings[$option])) {
+				$object->$option = (string) $aSettings[$option];
 			}
 		}
 
@@ -119,6 +137,8 @@ class Settings extends \MailSo\Net\ConnectSettings
 				'message_all_headers' => $this->message_all_headers,
 				'message_list_limit' => $this->message_list_limit,
 				'search_filter' => $this->search_filter,
+				'spam_headers' => $this->spam_headers,
+				'virus_headers' => $this->virus_headers,
 //				'thread_limit' => $this->thread_limit
 				'disabled_capabilities' => \array_values(\array_unique($this->disabled_capabilities))
 			]

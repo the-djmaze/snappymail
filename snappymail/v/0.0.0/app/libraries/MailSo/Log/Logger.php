@@ -150,7 +150,7 @@ class Logger extends \SplFixedArray
 		\E_USER_ERROR => \LOG_ERR,
 		\E_USER_WARNING => \LOG_WARNING,
 		\E_USER_NOTICE => \LOG_NOTICE,
-		\E_STRICT => \LOG_CRIT,
+//		\E_STRICT => \LOG_CRIT,
 		\E_RECOVERABLE_ERROR => \LOG_ERR,
 		\E_DEPRECATED => \LOG_INFO,
 		\E_USER_DEPRECATED => \LOG_INFO
@@ -168,7 +168,7 @@ class Logger extends \SplFixedArray
 		\E_USER_ERROR => '-USER',
 		\E_USER_WARNING => '-USER',
 		\E_USER_NOTICE => '-USER',
-		\E_STRICT => '-STRICT',
+//		\E_STRICT => '-STRICT',
 		\E_RECOVERABLE_ERROR => '-RECOVERABLE',
 		\E_DEPRECATED => '-DEPRECATED',
 		\E_USER_DEPRECATED => '-USER_DEPRECATED'
@@ -206,17 +206,15 @@ class Logger extends \SplFixedArray
 		}
 	}
 
-	public function signalHandler($signo)
+	public function signalHandler($signo, /*?array*/$siginfo = null)
 	{
 		if (\SIGTERM == $signo) {
 			exit;
 		}
-		if ($this->bUsed) {
-			foreach (static::$SIGNALS as $SIGNAL) {
-				if (\defined($SIGNAL) && \constant($SIGNAL) == $signo) {
-					$this->Write("Caught {$SIGNAL}");
-					break;
-				}
+		foreach (static::$SIGNALS as $SIGNAL) {
+			if (\defined($SIGNAL) && \constant($SIGNAL) == $signo) {
+				$this->Write("Caught {$SIGNAL} ".($siginfo ? \json_encode($siginfo) : ''), \LOG_CRIT, 'PHP');
+				break;
 			}
 		}
 	}

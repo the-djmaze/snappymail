@@ -147,9 +147,7 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 			.($sSubEmail ? '/'.\MailSo\Base\Utils::SecureFileName($sSubEmail) : '')
 			.'/.files/'.\sha1($sKey);
 
-		if ($bMkDir && !\is_dir(\dirname($sFilePath)) && !\mkdir(\dirname($sFilePath), 0700, true)) {
-			throw new \RuntimeException('Can\'t make storage directory "'.$sFilePath.'"');
-		}
+		$bMkDir && \MailSo\Base\Utils::mkdir(\dirname($sFilePath));
 
 		return $sFilePath;
 	}

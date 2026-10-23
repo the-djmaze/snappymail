@@ -18,7 +18,8 @@ export class AdminSettingsPackages extends AbstractViewSettings {
 		this.addSettings(['pluginsEnable']);
 
 		addObservablesTo(this, {
-			packagesError: ''
+			packagesError: '',
+			search: ''
 		});
 
 		this.packages = PackageAdminStore;
@@ -29,6 +30,19 @@ export class AdminSettingsPackages extends AbstractViewSettings {
 			packagesAvailable: () => PackageAdminStore().filter(item => !item?.installed),
 
 			visibility: () => (PackageAdminStore.loading() ? 'visible' : 'hidden')
+		});
+
+		this.search.subscribe(value => {
+			const v = value.toLowerCase(),
+				qsa = (node, selector, fn) => node.querySelectorAll(selector).forEach(fn),
+				match = node => node.textContent.toLowerCase().includes(v);
+			if (v.length) {
+				qsa(this.viewModelDom, 'td:first-child', td => {
+					td.parentNode.hidden = !match(td);
+				});
+			} else {
+				qsa(this.viewModelDom, 'tr[hidden]', n => n.hidden = false);
+			}
 		});
 	}
 
@@ -68,7 +82,7 @@ export class AdminSettingsPackages extends AbstractViewSettings {
 			if (iError) {
 				this.packagesError(
 					getNotification(install ? Notifications.CantInstallPackage : Notifications.CantDeletePackage)
-					+ (data.ErrorMessage ? ':\n' + data.ErrorMessage : '')
+					+ (data.message ? ':\n' + data.message : '')
 				);
 			} else if (data.Result.Reload) {
 				location.reload();
@@ -113,8 +127,8 @@ export class AdminSettingsPackages extends AbstractViewSettings {
 				if (iError) {
 					plugin.enabled(disable);
 					this.packagesError(
-						(Notifications.UnsupportedPluginPackage === iError && data?.ErrorMessage)
-						? data.ErrorMessage
+						(Notifications.UnsupportedPluginPackage === iError && data?.message)
+						? data.message
 						: getNotification(iError)
 					);
 				}

@@ -11,13 +11,15 @@
 		"CLOSE": "關閉",
 		"CONTACTS": "連絡人",
 		"DELETE": "刪除",
+		"UNDELETE": "撤銷刪除",
 		"DONE": "完成",
 		"EMAIL": "電子郵件",
 		"FROM": "寄件者",
-		"LOADING": "正在載入...",
+		"LOADING": "正在載入…",
 		"LOGOUT": "登出",
 		"MORE": "更多",
 		"MOVE_TO": "移至",
+		"COPY_TO": "复制到",
 		"NAME": "名稱",
 		"NONE": "無",
 		"TO_SPAM": "移動郵件至垃圾郵件",
@@ -58,12 +60,18 @@
 		"UNSEEN": "未讀取",
 		"DATE": "日期",
 		"DATE_ALL": "全部",
-		"DATE_3_DAYS": "三天以內",
-		"DATE_7_DAYS": "一週以內",
-		"DATE_MONTH": "一個月以內",
-		"DATE_3_MONTHS": "三個月以內",
-		"DATE_6_MONTHS": "半年以內",
-		"DATE_YEAR": "一年以內",
+		"BEFORE_3_DAYS": "三天以外",
+		"BEFORE_7_DAYS": "一週以外",
+		"BEFORE_MONTH": "一個月以外",
+		"BEFORE_3_MONTHS": "三個月以外",
+		"BEFORE_6_MONTHS": "半年以外",
+		"BEFORE_YEAR": "一年以外",
+		"SINCE_3_DAYS": "三天以內",
+		"SINCE_7_DAYS": "一週以內",
+		"SINCE_MONTH": "一個月以內",
+		"SINCE_3_MONTHS": "三個月以內",
+		"SINCE_6_MONTHS": "半年以內",
+		"SINCE_YEAR": "一年以內",
 		"SUBFOLDERS": "子資料夾",
 		"SUBFOLDERS_NONE": "無",
 		"SUBFOLDERS_SUBTREE": "全部",
@@ -80,8 +88,19 @@
 		"TRASH_NAME": "垃圾桶",
 		"ARCHIVE_NAME": "封存"
 	},
-	"QUOTA": {
-		"TITLE": "配額使用"
+	"IMAP": {
+		"ACL_RIGHTS": "Rights",
+		"ACL_A": "Administer",
+		"ACL_E": "Expunge",
+		"ACL_I": "Insert messages",
+		"ACL_K": "Create sub-folders",
+		"ACL_L": "Show messages",
+		"ACL_P": "Send mail",
+		"ACL_R": "Select folder",
+		"ACL_S": "\\SEEN tag",
+		"ACL_T": "\\DELETED tag",
+		"ACL_W": "Other tags",
+		"ACL_X": "Delete\/Rename folder"
 	},
 	"MESSAGE_LIST": {
 		"BUTTON_RELOAD": "重新載入郵件清單",
@@ -111,6 +130,8 @@
 		"QUOTA_SIZE": "已使用  <strong>%LIMIT%<\/strong> 中的 <strong>%SIZE% (%PROC%%)<\/strong> 儲存空間",
 		"SORT": "排序",
 		"NO_SORT": "郵件伺服器不支援排序",
+		"SORT_ARRIVAL_ASC": "Arrived ascending",
+		"SORT_ARRIVAL_DESC": "Arrived descending",
 		"SORT_DATE_ASC": "日期遞增",
 		"SORT_DATE_DESC": "日期遞減",
 		"SORT_SIZE_ASC": "大小遞增",
@@ -155,8 +176,8 @@
 		"HAS_VIRUS_WARNING": "警告: 已偵測到病毒",
 		"TAGS": "標籤",
 		"NEW_TAG": "新增標籤",
-		"ENABLE_TRACKING_LINKS": "Enable tracking links",
-		"TRACKING_ENABLED": "Links are now tracked when clicked!"
+		"ENABLE_TRACKING_LINKS": "啓用跟蹤鏈接",
+		"TRACKING_ENABLED": "點擊鏈接時會被追蹤！"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "重要",
@@ -172,7 +193,7 @@
 		"BODY": "這是您寄到 %READ-RECEIPT% 的郵件回條。\n\n注意: 這份回條僅能認知到郵件已在收件者的電腦中顯示。\n無法確認收件者已閱讀或瞭解信中的內容\n"
 	},
 	"SUGGESTIONS": {
-		"SEARCHING_DESC": "正在搜尋..."
+		"SEARCHING_DESC": "正在搜尋…"
 	},
 	"CONTACTS": {
 		"TAB_CONTACT": "聯絡人",
@@ -188,7 +209,6 @@
 		"ALWAYS_IF_POSSIBLE": "可能的話永遠",
 		"BUTTON_ADD_CONTACT": "新增連絡人",
 		"BUTTON_CREATE_CONTACT": "建立",
-		"BUTTON_UPDATE_CONTACT": "更新",
 		"BUTTON_IMPORT": "匯入 (csv, vcf, vCard)",
 		"BUTTON_EXPORT_VCARD": "匯出 (vcf, vCard)",
 		"BUTTON_EXPORT_CSV": "匯出 (csv)",
@@ -198,10 +218,13 @@
 		"CLEAR_SEARCH": "清除搜尋",
 		"CONTACT_VIEW_DESC": "選取聯絡人以在清單中檢視。",
 		"LABEL_BIRTHDAY": "生日",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "顯示名稱",
-		"PLACEHOLDER_ENTER_LAST_NAME": "姓",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "名",
-		"PLACEHOLDER_ENTER_NICK_NAME": "暱稱",
+		"DISPLAY_NAME": "顯示名稱",
+		"LAST_NAME": "姓",
+		"FIRST_NAME": "名",
+		"MIDDLE_NAME": "Middle name",
+		"NAME_PREFIX": "Name prefix",
+		"NAME_SUFFIX": "Name suffix",
+		"NICK_NAME": "暱稱",
 		"LABEL_READ_ONLY": "唯讀",
 		"ADD_MENU_LABEL": "新增",
 		"ADD_MENU_NICKNAME": "暱稱",
@@ -248,18 +271,16 @@
 		"TITLE_LANGUAGES": "選取語言"
 	},
 	"POPUPS_ADD_ACCOUNT": {
-		"TITLE_ADD_ACCOUNT": "是否要新增帳戶？",
+		"TITLE_ADD_ACCOUNT": "是否要新增帳戶",
 		"BUTTON_ADD_ACCOUNT": "新增",
-		"TITLE_UPDATE_ACCOUNT": "是否要更新帳戶？",
-		"BUTTON_UPDATE_ACCOUNT": "更新"
+		"TITLE_UPDATE_ACCOUNT": "是否要更新帳戶"
 	},
 	"POPUPS_IDENTITY": {
-		"TITLE_ADD_IDENTITY": "是否要新增識別檔？",
-		"TITLE_UPDATE_IDENTITY": "是否要更新識別檔？",
-		"LABEL": "Label",
+		"TITLE_ADD_IDENTITY": "是否要新增識別檔",
+		"TITLE_UPDATE_IDENTITY": "是否要更新識別檔",
+		"LABEL": "標簽",
 		"BUTTON_ADD_IDENTITY": "新增",
-		"BUTTON_UPDATE_IDENTITY": "更新",
-		"SIGNATURE": "Signature",
+		"SIGNATURE": "簽名",
 		"LABEL_SIGNATURE_INSERT_BEFORE": "在回覆引用的訊息前插入此簽名"
 	},
 	"POPUPS_CREATE_FOLDER": {
@@ -273,7 +294,7 @@
 		"DANGER_DESC_WARNING": "警告！",
 		"DANGER_DESC_HTML_1": "此操作將完全刪除資料夾「<strong>%FOLDER%<\/strong>」中的所有郵件。",
 		"DANGER_DESC_HTML_2": "一旦執行操作，就無法中斷或取消。",
-		"TITLE_CLEARING_PROCESS": "正在清除資料夾..."
+		"TITLE_CLEARING_PROCESS": "正在清除資料夾…"
 	},
 	"CRYPTO": {
 		"SIGN": "簽署",
@@ -282,10 +303,13 @@
 		"VERIFY": "驗證",
 		"GOOD_SIGNATURE": "來自「%USER%」的良好簽署",
 		"ERROR": "%TYPE% 錯誤: %ERROR%",
-		"CREATE_SELF_SIGNED": "Create self-signed",
-		"VALID_UNTIL": "Valid until",
-		"PRIVATE_KEY": "Private key",
-		"ASK_CRYPTKEY_PASS": "Your login passphrase has changed. Please fill in your old login password to decrypt data"
+		"CREATE_SELF_SIGNED": "創建自簽署",
+		"VALID_UNTIL": "有效期至",
+		"PRIVATE_KEY": "私鑰",
+		"CHANGE_PASS": "改變密碼",
+		"CURRENT_PASS": "現有密碼",
+		"NEW_PASS": "新密碼",
+		"ASK_CRYPTKEY_PASS": "台端之登入密碼業已改變。請鍵入舊密碼，以便解鎖資料。"
 	},
 	"OPENPGP": {
 		"POPUP_IMPORT_TITLE": "匯入 OpenPGP 金鑰",
@@ -298,23 +322,23 @@
 		"SIGNED_MESSAGE": "已透過 OpenPGP 簽署郵件",
 		"ENCRYPTED_MESSAGE": "已透過 OpenPGP 加密郵件",
 		"STORE_IN_GNUPG": "以 GnuPG 儲存在伺服器上",
-		"STORE_PUBLIC_KEY_IN_GNUPG": "Store public key on server in GnuPG",
-		"STORE_PRIVATE_KEY_IN_GNUPG": "Store private key on server in GnuPG",
+		"STORE_PUBLIC_KEY_IN_GNUPG": "以 GnuPG 儲存公鑰在伺服器上",
+		"STORE_PRIVATE_KEY_IN_GNUPG": "以 GnuPG 儲存私鑰在伺服器上",
 		"BACKUP_ON_SERVER": "在伺服器中儲存 (已加密)",
-		"BACKUP_PUBLIC_KEY_ON_SERVER": "Backup public key on server",
-		"BACKUP_PRIVATE_KEY_ON_SERVER": "Backup private key on server"
+		"BACKUP_PUBLIC_KEY_ON_SERVER": "在伺服器中儲存公鑰",
+		"BACKUP_PRIVATE_KEY_ON_SERVER": "在伺服器中儲存私鑰"
 	},
 	"SMIME": {
-		"POPUP_IMPORT_TITLE": "Import S\/MIME certificate",
-		"CERTIFICATE": "Certificate",
-		"CERTIFICATES": "S\/MIME Certificates",
+		"POPUP_IMPORT_TITLE": "匯入 S\/MIME 證書",
+		"CERTIFICATE": "證書",
+		"CERTIFICATES": "S\/MIME 證書",
 		"SIGNED_MESSAGE": "已透過 S\/MIME 簽署郵件",
 		"ENCRYPTED_MESSAGE": "已透過 S\/MIME 加密郵件",
-		"PRIVATE_KEY_OF": "S\/MIME private key of %EMAIL%"
+		"PRIVATE_KEY_OF": "%EMAIL% 的 S\/MIME 私鑰"
 	},
 	"POPUPS_FILTER": {
-		"TITLE_CREATE_FILTER": "是否要建立篩選器？",
-		"TITLE_EDIT_FILTER": "是否要更新篩選器？",
+		"TITLE_CREATE_FILTER": "是否要建立篩選器",
+		"TITLE_EDIT_FILTER": "是否要更新篩選器",
 		"LEGEND_CONDITIONS": "條件",
 		"LEGEND_ACTIONS": "操作",
 		"BUTTON_ADD_CONDITION": "新增條件",
@@ -384,7 +408,7 @@
 	},
 	"EDITOR": {
 		"PLAIN": "HTML <-> 純文字",
-		"SOURCE": "HTML <-> 來源",
+		"SOURCE": "HTML <-> 原始碼",
 		"FONTFAMILY": "字型家族",
 		"FONTSIZE": "字型大小",
 		"DIR": "文字方向",
@@ -409,7 +433,7 @@
 		"IMAGEUPLOAD": "圖片選取",
 		"UNDO": "復原",
 		"REDO": "取消復原",
-		"REMOVESTYLE": "Remove style"
+		"REMOVESTYLE": "移除格式"
 	},
 	"SETTINGS_LABELS": {
 		"GENERAL": "一般設定",
@@ -433,7 +457,8 @@
 	"SETTINGS_SECURITY": {
 		"LEGEND_SECURITY": "安全性",
 		"LABEL_AUTOLOGOUT": "自動登出",
-		"AUTOLOGIN_NEVER_OPTION_NAME": "永不"
+		"FORGET_KEY_PASS": "忘記私鑰密碼",
+		"NEVER": "永不"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "語言",
@@ -452,6 +477,7 @@
 		"HIDE_DELETED_MESSAGES": "隱藏標示為已刪除的郵件",
 		"USE_CHECKBOXES_IN_LIST": "在清單中顯示核取方塊",
 		"USE_THREADS": "使用對話",
+		"THREAD_ALGORITHM": "對話演算法",
 		"REPLY_SAME_FOLDER": "放置回覆的郵件在其所在資料夾",
 		"PREFER_HTML": "偏好 HTML",
 		"PREFER_HTML_INFO": "部分郵件會有兩種格式。此選項旨在設定郵件應優先顯示 HTML 格式，或純文字格式。",
@@ -469,6 +495,7 @@
 		"CHROME_NOTIFICATION_DESC_DENIED": "(遭瀏覽器封鎖)",
 		"COLLAPSE_BLOCKQUOTES": "摺疊引文",
 		"MAX_QUOTE_LEVEL": "最大化顯示引文",
+		"MIN_FONT_SIZE": "Minimum Font Size",
 		"LIST_INLINE_ATTACHMENTS": "在清單中顯示內嵌附件",
 		"LIST_SIMPLE_ATTACHMENTS": "簡易附件清單",
 		"LIST_MESSAGES_GROUPED": "郵件清單已分組 (當以日期或寄件者排序)",
@@ -477,7 +504,9 @@
 		"IMAGES_OPTION_WHITELIST": "白名單或詢問",
 		"IMAGES_OPTION_ALWAYS": "永遠顯示",
 		"IMAGES_WHITELIST": "圖片白名單",
-		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab"
+		"MESSAGE_POPUP_WINDOW": "在新彈出窗口而非分頁中打開",
+		"MAILTO": "注冊成 mailto: 連結處理器",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "自動新增收件者至通訊錄",
@@ -528,13 +557,13 @@
 		"LEGEND_ACCOUNTS_AND_IDENTITIES": "帳戶和識別",
 		"BUTTON_ADD_ACCOUNT": "新增帳戶",
 		"BUTTON_ADD_IDENTITY": "新增識別檔",
-		"LOADING_PROCESS": "正在更新...",
+		"LOADING_PROCESS": "正在更新…",
 		"SHOW_UNREAD": "顯示未讀郵件數"
 	},
 	"SETTINGS_OPENPGP": {
 		"BUTTON_IMPORT_KEY": "匯入金鑰",
 		"BUTTON_GENERATE_KEY_PAIR": "產生密鑰",
-		"IMPORT_FROM_SERVER": "Import from server",
+		"IMPORT_FROM_SERVER": "從伺服器匯入",
 		"TITLE_PRIVATE": "私密",
 		"TITLE_PUBLIC": "公開",
 		"GET_MAILVELOPE": "取得 Mailvelope 瀏覽器擴充功能"
@@ -586,7 +615,7 @@
 		"DomainAlreadyExists": "域名已經存在",
 		"DomainNotAllowed": "不可使用該域名",
 		"AccountNotAllowed": "不可使用該帳戶",
-		"CryptKeyError": "Your login passphrase has changed",
+		"CryptKeyError": "登入密碼已改變",
 		"ContactsSyncError": "連絡人同步錯誤",
 		"CantGetMessageList": "無法取得郵件清單",
 		"CantGetMessage": "無法取得郵件",

@@ -44,10 +44,9 @@
 
                 // Need to applyBindings *before* unmemoziation, because unmemoization might introduce extra nodes (that we don't want to re-bind)
                 // whereas a regular applyBindings won't introduce new memoized nodes
-                invokeForEachNodeInContinuousRange(firstNode, lastNode, node => {
-                    if (node.nodeType === 1 || node.nodeType === 8)
-                        ko.applyBindings(bindingContext, node);
-                });
+                invokeForEachNodeInContinuousRange(firstNode, lastNode, node =>
+                    (node.nodeType === 1 || node.nodeType === 8) && ko.applyBindings(bindingContext, node)
+                );
 
                 // Make sure any changes done by applyBindings or unmemoize are reflected in the array
                 ko.utils.fixUpContinuousNodeArray(continuousNodeArray, parentNode);

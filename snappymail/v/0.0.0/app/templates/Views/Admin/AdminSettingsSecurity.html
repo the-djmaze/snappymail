@@ -5,7 +5,7 @@
 			name: 'Checkbox',
 			params: {
 				label: 'TAB_SECURITY/LABEL_USE_IMAGE_PROXY',
-				value: useLocalProxyForExternalImages
+				value: proxyExternalImages
 			}
 		}"></div>
 	</div>
@@ -17,7 +17,7 @@
 			<div data-bind="component: {
 				name: 'Checkbox',
 				params: {
-					label: 'GnuPG',
+					label: gnuPGversion,
 					value: capaGnuPG
 				}
 			}"></div>
@@ -72,6 +72,7 @@
 		<pre data-bind="text: viewQRCode" style="font-family:var(--fontMono);font-size:11px;letter-spacing:-1px;line-height:1;"></pre>
 	</div>
 	<div class="control-group">
+		<label></label>
 		<a class="btn" data-bind="command: saveAdminUserCommand, css: { 'btn-success': saveSuccess, 'btn-danger': saveError }"
 			data-icon="🔑" data-i18n="GLOBAL/SAVE"></a>
 	</div>

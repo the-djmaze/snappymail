@@ -80,8 +80,7 @@ class ZIP
 		\header('Pragma: no-cache');
 		\header('Content-Transfer-Encoding: binary');
 		$name .= '.zip';
-		$name = \preg_match('#^[\x01-\x7F]*$#D', $name) ? $name : '=?UTF-8?B?'.\base64_encode($name).'?=';
-		\header("Content-Disposition: attachment; filename={$name}");
+		\MailSo\Base\Http::setContentDisposition('attachment', ['filename' => $name]);
 		\header("Content-Type: application/zip; name={$name}");
 	}
 
@@ -103,7 +102,7 @@ class ZIP
 		}
 	}
 
-	public function addFile($file, string $name = null) : bool
+	public function addFile($file, ?string $name = null) : bool
 	{
 		if (\is_file($file) && $fp = new \SplFileObject($file, 'rb')) {
 			return $this->addFromStream($fp, $name ?: \basename($file));

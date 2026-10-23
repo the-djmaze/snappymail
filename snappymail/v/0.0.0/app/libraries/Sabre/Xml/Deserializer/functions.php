@@ -57,7 +57,7 @@ use Sabre\Xml\Reader;
  *
  * @phpstan-return array<string, mixed>
  */
-function keyValue(Reader $reader, string $namespace = null): array
+function keyValue(Reader $reader, ?string $namespace = null): array
 {
     // If there's no children, we don't do anything.
     if ($reader->isEmptyElement) {
@@ -148,7 +148,7 @@ function keyValue(Reader $reader, string $namespace = null): array
  *
  * @phpstan-return list<string>
  */
-function enum(Reader $reader, string $namespace = null): array
+function enum(Reader $reader, ?string $namespace = null): array
 {
     // If there's no children, we don't do anything.
     if ($reader->isEmptyElement) {
@@ -212,17 +212,22 @@ function valueObject(Reader $reader, string $className, string $namespace): obje
 
     $reader->read();
     do {
-        if (Reader::ELEMENT === $reader->nodeType && $reader->namespaceURI == $namespace) {
+        if (Reader::ELEMENT === $reader->nodeType && $reader->namespaceURI === $namespace) {
             if (property_exists($valueObject, $reader->localName)) {
                 if (is_array($defaultProperties[$reader->localName])) {
+                    // @phpstan-ignore property.dynamicName
                     $valueObject->{$reader->localName}[] = $reader->parseCurrentElement()['value'];
                 } else {
+                    // @phpstan-ignore property.dynamicName
                     $valueObject->{$reader->localName} = $reader->parseCurrentElement()['value'];
                 }
             } else {
                 // Ignore property
                 $reader->next();
             }
+        } elseif (Reader::ELEMENT === $reader->nodeType) {
+            // Skipping element from different namespace
+            $reader->next();
         } else {
             if (Reader::END_ELEMENT !== $reader->nodeType && !$reader->read()) {
                 break;

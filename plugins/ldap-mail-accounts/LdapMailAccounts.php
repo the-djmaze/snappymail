@@ -3,7 +3,9 @@
 use RainLoop\Enumerations\Capa;
 use MailSo\Log\Logger;
 use RainLoop\Actions;
+use RainLoop\Model\AdditionalAccount;
 use RainLoop\Model\MainAccount;
+use RainLoop\Providers\Storage\Enumerations\StorageType;
 
 class LdapMailAccounts
 {
@@ -50,14 +52,13 @@ class LdapMailAccounts
 	/**
 	 * @inheritDoc
 	 *
-	 * AOverwrite the MainAccount mail address by looking up the new one in the ldap directory
+	 * Overwrite the MainAccount mail address by looking up the new one in the ldap directory
 	 *
 	 * The ldap search string has to be configured in the plugin configuration of the extension (in the SnappyMail Admin Panel)
 	 *
 	 * @param string &$sEmail
-	 * @param string &$sLogin
 	 */
-	public function overwriteEmail(&$sEmail, &$sLogin)
+	public function overwriteEmail(&$sEmail)
 	{
 		try {
 			$this->EnsureBound();
@@ -106,7 +107,7 @@ class LdapMailAccounts
 		foreach($mailAddressResults as $mailAddressResult)
 		{
 			if($mailAddressResult->username === $username)	{
-				//$sLogin is already set to be the same as $sEmail by function "resolveLoginCredentials" in /RainLoop/Actions/UserAuth.php
+				//$sImapUser and $sSmtpUser are already set to be the same as $sEmail by function "resolveLoginCredentials" in /RainLoop/Actions/UserAuth.php
 				//that called this hook, so we just have to overwrite the mail address
 				$sEmail = $mailAddressResult->mailMainAccount;
 			}
@@ -131,10 +132,19 @@ class LdapMailAccounts
 			return false; // exceptions are only thrown from the handle error function that does logging already
 		}
 
-		// Try to get account information. IncLogin() returns the username of the user
-		// and removes the domainname if this was configured inside the domain config.
-		$username = @ldap_escape($oAccount->IncLogin(), "", LDAP_ESCAPE_FILTER);
+		//Basing on https://github.com/the-djmaze/snappymail/issues/616
 
+		$oActions = \RainLoop\Api::Actions();
+
+		//Check if SnappyMail is configured to allow additional accounts
+		if (!$oActions->GetCapa(Capa::ADDITIONAL_ACCOUNTS)) {
+			return $oActions->FalseResponse(__FUNCTION__);
+		}
+
+		// Try to get account information. ImapUser() returns the username of the user
+		// and removes the domainname if this was configured inside the domain config.
+		$username = @ldap_escape($oAccount->ImapUser(), "", LDAP_ESCAPE_FILTER);
+		
 		$searchString = $this->config->search_string;
 
 		// Replace placeholders inside the ldap search string with actual values
@@ -159,21 +169,10 @@ class LdapMailAccounts
 		catch (LdapMailAccountsException $e) {
 			return false; // exceptions are only thrown from the handle error function that does logging already
 		}
+
 		if (count($mailAddressResults) < 1) {
 			$this->logger->Write("Could not find user $username", \LOG_NOTICE, self::LOG_KEY);
 			return false;
-		} else if (count($mailAddressResults) == 1) {
-			$this->logger->Write("Found only one match for user $username, no additional mail adresses found", \LOG_NOTICE, self::LOG_KEY);
-			return true;
-		}
-
-		//Basing on https://github.com/the-djmaze/snappymail/issues/616
-
-		$oActions = \RainLoop\Api::Actions();
-
-		//Check if SnappyMail is configured to allow additional accounts
-		if (!$oActions->GetCapa(Capa::ADDITIONAL_ACCOUNTS)) {
-			return $oActions->FalseResponse(__FUNCTION__);
 		}
 
 		$aAccounts = $oActions->GetAccounts($oAccount);
@@ -187,6 +186,25 @@ class LdapMailAccounts
 			{
 				unset($aAccounts[$key]);
 			}
+		}
+
+		//SnappyMail saves the passwords of the additional accounts by encrypting them using a cryptkey that is saved in the file .cryptkey
+		//When the password of the main account changes, SnappyMail asks the user for the old password to reencrypt the keys with the new userpassword.
+		//On a password change using ldap (or when the password has been forgotten by the user) this makes us some problems. Therefore overwrite
+		//the .cryptkey file in order to always accept the actual ldap password of the user. This has side effects on pgp keys! 
+		//See https://github.com/the-djmaze/snappymail/issues/1570#issuecomment-2085528061
+		if ($this->config->bool_overwrite_cryptkey) {
+			if (!$oActions->StorageProvider()->Put($oAccount, StorageType::ROOT, '.cryptkey', "")) {
+				$this->logger->Write("Could not overwrite the .cryptkey file!", \LOG_WARNING, self::LOG_KEY);
+				return $oActions->FalseResponse(__FUNCTION__);
+			}
+		}
+
+		if (count($mailAddressResults) == 1) {
+			$this->logger->Write("Found only one match for user $username, no additional mail adresses found", \LOG_NOTICE, self::LOG_KEY);
+			//Write back the accounts even if no additional account was found. This ensures, that previous additional accounts are always removed
+			$oActions->SetAccounts($oAccount, $aAccounts);
+			return true;
 		}
 
 		foreach($mailAddressResults as $mailAddressResult)
@@ -210,7 +228,18 @@ class LdapMailAccounts
 					//if this fails the user will see the new mail addresses but will be asked for the correct password
 					$sPass = new \SnappyMail\SensitiveString($oAccount->IncPassword());
 					//After creating the accounts here $sUsername is used as username to login to the IMAP server (see Account.php)
-					$oNewAccount = RainLoop\Model\AdditionalAccount::NewInstanceFromCredentials($oActions, $sEmail, $sUsername, $sPass);
+					//$oNewAccount = RainLoop\Model\AdditionalAccount::NewInstanceFromCredentials($oActions, $sEmail, $sUsername, $sPass);
+
+					$oDomain = $oActions->DomainProvider()->Load($sDomain, false);
+
+					$oNewAccount = new AdditionalAccount;			
+					$oNewAccount->setCredentials(
+						$oDomain,
+						$sEmail,
+						$sUsername,
+						$sPass,
+						$sUsername
+					);
 
 					$aAccounts[$sEmail] = $oNewAccount->asTokenArray($oAccount);
 				}

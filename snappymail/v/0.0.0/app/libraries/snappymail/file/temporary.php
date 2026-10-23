@@ -10,13 +10,7 @@ class Temporary
 	{
 		$tmpdir = \sys_get_temp_dir() . '/snappymail';
 //		if (\RainLoop\Utils::inOpenBasedir($tmpdir) &&
-		\is_dir($tmpdir) || \mkdir($tmpdir, 0700);
-		if (!\is_dir($tmpdir)) {
-			throw new \Exception("Failed to create directory {$tmpdir}");
-		}
-		if (!\is_writable($tmpdir)) {
-//			throw new \Exception("Failed to access directory {$tmpdir}");
-		}
+		\MailSo\Base\Utils::mkdir($tmpdir);
 		if ($prefix) {
 			$this->filename = @\tempnam($tmpdir, $name);
 		} else {

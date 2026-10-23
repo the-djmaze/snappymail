@@ -1,7 +1,9 @@
-getEmailAddressDomain<?php
+<?php
 
 class LdapContactsSuggestions implements \RainLoop\Providers\Suggestions\ISuggestions
 {
+	use \MailSo\Log\Inherit;
+
 	private string $sLdapUri = 'ldap://localhost:389';
 
 	private bool $bUseStartTLS = true;
@@ -19,11 +21,6 @@ class LdapContactsSuggestions implements \RainLoop\Providers\Suggestions\ISugges
 	private string $sNameAttributes = 'displayName,cn,givenName,sn';
 
 	private string $sEmailAttributes = 'mailAddress,mail,mailAlternateAddress,mailAlias';
-
-	/**
-	 * @var \MailSo\Log\Logger
-	 */
-	private $oLogger = null;
 
 	private string $sAllowedEmails = '*';
 
@@ -75,7 +72,7 @@ class LdapContactsSuggestions implements \RainLoop\Providers\Suggestions\ISugges
 		$aResult = array();
 		$oCon = @\ldap_connect($this->sLdapUri);
 		if ($oCon) {
-			$this->oLogger->Write('ldap_connect: connected', \LOG_INFO, 'LDAP');
+			$this->logWrite('ldap_connect: connected', \LOG_INFO, 'LDAP');
 
 			@\ldap_set_option($oCon, LDAP_OPT_PROTOCOL_VERSION, 3);
 
@@ -142,29 +139,41 @@ class LdapContactsSuggestions implements \RainLoop\Providers\Suggestions\ISugges
 			$sFilter .= (1 < count($aItems) ? '(|' : '').$sSubFilter.(1 < count($aItems) ? ')' : '');
 			$sFilter .= ')';
 
-			$this->oLogger->Write('ldap_search: start: '.$sBaseDn.' / '.$sFilter, \LOG_INFO, 'LDAP');
-			$oS = @\ldap_search($oCon, $sBaseDn, $sFilter, $aItems, 0, 30, 30);
-			if ($oS) {
-				$aEntries = @\ldap_get_entries($oCon, $oS);
-				if (is_array($aEntries)) {
-					if (isset($aEntries['count'])) {
-						unset($aEntries['count']);
-					}
+			// A directory rarely keeps everything worth suggesting in one branch:
+			// meeting rooms and other bookable resources commonly live outside
+			// the people branch. Searching a single subtree either misses them,
+			// or - if the base is widened to the domain root - drags every
+			// service account into the suggestion list. Base DNs are therefore
+			// separated by '|', which cannot appear unescaped in a DN, so an
+			// existing single-branch configuration keeps working unchanged.
+			$aBaseDns = \array_filter(\array_map('trim', \explode('|', $sBaseDn)), 'strlen');
 
-					foreach ($aEntries as $aItem) {
-						if ($aItem) {
-							$sName = $sEmail = '';
-							list ($sEmail, $sName) = $this->findNameAndEmail($aItem, $aEmails, $aNames, $aUIDs);
-							if (!empty($sEmail)) {
-								$aResult[] = array($sEmail, $sName);
+			foreach ($aBaseDns as $sOneBaseDn) {
+				$this->logWrite('ldap_search: start: '.$sOneBaseDn.' / '.$sFilter, \LOG_INFO, 'LDAP');
+				$oS = @\ldap_search($oCon, $sOneBaseDn, $sFilter, $aItems, 0, 30, 30);
+				if ($oS) {
+					$aEntries = @\ldap_get_entries($oCon, $oS);
+					if (is_array($aEntries)) {
+						if (isset($aEntries['count'])) {
+							unset($aEntries['count']);
+						}
+
+						foreach ($aEntries as $aItem) {
+							if ($aItem) {
+								$sName = $sEmail = '';
+								list ($sEmail, $sName) = $this->findNameAndEmail($aItem, $aEmails, $aNames, $aUIDs);
+								if (!empty($sEmail)) {
+									$aResult[] = array($sEmail, $sName);
+								}
 							}
 						}
+					} else {
+						$this->logLdapError($oCon, 'ldap_get_entries');
 					}
 				} else {
-					$this->logLdapError($oCon, 'ldap_get_entries');
+					// One unreachable branch must not silence the others.
+					$this->logLdapError($oCon, 'ldap_search ('.$sOneBaseDn.')');
 				}
-			} else {
-				$this->logLdapError($oCon, 'ldap_search');
 			}
 		}
 
@@ -245,23 +254,7 @@ class LdapContactsSuggestions implements \RainLoop\Providers\Suggestions\ISugges
 		if ($this->oLogger) {
 			$sError = $oCon ? @\ldap_error($oCon) : '';
 			$iErrno = $oCon ? @\ldap_errno($oCon) : 0;
-
-			$this->oLogger->Write($sCmd.' error: '.$sError.' ('.$iErrno.')',
-				\LOG_WARNING, 'LDAP');
+			$this->logWrite($sCmd.' error: '.$sError.' ('.$iErrno.')', \LOG_WARNING, 'LDAP');
 		}
-	}
-
-	/**
-	 * @param \MailSo\Log\Logger $oLogger
-	 *
-	 * @return \LdapContactsSuggestions
-	 */
-	public function SetLogger($oLogger)
-	{
-		if ($oLogger instanceof \MailSo\Log\Logger) {
-			$this->oLogger = $oLogger;
-		}
-
-		return $this;
 	}
 }

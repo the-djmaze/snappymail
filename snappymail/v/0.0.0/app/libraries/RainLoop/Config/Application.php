@@ -96,7 +96,7 @@ class Application extends \RainLoop\Config\AbstractConfig
 	{
 		// Workarounds for the changed application structure
 		if ('webmail' === $sSectionKey) {
-			if ('language_admin' === $sSectionKey) {
+			if ('language_admin' === $sParamKey) {
 				$sSectionKey = 'admin_panel';
 				$sParamKey = 'language';
 			}
@@ -128,6 +128,17 @@ class Application extends \RainLoop\Config\AbstractConfig
 				$sSectionKey = 'imap';
 				$sParamKey = 'fetch_new_messages';
 			}
+			if ('login_fault_delay' === $sParamKey) {
+				$sSectionKey = 'login';
+				$sParamKey = 'fault_delay';
+			}
+			if ('log_ajax_response_write_limit' === $sParamKey) {
+				$sSectionKey = 'logs';
+				$sParamKey = 'json_response_write_limit';
+			}
+		}
+		if ('language' === $sParamKey) {
+			$mParamValue = \SnappyMail\L10n::validLanguage($mParamValue, 'admin_panel' === $sSectionKey) ?: 'en';
 		}
 		parent::Set($sSectionKey, $sParamKey, $mParamValue);
 	}
@@ -179,9 +190,12 @@ class Application extends \RainLoop\Config\AbstractConfig
 
 				'allow_additional_accounts'   => array(true),
 				'allow_additional_identities' => array(true),
+				'popup_identity' => array(true, 'When identity is not set yet, open identity popup after login'),
 
 				'messages_per_page'           => array(20, 'Number of messages displayed on page by default'),
 				'message_read_delay'          => array(5, 'Mark message read after N seconds'),
+
+				'min_refresh_interval'        => array(5, 'Minimal check for new messages interval in minutes'),
 
 				'attachment_size_limit'       => array(\min($upload_max_filesize, 25), 'File size limit (MB) for file upload on compose screen
 0 for unlimited.'),
@@ -221,6 +235,7 @@ Warning: only enable when server does not do this, else double compression error
 				'admin_login'             => array('admin', 'Login and password for web admin panel'),
 				'admin_password'          => array(''),
 				'admin_totp'              => array(''),
+				'insecure_cryptkey'       => array(false, 'Use email address instead of login password for encrypting sensitive data (like account passwords)'),
 
 				'force_https'             => array(false),
 				'hide_x_mailer_header'    => array(true),
@@ -289,7 +304,9 @@ once they closed the browser window.
 Values:
   "DefaultOff" - can be used, disabled by default;
   "DefaultOn"  - can be used, enabled by default;
-  "Unused"     - cannot be used')
+  "Unused"     - cannot be used'),
+
+				'fault_delay' => array(5, 'When login fails, wait N seconds before responding'),
 			),
 
 			'plugins' => array(
@@ -373,7 +390,9 @@ Examples:
 				'auth_logging' => array(false, 'Enable auth logging in a separate file (for fail2ban)'),
 				'auth_logging_filename' => array('fail2ban/auth-{date:Y-m-d}.txt'),
 				'auth_logging_format' => array('[{date:Y-m-d H:i:s}] Auth failed: ip={request:ip} user={imap:login} host={imap:host} port={imap:port}'),
-				'auth_syslog' => array(false, 'Enable auth logging to syslog for fail2ban')
+				'auth_syslog' => array(false, 'Enable auth logging to syslog for fail2ban'),
+
+				'json_response_write_limit' => array(300),
 			),
 
 			'debug' => array(
@@ -394,7 +413,6 @@ Enables caching in the system'),
 
 				'index' => array('v1', 'Additional caching key. If changed, cache is purged'),
 
-				'fast_cache_driver' => array('files', 'Can be: files, APCU, memcache, redis (beta)'),
 				'fast_cache_index' => array('v1', 'Additional caching key. If changed, fast cache is purged'),
 
 				'http' => array(true, 'Browser-level cache. If enabled, caching is maintainted without using files'),
@@ -416,13 +434,8 @@ Enables caching in the system'),
 			),
 
 			'labs' => array(
-				'date_from_headers' => array(true, 'Display message RFC 2822 date and time header, instead of the arrival internal date.'),
 				'allow_message_append' => array(false, 'Allow drag & drop .eml files from system into messages list'),
-				'login_fault_delay' => array(5, 'When login fails, wait N seconds before responding'),
-				'log_ajax_response_write_limit' => array(300),
 				'smtp_show_server_errors' => array(false),
-				'sieve_auth_plain_initial' => array(true),
-				'sieve_allow_fileinto_inbox' => array(false),
 				'mail_func_clear_headers' => array(true, 'PHP mail() remove To and Subject headers'),
 				'mail_func_additional_parameters' => array(false, 'PHP mail() set -f emailaddress'),
 				'folders_spec_limit' => array(50),
@@ -431,10 +444,6 @@ Enables caching in the system'),
 				'custom_login_link' => array(''),
 				'custom_logout_link' => array(''),
 				'http_client_ip_check_proxy' => array(false),
-				'fast_cache_memcache_host' => array('127.0.0.1'),
-				'fast_cache_memcache_port' => array(11211),
-				'fast_cache_redis_host' => array('127.0.0.1'),
-				'fast_cache_redis_port' => array(6379),
 				'use_local_proxy_for_external_images' => array(true),
 				'image_exif_auto_rotate' => array(false),
 				'cookie_default_path' => array(''),

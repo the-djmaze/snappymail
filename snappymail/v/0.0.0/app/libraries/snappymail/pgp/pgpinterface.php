@@ -39,7 +39,7 @@ interface PGPInterface
 	public function sign(string $plaintext) /*: string|false*/;
 	public function signFile(string $filename) /*: string|false*/;
 	public function signStream($fp, /*string|resource*/ $output = null) /*: string|false*/;
-	public function verify(string $signed_text, string $signature, string &$plaintext = null) /*: array|false*/;
-	public function verifyFile(string $filename, string $signature, string &$plaintext = null) /*: array|false*/;
-	public function verifyStream(/*resource*/ $fp, string $signature, string &$plaintext = null) /*: array|false */;
+	public function verify(string $signed_text, string $signature, ?string &$plaintext = null) /*: array|false*/;
+	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null) /*: array|false*/;
+	public function verifyStream(/*resource*/ $fp, string $signature, ?string &$plaintext = null) /*: array|false */;
 }

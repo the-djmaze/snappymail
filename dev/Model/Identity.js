@@ -1,19 +1,16 @@
-import { AbstractModel } from 'Knoin/AbstractModel';
+//import { AbstractModel } from 'Knoin/AbstractModel';
+import { EmailModel } from 'Model/Email';
 import { addObservablesTo, addComputablesTo } from 'External/ko';
 
-export class IdentityModel extends AbstractModel {
-	/**
-	 * @param {string} id
-	 * @param {string} email
-	 */
+export class IdentityModel extends EmailModel /*AbstractModel*/ {
 	constructor() {
 		super();
 
 		addObservablesTo(this, {
 			id: '',
 			label: '',
-			email: '',
-			name: '',
+//			email: '',
+//			name: '',
 
 			replyTo: '',
 			bcc: '',
@@ -27,23 +24,28 @@ export class IdentityModel extends AbstractModel {
 
 			smimeKey: '',
 			smimeCertificate: '',
+			smimeCertificateChain: '',
 
-			askDelete: false
+			askDelete: false,
+
+			exists: false
 		});
 
 		addComputablesTo(this, {
 			smimeKeyEncrypted: () => this.smimeKey().includes('-----BEGIN ENCRYPTED PRIVATE KEY-----'),
-			smimeKeyValid: () => /^-----BEGIN (ENCRYPTED )?PRIVATE KEY-----/.test(this.smimeKey()),
-			smimeCertificateValid: () => /^-----BEGIN CERTIFICATE-----/.test(this.smimeCertificate())
+			smimeKeyValid: () => /^-----BEGIN (ENCRYPTED |RSA )?PRIVATE KEY-----/.test(this.smimeKey()),
+			smimeCertificateValid: () => /^-----BEGIN CERTIFICATE-----/.test(this.smimeCertificate()),
+			smimeCertificateChainValid: () => !this.smimeCertificateChain()
+				|| /^-----BEGIN CERTIFICATE-----/.test(this.smimeCertificateChain())
 		});
 	}
 
 	/**
 	 * @returns {string}
 	 */
-	formattedName() {
-		const name = this.name(),
-			email = this.email(),
+	toString() {
+		const name = this.name,
+			email = this.email,
 			label = this.label();
 		return (name ? `${name} ` : '') + `<${email}>` + (label ? ` (${label})` : '');
 	}

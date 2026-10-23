@@ -1,7 +1,7 @@
 /* eslint key-spacing: 0 */
 /* eslint quote-props: 0 */
 
-import { arrayLength } from 'Common/Utils';
+import { arrayLength, pInt } from 'Common/Utils';
 
 export const RFC822 = 'message/rfc822';
 
@@ -274,8 +274,7 @@ export const FileInfo = {
 	},
 
 	friendlySize: bytes => {
-		bytes = parseInt(bytes, 10);
-		bytes = isFinite(bytes) ? bytes : 0;
+		bytes = pInt(bytes);
 		let i = bytes ? Math.floor(Math.log(bytes) / Math.log(1024)) : 0;
 		return (bytes / Math.pow(1024, i)).toFixed(2>i ? 0 : 1) + ' ' + sizes[i];
 	}

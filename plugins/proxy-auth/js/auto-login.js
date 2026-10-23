@@ -11,11 +11,11 @@
                 ForwardProxyAuth = () => {
 		    if (auto_login) {
                         var xhr = new XMLHttpRequest();
-                        xhr.open("GET", "/?UserHeaderSet", true);
+                        xhr.open("GET", "?UserHeaderSet", true);
 
                         xhr.onreadystatechange = function () {
                             if (xhr.readyState == 4 && xhr.status == 200) {
-                                window.location.href = "/?ProxyAuth";
+                                window.location.href = "?ProxyAuth";
                             }
                         };
 

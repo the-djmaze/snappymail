@@ -10,7 +10,7 @@ export class AdminSettingsSecurity extends AbstractViewSettings {
 	constructor() {
 		super();
 
-		this.addSettings(['useLocalProxyForExternalImages', 'autoVerifySignatures']);
+		this.addSettings(['proxyExternalImages', 'autoVerifySignatures']);
 
 		this.weakPassword = rl.app.weakPassword;
 
@@ -31,6 +31,8 @@ export class AdminSettingsSecurity extends AbstractViewSettings {
 			capaGnuPG: SettingsCapa('GnuPG'),
 			capaOpenPGP: SettingsCapa('OpenPGP')
 		});
+
+		this.gnuPGversion = 'GnuPG v' + SettingsGet('gnupg');
 
 		const reset = () => {
 			this.saveError(false);

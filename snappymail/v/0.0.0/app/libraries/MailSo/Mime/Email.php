@@ -11,6 +11,8 @@
 
 namespace MailSo\Mime;
 
+use MailSo\Base\Utils;
+
 /**
  * @category MailSo
  * @package Mime
@@ -38,9 +40,9 @@ class Email implements \JsonSerializable
 			throw new \ValueError;
 		}
 
-		$this->sEmail = \SnappyMail\IDN::emailToAscii(\MailSo\Base\Utils::Trim($sEmail));
+		$this->sEmail = \SnappyMail\IDN::emailToAscii(Utils::Trim($sEmail));
 
-		$this->sDisplayName = \MailSo\Base\Utils::Trim($sDisplayName);
+		$this->sDisplayName = Utils::Trim($sDisplayName);
 	}
 
 	/**
@@ -48,8 +50,7 @@ class Email implements \JsonSerializable
 	 */
 	public static function Parse(string $sEmailAddress) : self
 	{
-		$sEmailAddress = \MailSo\Base\Utils::DecodeHeaderValue($sEmailAddress);
-		$sEmailAddress = \MailSo\Base\Utils::Trim($sEmailAddress);
+		$sEmailAddress = Utils::Trim(Utils::DecodeHeaderValue($sEmailAddress));
 		if (!\strlen(\trim($sEmailAddress))) {
 			throw new \ValueError;
 		}
@@ -63,7 +64,6 @@ class Email implements \JsonSerializable
 		$bInComment = false;
 
 		$iStartIndex = 0;
-		$iEndIndex = 0;
 		$iCurrentIndex = 0;
 
 		while ($iCurrentIndex < \strlen($sEmailAddress)) {
@@ -76,10 +76,8 @@ class Email implements \JsonSerializable
 						$bInName = true;
 						$iStartIndex = $iCurrentIndex;
 					} else if (!$bInAddress && !$bInComment) {
-						$iEndIndex = $iCurrentIndex;
-						$sName = \substr($sEmailAddress, $iStartIndex + 1, $iEndIndex - $iStartIndex - 1);
-						$sEmailAddress = \substr_replace($sEmailAddress, '', $iStartIndex, $iEndIndex - $iStartIndex + 1);
-						$iEndIndex = 0;
+						$sName = \substr($sEmailAddress, $iStartIndex + 1, $iCurrentIndex - $iStartIndex - 1);
+						$sEmailAddress = \substr_replace($sEmailAddress, '', $iStartIndex, $iCurrentIndex - $iStartIndex + 1);
 						$iCurrentIndex = 0;
 						$iStartIndex = 0;
 						$bInName = false;
@@ -97,10 +95,8 @@ class Email implements \JsonSerializable
 					break;
 				case '>':
 					if ($bInAddress) {
-						$iEndIndex = $iCurrentIndex;
-						$sEmail = \substr($sEmailAddress, $iStartIndex + 1, $iEndIndex - $iStartIndex - 1);
-						$sEmailAddress = \substr_replace($sEmailAddress, '', $iStartIndex, $iEndIndex - $iStartIndex + 1);
-						$iEndIndex = 0;
+						$sEmail = \substr($sEmailAddress, $iStartIndex + 1, $iCurrentIndex - $iStartIndex - 1);
+						$sEmailAddress = \substr_replace($sEmailAddress, '', $iStartIndex, $iCurrentIndex - $iStartIndex + 1);
 						$iCurrentIndex = 0;
 						$iStartIndex = 0;
 						$bInAddress = false;
@@ -114,10 +110,8 @@ class Email implements \JsonSerializable
 					break;
 				case ')':
 					if ($bInComment) {
-						$iEndIndex = $iCurrentIndex;
-						$sComment = \substr($sEmailAddress, $iStartIndex + 1, $iEndIndex - $iStartIndex - 1);
-						$sEmailAddress = \substr_replace($sEmailAddress, '', $iStartIndex, $iEndIndex - $iStartIndex + 1);
-						$iEndIndex = 0;
+						$sComment = \substr($sEmailAddress, $iStartIndex + 1, $iCurrentIndex - $iStartIndex - 1);
+						$sEmailAddress = \substr_replace($sEmailAddress, '', $iStartIndex, $iCurrentIndex - $iStartIndex + 1);
 						$iCurrentIndex = 0;
 						$iStartIndex = 0;
 						$bInComment = false;
@@ -159,9 +153,9 @@ class Email implements \JsonSerializable
 		return new self($sEmail, $sName);
 	}
 
-	public function GetEmail(bool $bIdn = false) : string
+	public function GetEmail(bool $bUtf8 = false) : string
 	{
-		return $bIdn ? \SnappyMail\IDN::emailToUtf8($this->sEmail) : $this->sEmail;
+		return $bUtf8 ? \SnappyMail\IDN::emailToUtf8($this->sEmail) : $this->sEmail;
 	}
 
 	public function GetDisplayName() : string
@@ -171,12 +165,12 @@ class Email implements \JsonSerializable
 
 	public function getLocalPart() : string
 	{
-		return \MailSo\Base\Utils::getEmailAddressLocalPart($this->sEmail);
+		return Utils::getEmailAddressLocalPart($this->sEmail);
 	}
 
 	public function GetDomain(bool $bIdn = false) : string
 	{
-		return \MailSo\Base\Utils::getEmailAddressDomain($this->GetEmail($bIdn));
+		return Utils::getEmailAddressDomain($this->GetEmail($bIdn));
 	}
 
 	public function SetDkimStatus(string $sDkimStatus)
@@ -184,24 +178,21 @@ class Email implements \JsonSerializable
 		$this->sDkimStatus = Enumerations\DkimStatus::normalizeValue($sDkimStatus);
 	}
 
-	public function ToString(bool $bConvertSpecialsName = false, bool $bIdn = false) : string
+	public function ToString(bool $bConvertSpecialsName = false, bool $bUtf8 = false) : string
 	{
 		$sReturn = '';
-
-		$sDisplayName = \str_replace('"', '\"', $this->sDisplayName);
-		if ($bConvertSpecialsName) {
-			$sDisplayName = \strlen($sDisplayName) ? \MailSo\Base\Utils::EncodeHeaderValue($sDisplayName) : '';
-		}
-
-		$sDisplayName = \strlen($sDisplayName) ? '"'.$sDisplayName.'"' : '';
 		if (\strlen($this->sEmail)) {
-			$sReturn = $this->GetEmail($bIdn);
+			$sReturn = $this->GetEmail($bUtf8);
+			$sDisplayName = $this->sDisplayName;
 			if (\strlen($sDisplayName)) {
-				$sReturn = $sDisplayName.' <'.$sReturn.'>';
+				$sDisplayName = \str_replace('"', '\"', $sDisplayName);
+				if ($bConvertSpecialsName) {
+					$sDisplayName = Utils::EncodeHeaderValue($sDisplayName);
+				}
+				$sReturn = '"'.$sDisplayName.'" <'.$sReturn.'>';
 			}
 		}
-
-		return \trim($sReturn);
+		return $sReturn;
 	}
 
 	public function __toString() : string
@@ -214,8 +205,8 @@ class Email implements \JsonSerializable
 	{
 		return array(
 			'@Object' => 'Object/Email',
-			'name' => \MailSo\Base\Utils::Utf8Clear($this->GetDisplayName()),
-			'email' => \MailSo\Base\Utils::Utf8Clear($this->GetEmail(true)),
+			'name' => Utils::Utf8Clear($this->sDisplayName),
+			'email' => Utils::Utf8Clear($this->GetEmail(true)),
 			'dkimStatus' => $this->sDkimStatus
 		);
 	}

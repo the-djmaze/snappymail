@@ -2,14 +2,13 @@
 const rollup2 = require('gulp-rollup-2');
 const includePaths = require('rollup-plugin-includepaths');
 const externalGlobals = require('rollup-plugin-external-globals');
-const html = require('rollup-plugin-html');
 const { config } = require('./config');
 
 let includePathOptions = {
 	include: {},
 	paths: ['dev'],
 	external: [],
-	extensions: ['.js', '.html']
+	extensions: ['.js']
 };
 
 exports.rollupJS = (inputFile) =>
@@ -23,9 +22,6 @@ exports.rollupJS = (inputFile) =>
 			includePaths(includePathOptions),
 			externalGlobals({
 				ko: 'ko'
-			}),
-			html({
-				include: '**/*.html'
 			})
 		]
 	});

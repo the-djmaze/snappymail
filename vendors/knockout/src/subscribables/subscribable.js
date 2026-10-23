@@ -25,7 +25,7 @@ class koSubscription
     disposeWhenNodeIsRemoved(node) {
         // MutationObserver ?
         this._node = node;
-        ko.utils.domNodeDisposal['addDisposeCallback'](node, this._domNodeDisposalCallback = this['dispose'].bind(this));
+        ko.utils.domNodeDisposal.addDisposeCallback(node, this._domNodeDisposalCallback = this['dispose'].bind(this));
     }
 }
 

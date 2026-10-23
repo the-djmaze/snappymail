@@ -7,9 +7,9 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME     = 'Change Password',
-		VERSION  = '2.36',
-		RELEASE  = '2024-03-17',
-		REQUIRED = '2.36.0',
+		VERSION  = '2.38',
+		RELEASE  = '2024-04-22',
+		REQUIRED = '2.36.1',
 		CATEGORY = 'Security',
 		DESCRIPTION = 'Extension to allow users to change their passwords';
 
@@ -18,7 +18,8 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 		CouldNotSaveNewPassword = 130,
 		CurrentPasswordIncorrect = 131,
 		NewPasswordShort = 132,
-		NewPasswordWeak = 133;
+		NewPasswordWeak = 133,
+		NewPasswordHibp = 134;
 
 	public function Init() : void
 	{
@@ -103,18 +104,23 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 	public function configMapping() : array
 	{
 		$result = [
-			\RainLoop\Plugins\Property::NewInstance("pass_min_length")
+			\RainLoop\Plugins\Property::NewInstance('pass_min_length')
 				->SetLabel('Password minimum length')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::INT)
 				->SetDescription('Minimum length of the password')
 				->SetDefaultValue(10)
 				->SetAllowedInJs(true),
-			\RainLoop\Plugins\Property::NewInstance("pass_min_strength")
+			\RainLoop\Plugins\Property::NewInstance('pass_min_strength')
 				->SetLabel('Password minimum strength')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::INT)
 				->SetDescription('Minimum strength of the password in %')
 				->SetDefaultValue(70)
 				->SetAllowedInJs(true),
+			\RainLoop\Plugins\Property::NewInstance('check_hibp')
+				->SetLabel('Check Have I Been Pwned')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
+				->SetDescription('Check if new passphrase is in a data breach')
+				->SetDefaultValue(false),
 		];
 		foreach ($this->getSupportedDrivers(true) as $name => $class) {
 			$group = new \RainLoop\Plugins\PropertyCollection($name);
@@ -160,6 +166,9 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 			throw new ClientException(static::NewPasswordWeak, null, $oActions->StaticI18N('NOTIFICATIONS/NEW_PASSWORD_WEAK'));
 		}
 		$oNewPassword = new \SnappyMail\SensitiveString($sNewPassword);
+		if ($this->Config()->Get('plugin', 'check_hibp', false) && \SnappyMail\Hibp::password($oNewPassword)) {
+			throw new ClientException(static::NewPasswordHibp, null, $oActions->StaticI18N('NOTIFICATIONS/NEW_PASSWORD_HIBP'));
+		}
 
 		$bResult = false;
 		$oConfig = $this->Config();

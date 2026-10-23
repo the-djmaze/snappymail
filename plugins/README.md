@@ -124,16 +124,30 @@ $Plugin->addHook('hook.name', 'functionName');
 	params:
 		string &$sEmail
 
+	Happens in resolveLoginCredentials($sEmail) BEFORE resolving domain name.
+	This is the pure text from the login screen (DoLogin) or the SSO feature (ServiceSso) received by LoginProcess().
+	- DoLogin() -> LoginProcess() -> resolveLoginCredentials($sEmail)
+	- ServiceSso() -> LoginProcess() -> resolveLoginCredentials($sEmail)
+	So $sEmail can just have the value `test` without a domain.
+
 ### login.credentials.step-2
 	params:
 		string &$sEmail
 		string &$sPassword
 
+	Happens in resolveLoginCredentials($sEmail) AFTER resolving domain name.
+	So $sEmail always has a domain (for example `test` is now `test@example.com`).
+
 ### login.credentials
 	params:
 		string &$sEmail
-		string &$sLogin
+		string &$sImapUser
 		string &$sPassword
+		string &$sSmtpUser
+
+		$sEmail is the domain imap->fixUsername() without shortening.
+		$sImapUser is the domain imap->fixUsername() for login into IMAP.
+		$sSmtpUser is the domain smtp->fixUsername() for login into SMTP.
 
 ### login.success
 	params:
@@ -411,12 +425,6 @@ and called in JavaScript using rl.pluginRemoteRequest().
 		string $sName
 		mixed &$mResult
 
-### service.app-delay-start-begin
-	no params
-
-### service.app-delay-start-end
-	no params
-
 # JavaScript Events
 
 ## mailbox
@@ -454,11 +462,16 @@ and called in JavaScript using rl.pluginRemoteRequest().
 
 ### rl-view-model.create
 	event.detail = the ViewModel class
-	Happens immediately after the ViewModel constructor
+	Happens immediately after the ViewModel constructor.
+	See accessible properties as https://github.com/the-djmaze/snappymail/blob/master/dev/Knoin/AbstractViews.js
 
 ### rl-view-model
 	event.detail = the ViewModel class
 	Happens after the full build (vm.onBuild()) and contains viewModelDom
+
+### rl-vm-visible
+	event.detail = the ViewModel class
+	Happens after the model is made visible (vm.afterShow())
 
 ### sm-admin-login
 	event.detail = FormData

@@ -76,12 +76,16 @@ abstract class Base
 	function __destruct()
 	{
 		$this->proc_close();
-
 		$gpgconf = static::findBinary('gpgconf');
 		if ($gpgconf) {
+			$cmd = $gpgconf . ' --kill gpg-agent';
+			// https://github.com/the-djmaze/snappymail/issues/1560#issuecomment-2144817883
+//			if (\version_compare($this->version, '2.4.0', '<')) {
+				$cmd .= ' ' . \escapeshellarg($this->options['homedir']);
+//			}
 			$env = ['GNUPGHOME' => $this->options['homedir']];
 			$pipes = [];
-			if ($process = \proc_open($gpgconf . ' --kill gpg-agent --homedir ' . \escapeshellarg($this->options['homedir']), [], $pipes, null, $env)) {
+			if ($process = \proc_open($cmd, [], $pipes, null, $env)) {
 				\proc_close($process);
 			}
 		}
@@ -247,7 +251,7 @@ abstract class Base
 	/**
 	 * Verifies a signed text
 	 */
-	public function verify(string $signed_text, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verify(string $signed_text, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		return false;
 	}
@@ -255,7 +259,7 @@ abstract class Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyFile(string $filename, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		return false;
 	}
@@ -263,7 +267,7 @@ abstract class Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyStream($fp, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verifyStream($fp, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		return false;
 	}
@@ -430,7 +434,7 @@ abstract class Base
 	public function agent()
 	{
 //		$home = \escapeshellarg($this->options['homedir']);
-//		echo `gpg-agent --daemon --homedir $home 2>&1`;
+//		echo \shell_exec('gpg-agent --daemon --homedir $home 2>&1');
 	}
 
 	protected function getPassphrase($key)
@@ -483,8 +487,8 @@ abstract class Base
 
 	protected static function findBinary($name) : ?string
 	{
-		$binary = \trim((string) `which $name`);
-		if ($binary && \is_executable($binary)) {
+		$binary = \function_exists('shell_exec') ? \trim((string) \shell_exec('which $name')) : '';
+		if ($binary && \RainLoop\Utils::inOpenBasedir($binary) && \is_executable($binary)) {
 			return $binary;
 		}
 		$locations = \array_filter([

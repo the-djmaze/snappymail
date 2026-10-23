@@ -9,7 +9,7 @@ const fontasticFontsClear = () => del('snappymail/v/' + config.devVersion + '/st
 
 const fontasticFontsCopy = () =>
 	gulp
-		.src('vendors/fontastic/fonts/snappymail.*')
+		.src('vendors/fontastic/fonts/snappymail.*', { encoding: false })
 		.pipe(gulp.dest('snappymail/v/' + config.devVersion + '/static/css/fonts'));
 
 const fontastic = gulp.series(fontasticFontsClear, fontasticFontsCopy);

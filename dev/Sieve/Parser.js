@@ -18,6 +18,7 @@ import {
 import {
 	GrammarBracketComment,
 	GrammarCommand,
+	GrammarComment,
 	GrammarHashComment,
 	GrammarMultiLine,
 	GrammarNumber,
@@ -27,8 +28,8 @@ import {
 	GrammarTestList
 } from 'Sieve/Grammar';
 
-import { availableCommands } from 'Sieve/Commands';
-import { ConditionalCommand, RequireCommand } from 'Sieve/Commands/Controls';
+import { availableCommands, unavailableCommands } from 'Sieve/Commands';
+import { ConditionalCommand, IfCommand, RequireCommand } from 'Sieve/Commands/Controls';
 import { NotTest } from 'Sieve/Commands/Tests';
 
 const
@@ -92,6 +93,7 @@ export const parseScript = (script, name = 'script.sieve') => {
 
 	// Only activate available commands
 	const Commands = availableCommands();
+	const disabledCommands = unavailableCommands();
 
 	let match,
 		line = 1,
@@ -117,18 +119,20 @@ export const parseScript = (script, name = 'script.sieve') => {
 			let prev_arg = args[args.length-1];
 			if (getMatchTypes(0).includes(arg)) {
 				command.match_type = arg;
-			} else if (':value' === prev_arg || ':count' === prev_arg) {
-				// Sieve relational [RFC5231] match types
-				/^(gt|ge|lt|le|eq|ne)$/.test(arg.value) || error('Invalid relational match-type ' + arg);
-				command.match_type = prev_arg + ' ' + arg;
+			} else if (getMatchTypes(0).includes(prev_arg)) {
 				--args.length;
-//				requires.push('relational');
+				if (':value' === prev_arg || ':count' === prev_arg) {
+					// Sieve relational [RFC5231] match types
+					/^"(gt|ge|lt|le|eq|ne)"$/.test(arg) || error('Invalid relational match-type ' + arg);
+					command.relational_match = arg;
+//					requires.push('relational');
+					return;
+				}
 			} else if (':comparator' === prev_arg) {
 				command.comparator = arg;
 				--args.length;
-			} else {
-				args.push(arg);
 			}
+			args.push(arg);
 		},
 		pushArgs = () => {
 			if (args.length) {
@@ -154,27 +158,30 @@ export const parseScript = (script, name = 'script.sieve') => {
 			pushArgs();
 			value = value.toLowerCase();
 			let new_command;
-			if ('if' === value) {
-				new_command = new ConditionalCommand(value);
-			} else if ('elsif' === value || 'else' === value) {
-//				(prev_command instanceof ConditionalCommand) || error('Not after IF condition');
-				new_command = new ConditionalCommand(value);
-			} else if (Commands[value]) {
+			if (Commands[value]) {
+				if ('elsif' === value || 'else' === value) {
+					let valid = false, cmd = (command ? command?.commands : tree), i = cmd?.length;
+					while (i) {
+						cmd[--i];
+						if (cmd[i] instanceof IfCommand) {
+							valid = true;
+							break;
+						} else if (typeof cmd[i] !== 'string' && !(cmd[i] instanceof GrammarComment)) {
+							break;
+						}
+					}
+					valid || error('Not after IF/ELSIF condition');
+				}
 				if ('allof' === value || 'anyof' === value) {
 //					(command instanceof ConditionalCommand || command instanceof NotTest) || error('Test-list not in conditional');
 				}
 				new_command = new Commands[value]();
+			} else if (disabledCommands[value]) {
+				console.error('Unsupported command: ' + value);
+				new_command = new disabledCommands[value]();
 			} else {
-				if (command && (
-				    command instanceof ConditionalCommand
-				 || command instanceof NotTest
-				 || command.tests instanceof GrammarTestList)) {
-					console.error('Unknown test: ' + value);
-					new_command = new TestCommand(value);
-				} else {
-					console.error('Unknown command: ' + value);
-					new_command = new GrammarCommand(value);
-				}
+				console.error('Unknown command: ' + value);
+				new_command = new GrammarCommand(value);
 			}
 
 			if (new_command instanceof TestCommand) {
@@ -192,7 +199,7 @@ export const parseScript = (script, name = 'script.sieve') => {
 				if (command.commands) {
 					command.commands.push(new_command);
 				} else {
-					error('commands not allowed in "' + command.identifier + '" command');
+					error('command "' + new_command.identifier + '" not allowed in "' + command.identifier + '" command');
 				}
 			} else {
 				tree.push(new_command);
@@ -219,7 +226,8 @@ export const parseScript = (script, name = 'script.sieve') => {
 			pushArg(GrammarMultiLine.fromString(value));
 			break;
 		case T_QUOTED_STRING:
-			pushArg(new GrammarQuotedString(value.slice(1,-1)));
+			try { value = JSON.parse(value); } catch(e) { console.error(e, value); }
+			pushArg(new GrammarQuotedString(value));
 			break;
 		case T_NUMBER:
 			pushArg(new GrammarNumber(value));
@@ -268,7 +276,6 @@ export const parseScript = (script, name = 'script.sieve') => {
 			break;
 		case T_BLOCK_END:
 			(command instanceof ConditionalCommand) || error(TokenError[type]);
-//			prev_command = command;
 			command = levels.up();
 			break;
 
@@ -293,5 +300,6 @@ export const parseScript = (script, name = 'script.sieve') => {
 	}
 
 	tree.requires = requires;
+	tree.toString = () => tree.join('\r\n');
 	return tree;
 };

@@ -11,6 +11,7 @@
 		"CLOSE": "Fechar (Esc)",
 		"CONTACTS": "Contatos",
 		"DELETE": "Excluir",
+		"UNDELETE": "Undelete",
 		"DONE": "Concluir",
 		"EMAIL": "E-mail",
 		"FROM": "De",
@@ -18,6 +19,7 @@
 		"LOGOUT": "Sair",
 		"MORE": "Mais",
 		"MOVE_TO": "Mover Para",
+		"COPY_TO": "Copiar para",
 		"NAME": "Caixa de Entrada",
 		"NONE": "Nenhum",
 		"TO_SPAM": "Move message(s) to Spam",
@@ -58,12 +60,18 @@
 		"UNSEEN": "Não Lida",
 		"DATE": "Data",
 		"DATE_ALL": "Qualquer",
-		"DATE_3_DAYS": "Até 3 dias atrás",
-		"DATE_7_DAYS": "Até 1 semana atrás",
-		"DATE_MONTH": "Até 1 mês atrás",
-		"DATE_3_MONTHS": "Até 3 meses atrás",
-		"DATE_6_MONTHS": "Até 6 meses atrás",
-		"DATE_YEAR": "Até 1 ano atrás",
+		"BEFORE_3_DAYS": "Older then 3 days",
+		"BEFORE_7_DAYS": "Older then 1 week",
+		"BEFORE_MONTH": "Older then 1 month",
+		"BEFORE_3_MONTHS": "Older then 3 months",
+		"BEFORE_6_MONTHS": "Older then 6 months",
+		"BEFORE_YEAR": "Older then 1 year",
+		"SINCE_3_DAYS": "Até 3 dias atrás",
+		"SINCE_7_DAYS": "Até 1 semana atrás",
+		"SINCE_MONTH": "Até 1 mês atrás",
+		"SINCE_3_MONTHS": "Até 3 meses atrás",
+		"SINCE_6_MONTHS": "Até 6 meses atrás",
+		"SINCE_YEAR": "Até 1 ano atrás",
 		"SUBFOLDERS": "Subfolders",
 		"SUBFOLDERS_NONE": "None",
 		"SUBFOLDERS_SUBTREE": "All",
@@ -80,8 +88,19 @@
 		"TRASH_NAME": "Lixeira",
 		"ARCHIVE_NAME": "Arquivadas"
 	},
-	"QUOTA": {
-		"TITLE": "Uso do Armazenamento"
+	"IMAP": {
+		"ACL_RIGHTS": "Rights",
+		"ACL_A": "Administer",
+		"ACL_E": "Expunge",
+		"ACL_I": "Insert messages",
+		"ACL_K": "Create sub-folders",
+		"ACL_L": "Show messages",
+		"ACL_P": "Send mail",
+		"ACL_R": "Select folder",
+		"ACL_S": "\\SEEN tag",
+		"ACL_T": "\\DELETED tag",
+		"ACL_W": "Other tags",
+		"ACL_X": "Delete\/Rename folder"
 	},
 	"MESSAGE_LIST": {
 		"BUTTON_RELOAD": "Atualizar Lista de Mensagens",
@@ -111,6 +130,8 @@
 		"QUOTA_SIZE": "Utilizando <strong>%SIZE% (%PROC%%)<\/strong> de <strong>%LIMIT%<\/strong>",
 		"SORT": "Sort",
 		"NO_SORT": "Mail server does not support sorting",
+		"SORT_ARRIVAL_ASC": "Arrived ascending",
+		"SORT_ARRIVAL_DESC": "Arrived descending",
 		"SORT_DATE_ASC": "Date ascending",
 		"SORT_DATE_DESC": "Date descending",
 		"SORT_SIZE_ASC": "Size ascending",
@@ -188,7 +209,6 @@
 		"ALWAYS_IF_POSSIBLE": "Always if possible",
 		"BUTTON_ADD_CONTACT": "Adicionar Contato",
 		"BUTTON_CREATE_CONTACT": "Criar",
-		"BUTTON_UPDATE_CONTACT": "Atualizar",
 		"BUTTON_IMPORT": "Importar (csv, vcf, vCard)",
 		"BUTTON_EXPORT_VCARD": "Exportar (vcf, vCard)",
 		"BUTTON_EXPORT_CSV": "Exportar (csv)",
@@ -198,10 +218,13 @@
 		"CLEAR_SEARCH": "Limpar pesquisa",
 		"CONTACT_VIEW_DESC": "Selecione um contato na lista para visualizá-lo.",
 		"LABEL_BIRTHDAY": "Aniversário",
-		"PLACEHOLDER_ENTER_DISPLAY_NAME": "Digite o nome de exibição",
-		"PLACEHOLDER_ENTER_LAST_NAME": "Digite o sobrenome",
-		"PLACEHOLDER_ENTER_FIRST_NAME": "Digite o primeiro nome",
-		"PLACEHOLDER_ENTER_NICK_NAME": "Digite o apelido",
+		"DISPLAY_NAME": "Nome de exibição",
+		"LAST_NAME": "Sobrenome",
+		"FIRST_NAME": "Primeiro nome",
+		"MIDDLE_NAME": "Nomes adicionais",
+		"NAME_PREFIX": "Prefixo do nome",
+		"NAME_SUFFIX": "Sufixo do nome",
+		"NICK_NAME": "Apelido",
 		"LABEL_READ_ONLY": "Somente Leitura",
 		"ADD_MENU_LABEL": "Adicionar",
 		"ADD_MENU_NICKNAME": "Apelido",
@@ -250,15 +273,13 @@
 	"POPUPS_ADD_ACCOUNT": {
 		"TITLE_ADD_ACCOUNT": "Nova conta",
 		"BUTTON_ADD_ACCOUNT": "Adicionar",
-		"TITLE_UPDATE_ACCOUNT": "Atualizar Conta?",
-		"BUTTON_UPDATE_ACCOUNT": "Atualizar"
+		"TITLE_UPDATE_ACCOUNT": "Atualizar Conta?"
 	},
 	"POPUPS_IDENTITY": {
 		"TITLE_ADD_IDENTITY": "Adicionar identidade",
-		"TITLE_UPDATE_IDENTITY": "Atualizar identidade?",
+		"TITLE_UPDATE_IDENTITY": "Atualizar identidade",
 		"LABEL": "Label",
 		"BUTTON_ADD_IDENTITY": "Adicionar",
-		"BUTTON_UPDATE_IDENTITY": "Atualizar",
 		"SIGNATURE": "Signature",
 		"LABEL_SIGNATURE_INSERT_BEFORE": "Inserir esta assinatura antes do texto citado nas respostas"
 	},
@@ -285,7 +306,10 @@
 		"CREATE_SELF_SIGNED": "Create self-signed",
 		"VALID_UNTIL": "Valid until",
 		"PRIVATE_KEY": "Private key",
-		"ASK_CRYPTKEY_PASS": "Your login passphrase has changed. Please fill in your old login password to decrypt data"
+		"CHANGE_PASS": "Change passphrase",
+		"CURRENT_PASS": "Current passphrase",
+		"NEW_PASS": "New passphrase",
+		"ASK_CRYPTKEY_PASS": "Your login passphrase has changed. Please fill in your old login passphrase to decrypt data"
 	},
 	"OPENPGP": {
 		"POPUP_IMPORT_TITLE": "Importar chave OpenPGP",
@@ -313,8 +337,8 @@
 		"PRIVATE_KEY_OF": "S\/MIME private key of %EMAIL%"
 	},
 	"POPUPS_FILTER": {
-		"TITLE_CREATE_FILTER": "Criar um filtro?",
-		"TITLE_EDIT_FILTER": "Atualizar filtro?",
+		"TITLE_CREATE_FILTER": "Criar um filtro",
+		"TITLE_EDIT_FILTER": "Atualizar filtro",
 		"LEGEND_CONDITIONS": "Condições",
 		"LEGEND_ACTIONS": "Ações",
 		"BUTTON_ADD_CONDITION": "Adicionar uma Condição",
@@ -433,7 +457,8 @@
 	"SETTINGS_SECURITY": {
 		"LEGEND_SECURITY": "Segurança",
 		"LABEL_AUTOLOGOUT": "Deslogar Automaticamente",
-		"AUTOLOGIN_NEVER_OPTION_NAME": "Nunca"
+		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"NEVER": "Nunca"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "Idioma",
@@ -452,6 +477,7 @@
 		"HIDE_DELETED_MESSAGES": "Ocultar mensagens marcadas para exclusão",
 		"USE_CHECKBOXES_IN_LIST": "Exibir caixas de seleção na lista",
 		"USE_THREADS": "Agrupar mensagens por conversa",
+		"THREAD_ALGORITHM": "Threads algorithm",
 		"REPLY_SAME_FOLDER": "Colocar resposta na mesma pasta da mensagem respondida",
 		"PREFER_HTML": "Prefer HTML to plain text",
 		"PREFER_HTML_INFO": "Messages sometimes come in both formats. This option controls whether you want the HTML part or the plain text part to be displayed.",
@@ -469,6 +495,7 @@
 		"CHROME_NOTIFICATION_DESC_DENIED": "(Bloqueado pelo navegador)",
 		"COLLAPSE_BLOCKQUOTES": "Collapse quoted text",
 		"MAX_QUOTE_LEVEL": "Maximum visible quoted text levels",
+		"MIN_FONT_SIZE": "Minimum Font Size",
 		"LIST_INLINE_ATTACHMENTS": "Show inline attachments in list",
 		"LIST_SIMPLE_ATTACHMENTS": "Simple attachments list",
 		"LIST_MESSAGES_GROUPED": "List messages grouped (when sorting by date or from)",
@@ -477,7 +504,9 @@
 		"IMAGES_OPTION_WHITELIST": "Whitelist or ask",
 		"IMAGES_OPTION_ALWAYS": "Show always",
 		"IMAGES_WHITELIST": "Images whitelist",
-		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab"
+		"MESSAGE_POPUP_WINDOW": "Popup in new window instead of tab",
+		"MAILTO": "Register as 'mailto:' links handler",
+		"HTML_TO_MD": "Convert HTML to Markdown instead of plain text"
 	},
 	"SETTINGS_CONTACTS": {
 		"LABEL_CONTACTS_AUTOSAVE": "Adicionar automaticamente os destinatários na lista de endereços",

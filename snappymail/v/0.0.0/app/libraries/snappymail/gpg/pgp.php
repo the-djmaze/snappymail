@@ -83,28 +83,17 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 	protected function listDecryptKeys(/*string|resource*/ $input, /*string|resource*/ $output = null)
 	{
 		$this->setInput($input);
-		$fclose = $this->setOutput($output);
 		$_ENV['PINENTRY_USER_DATA'] = '';
-		$result = $this->exec(['--list-packets']);
-		$fclose && \fclose($fclose);
-		return $output ? true : ($result ? $result['output'] : false);
+		return $this->execOutput(['--list-packets'], $output);
 	}
 
 	protected function _decrypt(/*string|resource*/ $input, /*string|resource*/ $output = null)
 	{
 		$this->setInput($input);
-
-		$fclose = $this->setOutput($output);
-
 		if ($this->pinentries) {
 			$_ENV['PINENTRY_USER_DATA'] = \json_encode(\array_map('strval', $this->pinentries));
 		}
-
-		$result = $this->exec(['--decrypt','--skip-verify']);
-
-		$fclose && \fclose($fclose);
-
-		return $output ? true : ($result ? $result['output'] : false);
+		return $this->execOutput(['--decrypt','--skip-verify'], $output);
 	}
 
 	/**
@@ -169,8 +158,6 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 
 		$this->setInput($input);
 
-		$fclose = $this->setOutput($output);
-
 		$arguments = [
 			'--encrypt'
 		];
@@ -182,11 +169,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 			$arguments[] = '--recipient ' . \escapeshellarg($fingerprint);
 		}
 
-		$result = $this->exec($arguments);
-
-		$fclose && \fclose($fclose);
-
-		return $output ? true : $result['output'];
+		return $this->execOutput($arguments, $output);
 	}
 
 	/**
@@ -257,7 +240,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 			'--armor',
 			\escapeshellarg($keys[0]['subkeys'][0]['fingerprint']),
 		]);
-		return $result['output'];
+		return $result ? $result['output'] : false;
 	}
 
 	/**
@@ -315,6 +298,9 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 			$settings->algo(),
 			$settings->usage
 		]));
+		if (!$result) {
+			return false;
+		}
 
 		$fingerprint = '';
 		foreach ($result['status'] as $line) {
@@ -364,24 +350,24 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 
 		$this->setInput($input);
 		$result = $this->exec($arguments);
-
-		foreach ($result['status'] as $line) {
-			if (false !== \strpos($line, 'IMPORT_RES')) {
-				$line = \explode(' ', \explode('IMPORT_RES ', $line)[1]);
-				return [
-					'imported' => (int) $line[2],
-					'unchanged' => (int) $line[4],
-					'newuserids' => (int) $line[5],
-					'newsubkeys' => (int) $line[6],
-					'secretimported' => (int) $line[10],
-					'secretunchanged' => (int) $line[11],
-					'newsignatures' => (int) $line[7],
-					'skippedkeys' => (int) $line[12],
-					'fingerprint' => ''
-				];
+		if ($result) {
+			foreach ($result['status'] as $line) {
+				if (false !== \strpos($line, 'IMPORT_RES')) {
+					$line = \explode(' ', \explode('IMPORT_RES ', $line)[1]);
+					return [
+						'imported' => (int) $line[2],
+						'unchanged' => (int) $line[4],
+						'newuserids' => (int) $line[5],
+						'newsubkeys' => (int) $line[6],
+						'secretimported' => (int) $line[10],
+						'secretunchanged' => (int) $line[11],
+						'newsignatures' => (int) $line[7],
+						'skippedkeys' => (int) $line[12],
+						'fingerprint' => ''
+					];
+				}
 			}
 		}
-
 		return false;
 	}
 
@@ -433,7 +419,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 //		$result['errors'][0] = 'gpg: error reading key: No public key'
 
 //		print_r($result);
-		return true;
+		return !!$result;
 	}
 
 	/**
@@ -458,106 +444,108 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 		$result = $this->exec($arguments);
 
 		$keys   = [];
-		$key    = null; // current key
-		$subKey = null; // current sub-key
+		if ($result) {
+			$key    = null; // current key
+			$subKey = null; // current sub-key
 
-		foreach (\explode(PHP_EOL, $result['output']) as $line) {
-			$tokens = \explode(':', $line);
+			foreach (\explode(PHP_EOL, $result['output']) as $line) {
+				$tokens = \explode(':', $line);
 
-			switch ($tokens[0])
-			{
-			case 'tru':
-				break;
+				switch ($tokens[0])
+				{
+				case 'tru':
+					break;
 
-			case 'sec':
-			case 'pub':
-				// new primary key means last key should be added to the array
-				if ($key !== null) {
-					$keys[] = $key;
+				case 'sec':
+				case 'pub':
+					// new primary key means last key should be added to the array
+					if ($key !== null) {
+						$keys[] = $key;
+					}
+					$key = [
+						'disabled' => false,
+						'expired' => false,
+						'revoked' => false,
+						'is_secret' => 'ssb' === $tokens[0],
+						'can_sign' => \str_contains($tokens[11], 's'),
+						'can_encrypt' => \str_contains($tokens[11], 'e'),
+						'uids' => [],
+						'subkeys' => []
+					];
+					// Fall through to add subkey
+				case 'ssb': // secure subkey
+				case 'sub': // public subkey
+					$key['subkeys'][] = [
+						'fingerprint' => '', // fpr:::::::::....:
+						'keyid' => $tokens[4],
+						'timestamp' => $tokens[5],
+						'expires' => $tokens[6],
+						'is_secret' => 'ssb' === $tokens[0],
+						'invalid' => false,
+						// escaESCA
+						'can_encrypt' => \str_contains($tokens[11], 'e'),
+						'can_sign' => \str_contains($tokens[11], 's'),
+						'can_certify' => \str_contains($tokens[11], 'c'),
+						'can_authenticate' => \str_contains($tokens[11], 'a'),
+						'disabled' => false,
+						'expired' => false,
+						'revoked' => 'r' === $tokens[1],
+						'length' => $tokens[2],
+						'algorithm' => $tokens[3],
+					];
+					break;
+
+				case 'fpr':
+					$key['subkeys'][\array_key_last($key['subkeys'])]['fingerprint'] = $tokens[9];
+					break;
+
+				case 'grp':
+					$key['subkeys'][\array_key_last($key['subkeys'])]['keygrip'] = $tokens[9];
+					break;
+
+				case 'uid':
+					$string  = \stripcslashes($tokens[9]); // as per documentation
+					$name    = '';
+					$email   = '';
+					$comment = '';
+					$matches = [];
+
+					// get email address from end of string if it exists
+					if (\preg_match('/^(.*?)<([^>]+)>$/', $string, $matches)) {
+						$string = \trim($matches[1]);
+						$email  = $matches[2];
+					}
+
+					// get comment from end of string if it exists
+					$matches = [];
+					if (\preg_match('/^(.+?) \(([^\)]+)\)$/', $string, $matches)) {
+						$string  = $matches[1];
+						$comment = $matches[2];
+					}
+
+					// there can be an email without a name
+					if (!$email && \preg_match('/^[\S]+@[\S]+$/', $string, $matches)) {
+						$email = $string;
+					} else {
+						$name = $string;
+					}
+
+					$key['uids'][] = [
+						'name' => $name,
+						'comment' => $comment,
+						'email' => $email,
+						'uid' => $tokens[9],
+						'revoked' => 'r' === $tokens[1],
+						'invalid' => false,
+					];
+					break;
 				}
-				$key = [
-					'disabled' => false,
-					'expired' => false,
-					'revoked' => false,
-					'is_secret' => 'ssb' === $tokens[0],
-					'can_sign' => \str_contains($tokens[11], 's'),
-					'can_encrypt' => \str_contains($tokens[11], 'e'),
-					'uids' => [],
-					'subkeys' => []
-				];
-				// Fall through to add subkey
-			case 'ssb': // secure subkey
-			case 'sub': // public subkey
-				$key['subkeys'][] = [
-					'fingerprint' => '', // fpr:::::::::....:
-					'keyid' => $tokens[4],
-					'timestamp' => $tokens[5],
-					'expires' => $tokens[6],
-					'is_secret' => 'ssb' === $tokens[0],
-					'invalid' => false,
-					// escaESCA
-					'can_encrypt' => \str_contains($tokens[11], 'e'),
-					'can_sign' => \str_contains($tokens[11], 's'),
-					'can_certify' => \str_contains($tokens[11], 'c'),
-					'can_authenticate' => \str_contains($tokens[11], 'a'),
-					'disabled' => false,
-					'expired' => false,
-					'revoked' => 'r' === $tokens[1],
-					'length' => $tokens[2],
-					'algorithm' => $tokens[3],
-				];
-				break;
-
-			case 'fpr':
-				$key['subkeys'][\array_key_last($key['subkeys'])]['fingerprint'] = $tokens[9];
-				break;
-
-			case 'grp':
-				$key['subkeys'][\array_key_last($key['subkeys'])]['keygrip'] = $tokens[9];
-				break;
-
-			case 'uid':
-				$string  = \stripcslashes($tokens[9]); // as per documentation
-				$name    = '';
-				$email   = '';
-				$comment = '';
-				$matches = [];
-
-				// get email address from end of string if it exists
-				if (\preg_match('/^(.*?)<([^>]+)>$/', $string, $matches)) {
-					$string = \trim($matches[1]);
-					$email  = $matches[2];
-				}
-
-				// get comment from end of string if it exists
-				$matches = [];
-				if (\preg_match('/^(.+?) \(([^\)]+)\)$/', $string, $matches)) {
-					$string  = $matches[1];
-					$comment = $matches[2];
-				}
-
-				// there can be an email without a name
-				if (!$email && \preg_match('/^[\S]+@[\S]+$/', $string, $matches)) {
-					$email = $string;
-				} else {
-					$name = $string;
-				}
-
-				$key['uids'][] = [
-					'name' => $name,
-					'comment' => $comment,
-					'email' => $email,
-					'uid' => $tokens[9],
-					'revoked' => 'r' === $tokens[1],
-					'invalid' => false,
-				];
-				break;
 			}
-		}
 
-		// add last key
-		if ($key) {
-			$keys[] = $key;
+			// add last key
+			if ($key) {
+				$keys[] = $key;
+			}
 		}
 
 		return $keys;
@@ -615,8 +603,6 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 
 		$this->setInput($input);
 
-		$fclose = $this->setOutput($output);
-
 		$arguments = [];
 
 		switch ($this->signmode)
@@ -647,11 +633,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 			$_ENV['PINENTRY_USER_DATA'] = \json_encode(\array_map('strval', $this->pinentries));
 		}
 
-		$result = $this->exec($arguments);
-
-		$fclose && \fclose($fclose);
-
-		return $output ? true : $result['output'];
+		return $this->execOutput($arguments, $output);
 	}
 
 	/**
@@ -708,44 +690,46 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 		$result = $this->exec($arguments);
 
 		$signatures = [];
-		foreach ($result['status'] as $line) {
-			$tokens = \explode(' ', $line);
-			switch ($tokens[0])
-			{
-			case 'VERIFICATION_COMPLIANCE_MODE':
-			case 'TRUST_FULLY':
-				break;
+		if ($result) {
+			foreach ($result['status'] as $line) {
+				$tokens = \explode(' ', $line);
+				switch ($tokens[0])
+				{
+				case 'VERIFICATION_COMPLIANCE_MODE':
+				case 'TRUST_FULLY':
+					break;
 
-			case 'EXPSIG':
-			case 'EXPKEYSIG':
-			case 'REVKEYSIG':
-			case 'BADSIG':
-			case 'ERRSIG':
-			case 'GOODSIG':
-				$signatures[] = [
-					'fingerprint' => '',
-					'validity' => 0,
-					'timestamp' => 0,
-					'status' => 'GOODSIG' === $tokens[0] ? 0 : 1,
-					'summary' => 'GOODSIG' === $tokens[0] ? 0 : 4,
-					'keyid' => $tokens[1],
-					'uid' => \rawurldecode(\implode(' ', \array_splice($tokens, 2))),
-					'valid' => false
-				];
-				break;
+				case 'EXPSIG':
+				case 'EXPKEYSIG':
+				case 'REVKEYSIG':
+				case 'BADSIG':
+				case 'ERRSIG':
+				case 'GOODSIG':
+					$signatures[] = [
+						'fingerprint' => '',
+						'validity' => 0,
+						'timestamp' => 0,
+						'status' => 'GOODSIG' === $tokens[0] ? 0 : 1,
+						'summary' => 'GOODSIG' === $tokens[0] ? 0 : 4,
+						'keyid' => $tokens[1],
+						'uid' => \rawurldecode(\implode(' ', \array_splice($tokens, 2))),
+						'valid' => false
+					];
+					break;
 
-			case 'VALIDSIG':
-				$last = \array_key_last($signatures);
-				$signatures[$last]['fingerprint'] = $tokens[1];
-				$signatures[$last]['timestamp'] = (int) $tokens[3];
-				$signatures[$last]['expires'] = (int) $tokens[4];
-				$signatures[$last]['version'] = (int) $tokens[5];
-//				$signatures[$last]['reserved'] = (int) $tokens[6];
-//				$signatures[$last]['pubkey-algo'] = (int) $tokens[7];
-//				$signatures[$last]['hash-algo'] = (int) $tokens[8];
-//				$signatures[$last]['sig-class'] = $tokens[9];
-//				$signatures[$last]['primary-fingerprint'] = $tokens[10];
-				$signatures[$last]['valid'] = 0;
+				case 'VALIDSIG':
+					$last = \array_key_last($signatures);
+					$signatures[$last]['fingerprint'] = $tokens[1];
+					$signatures[$last]['timestamp'] = (int) $tokens[3];
+					$signatures[$last]['expires'] = (int) $tokens[4];
+					$signatures[$last]['version'] = (int) $tokens[5];
+//					$signatures[$last]['reserved'] = (int) $tokens[6];
+//					$signatures[$last]['pubkey-algo'] = (int) $tokens[7];
+//					$signatures[$last]['hash-algo'] = (int) $tokens[8];
+//					$signatures[$last]['sig-class'] = $tokens[9];
+//					$signatures[$last]['primary-fingerprint'] = $tokens[10];
+					$signatures[$last]['valid'] = 0;
+				}
 			}
 		}
 
@@ -755,7 +739,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Verifies a signed text
 	 */
-	public function verify(string $signed_text, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verify(string $signed_text, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		return $this->_verify($signed_text, $signature);
 	}
@@ -763,7 +747,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyFile(string $filename, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		$fp = \fopen($filename, 'rb');
 		try {
@@ -779,7 +763,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyStream($fp, string $signature, string &$plaintext = null) /*: array|false*/
+	public function verifyStream($fp, string $signature, ?string &$plaintext = null) /*: array|false*/
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');
@@ -799,14 +783,24 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 //			'KEY_CONSIDERED' => [],
 //			'NO_SECKEY' => [],
 		];
-		foreach ($result['status'] as $line) {
-			$tokens = \explode(' ', $line);
-			if (isset($info[$tokens[0]])) {
-				$info[$tokens[0]][] = $tokens[1];
+		if ($result) {
+			foreach ($result['status'] as $line) {
+				$tokens = \explode(' ', $line);
+				if (isset($info[$tokens[0]])) {
+					$info[$tokens[0]][] = $tokens[1];
+				}
 			}
 		}
 		$this->_debug('END DETECT MESSAGE KEY IDs');
 		return $info['ENC_TO'];
+	}
+
+	protected function execOutput(array $arguments, /*string|resource*/ $output = null)
+	{
+		$fclose = $this->setOutput($output);
+		$result = $this->exec($arguments);
+		$fclose && \fclose($fclose);
+		return $output ? true : ($result ? $result['output'] : false);
 	}
 
 	private function exec(array $arguments, bool $throw = true) /*: array|false*/
@@ -873,6 +867,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 		// Don't localize GnuPG results.
 		$env = $_ENV;
 		$env['LC_ALL'] = 'C';
+		$env = \array_filter($env, fn($var) => \is_scalar($var));
 
 		$proc_pipes = [];
 
