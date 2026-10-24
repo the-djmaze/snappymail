@@ -20,7 +20,6 @@
 /issues
 .idea/
 .env
-/test
 /public_html
 /vendors/knockout/spec
 /vendors/openpgp-5
