@@ -300,7 +300,11 @@ abstract class Utils
 			$sValue = static::ConvertEncoding($sValue, $sMainCharset, Enumerations\Charset::UTF_8);
 		}
 
-		return $sValue;
+		// The strip above runs before decoding, so an encoded-word such as
+		// =?utf-8?b?...?= can still decode to a CR or LF. A decoded header value
+		// is one line; a line break here would be carried into the headers of a
+		// reply (In-Reply-To is copied from Message-ID) and inject new ones.
+		return \preg_replace('/[\r\n\0]+/', ' ', $sValue);
 	}
 
 	public static function RemoveHeaderFromHeaders(string $sIncHeaders, array $aHeadersToRemove = array()) : string

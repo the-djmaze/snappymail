@@ -37,8 +37,13 @@ class Header implements \JsonSerializable
 
 	private function initInputData(string $sName, string $sValue, string $sEncodedValueForReparse) : void
 	{
-		$this->sName = \trim($sName);
-		$this->sFullValue = \trim($sValue);
+		// A header is one logical line. A CR or LF in a name or value lets the
+		// value end its own header and start another (or the body), and values
+		// reach here from decoded encoded-words and from client parameters, so
+		// no caller can be relied on to have stripped them. Folding is added
+		// back by __toString().
+		$this->sName = \trim(\preg_replace('/[\r\n\0]+/', ' ', $sName));
+		$this->sFullValue = \trim(\preg_replace('/[\r\n\0]+/', ' ', $sValue));
 		$this->sEncodedValue = '';
 
 		if (\strlen($sEncodedValueForReparse) && ($this->IsEmail() || $this->IsSubject() || $this->IsParameterized())) {
