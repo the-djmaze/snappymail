@@ -339,8 +339,12 @@ class ServiceActions
 					$sMethodName = 'Raw'.$sAction;
 					if (\method_exists($this->oActions, $sMethodName)) {
 						\header('X-Raw-Action: '.$sMethodName);
-						\header('Content-Security-Policy: script-src \'none\'; child-src \'none\'; object-src \'none\'');
-
+						// Raw responses carry content from the message. Besides scripts and
+						// frames, deny forms, base and everything not needed to show an
+						// image, media, a PDF or plain text.
+						\header('Content-Security-Policy: default-src \'none\'; script-src \'none\'; child-src \'none\'; '
+							. 'form-action \'none\'; base-uri \'none\'; img-src \'self\' data:; media-src \'self\'; '
+							. 'style-src \'self\' \'unsafe-inline\'; object-src \'self\'');
 						$sRawError = '';
 						$this->oActions->SetActionParams(array(
 							'RawKey' => empty($this->aPaths[3]) ? '' : $this->aPaths[3],
