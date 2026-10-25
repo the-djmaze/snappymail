@@ -279,10 +279,18 @@ class ServiceActions
 	// https://github.com/the-djmaze/snappymail/security/advisories/GHSA-xpr6-5vj6-wq26
 	private static function allowedProxyUri($uri) : bool
 	{
-		if (!\preg_match('#^https?://([^/:]+)#i', $uri, $m)) {
+		if (!\preg_match('#^https?://#i', $uri)) {
 			return false;
 		}
-		$host = $m[1];
+		$host = \parse_url($uri, \PHP_URL_HOST);
+		if (!\is_string($host) || '' === $host) {
+			return null;
+		}
+		// Bracketed IPv6 literals (http://[::1]/): parse_url keeps the
+		// brackets, which filter_var rejects, so strip them first.
+		if (\str_starts_with($host, '[') && \str_ends_with($host, ']')) {
+			$host = \substr($host, 1, -1);
+		}
 		// Validate direct IP or resolve hostname
 		$ips = \filter_var($host, \FILTER_VALIDATE_IP) ? [$host] : \gethostbynamel($host);
 		if (!$ips || !\is_array($ips)) {
