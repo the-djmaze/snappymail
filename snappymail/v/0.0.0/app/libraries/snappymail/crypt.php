@@ -64,8 +64,21 @@ abstract class Crypt
 	) /* : mixed */
 	{
 		if (3 === \count($data) && isset($data[0], $data[1], $data[2]) && \strlen($data[0])) {
-			$fn = "{$data[0]}Decrypt";
-			if (!\method_exists(__CLASS__, $fn)) {
+			// The algorithm name comes from the token, so it must not be able to
+			// pick a weaker one than Encrypt() would have used. Xxtea is only
+			// written when neither sodium nor openssl is available; anywhere else
+			// an xxtea token was not made by this server, and before the key
+			// derivation fix below its 16 byte salt was the entire key, so anyone
+			// could mint one.
+			$algo = \strtolower($data[0]);
+			if ('xxtea' === $algo
+			 && (\is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt') || \is_callable('openssl_decrypt'))
+			) {
+				Log::warning('Crypt', 'xxtea token refused, a stronger algorithm is available');
+				return null;
+			}
+			$fn = "{$algo}Decrypt";
+			if (!\in_array($algo, ['sodium', 'openssl', 'xxtea'], true) || !\method_exists(__CLASS__, $fn)) {
 				Log::warning('Crypt', "{$fn} does not exists");
 			} else {
 				try {
@@ -261,6 +274,22 @@ abstract class Crypt
 		return $result;
 	}
 
+	/**
+	 * XXTEA takes a 128 bit key and reads only the first 16 bytes of what it is
+	 * given. The key used to be $salt . Passphrase(), and the salt is 16 random
+	 * bytes stored in the token, so the server secret never took part: xxtea
+	 * tokens could be read and forged by anyone. Hash the two together instead.
+	 * Tokens made under the old derivation no longer decrypt; they were never
+	 * keyed by this server.
+	 */
+	private static function XxteaKey(string $salt,
+		#[\SensitiveParameter]
+		?string $key
+	) : string
+	{
+		return \substr(\hash('sha256', $salt . static::Passphrase($key), true), 0, 16);
+	}
+
 	public static function XxteaDecrypt(string $data, string $salt,
 		#[\SensitiveParameter]
 		?string $key = null
@@ -269,7 +298,7 @@ abstract class Crypt
 		if (!$data || !$salt) {
 			throw new \ValueError('$data or $salt is empty string');
 		}
-		$key = $salt . static::Passphrase($key);
+		$key = static::XxteaKey($salt, $key);
 		return \is_callable('xxtea_decrypt')
 			? \xxtea_decrypt($data, $key)
 			: \MailSo\Base\Xxtea::decrypt($data, $key);
@@ -286,7 +315,7 @@ abstract class Crypt
 		if (!$data || !$salt) {
 			throw new \ValueError('$data or $salt is empty string');
 		}
-		$key = $salt . static::Passphrase($key);
+		$key = static::XxteaKey($salt, $key);
 		$result = \is_callable('xxtea_encrypt')
 			? \xxtea_encrypt($data, $key)
 			: \MailSo\Base\Xxtea::encrypt($data, $key);
