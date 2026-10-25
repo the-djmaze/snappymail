@@ -1,12 +1,9 @@
 <?php
 
 // Run with: php test/raw-inline-type.php
-spl_autoload_register(static function (string $class): void {
-	$file = dirname(__DIR__).'/tachyon/v/0.0.0/app/libraries/'.str_replace('\\', '/', $class).'.php';
-	if (is_file($file)) {
-		require_once $file;
-	}
-});
+// Enable SnappyMail Api and include index file
+$_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = true;
+require '../index.php';
 
 function check(bool $condition, string $message): void
 {
@@ -17,7 +14,7 @@ function check(bool $condition, string $message): void
 
 class RawInlineType
 {
-	use \Tachyon\Actions\Raw;
+	use \RainLoop\Actions\Raw;
 }
 
 $cases = [

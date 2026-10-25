@@ -1,15 +1,7 @@
 <?php
-
-// Run with: php test/smime-verify.php
-spl_autoload_register(static function (string $class): void {
-	$base = dirname(__DIR__).'/tachyon/v/0.0.0/app/libraries/';
-	$file = str_starts_with($class, 'Tachyon\\Util\\')
-		? $base.'tachyon_util/'.strtolower(str_replace('\\', '/', substr($class, 13))).'.php'
-		: $base.str_replace('\\', '/', $class).'.php';
-	if (is_file($file)) {
-		require_once $file;
-	}
-});
+// Enable SnappyMail Api and include index file
+$_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = true;
+require '../index.php';
 
 function check(bool $condition, string $message): void
 {
@@ -28,7 +20,7 @@ openssl_pkey_export_to_file($key, "{$dir}/key.pem");
 $content = "Content-Type: text/plain\r\n\r\nPay 100 EUR to account A.\r\n";
 file_put_contents("{$dir}/in.txt", $content);
 
-$smime = new \Tachyon\Util\SMime\OpenSSL($dir);
+$smime = new \SnappyMail\SMime\OpenSSL($dir);
 
 // Detached (multipart/signed) and opaque (application/pkcs7-mime) signatures.
 foreach (['detached' => PKCS7_DETACHED, 'opaque' => 0] as $kind => $flags) {

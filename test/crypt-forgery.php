@@ -2,17 +2,17 @@
 
 // Run with: php test/crypt-forgery.php
 
-// Crypt logs through Tachyon\Util\Log and reads its cipher from Tachyon\Api at
+// Crypt logs through SnappyMail\Log and reads its cipher from RainLoop\Api at
 // load time, both of which need the whole application. Stand-ins are declared
 // before the autoloader could load the real classes; Config returns defaults.
-namespace Tachyon\Util {
+namespace SnappyMail {
 	abstract class Log
 	{
 		public static function __callStatic(string $name, array $arguments) : void {}
 	}
 }
 
-namespace Tachyon {
+namespace RainLoop {
 	abstract class Api
 	{
 		public static function Config() : object
@@ -25,18 +25,12 @@ namespace Tachyon {
 }
 
 namespace {
-	define('APP_SALT', 'test-salt-'.bin2hex(random_bytes(8)));
-	define('APP_VERSION', 'test');
+	// Enable SnappyMail Api and include index file
+	$_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = true;
+	require '../index.php';
+//	define('APP_SALT', 'test-salt-'.bin2hex(random_bytes(8)));
+
 	$_COOKIE['smctoken'] = base64_encode(random_bytes(16));
-	spl_autoload_register(static function (string $class): void {
-		$base = dirname(__DIR__).'/tachyon/v/0.0.0/app/libraries/';
-		$file = str_starts_with($class, 'Tachyon\\Util\\')
-			? $base.'tachyon_util/'.strtolower(str_replace('\\', '/', substr($class, 13))).'.php'
-			: $base.str_replace('\\', '/', $class).'.php';
-		if (is_file($file)) {
-			require_once $file;
-		}
-	});
 
 	function check(bool $condition, string $message): void
 	{
@@ -45,7 +39,7 @@ namespace {
 		}
 	}
 
-	$Crypt = 'Tachyon\\Util\\Crypt';
+	$Crypt = 'SnappyMail\\Crypt';
 
 	check(is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt'), 'test needs sodium');
 

@@ -1,13 +1,9 @@
 <?php
 
 // Run with: php test/header-injection.php
-define('APP_VERSION', 'test');
-spl_autoload_register(static function (string $class): void {
-	$file = dirname(__DIR__).'/tachyon/v/0.0.0/app/libraries/'.str_replace('\\', '/', $class).'.php';
-	if (is_file($file)) {
-		require_once $file;
-	}
-});
+// Enable SnappyMail Api and include index file
+$_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = true;
+require '../index.php';
 
 function check(bool $condition, string $message): void
 {
