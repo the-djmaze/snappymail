@@ -628,9 +628,10 @@ export const
 				}
 
 				// https://github.com/the-djmaze/snappymail/issues/1082
-				if (minFontSize > pInt(oStyle.fontSize)) {
+				// Use getComputedStyle?
+				if (oStyle.fontSize && minFontSize > pInt(oStyle.fontSize)) {
 					oStyle.fontSize = minFontSize + "px";
-//					oStyle.removeProperty('font-size');
+//					oStyle.setProperty('font-size', minFontSize + "px");
 				}
 
 				// Removes background and color
