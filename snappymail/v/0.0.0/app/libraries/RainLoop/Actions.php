@@ -591,7 +591,7 @@ class Actions
 						'ListInlineAttachments' => false,
 						'CollapseBlockquotes' => $oConfig->Get('defaults', 'collapse_blockquotes', true),
 						'MaxBlockquotesLevel' => 0,
-						'minFontSize' => 0,
+						'minFontSize' => 5,
 						'simpleAttachmentsList' => false,
 						'listGrouped' => $oConfig->Get('defaults', 'mail_list_grouped', false),
 						'MessagesPerPage' => \max(10, \intval($oConfig->Get('webmail', 'messages_per_page', 25)) ?: 25),
