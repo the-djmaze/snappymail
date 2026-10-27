@@ -2,6 +2,11 @@
 
 namespace SnappyMail;
 
+// Sockets extension not loaded?
+if (!defined('AF_INET6')) {
+	define('AF_INET6', true);
+}
+
 abstract class DNS
 {
 	/**
@@ -75,7 +80,7 @@ abstract class DNS
 	public static function IP(string $domain): array
 	{
 		$ips = array();
-		foreach (\dns_get_record($host, \DNS_A | (\defined('AF_INET6') ? \DNS_AAAA : 0)) ?: array() as $record) {
+		foreach (\dns_get_record($host, \DNS_A | (\AF_INET6 ? \DNS_AAAA : 0)) ?: array() as $record) {
 			if (!empty($record['ip'])) {
 				$ips[] = $record['ip'];
 			}
