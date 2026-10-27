@@ -88,6 +88,34 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 		}
 	}
 
+	/**
+	 * Turning 2-step verification off, wiping it, replacing its secret or showing
+	 * the secret all used to need only the session. Whoever held a session (a
+	 * stolen cookie, an unlocked machine) could quietly drop the second factor or
+	 * copy it. While it is enabled, these now need a current code or backup code,
+	 * as login does. A used backup code is spent.
+	 */
+	private function requireCurrentCode(MainAccount $oAccount) : void
+	{
+		$aData = $this->getTwoFactorInfo($oAccount);
+		if (empty($aData['IsSet']) || empty($aData['Enable']) || empty($aData['Secret'])) {
+			return;
+		}
+		$sCode = \trim($this->jsonParam('Code', ''));
+		if (\strlen($sCode)) {
+			if ($this->TwoFactorAuthProvider($oAccount)->VerifyCode($aData['Secret'], $sCode)) {
+				return;
+			}
+			$aBackupCodes = \explode(' ', \trim(\preg_replace('/[^\d]+/', ' ', $aData['BackupCodes'] ?? '')));
+			if (6 < \strlen($sCode) && \in_array($sCode, $aBackupCodes, true)) {
+				$this->removeBackupCodeFromTwoFactorInfo($oAccount, $sCode);
+				return;
+			}
+		}
+		$this->Logger()->Write("TFA: change refused for {$oAccount->Email()}, no valid current code");
+		throw new ClientException(\RainLoop\Notifications::AuthError);
+	}
+
 	public function DoGetTwoFactorInfo() : array
 	{
 		$oAccount = $this->getMainAccountFromToken();
@@ -107,11 +135,15 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 			return $this->jsonResponse(__FUNCTION__, false);
 		}
 
+		// Overwrites the stored secret with Enable false, i.e. also switches it off
+		$this->requireCurrentCode($oAccount);
+
 		$sEmail = $oAccount->Email();
 
 		$sSecret = $this->TwoFactorAuthProvider($oAccount)->CreateSecret();
 
-		$aCodes = \array_map(function(){return \rand(100000000, 900000000);}, \array_fill(0, 8, null));
+		// Backup codes are a second factor; rand() is not a CSPRNG
+		$aCodes = \array_map(fn() => \random_int(100000000, 899999999), \array_fill(0, 8, null));
 
 		$this->StorageProvider()->Put($oAccount,
 			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
@@ -148,6 +180,8 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 			return $this->jsonResponse(__FUNCTION__, false);
 		}
 
+		$this->requireCurrentCode($oAccount);
+
 		$aResult = $this->getTwoFactorInfo($oAccount);
 		unset($aResult['BackupCodes']);
 
@@ -162,6 +196,10 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 		if (!$this->TwoFactorAuthProvider($oAccount)) {
 			return $this->jsonResponse(__FUNCTION__, false);
+		}
+
+		if ('1' !== \trim($this->jsonParam('Enable', '0'))) {
+			$this->requireCurrentCode($oAccount);
 		}
 
 		$oActions = $this->Manager()->Actions();
@@ -214,6 +252,8 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 		if (!$this->TwoFactorAuthProvider($oAccount)) {
 			return $this->jsonResponse(__FUNCTION__, false);
 		}
+
+		$this->requireCurrentCode($oAccount);
 
 		$this->StorageProvider()->Clear($oAccount,
 			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,

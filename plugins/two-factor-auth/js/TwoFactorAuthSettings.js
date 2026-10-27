@@ -22,8 +22,9 @@ const
 		 * @param {?Function} fCallback
 		 * @param {boolean} bEnable
 		 */
-		enableTwoFactor(fCallback, bEnable) {
+		enableTwoFactor(fCallback, bEnable, oParams) {
 			rl.pluginRemoteRequest(fCallback, 'EnableTwoFactor', {
+				...oParams,
 				Enable: bEnable ? 1 : 0
 			});
 		}
@@ -61,8 +62,12 @@ class TwoFactorAuthSettings
 							rl.settings.get('RequireTwoFactor') && rl.settings.set('SetupTwoFactor', !!iError);
 						}, value);
 					} else {
-						value || this.viewEnable_(value);
-						Remote.enableTwoFactor(fn, false);
+						// Turning it off needs a current code while it is on.
+						// Cancelled or refused, the checkbox goes back to on.
+						this.withCode(params => {
+							value || this.viewEnable_(value);
+							Remote.enableTwoFactor(iError => iError && this.viewEnable_(true), false, params);
+						}, () => this.viewEnable_.valueHasMutated());
 					}
 				}
 			},
@@ -86,12 +91,28 @@ class TwoFactorAuthSettings
 		}).forEach(([key, fn]) => this[key] = ko.computed(fn));
 
 		this.onResult = this.onResult.bind(this);
+		this.onChangeResult = this.onChangeResult.bind(this);
 		this.onShowSecretResult = this.onShowSecretResult.bind(this);
 	}
 
+	/**
+	 * While 2-step verification is on, the server wants a current code (or a
+	 * backup code) to turn it off, clear it, replace it or show its secret.
+	 */
+	withCode(fDo, fCancel) {
+		if (!this.viewEnable_()) {
+			fDo({});
+		} else {
+			const code = (prompt(rl.i18n('PLUGIN_2FA/LABEL_TWO_FACTOR_CODE')) || '').trim();
+			code ? fDo({ Code: code }) : fCancel?.();
+		}
+	}
+
 	showSecret() {
-		this.secreting(true);
-		rl.pluginRemoteRequest(this.onShowSecretResult, 'ShowTwoFactorSecret');
+		this.withCode(params => {
+			this.secreting(true);
+			rl.pluginRemoteRequest(this.onShowSecretResult, 'ShowTwoFactorSecret', params);
+		});
 	}
 
 	hideSecret() {
@@ -101,8 +122,10 @@ class TwoFactorAuthSettings
 	}
 
 	createTwoFactor() {
-		this.processing(true);
-		rl.pluginRemoteRequest(this.onResult, 'CreateTwoFactorSecret');
+		this.withCode(params => {
+			this.processing(true);
+			rl.pluginRemoteRequest(this.onChangeResult, 'CreateTwoFactorSecret', params);
+		});
 	}
 
 	testTwoFactor() {
@@ -115,12 +138,26 @@ class TwoFactorAuthSettings
 	}
 
 	clearTwoFactor() {
-		this.hideSecret();
+		this.withCode(params => {
+			this.hideSecret();
 
-		this.twoFactorTested(false);
+			this.twoFactorTested(false);
 
-		this.clearing(true);
-		rl.pluginRemoteRequest(this.onResult, 'ClearTwoFactorInfo');
+			this.clearing(true);
+			rl.pluginRemoteRequest(this.onChangeResult, 'ClearTwoFactorInfo', params);
+		});
+	}
+
+	// A refused change must not show the account as unconfigured, which is what
+	// onResult does with an error; reload the real state instead.
+	onChangeResult(iError, oData) {
+		if (iError) {
+			this.processing(false);
+			this.clearing(false);
+			this.onBuild();
+		} else {
+			this.onResult(iError, oData);
+		}
 	}
 
 	onShow() {
