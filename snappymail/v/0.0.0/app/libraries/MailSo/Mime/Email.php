@@ -200,8 +200,8 @@ class Email implements \JsonSerializable
 		return $this->ToString();
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 			'@Object' => 'Object/Email',

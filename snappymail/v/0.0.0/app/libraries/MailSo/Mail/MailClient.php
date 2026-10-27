@@ -37,12 +37,12 @@ class MailClient
 		$this->oImapClient = new \MailSo\Imap\ImapClient;
 	}
 
-	public function ImapClient() : \MailSo\Imap\ImapClient
+	public function ImapClient(): \MailSo\Imap\ImapClient
 	{
 		return $this->oImapClient;
 	}
 
-	private function getEnvelopeOrHeadersRequestString() : string
+	private function getEnvelopeOrHeadersRequestString(): string
 	{
 		if ($this->oImapClient->Settings->message_all_headers) {
 			return FetchType::BODY_HEADER_PEEK;
@@ -115,7 +115,7 @@ class MailClient
 	 * @throws \MailSo\Imap\Exceptions\*
 	 * @throws \MailSo\Mail\Exceptions\*
 	 */
-	public function MessageSetFlag(string $sFolderName, SequenceSet $oRange, string $sMessageFlag, bool $bSetAction = true, bool $bSkipUnsupportedFlag = false) : void
+	public function MessageSetFlag(string $sFolderName, SequenceSet $oRange, string $sMessageFlag, bool $bSetAction = true, bool $bSkipUnsupportedFlag = false): void
 	{
 		if (\count($oRange)) {
 			if ($this->oImapClient->FolderSelect($sFolderName)->IsFlagSupported($sMessageFlag)) {
@@ -133,7 +133,7 @@ class MailClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function Message(string $sFolderName, int $iIndex, bool $bIndexIsUid = true, ?\MailSo\Cache\CacheClient $oCacher = null) : ?Message
+	public function Message(string $sFolderName, int $iIndex, bool $bIndexIsUid = true, ?\MailSo\Cache\CacheClient $oCacher = null): ?Message
 	{
 		if (1 > $iIndex) {
 			throw new \ValueError;
@@ -181,14 +181,12 @@ class MailClient
 	/**
 	 * Streams mime part to $mCallback
 	 *
-	 * @param mixed $mCallback
-	 *
 	 * @throws \InvalidArgumentException
 	 * @throws \MailSo\RuntimeException
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageMimeStream($mCallback, string $sFolderName, int $iIndex, string $sMimeIndex) : bool
+	public function MessageMimeStream(callable $mCallback, string $sFolderName, int $iIndex, string $sMimeIndex): bool
 	{
 		if (!\is_callable($mCallback)) {
 			throw new \ValueError;
@@ -279,7 +277,7 @@ class MailClient
 		return ($aFetchResponse && 1 === \count($aFetchResponse));
 	}
 
-	public function MessageAppendFile(string $sMessageFileName, string $sFolderToSave, ?array $aAppendFlags = null) : int
+	public function MessageAppendFile(string $sMessageFileName, string $sFolderToSave, ?array $aAppendFlags = null): int
 	{
 		if (!\is_file($sMessageFileName) || !\is_readable($sMessageFileName)) {
 			throw new \ValueError;
@@ -299,7 +297,7 @@ class MailClient
 	 * Returns list of new messages since $iPrevUidNext
 	 * Currently only for INBOX
 	 */
-	private function getFolderNextMessageInformation(string $sFolderName, int $iPrevUidNext, int $iCurrentUidNext) : array
+	private function getFolderNextMessageInformation(string $sFolderName, int $iPrevUidNext, int $iCurrentUidNext): array
 	{
 		$aNewMessages = array();
 
@@ -349,7 +347,7 @@ class MailClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function FolderInformation(string $sFolderName, int $iPrevUidNext = 0, ?SequenceSet $oRange = null) : array
+	public function FolderInformation(string $sFolderName, int $iPrevUidNext = 0, ?SequenceSet $oRange = null): array
 	{
 		if ($oRange) {
 //			$aInfo = $this->oImapClient->FolderExamine($sFolderName)->jsonSerialize();
@@ -391,7 +389,7 @@ class MailClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function FolderHash(string $sFolderName) : string
+	public function FolderHash(string $sFolderName): string
 	{
 		try
 		{
@@ -405,7 +403,7 @@ class MailClient
 		return '';
 	}
 
-	public function MessageThread(string $sFolderName, string $sMessageID) : MessageCollection
+	public function MessageThread(string $sFolderName, string $sMessageID): MessageCollection
 	{
 		$this->oImapClient->FolderExamine($sFolderName);
 
@@ -434,7 +432,7 @@ class MailClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	protected function ThreadsMap(string $sAlgorithm, MessageCollection $oMessageCollection, ?\MailSo\Cache\CacheClient $oCacher, bool $bBackground = false) : array
+	protected function ThreadsMap(string $sAlgorithm, MessageCollection $oMessageCollection, ?\MailSo\Cache\CacheClient $oCacher, bool $bBackground = false): array
 	{
 		$oFolderInfo = $oMessageCollection->FolderInfo;
 		$sFolderName = $oFolderInfo->FullName;
@@ -512,7 +510,7 @@ class MailClient
 	}
 
 	// All threads UID's except the most recent UID of each thread
-	protected function ThreadsOldUids(array $aAllThreads, MessageCollection $oMessageCollection, ?\MailSo\Cache\CacheClient $oCacher, bool $bBackground = false) : array
+	protected function ThreadsOldUids(array $aAllThreads, MessageCollection $oMessageCollection, ?\MailSo\Cache\CacheClient $oCacher, bool $bBackground = false): array
 	{
 		$oFolderInfo = $oMessageCollection->FolderInfo;
 
@@ -585,7 +583,7 @@ class MailClient
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
 	protected function MessageListByRequestIndexOrUids(MessageCollection $oMessageCollection, SequenceSet $oRange,
-		array &$aAllThreads = [], array &$aUnseenUIDs = []) : void
+		array &$aAllThreads = [], array &$aUnseenUIDs = []): void
 	{
 		if (\count($oRange)) {
 			$aFetchItems = array(
@@ -633,7 +631,7 @@ class MailClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	private function GetUids(MessageListParams $oParams, FolderInformation $oInfo, bool $onlyCache = false) : ?array
+	private function GetUids(MessageListParams $oParams, FolderInformation $oInfo, bool $onlyCache = false): ?array
 	{
 		$oCacher = $oParams->oCacher;
 		$sFolderName = $oParams->sFolderName;
@@ -725,7 +723,7 @@ class MailClient
 		return $aResultUids;
 	}
 
-	public function MessageListUnseen(MessageListParams $oParams, FolderInformation $oInfo) : array
+	public function MessageListUnseen(MessageListParams $oParams, FolderInformation $oInfo): array
 	{
 		$oUnseenParams = new MessageListParams;
 		$oUnseenParams->sFolderName = $oParams->sFolderName;
@@ -749,7 +747,7 @@ class MailClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageList(MessageListParams $oParams) : MessageCollection
+	public function MessageList(MessageListParams $oParams): MessageCollection
 	{
 		if (0 > $oParams->iOffset || 0 > $oParams->iLimit) {
 			throw new \ValueError;
@@ -911,7 +909,7 @@ class MailClient
 		return $oMessageCollection;
 	}
 
-	public function FindMessageUidByMessageId(string $sFolderName, string $sMessageId) : ?int
+	public function FindMessageUidByMessageId(string $sFolderName, string $sMessageId): ?int
 	{
 		if (!\strlen($sMessageId)) {
 			throw new \ValueError;
@@ -924,7 +922,7 @@ class MailClient
 		return 1 === \count($aUids) && \is_numeric($aUids[0]) ? (int) $aUids[0] : null;
 	}
 
-	public function Folders(string $sParent, string $sListPattern, bool $bUseListSubscribeStatus) : ?FolderCollection
+	public function Folders(string $sParent, string $sListPattern, bool $bUseListSubscribeStatus): ?FolderCollection
 	{
 		$oFolderCollection = $this->oImapClient->FolderStatusList($sParent, $sListPattern);
 		if (!$oFolderCollection->count()) {
@@ -957,7 +955,7 @@ class MailClient
 	/**
 	 * @throws \ValueError
 	 */
-	public function FolderCreate(string $sFolderNameInUtf8, string $sFolderParentFullName = '', bool $bSubscribeOnCreation = true, string $sDelimiter = '') : ?\MailSo\Imap\Folder
+	public function FolderCreate(string $sFolderNameInUtf8, string $sFolderParentFullName = '', bool $bSubscribeOnCreation = true, string $sDelimiter = ''): ?\MailSo\Imap\Folder
 	{
 		$sFolderNameInUtf8 = \trim($sFolderNameInUtf8);
 		$sFolderParentFullName = \trim($sFolderParentFullName);
@@ -1004,7 +1002,7 @@ class MailClient
 	/**
 	 * @throws \InvalidArgumentException
 	 */
-	public function FolderRename(string $sPrevFolderFullName, string $sNewFolderFullName) : self
+	public function FolderRename(string $sPrevFolderFullName, string $sNewFolderFullName): self
 	{
 		if (!\strlen($sPrevFolderFullName) || !\strlen($sNewFolderFullName)) {
 			throw new \ValueError;
@@ -1047,7 +1045,7 @@ class MailClient
 	/**
 	 * @throws \InvalidArgumentException
 	 */
-	public function SetLogger(?\MailSo\Log\Logger $oLogger) : void
+	public function SetLogger(?\MailSo\Log\Logger $oLogger): void
 	{
 		$this->oLogger = $oLogger;
 		$this->oImapClient->SetLogger($oLogger);

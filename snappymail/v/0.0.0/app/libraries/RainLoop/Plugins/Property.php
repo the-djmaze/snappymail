@@ -8,10 +8,7 @@ class Property implements \JsonSerializable
 {
 	private string $sName;
 
-	/**
-	 * @var mixed
-	 */
-	private $mValue;
+	private mixed $mValue;
 
 	private string $sLabel = '';
 
@@ -21,10 +18,7 @@ class Property implements \JsonSerializable
 
 	private bool $bAllowedInJs = false;
 
-	/**
-	 * @var mixed
-	 */
-	private $mDefaultValue = '';
+	private mixed $mDefaultValue = '';
 
 	private array $aOptions = [];
 
@@ -37,21 +31,18 @@ class Property implements \JsonSerializable
 		$this->sName = $sName;
 	}
 
-	public static function NewInstance(string $sName) : self
+	public static function NewInstance(string $sName): self
 	{
 		return new self($sName);
 	}
 
-	public function SetType(int $iType) : self
+	public function SetType(int $iType): self
 	{
 		$this->iType = (int) $iType;
 		return $this;
 	}
 
-	/**
-	 * @param mixed $mValue
-	 */
-	public function SetValue($mValue) : void
+	public function SetValue(mixed $mValue): void
 	{
 		$this->mValue = null;
 		switch ($this->iType) {
@@ -87,7 +78,7 @@ class Property implements \JsonSerializable
 	/**
 	 * @param mixed $mDefaultValue
 	 */
-	public function SetDefaultValue($mDefaultValue) : self
+	public function SetDefaultValue($mDefaultValue): self
 	{
 		if (\is_array($mDefaultValue)) {
 			$this->aOptions = $mDefaultValue;
@@ -97,95 +88,89 @@ class Property implements \JsonSerializable
 		return $this;
 	}
 
-	public function SetOptions(array $aOptions) : self
+	public function SetOptions(array $aOptions): self
 	{
 		$this->aOptions = $aOptions;
 		return $this;
 	}
 
-	public function SetPlaceholder(string $sPlaceholder) : self
+	public function SetPlaceholder(string $sPlaceholder): self
 	{
 		$this->sPlaceholder = $sPlaceholder;
 		return $this;
 	}
 
-	public function SetLabel(string $sLabel) : self
+	public function SetLabel(string $sLabel): self
 	{
 		$this->sLabel = $sLabel;
 		return $this;
 	}
 
-	public function SetDescription(string $sDesc) : self
+	public function SetDescription(string $sDesc): self
 	{
 		$this->sDesc = $sDesc;
 		return $this;
 	}
 
-	public function SetAllowedInJs(bool $bValue = true) : self
+	public function SetAllowedInJs(bool $bValue = true): self
 	{
 		$this->bAllowedInJs = $bValue;
 		return $this;
 	}
 
-	public function SetEncrypted(bool $bValue = true) : self
+	public function SetEncrypted(bool $bValue = true): self
 	{
 		$this->encrypted = $bValue;
 		return $this;
 	}
 
-	public function Name() : string
+	public function Name(): string
 	{
 		return $this->sName;
 	}
 
-	public function AllowedInJs() : bool
+	public function AllowedInJs(): bool
 	{
 		return $this->bAllowedInJs;
 	}
 
-	public function Description() : string
+	public function Description(): string
 	{
 		return $this->sDesc;
 	}
 
-	public function Label() : string
+	public function Label(): string
 	{
 		return $this->sLabel;
 	}
 
-	public function Type() : int
+	public function Type(): int
 	{
 		return $this->iType;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function DefaultValue()
+	public function DefaultValue(): mixed
 	{
 		return $this->mDefaultValue;
 	}
 
-	public function Options() : array
+	public function Options(): array
 	{
 		return $this->aOptions;
 	}
 
-	public function Placeholder() : string
+	public function Placeholder(): string
 	{
 		return $this->sPlaceholder;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function Value()
+	public function Value(): mixed
 	{
 		return $this->mValue;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		$mValue = $this->mValue;
 		if ($this->encrypted && $mValue) try {

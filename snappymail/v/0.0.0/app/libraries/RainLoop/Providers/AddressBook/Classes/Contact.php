@@ -78,8 +78,8 @@ class Contact implements \JsonSerializable
 		$this->IdContactStr = $sUid;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 			'@Object' => 'Object/Contact',

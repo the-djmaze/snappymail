@@ -35,7 +35,7 @@ class Header implements \JsonSerializable
 		$this->initInputData($sName, $sValue, $sEncodedValueForReparse);
 	}
 
-	private function initInputData(string $sName, string $sValue, string $sEncodedValueForReparse) : void
+	private function initInputData(string $sName, string $sValue, string $sEncodedValueForReparse): void
 	{
 		$this->sName = \trim($sName);
 		$this->sFullValue = \trim($sValue);
@@ -62,7 +62,7 @@ class Header implements \JsonSerializable
 		}
 	}
 
-	public static function NewInstanceFromEncodedString(string $sEncodedLines, string $sIncomingCharset = \MailSo\Base\Enumerations\Charset::ISO_8859_1) : Header
+	public static function NewInstanceFromEncodedString(string $sEncodedLines, string $sIncomingCharset = \MailSo\Base\Enumerations\Charset::ISO_8859_1): Header
 	{
 		if (empty($sIncomingCharset)) {
 			$sIncomingCharset = \MailSo\Base\Enumerations\Charset::ISO_8859_1;
@@ -81,27 +81,27 @@ class Header implements \JsonSerializable
 		return false;
 	}
 
-	public function Name() : string
+	public function Name(): string
 	{
 		return $this->sName;
 	}
 
-	public function Value() : string
+	public function Value(): string
 	{
 		return $this->sValue;
 	}
 
-	public function FullValue() : string
+	public function FullValue(): string
 	{
 		return $this->sFullValue;
 	}
 
-	public function EncodedValue() : string
+	public function EncodedValue(): string
 	{
 		return $this->sEncodedValue ?: $this->sFullValue;
 	}
 
-	public function SetParentCharset(string $sParentCharset) : Header
+	public function SetParentCharset(string $sParentCharset): Header
 	{
 		if ($this->sParentCharset !== $sParentCharset && \strlen($this->sEncodedValue)) {
 			$this->initInputData(
@@ -116,17 +116,17 @@ class Header implements \JsonSerializable
 		return $this;
 	}
 
-	public function Parameters() : ?ParameterCollection
+	public function Parameters(): ?ParameterCollection
 	{
 		return $this->oParameters;
 	}
 
-	public function setParameter(string $sName, string $sValue) : void
+	public function setParameter(string $sName, string $sValue): void
 	{
 		$this->oParameters->setParameter($sName, $sValue);
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		$sResult = $this->sFullValue;
 
@@ -159,12 +159,12 @@ class Header implements \JsonSerializable
 		return $sName . \wordwrap($sResult, 78 - \strlen($sName) - 1, "\r\n ");
 	}
 
-	private function IsSubject() : bool
+	private function IsSubject(): bool
 	{
 		return \strtolower(Enumerations\Header::SUBJECT) === \strtolower($this->Name());
 	}
 
-	private function IsParameterized() : bool
+	private function IsParameterized(): bool
 	{
 		return \in_array(\strtolower($this->sName), array(
 			\strtolower(Enumerations\Header::CONTENT_TYPE),
@@ -173,7 +173,7 @@ class Header implements \JsonSerializable
 		));
 	}
 
-	private function IsEmail() : bool
+	private function IsEmail(): bool
 	{
 		return \in_array(\strtolower($this->sName), array(
 			\strtolower(Enumerations\Header::FROM_),
@@ -186,7 +186,7 @@ class Header implements \JsonSerializable
 		));
 	}
 
-	public function ValueWithCharsetAutoDetect() : string
+	public function ValueWithCharsetAutoDetect(): string
 	{
 		if (!\MailSo\Base\Utils::IsAscii($this->Value())
 		 && \strlen($this->sEncodedValue)
@@ -198,8 +198,8 @@ class Header implements \JsonSerializable
 		return $this->Value();
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		$aResult = array(
 			'@Object' => 'Object/MimeHeader',

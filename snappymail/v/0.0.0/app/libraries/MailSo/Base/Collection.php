@@ -25,10 +25,7 @@ abstract class Collection extends \ArrayObject implements \JsonSerializable
 		}
 	}
 
-	/**
-	 * @param mixed $mItem
-	 */
-	public function append($mItem, bool $bToTop = false) : void
+	public function append(mixed $mItem, bool $bToTop = false): void
 	{
 		if ($bToTop) {
 			$array = $this->getArrayCopy();
@@ -39,18 +36,18 @@ abstract class Collection extends \ArrayObject implements \JsonSerializable
 		}
 	}
 
-	public function keys() : array
+	public function keys(): array
 	{
 		return \array_keys($this->getArrayCopy());
 	}
 
-	public function Add($mItem, bool $bToTop = false) : self
+	public function Add($mItem, bool $bToTop = false): self
 	{
 		$this->append($mItem, $bToTop);
 		return $this;
 	}
 
-	public function Clear() : void
+	public function Clear(): void
 	{
 		$this->exchangeArray([]);
 	}
@@ -64,14 +61,14 @@ abstract class Collection extends \ArrayObject implements \JsonSerializable
 		return $callable($this->getArrayCopy(), ...$arguments);
 	}
 */
-	public function Slice(int $offset, ?int $length = null, bool $preserve_keys = false)
+	public function Slice(int $offset, ?int $length = null, bool $preserve_keys = false)/*: static*/
 	{
 		return new static(
 			\array_slice($this->getArrayCopy(), $offset, $length, $preserve_keys)
 		);
 	}
 
-	public function Crop(?int $length = null, int $offset = 0, bool $preserve_keys = false)
+	public function Crop(?int $length = null, int $offset = 0, bool $preserve_keys = false): self
 	{
 		$this->exchangeArray(
 			\array_slice($this->getArrayCopy(), $offset, $length, $preserve_keys)
@@ -79,8 +76,8 @@ abstract class Collection extends \ArrayObject implements \JsonSerializable
 		return $this;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		$aNames = \explode('\\', \get_class($this));
 		return array(

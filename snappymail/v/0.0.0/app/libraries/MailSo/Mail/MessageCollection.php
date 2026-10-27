@@ -36,8 +36,7 @@ class MessageCollection extends \MailSo\Base\Collection
 
 	public int $ThreadUid = 0;
 
-	// MailSo\Imap\FolderInformation
-	public $FolderInfo = null;
+	public ?\MailSo\Imap\FolderInformation $FolderInfo = null;
 
 	public array $NewMessages = array();
 
@@ -45,19 +44,19 @@ class MessageCollection extends \MailSo\Base\Collection
 
 	public bool $Limited = false;
 
-	public function append($oMessage, bool $bToTop = false) : void
+	public function append($oMessage, bool $bToTop = false): void
 	{
 		assert($oMessage instanceof Message);
 		parent::append($oMessage, $bToTop);
 	}
 
-	public function Clear() : void
+	public function Clear(): void
 	{
 		throw new \BadMethodCallException('disallowed');
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return \array_merge(parent::jsonSerialize(), array(
 			'totalEmails' => $this->totalEmails,

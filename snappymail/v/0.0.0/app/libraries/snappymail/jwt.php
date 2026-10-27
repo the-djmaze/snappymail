@@ -6,15 +6,15 @@ use MailSo\Base\Utils;
 
 abstract class JWT
 {
-	private static function jsonEncode($data)
+	private static function jsonEncode(mixed $data): string|false
 	{
-		return Utils::UrlSafeBase64Encode(\json_encode($payload, JSON_THROW_ON_ERROR));
+		return Utils::UrlSafeBase64Encode(\json_encode($payload, \JSON_THROW_ON_ERROR));
 	}
 
-	private static function jsonDecode($data)
+	private static function jsonDecode(string $data): mixed
 	{
 		$data = Utils::UrlSafeBase64Decode($data);
-		return \json_decode($data, false, 8, JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR);
+		return \json_decode($data, false, 8, \JSON_BIGINT_AS_STRING | \JSON_THROW_ON_ERROR);
 	}
 
 	/**
@@ -26,7 +26,7 @@ abstract class JWT
 	 * @param int           $timestamp      Allow the current timestamp to be specified. default time()
 	 * @param int           $leeway         When checking nbf (Not Before) Claim, iat (Issued At) Claim or expiration times, we want to provide some extra leeway time to account for clock skew.
 	 */
-	public static function decode(string $jwt, $key, ?int $timestamp = null, int $leeway = 0) : object
+	public static function decode(string $jwt, string|array $key, ?int $timestamp = null, int $leeway = 0): object
 	{
 		$timestamp = $timestamp ?: \time();
 
@@ -101,7 +101,7 @@ abstract class JWT
 	 *
 	 * @return string A signed JWT
 	 */
-	public static function encode($payload, string $key, string $alg = 'HS256', $keyId = null, array $header = array()) : string
+	public static function encode(object|array $payload, string $key, string $alg = 'HS256', mixed $keyId = null, array $header = array()): string
 	{
 		$header = \array_merge($header, array('typ' => 'JWT', 'alg' => $alg));
 		if ($keyId) {
@@ -125,7 +125,10 @@ abstract class JWT
 	 *
 	 * @return string An encrypted message
 	 */
-	public static function sign(string $msg, $key, string $alg = 'HS256', string $passphrase = '') : string
+	public static function sign(string $msg, $key, string $alg = 'HS256',
+		#[\SensitiveParameter]
+		string $passphrase = ''
+	): string
 	{
 		switch ($alg)
 		{
@@ -173,7 +176,7 @@ abstract class JWT
 	 *
 	 * @return bool
 	 */
-	private static function verify(string $msg, string $signature, $key, string $alg) : bool
+	private static function verify(string $msg, string $signature, $key, string $alg): bool
 	{
 		switch ($alg)
 		{

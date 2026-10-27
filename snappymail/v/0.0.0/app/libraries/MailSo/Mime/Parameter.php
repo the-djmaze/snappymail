@@ -27,7 +27,7 @@ class Parameter implements \JsonSerializable
 		$this->sValue = $sValue;
 	}
 
-	public static function FromString(string $sRawParam) : self
+	public static function FromString(string $sRawParam): self
 	{
 		$oParameter = new self('', '');
 
@@ -40,22 +40,22 @@ class Parameter implements \JsonSerializable
 		return $oParameter;
 	}
 
-	public function Name() : string
+	public function Name(): string
 	{
 		return $this->sName;
 	}
 
-	public function Value() : string
+	public function Value(): string
 	{
 		return $this->sValue;
 	}
 
-	public function setValue(string $sValue) : void
+	public function setValue(string $sValue): void
 	{
 		$this->sValue = $sValue;
 	}
 
-	public function ToString(bool $bConvertSpecialsName = false) : string
+	public function ToString(bool $bConvertSpecialsName = false): string
 	{
 		if (!\strlen($this->sName)) {
 			return '';
@@ -72,13 +72,13 @@ class Parameter implements \JsonSerializable
 		return $this->sName . '="' . $this->sValue . '"';
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return $this->ToString();
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 			'name' => $this->sName,

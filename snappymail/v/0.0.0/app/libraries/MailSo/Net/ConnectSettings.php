@@ -83,7 +83,7 @@ class ConnectSettings implements \JsonSerializable
 		}
 	}
 
-	public function fixUsername(string $value, bool $allowShorten = true) : string
+	public function fixUsername(string $value, bool $allowShorten = true): string
 	{
 		$value = \SnappyMail\IDN::emailToAscii($value);
 //		$value = \SnappyMail\IDN::emailToAscii(\MailSo\Base\Utils::Trim($value));
@@ -104,7 +104,7 @@ class ConnectSettings implements \JsonSerializable
 		return $value;
 	}
 
-	public static function fromArray(array $aSettings) : self
+	public static function fromArray(array $aSettings): self
 	{
 		$object = new static;
 		$object->host = $aSettings['host'];
@@ -128,8 +128,8 @@ class ConnectSettings implements \JsonSerializable
 		return $object;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 //			'@Object' => 'Object/ConnectSettings',

@@ -14,7 +14,7 @@ class Application extends \RainLoop\Config\AbstractConfig
 			APP_CONFIGURATION_NAME);
 	}
 
-	public function Load() : bool
+	public function Load(): bool
 	{
 		$bResult = parent::Load();
 
@@ -64,12 +64,7 @@ class Application extends \RainLoop\Config\AbstractConfig
 		return $bResult;
 	}
 
-	/**
-	 * @param mixed $mDefault = null
-	 *
-	 * @return mixed
-	 */
-	public function Get(string $sSection, string $sName, $mDefault = null)
+	public function Get(string $sSection, string $sName, mixed $mDefault = null): mixed
 	{
 		$mResult = parent::Get($sSection, $sName, $mDefault);
 		if ($this->aReplaceEnv && \is_string($mResult)) {
@@ -92,7 +87,7 @@ class Application extends \RainLoop\Config\AbstractConfig
 		return $mResult;
 	}
 
-	public function Set(string $sSectionKey, string $sParamKey, $mParamValue) : void
+	public function Set(string $sSectionKey, string $sParamKey, $mParamValue): void
 	{
 		// Workarounds for the changed application structure
 		if ('webmail' === $sSectionKey) {
@@ -143,17 +138,17 @@ class Application extends \RainLoop\Config\AbstractConfig
 		parent::Set($sSectionKey, $sParamKey, $mParamValue);
 	}
 
-	public function SetPassword(\SnappyMail\SensitiveString $oPassword) : void
+	public function SetPassword(\SnappyMail\SensitiveString $oPassword): void
 	{
 		$this->Set('security', 'admin_password', \password_hash($oPassword, PASSWORD_DEFAULT));
 	}
 
-	public function ValidatePassword(\SnappyMail\SensitiveString $oPassword) : bool
+	public function ValidatePassword(\SnappyMail\SensitiveString $oPassword): bool
 	{
 		return \strlen($oPassword) && \password_verify($oPassword, $this->Get('security', 'admin_password', ''));
 	}
 
-	public function Save() : bool
+	public function Save(): bool
 	{
 		$this->Set('version', 'current', APP_VERSION);
 		$this->Set('version', 'saved', \gmdate('r'));
@@ -161,7 +156,7 @@ class Application extends \RainLoop\Config\AbstractConfig
 		return parent::Save();
 	}
 
-	protected function defaultValues() : array
+	protected function defaultValues(): array
 	{
 		$value = \ini_get('upload_max_filesize');
 		$upload_max_filesize = \intval($value);

@@ -26,12 +26,12 @@ class OpenSSL
 		$this->homedir = $homedir;
 	}
 
-	public function getCertificate(string $filename)/* : string*/
+	public function getCertificate(string $filename): string|false
 	{
 		return \file_get_contents("{$this->homedir}/{$filename}");
 	}
 
-	public function storeCertificate(string $certificate) : bool
+	public function storeCertificate(string $certificate): bool
 	{
 		$data = \openssl_x509_parse(\openssl_x509_read($certificate));
 		if (!$data) {
@@ -51,7 +51,7 @@ class OpenSSL
 		return true;
 	}
 
-	public function certificates(bool $force = false) : array
+	public function certificates(bool $force = false): array
 	{
 		$cacheFile = "{$this->homedir}/certificates.json";
 		$result = (!$force && \file_exists($cacheFile))
@@ -111,17 +111,17 @@ class OpenSSL
 		return $result;
 	}
 
-	public function privateKeys() : array
+	public function privateKeys(): array
 	{
 //		\glob("{$this->homedir}/*.key");
 	}
 
-	public static function isSupported() : bool
+	public static function isSupported(): bool
 	{
 		return \defined('PKCS7_DETACHED');
 	}
 
-	public function setCertificate(/*OpenSSLCertificate|string*/$certificate)
+	public function setCertificate(OpenSSLCertificate|string $certificate): void
 	{
 		$this->certificate = \openssl_x509_read($certificate);
 		if (!$this->certificate) {
@@ -132,7 +132,7 @@ class OpenSSL
 		}
 	}
 
-	public function setCertificateChain(/*string*/$certificateChain)
+	public function setCertificateChain(?string $certificateChain): void
 	{
 		if ($certificateChain === "") {
 			$this->certificateChain = null;
@@ -141,9 +141,9 @@ class OpenSSL
 		}
 	}
 
-	public function setPrivateKey(/*OpenSSLAsymmetricKey|string*/$privateKey,
+	public function setPrivateKey(OpenSSLAsymmetricKey|string $privateKey,
 		?\SnappyMail\SensitiveString $passphrase = null
-	) : void
+	): void
 	{
 		$this->privateKey = \openssl_pkey_get_private($privateKey, $passphrase);
 		if (!$this->privateKey) {
@@ -171,7 +171,7 @@ class OpenSSL
 	}
 
 /*
-	public function asn1parse(/*string|Temporary* / $input) : ?string
+	public function asn1parse(string|Temporary $input): ?string
 	{
 		if (\is_string($input)) {
 			$tmp = new Temporary('smimein-');
@@ -183,7 +183,7 @@ class OpenSSL
 		\shell_exec('openssl asn1parse -in $input->filename()');
 	}
 */
-	public function decrypt(/*string|Temporary*/ $input) : ?string
+	public function decrypt(string|Temporary $input): ?string
 	{
 		if (\is_string($input)) {
 			$tmp = new Temporary('smimein-');
@@ -204,7 +204,7 @@ class OpenSSL
 		return $output->getContents();
 	}
 
-	public function encrypt(/*string|Temporary*/$input, array $certificates) : ?string
+	public function encrypt(string|Temporary $input, array $certificates): ?string
 	{
 		if (\is_string($input)) {
 			$tmp = new Temporary('smimein-');
@@ -245,7 +245,7 @@ class OpenSSL
 		return $data;
 	}
 
-	public function sign(/*string|Temporary*/$input, bool $detached = true)
+	public function sign(string|Temporary $input, bool $detached = true): ?string
 	{
 		if (\is_string($input)) {
 			$tmp = new Temporary('smimein-');
@@ -314,7 +314,7 @@ class OpenSSL
 	/**
 	 * $opaque = true, when the message is not detached
 	 */
-	public function verify(/*string|Temporary*/$input, ?string $signers_certificates_filename = null, bool $opaque = false)
+	public function verify(string|Temporary $input, ?string $signers_certificates_filename = null, bool $opaque = false): ?array
 	{
 		if (\is_string($input)) {
 			$tmp = new Temporary('smimein-');

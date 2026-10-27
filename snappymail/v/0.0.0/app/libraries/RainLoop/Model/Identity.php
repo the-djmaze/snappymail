@@ -49,7 +49,7 @@ class Identity implements \JsonSerializable
 		}
 	}
 
-	function toMime() : \MailSo\Mime\Email
+	function toMime(): \MailSo\Mime\Email
 	{
 		return new \MailSo\Mime\Email($this->sEmail, $this->sName);
 	}
@@ -143,8 +143,8 @@ class Identity implements \JsonSerializable
 		);
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 			'@Object' => 'Object/Identity',

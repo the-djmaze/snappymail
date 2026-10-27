@@ -21,7 +21,7 @@ class Utils
 	 * @param mixed $value
 	 * @param int $flags Bitmask
 	 */
-	public static function jsonEncode($value, int $flags = \JSON_INVALID_UTF8_SUBSTITUTE) : string
+	public static function jsonEncode(mixed $value, int $flags = \JSON_INVALID_UTF8_SUBSTITUTE): string
 	{
 		try {
 			/* Issue with \SnappyMail\HTTP\Stream
@@ -36,7 +36,7 @@ class Utils
 		return '';
 	}
 
-	public static function EncodeKeyValuesQ(array $aValues, string $sCustomKey = '') : string
+	public static function EncodeKeyValuesQ(array $aValues, string $sCustomKey = ''): string
 	{
 		return \SnappyMail\Crypt::EncryptUrlSafe(
 			$aValues,
@@ -44,7 +44,7 @@ class Utils
 		);
 	}
 
-	public static function DecodeKeyValuesQ(string $sEncodedValues, string $sCustomKey = '') : array
+	public static function DecodeKeyValuesQ(string $sEncodedValues, string $sCustomKey = ''): array
 	{
 		return \SnappyMail\Crypt::DecryptUrlSafe(
 			$sEncodedValues,
@@ -52,7 +52,7 @@ class Utils
 		) ?: array();
 	}
 
-	public static function GetSessionToken(bool $generate = true) : ?string
+	public static function GetSessionToken(bool $generate = true): ?string
 	{
 		$sToken = \SnappyMail\Cookies::get(self::SESSION_TOKEN);
 		if (!$sToken) {
@@ -66,7 +66,7 @@ class Utils
 		return \sha1('Session'.APP_SALT.$sToken.'Token'.APP_SALT);
 	}
 
-	public static function GetConnectionToken() : string
+	public static function GetConnectionToken(): string
 	{
 		$oActions = \RainLoop\Api::Actions();
 		$oAccount = $oActions->getAccountFromToken(false);
@@ -85,13 +85,13 @@ class Utils
 		return '0-' . \sha1('Connection'.APP_SALT.$sToken.'Token'.APP_SALT);
 	}
 
-	public static function GetCsrfToken() : string
+	public static function GetCsrfToken(): string
 	{
 		return self::GetConnectionToken();
 //		return \sha1('Csrf'.APP_SALT.self::GetConnectionToken().'Token'.APP_SALT);
 	}
 
-	public static function UpdateConnectionToken() : void
+	public static function UpdateConnectionToken(): void
 	{
 		$sToken = \SnappyMail\Cookies::get(self::CONNECTION_TOKEN);
 		if ($sToken) {
@@ -99,7 +99,7 @@ class Utils
 		}
 	}
 
-	public static function ClearHtmlOutput(string $sHtml) : string
+	public static function ClearHtmlOutput(string $sHtml): string
 	{
 //		return $sHtml;
 		return \preg_replace('/>\\s+</', '> <', \preg_replace(
@@ -109,7 +109,7 @@ class Utils
 		));
 	}
 
-	public static function WebPath() : string
+	public static function WebPath(): string
 	{
 		static $sAppPath;
 		if (!$sAppPath) {
@@ -120,7 +120,7 @@ class Utils
 		return $sAppPath;
 	}
 
-	public static function WebVersionPath() : string
+	public static function WebVersionPath(): string
 	{
 		return self::WebPath() . 'snappymail/v/' . APP_VERSION . '/';
 		/**
@@ -130,12 +130,12 @@ class Utils
 //		return self::WebPath() . \str_replace(APP_INDEX_ROOT_PATH, '', APP_VERSION_ROOT_PATH);
 	}
 
-	public static function WebStaticPath(string $path = '') : string
+	public static function WebStaticPath(string $path = ''): string
 	{
 		return self::WebVersionPath() . 'static/' . $path;
 	}
 
-	public static function inOpenBasedir(string $name) : string
+	public static function inOpenBasedir(string $name): string
 	{
 		static $open_basedir;
 		if (null === $open_basedir) {
@@ -153,7 +153,7 @@ class Utils
 		return true;
 	}
 
-	public static function saveFile(string $filename, string $data) : void
+	public static function saveFile(string $filename, string $data): void
 	{
 		$dir = \dirname($filename);
 		if (!\is_dir($dir) && !\mkdir($dir, 0700, true)) {

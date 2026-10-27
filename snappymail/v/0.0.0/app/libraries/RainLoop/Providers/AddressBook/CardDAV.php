@@ -84,7 +84,7 @@ trait CardDAV
 		return $mResult;
 	}
 
-	protected function davClientRequest(DAVClient $oClient, string $sCmd, string $sUrl, $mData = null) : ?\SnappyMail\HTTP\Response
+	protected function davClientRequest(DAVClient $oClient, string $sCmd, string $sUrl, mixed $mData = null): ?\SnappyMail\HTTP\Response
 	{
 		\MailSo\Base\Utils::ResetTimeLimit();
 
@@ -111,7 +111,7 @@ trait CardDAV
 		return null;
 	}
 
-	private function detectionPropFind(DAVClient $oClient, string $sPath) : ?array
+	private function detectionPropFind(DAVClient $oClient, string $sPath): ?array
 	{
 		try
 		{
@@ -133,7 +133,7 @@ trait CardDAV
 	private function getContactsPaths(DAVClient $oClient, string $sPath, string $sUser,
 		#[\SensitiveParameter]
 		string $sPassword,
-		string $sProxy = '') : array
+		string $sProxy = ''): array
 	{
 		$aContactsPaths = array();
 
@@ -263,7 +263,7 @@ trait CardDAV
 	/**
 	 * Checks if remote path resourcetype is an addressbook
 	 */
-	private function checkContactsPath(DAVClient $oClient, string $sPath) : bool
+	private function checkContactsPath(DAVClient $oClient, string $sPath): bool
 	{
 		$aResponse = $oClient->propFind($sPath, array(
 			'{DAV:}resourcetype'
@@ -290,7 +290,7 @@ trait CardDAV
 		#[\SensitiveParameter]
 		string $sPassword,
 		string $sProxy = ''
-	) : DAVClient
+	): DAVClient
 	{
 		if (!\preg_match('/^http[s]?:\/\//i', $sUrl)) {
 			$sUrl = \preg_replace('/^fruux\.com/i', 'dav.fruux.com', $sUrl);
@@ -331,7 +331,7 @@ trait CardDAV
 		return $oClient;
 	}
 
-	public function getDavClient() : ?DAVClient
+	public function getDavClient(): ?DAVClient
 	{
 		if (!$this->aDAVConfig['Mode']) {
 			return null;
@@ -408,7 +408,7 @@ trait CardDAV
 		return $bGood ? $oClient : null;
 	}
 
-	private static function hasDAVCollection($aItem)
+	private static function hasDAVCollection($aItem): bool
 	{
 		return !empty($aItem['{DAV:}resourcetype'])
 			&& \is_array($aItem['{DAV:}resourcetype'])

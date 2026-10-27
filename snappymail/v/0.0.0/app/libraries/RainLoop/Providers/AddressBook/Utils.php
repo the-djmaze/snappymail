@@ -89,7 +89,7 @@ class Utils
 */
 	);
 
-	public static function CsvStreamToContacts(/*resource*/ $rFile, string $sDelimiter) : iterable
+	public static function CsvStreamToContacts(/*resource*/ $rFile, string $sDelimiter): iterable
 	{
 		\setlocale(LC_CTYPE, 'en_US.UTF-8');
 
@@ -140,7 +140,7 @@ class Utils
 		}
 	}
 
-	public static function VCardToCsv($stream, VCard $oVCard, bool $bWithHeader = false)/* : int|false*/
+	public static function VCardToCsv($stream, VCard $oVCard, bool $bWithHeader = false): int|false
 	{
 		$aData = array();
 		if ($bWithHeader) {
@@ -198,7 +198,7 @@ class Utils
 		));
 	}
 
-	public static function VcfStreamToContacts(/*resource*/ $rFile) : iterable
+	public static function VcfStreamToContacts(/*resource*/ $rFile): iterable
 	{
 		$oVCardSplitter = new \Sabre\VObject\Splitter\VCard($rFile);
 		if ($oVCardSplitter) {
@@ -213,7 +213,7 @@ class Utils
 		}
 	}
 /*
-	public static function QrCode(string $sVcfData) : string
+	public static function QrCode(string $sVcfData): string
 	{
 		MECARD:N:djmaze;ORG:SnappyMail;TEL:+31012345678;URL:https\://snappymail.eu;EMAIL:info@snappymail.eu;ADR:address line;;
 		VCARD

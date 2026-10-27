@@ -27,13 +27,13 @@ class EmailCollection extends \MailSo\Base\Collection
 		}
 	}
 
-	public function append($oEmail, bool $bToTop = false) : void
+	public function append($oEmail, bool $bToTop = false): void
 	{
 		assert($oEmail instanceof Email);
 		parent::append($oEmail, $bToTop);
 	}
 
-	public function Unique() : self
+	public function Unique(): self
 	{
 		$aReturn = array();
 
@@ -47,7 +47,7 @@ class EmailCollection extends \MailSo\Base\Collection
 		return new static($aReturn);
 	}
 
-	public function ToString(bool $bConvertSpecialsName = false, bool $bIdn = false) : string
+	public function ToString(bool $bConvertSpecialsName = false, bool $bIdn = false): string
 	{
 		$aReturn = array();
 		foreach ($this as $oEmail) {
@@ -57,12 +57,12 @@ class EmailCollection extends \MailSo\Base\Collection
 		return \implode(', ', $aReturn);
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return $this->ToString();
 	}
 
-	private function parseEmailAddresses(string $sRawEmails) : void
+	private function parseEmailAddresses(string $sRawEmails): void
 	{
 //		$sRawEmails = \MailSo\Base\Utils::Trim($sRawEmails);
 		$sRawEmails = \trim($sRawEmails);
@@ -156,8 +156,8 @@ class EmailCollection extends \MailSo\Base\Collection
 		}
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return \array_slice($this->getArrayCopy(), 0, 100);
 	}

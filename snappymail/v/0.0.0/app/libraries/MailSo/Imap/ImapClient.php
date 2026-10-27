@@ -49,7 +49,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 */
 	private bool $UTF8 = false;
 
-	public function Hash() : string
+	public function Hash(): string
 	{
 		return \md5('ImapClientHash/'.
 			$this->Settings->username . '@' .
@@ -64,8 +64,8 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-//	public function Connect(Settings $oSettings) : void
-	public function Connect(\MailSo\Net\ConnectSettings $oSettings) : void
+//	public function Connect(Settings $oSettings): void
+	public function Connect(\MailSo\Net\ConnectSettings $oSettings): void
 	{
 		$this->aTagTimeouts['*'] = \microtime(true);
 
@@ -79,7 +79,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		}
 	}
 
-	private function StartTLS() : void
+	private function StartTLS(): void
 	{
 		if ($this->hasCapability('STARTTLS')) {
 			$this->SendRequestGetResponse('STARTTLS');
@@ -93,7 +93,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		}
 	}
 
-	public function supportsAuthType(string $sasl_type) : bool
+	public function supportsAuthType(string $sasl_type): bool
 	{
 		return $this->hasCapability("AUTH={$sasl_type}");
 	}
@@ -104,7 +104,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function Login(Settings $oSettings) : self
+	public function Login(Settings $oSettings): self
 	{
 		if ($this->bIsLoggined) {
 			return $this;
@@ -242,7 +242,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function Logout() : void
+	public function Logout(): void
 	{
 		if ($this->bIsLoggined) {
 			$this->bIsLoggined = false;
@@ -250,12 +250,12 @@ class ImapClient extends \MailSo\Net\NetClient
 		}
 	}
 
-	public function IsLoggined() : bool
+	public function IsLoggined(): bool
 	{
 		return $this->IsConnected() && $this->bIsLoggined;
 	}
 
-	public function IsSelected() : bool
+	public function IsSelected(): bool
 	{
 		return $this->IsLoggined() && $this->oCurrentFolderInfo;
 	}
@@ -265,7 +265,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function Capability() : ?array
+	public function Capability(): ?array
 	{
 		if (!$this->aCapaRaw) {
 			$this->setCapabilities($this->SendRequestGetResponse('CAPABILITY'));
@@ -276,7 +276,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		return $this->aCapa;
 	}
 
-	public function Capabilities() : ?array
+	public function Capabilities(): ?array
 	{
 		if (!$this->aCapaRaw) {
 			$this->Capability();
@@ -284,7 +284,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		return $this->aCapaRaw;
 	}
 
-	public function CapabilityValue(string $sExtentionName) : ?string
+	public function CapabilityValue(string $sExtentionName): ?string
 	{
 		$sExtentionName = \trim($sExtentionName) . '=';
 		$aCapabilities = $this->Capability() ?: [];
@@ -296,7 +296,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		return null;
 	}
 
-	private function setCapabilities(ResponseCollection $oResponseCollection) : void
+	private function setCapabilities(ResponseCollection $oResponseCollection): void
 	{
 		$aList = $oResponseCollection->getCapabilityResult();
 		$this->aCapaRaw = $aList;
@@ -330,7 +330,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function hasCapability(string $sExtentionName) : bool
+	public function hasCapability(string $sExtentionName): bool
 	{
 		$sExtentionName = \trim($sExtentionName);
 		return $sExtentionName && \in_array(\strtoupper($sExtentionName), $this->Capability() ?: []);
@@ -339,7 +339,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	/**
 	 * RFC 5161
 	 */
-	public function Enable(/*string|array*/ $mCapabilityNames) : void
+	public function Enable(string|array $mCapabilityNames): void
 	{
 		if (\is_string($mCapabilityNames)) {
 			$mCapabilityNames = [$mCapabilityNames];
@@ -354,7 +354,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function GetNamespaces() : ?NamespaceResult
+	public function GetNamespaces(): ?NamespaceResult
 	{
 		if (!$this->hasCapability('NAMESPACE')) {
 			return null;
@@ -382,7 +382,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * and that the client will need to discover upload limits for each mailbox,
 	 * as they might differ from mailbox to mailbox.
 	 */
-	public function AppendLimit() : ?int
+	public function AppendLimit(): ?int
 	{
 		$string = $this->CapabilityValue('APPENDLIMIT');
 		return \is_null($string) ? null : (int) $string;
@@ -393,7 +393,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function Noop() : self
+	public function Noop(): self
 	{
 		$this->SendRequestGetResponse('NOOP');
 		return $this;
@@ -405,7 +405,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function SendRequest(string $sCommand, array $aParams = array(), bool $bBreakOnLiteral = false) : string
+	public function SendRequest(string $sCommand, array $aParams = array(), bool $bBreakOnLiteral = false): string
 	{
 		$sCommand = \trim($sCommand);
 		if (!\strlen($sCommand)) {
@@ -438,13 +438,13 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function SendRequestGetResponse(string $sCommand, array $aParams = array()) : ResponseCollection
+	public function SendRequestGetResponse(string $sCommand, array $aParams = array()): ResponseCollection
 	{
 		$this->SendRequest($sCommand, $aParams);
 		return $this->getResponse();
 	}
 
-	protected function getResponseValue(ResponseCollection $oResponseCollection, int $type = 0) : string
+	protected function getResponseValue(ResponseCollection $oResponseCollection, int $type = 0): string
 	{
 		$oResponse = $oResponseCollection->getLast();
 		if ($oResponse && (!$type || $type === $oResponse->ResponseType)) {
@@ -466,7 +466,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	protected function streamResponse(?string $sEndTag = null) : void
+	protected function streamResponse(?string $sEndTag = null): void
 	{
 		try {
 			if (\is_resource($this->ConnectionResource())) {
@@ -488,7 +488,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		}
 	}
 
-	protected function getResponse(?string $sEndTag = null) : ResponseCollection
+	protected function getResponse(?string $sEndTag = null): ResponseCollection
 	{
 		try {
 			$oResult = new ResponseCollection;
@@ -535,8 +535,8 @@ class ImapClient extends \MailSo\Net\NetClient
 		return $oResult;
 	}
 
-//	public function yieldUntaggedResponses() : \Generator
-	public function yieldUntaggedResponses() : iterable
+//	public function yieldUntaggedResponses(): \Generator
+	public function yieldUntaggedResponses(): iterable
 	{
 		try {
 			$oResult = new ResponseCollection;
@@ -577,7 +577,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		}
 	}
 
-	protected function prepareParamLine(array $aParams = array()) : string
+	protected function prepareParamLine(array $aParams = array()): string
 	{
 		$sReturn = '';
 		foreach ($aParams as $mParamItem) {
@@ -590,18 +590,18 @@ class ImapClient extends \MailSo\Net\NetClient
 		return $sReturn;
 	}
 
-	protected function getNewTag() : string
+	protected function getNewTag(): string
 	{
 		++$this->iTagCount;
 		return $this->getCurrentTag();
 	}
 
-	protected function getCurrentTag() : string
+	protected function getCurrentTag(): string
 	{
 		return $this->TAG_PREFIX.$this->iTagCount;
 	}
 
-	public function EscapeString(?string $sStringForEscape) : string
+	public function EscapeString(?string $sStringForEscape): string
 	{
 		if (null === $sStringForEscape) {
 			return 'NIL';
@@ -617,7 +617,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		return '"' . \addcslashes($sStringForEscape, '\\"') . '"';
 	}
 
-	public function getLogName() : string
+	public function getLogName(): string
 	{
 		return 'IMAP';
 	}
@@ -626,7 +626,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * RFC 2971
 	 * Don't have to be logged in to call this command
 	 */
-	public function ServerID() : string
+	public function ServerID(): string
 	{
 		if ($this->hasCapability('ID')) {
 			foreach ($this->SendRequestGetResponse('ID', [null]) as $oResponse) {
@@ -647,7 +647,7 @@ class ImapClient extends \MailSo\Net\NetClient
 	 * RFC 4978
 	 * It is RECOMMENDED that the client uses TLS compression.
 	 *//*
-	public function Compress() : bool
+	public function Compress(): bool
 	{
 		try {
 			if ($this->hasCapability('COMPRESS=DEFLATE')) {
@@ -663,12 +663,12 @@ class ImapClient extends \MailSo\Net\NetClient
 		return false;
 	}*/
 
-	public function EscapeFolderName(string $sFolderName) : string
+	public function EscapeFolderName(string $sFolderName): string
 	{
 		return $this->EscapeString($this->UTF8 ? $sFolderName : \MailSo\Base\Utils::Utf8ToUtf7Modified($sFolderName));
 	}
 
-	public function toUTF8(string $sText) : string
+	public function toUTF8(string $sText): string
 	{
 		return $this->UTF8 ? $sText : \MailSo\Base\Utils::Utf7ModifiedToUtf8($sText);
 	}

@@ -58,7 +58,7 @@ class SMIME extends Base
 		}
 	}
 
-	public static function isSupported() : bool
+	public static function isSupported(): bool
 	{
 		return parent::isSupported() && static::findBinary('gpgsm');
 	}
@@ -97,7 +97,7 @@ class SMIME extends Base
 	/**
 	 * Decrypts a given text
 	 */
-	public function decrypt(string $text) /*: string|false */
+	public function decrypt(string $text): string|false
 	{
 		return $this->_decrypt($text);
 	}
@@ -105,7 +105,7 @@ class SMIME extends Base
 	/**
 	 * Decrypts a given file
 	 */
-	public function decryptFile(string $filename) /*: string|false */
+	public function decryptFile(string $filename): string|false
 	{
 		$fp = \fopen($filename, 'rb');
 		try {
@@ -121,7 +121,7 @@ class SMIME extends Base
 	/**
 	 * Decrypts a given stream
 	 */
-	public function decryptStream($fp, /*string|resource*/ $output = null) /*: string|false*/
+	public function decryptStream($fp, /*string|resource*/ $output = null): string|false
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');
@@ -132,7 +132,7 @@ class SMIME extends Base
 	/**
 	 * Decrypts and verifies a given text
 	 */
-	public function decryptVerify(string $text, string &$plaintext) /*: array|false*/
+	public function decryptVerify(string $text, string &$plaintext): array|false
 	{
 		// TODO: https://github.com/the-djmaze/snappymail/issues/89
 		return false;
@@ -141,7 +141,7 @@ class SMIME extends Base
 	/**
 	 * Decrypts and verifies a given file
 	 */
-	public function decryptVerifyFile(string $filename, string &$plaintext) /*: array|false*/
+	public function decryptVerifyFile(string $filename, string &$plaintext): array|false
 	{
 		// TODO: https://github.com/the-djmaze/snappymail/issues/89
 		return false;
@@ -178,7 +178,7 @@ class SMIME extends Base
 	/**
 	 * Encrypts a given text
 	 */
-	public function encrypt(string $plaintext, /*string|resource*/ $output = null) /*: string|false*/
+	public function encrypt(string $plaintext, /*string|resource*/ $output = null): string|false
 	{
 		return $this->_encrypt($plaintext, $output);
 	}
@@ -186,7 +186,7 @@ class SMIME extends Base
 	/**
 	 * Encrypts a given text
 	 */
-	public function encryptFile(string $filename, /*string|resource*/ $output = null) /*: string|false*/
+	public function encryptFile(string $filename, /*string|resource*/ $output = null): string|false
 	{
 		$fp = \fopen($filename, 'rb');
 		try {
@@ -199,7 +199,7 @@ class SMIME extends Base
 		}
 	}
 
-	public function encryptStream(/*resource*/ $fp, /*string|resource*/ $output = null) /*: string|false*/
+	public function encryptStream(/*resource*/ $fp, /*string|resource*/ $output = null): string|false
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');
@@ -210,7 +210,7 @@ class SMIME extends Base
 	/**
 	 * Encrypts and signs a given text
 	 */
-	public function encryptSign(string $plaintext) /*: string|false*/
+	public function encryptSign(string $plaintext): string|false
 	{
 		return false;
 	}
@@ -218,7 +218,7 @@ class SMIME extends Base
 	/**
 	 * Encrypts and signs a given text
 	 */
-	public function encryptSignFile(string $filename) /*: string|false*/
+	public function encryptSignFile(string $filename): string|false
 	{
 		return false;
 	}
@@ -226,7 +226,7 @@ class SMIME extends Base
 	/**
 	 * Exports a public or private key
 	 */
-	public function export(string $fingerprint, ?SensitiveString $passphrase = null) /*: string|false*/
+	public function export(string $fingerprint, ?SensitiveString $passphrase = null): string|false
 	{
 		$private = null !== $passphrase;
 		$keys = $this->keyInfo($fingerprint, $private);
@@ -244,7 +244,7 @@ class SMIME extends Base
 		return $result['output'];
 	}
 
-	protected function _importKey($input) /*: array|false*/
+	protected function _importKey($input): array|false
 	{
 		$arguments = ['--import'];
 
@@ -284,7 +284,7 @@ class SMIME extends Base
 	/**
 	 * Imports a key
 	 */
-	public function import(string $keydata) /*: array|false*/
+	public function import(string $keydata): array|false
 	{
 		if (!$keydata) {
 			throw new \Exception('No valid input data found.');
@@ -295,7 +295,7 @@ class SMIME extends Base
 	/**
 	 * Imports a key
 	 */
-	public function importFile(string $filename) /*: array|false*/
+	public function importFile(string $filename): array|false
 	{
 		$fp = \fopen($filename, 'rb');
 		try {
@@ -335,7 +335,7 @@ class SMIME extends Base
 	/**
 	 * Returns an array with information about all keys that matches the given pattern
 	 */
-	public function keyInfo(string $pattern, bool $private = false) : array
+	public function keyInfo(string $pattern, bool $private = false): array
 	{
 		// According to The file 'doc/DETAILS' in the GnuPG distribution, using
 		// double '--with-fingerprint' also prints the fingerprint for subkeys.
@@ -457,7 +457,7 @@ class SMIME extends Base
 		return $keys;
 	}
 
-	protected function _sign(/*string|resource*/ $input, /*string|resource*/ $output = null) /*: string|false*/
+	protected function _sign(/*string|resource*/ $input, /*string|resource*/ $output = null): string|false
 	{
 		if (empty($this->pinentries)) {
 			throw new \Exception('No signing keys specified.');
@@ -492,7 +492,7 @@ class SMIME extends Base
 	/**
 	 * Signs a given text
 	 */
-	public function sign(string $plaintext, /*string|resource*/ $output = null) /*: string|false*/
+	public function sign(string $plaintext, /*string|resource*/ $output = null): string|false
 	{
 		return $this->_sign($plaintext, $output);
 	}
@@ -500,7 +500,7 @@ class SMIME extends Base
 	/**
 	 * Signs a given file
 	 */
-	public function signFile(string $filename, /*string|resource*/ $output = null) /*: string|false*/
+	public function signFile(string $filename, /*string|resource*/ $output = null): string|false
 	{
 		$fp = \fopen($filename, 'rb');
 		try {
@@ -516,7 +516,7 @@ class SMIME extends Base
 	/**
 	 * Signs a given file
 	 */
-	public function signStream($fp, /*string|resource*/ $output = null) /*: string|false*/
+	public function signStream($fp, /*string|resource*/ $output = null): string|false
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');
@@ -524,7 +524,7 @@ class SMIME extends Base
 		return $this->_sign($fp, $output);
 	}
 
-	protected function _verify($input, string $signature) /*: array|false*/
+	protected function _verify($input, string $signature): array|false
 	{
 		$arguments = ['--verify'];
 		if ($signature) {
@@ -589,7 +589,7 @@ class SMIME extends Base
 	/**
 	 * Verifies a signed text
 	 */
-	public function verify(string $signed_text, string $signature, ?string &$plaintext = null) /*: array|false*/
+	public function verify(string $signed_text, string $signature, ?string &$plaintext = null): array|false
 	{
 		return $this->_verify($signed_text, $signature);
 	}
@@ -597,7 +597,7 @@ class SMIME extends Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null) /*: array|false*/
+	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null): array|false
 	{
 		$fp = \fopen($filename, 'rb');
 		try {
@@ -613,7 +613,7 @@ class SMIME extends Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyStream($fp, string $signature, ?string &$plaintext = null) /*: array|false*/
+	public function verifyStream($fp, string $signature, ?string &$plaintext = null): array|false
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');
@@ -621,7 +621,7 @@ class SMIME extends Base
 		return $this->_verify($fp, $signature);
 	}
 
-	public function getEncryptedMessageKeys(/*string|resource*/ $data) : array
+	public function getEncryptedMessageKeys(/*string|resource*/ $data): array
 	{
 		$this->_debug('BEGIN DETECT MESSAGE KEY IDs');
 		$this->setInput($data);
@@ -643,7 +643,7 @@ class SMIME extends Base
 		return $info['ENC_TO'];
 	}
 
-	private function exec(array $arguments, bool $throw = true) /*: array|false*/
+	private function exec(array $arguments, bool $throw = true): array|false
 	{
 		if (\version_compare($this->version, '2.2.5', '<')) {
 			\SnappyMail\Log::error('GPG', "{$this->version} too old");
@@ -1032,7 +1032,7 @@ class SMIME extends Base
 		return '';
 	}
 
-	protected function proc_close() : int
+	protected function proc_close(): int
 	{
 		$exitCode = 0;
 

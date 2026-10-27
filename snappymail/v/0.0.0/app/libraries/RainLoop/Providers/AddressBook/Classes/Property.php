@@ -6,30 +6,15 @@ use RainLoop\Providers\AddressBook\Enumerations\PropertyType;
 
 class Property implements \JsonSerializable
 {
-	/**
-	 * @var int
-	 */
-	public $IdProperty = 0;
+	public int $IdProperty = 0;
 
-	/**
-	 * @var int
-	 */
-	public $Type;
+	public int $Type;
 
-	/**
-	 * @var string
-	 */
-	public $TypeStr;
+	public string $TypeStr;
 
-	/**
-	 * @var string
-	 */
-	public $Value;
+	public string $Value;
 
-	/**
-	 * @var int
-	 */
-	public $Frec = 0;
+	public int $Frec = 0;
 
 	public function __construct(int $iType = PropertyType::UNKNOWN, string $sValue = '', string $sTypeStr = '')
 	{
@@ -38,8 +23,7 @@ class Property implements \JsonSerializable
 		$this->TypeStr = $sTypeStr;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+	public function jsonSerialize(): mixed
 	{
 		throw new \Exception('Obsolete ' . __CLASS__ . '::jsonSerialize()');
 	}

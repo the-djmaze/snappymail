@@ -19,14 +19,14 @@ class FolderCollection extends \MailSo\Base\Collection
 {
 //	public bool $Optimized = false;
 
-	public function append($oFolder, bool $bToTop = false) : void
+	public function append($oFolder, bool $bToTop = false): void
 	{
 		assert($oFolder instanceof Folder);
 		parent::append($oFolder, $bToTop);
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 			'@Object' => 'Collection/FolderCollection',

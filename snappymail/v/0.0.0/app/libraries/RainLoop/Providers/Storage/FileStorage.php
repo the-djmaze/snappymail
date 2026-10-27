@@ -3,6 +3,7 @@
 namespace RainLoop\Providers\Storage;
 
 use RainLoop\Providers\Storage\Enumerations\StorageType;
+use RainLoop\Model\Account;
 
 class FileStorage implements \RainLoop\Providers\Storage\IStorage
 {
@@ -18,10 +19,7 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		$this->bLocal = $bLocal;
 	}
 
-	/**
-	 * @param \RainLoop\Model\Account|string|null $mAccount
-	 */
-	public function Put($mAccount, int $iStorageType, string $sKey, string $sValue) : bool
+	public function Put(Account|string|null $mAccount, int $iStorageType, string $sKey, string $sValue): bool
 	{
 		$sFileName = $this->generateFileName($mAccount, $iStorageType, $sKey, true);
 		try {
@@ -33,13 +31,7 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return false;
 	}
 
-	/**
-	 * @param \RainLoop\Model\Account|string|null $mAccount
-	 * @param mixed $mDefault = false
-	 *
-	 * @return mixed
-	 */
-	public function Get($mAccount, int $iStorageType, string $sKey, $mDefault = false)
+	public function Get(Account|string|null $mAccount, int $iStorageType, string $sKey, mixed $mDefault = false): mixed
 	{
 		$mValue = false;
 		$sFileName = $this->generateFileName($mAccount, $iStorageType, $sKey);
@@ -53,19 +45,13 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return false === $mValue ? $mDefault : $mValue;
 	}
 
-	/**
-	 * @param \RainLoop\Model\Account|string|null $mAccount
-	 */
-	public function Clear($mAccount, int $iStorageType, string $sKey) : bool
+	public function Clear(Account|string|null $mAccount, int $iStorageType, string $sKey): bool
 	{
 		$sFileName = $this->generateFileName($mAccount, $iStorageType, $sKey);
 		return $sFileName && \file_exists($sFileName) && \unlink($sFileName);
 	}
 
-	/**
-	 * @param \RainLoop\Model\Account|string $mAccount
-	 */
-	public function DeleteStorage($mAccount) : bool
+	public function DeleteStorage(Account|string|null $mAccount): bool
 	{
 		$sPath = $this->generateFileName($mAccount, StorageType::CONFIG, '');
 		if ($sPath && \is_dir($sPath)) {
@@ -79,10 +65,7 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return $this->bLocal;
 	}
 
-	/**
-	 * @param \RainLoop\Model\Account|string|null $mAccount
-	 */
-	public function GenerateFilePath($mAccount, int $iStorageType, bool $bMkDir = false) : string
+	public function GenerateFilePath(Account|string|null $mAccount, int $iStorageType, bool $bMkDir = false): string
 	{
 		$sEmail = $sSubFolder = $sFilePath = '';
 		if (null === $mAccount || StorageType::NOBODY === $iStorageType) {
@@ -142,10 +125,7 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return $sFilePath;
 	}
 
-	/**
-	 * @param \RainLoop\Model\Account|string|null $mAccount
-	 */
-	protected function generateFileName($mAccount, int $iStorageType, string $sKey, bool $bMkDir = false) : string
+	protected function generateFileName(Account|string|null $mAccount, int $iStorageType, string $sKey, bool $bMkDir = false): string
 	{
 		$sFilePath = $this->GenerateFilePath($mAccount, $iStorageType, $bMkDir);
 		if ($sFilePath) {
@@ -158,7 +138,7 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return $sFilePath;
 	}
 
-	public function GC() : void
+	public function GC(): void
 	{
 		\clearstatcache();
 		foreach (\glob("{$this->sDataPath}/*", GLOB_ONLYDIR) as $sDomain) {

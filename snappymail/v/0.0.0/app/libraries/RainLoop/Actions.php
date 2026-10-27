@@ -167,10 +167,7 @@ class Actions
 		return $this->oConfig;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	protected function fabrica(string $sName, ?Model\Account $oAccount = null)
+	protected function fabrica(string $sName, ?Model\Account $oAccount = null): mixed
 	{
 		$mResult = null;
 		$this->oPlugins->RunHook('main.fabrica', array($sName, &$mResult), false);
@@ -958,12 +955,7 @@ class Actions
 		return $this;
 	}
 
-	/**
-	 * @param mixed $mDefault = null
-	 *
-	 * @return mixed
-	 */
-	public function GetActionParam(string $sKey, ?mixed $mDefault = null)
+	public function GetActionParam(string $sKey, mixed $mDefault = null): mixed
 	{
 		return isset($this->aCurrentActionParams[$sKey]) ?
 			$this->aCurrentActionParams[$sKey] : $mDefault;

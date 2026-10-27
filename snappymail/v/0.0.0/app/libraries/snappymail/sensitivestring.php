@@ -61,8 +61,7 @@ class SensitiveString /* extends SensitiveParameterValue | SensitiveParameter */
 		return $this->getValue();
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+	public function jsonSerialize(): mixed
 	{
 		throw new \Exception("JSON serialization of 'SnappyMail\\SensitiveString' is not allowed");
 	}

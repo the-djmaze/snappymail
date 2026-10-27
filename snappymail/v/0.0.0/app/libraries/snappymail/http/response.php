@@ -47,7 +47,7 @@ class Response
 		return \property_exists($this, $k) ? $this->$k : null;
 	}
 
-	public function decoded()/*: string|false*/
+	public function decoded(): string|false
 	{
 		$body = $this->body;
 		if (\function_exists('gzinflate') && isset($this->headers['content-encoding'])
@@ -61,10 +61,7 @@ class Response
 		return $body;
 	}
 
-	/**
-	 * returns string, array or null
-	 */
-	public function getHeader($names)
+	public function getHeader(mixed $names): string|array|null
 	{
 		$names = \is_array($names) ? $names : array($names);
 		foreach ($names as $n) {
@@ -76,12 +73,12 @@ class Response
 		return null;
 	}
 
-	public function getHeaders() : array
+	public function getHeaders(): array
 	{
 		return $this->headers;
 	}
 
-	public function getRedirectLocation() : ?string
+	public function getRedirectLocation(): ?string
 	{
 		if ($location = $this->getHeader('location')) {
 			$uri = \is_array($location) ? $location[0] : $location;

@@ -48,7 +48,7 @@ abstract class Driver
 		$this->oTimeZone = new \DateTimeZone('UTC');
 	}
 
-	public function SetTimeZone(/*\DateTimeZone | string*/ $mTimeZone) : self
+	public function SetTimeZone(\DateTimeZone|string $mTimeZone): self
 	{
 		$this->oTimeZone = $mTimeZone instanceof \DateTimeZone
 			? $mTimeZone
@@ -56,43 +56,43 @@ abstract class Driver
 		return $this;
 	}
 
-	public function DisableGuidPrefix() : self
+	public function DisableGuidPrefix(): self
 	{
 		$this->bGuidPrefix = false;
 		return $this;
 	}
 
-	public function DisableTimePrefix() : self
+	public function DisableTimePrefix(): self
 	{
 		$this->bTimePrefix = false;
 		return $this;
 	}
 
-	public function DisableTypedPrefix() : self
+	public function DisableTypedPrefix(): self
 	{
 		$this->bTypedPrefix = false;
 		return $this;
 	}
 
-	abstract protected function writeImplementation($mDesc) : bool;
+	abstract protected function writeImplementation($mDesc): bool;
 
-	protected function clearImplementation() : bool
+	protected function clearImplementation(): bool
 	{
 		return true;
 	}
 
-	protected function getTimeWithMicroSec() : string
+	protected function getTimeWithMicroSec(): string
 	{
 		return \substr((new \DateTime('now', $this->oTimeZone))->format('Y-m-d H:i:s.u'), 0, -3);
 	}
 
-	protected function getTypedPrefix(int $iType, string $sName = '') : string
+	protected function getTypedPrefix(int $iType, string $sName = ''): string
 	{
 		$sName = \strlen($sName) ? $sName : $this->sName;
 		return isset(self::PREFIXES[$iType]) ? $sName . self::PREFIXES[$iType].': ' : '';
 	}
 
-	final public function Write(string $sDesc, int $iType = \LOG_INFO, string $sName = '', bool $bDiplayCrLf = false)
+	final public function Write(string $sDesc, int $iType = \LOG_INFO, string $sName = '', bool $bDiplayCrLf = false): bool
 	{
 		$sDesc = \ltrim(
 			($this->bTimePrefix ? '['.$this->getTimeWithMicroSec().']' : '').
@@ -105,7 +105,7 @@ abstract class Driver
 		return $this->writeImplementation($sDesc);
 	}
 
-	final public function Clear() : bool
+	final public function Clear(): bool
 	{
 		return $this->clearImplementation();
 	}

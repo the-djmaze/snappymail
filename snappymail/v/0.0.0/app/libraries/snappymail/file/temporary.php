@@ -42,7 +42,7 @@ class Temporary
 		return $this->fp;
 	}
 
-	public function writeFromStream(/*resource*/ $from)/* : int|false*/
+	public function writeFromStream(/*resource*/ $from): int|false
 	{
 		$fp = $this->fopen();
 //		return \stream_copy_to_stream($from, $fp); // Fails
@@ -51,12 +51,12 @@ class Temporary
 		return $bytes;
 	}
 
-	public function putContents($data, int $flags = 0)/* : int|false*/
+	public function putContents(mixed $data, int $flags = 0): int|false
 	{
 		return \file_put_contents($this->filename, $data /*, $flags, $context*/);
 	}
 
-	public function getContents()/* : string|false*/
+	public function getContents(): string|false
 	{
 		return \file_get_contents($this->filename);
 	}

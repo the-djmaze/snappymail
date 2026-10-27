@@ -53,7 +53,7 @@ class SequenceSet /*extends \SplFixedArray*/ implements \Countable
 		return \in_array($value, $this->data);
 	}
 
-	public function indexOf($value)/*: int|false*/
+	public function indexOf($value): int|false
 	{
 		return \array_search($value, $this->data);
 	}

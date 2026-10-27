@@ -54,7 +54,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 		$this->GnuPG->clearsignkeys();
 	}
 
-	public static function isSupported() : bool
+	public static function isSupported(): bool
 	{
 		// Disabled due to failures with "no passphrase" while a passphrase does exist
 		return false && \class_exists('gnupg') && \version_compare(\phpversion('gnupg'), '1.5', '>=');
@@ -68,7 +68,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 		}
 	}
 
-	public function getGPG(bool $throw = true) : ?GPG
+	public function getGPG(bool $throw = true): ?GPG
 	{
 		if (!$this->GPG) {
 			if (GPG::isSupported()) {
@@ -83,7 +83,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Add a key for decryption
 	 */
-	public function addDecryptKey(string $fingerprint, SensitiveString $passphrase) : bool
+	public function addDecryptKey(string $fingerprint, SensitiveString $passphrase): bool
 	{
 //		\SnappyMail\Log::debug('GnuPG', "addDecryptKey({$fingerprint}, {$passphrase})");
 		return $this->GnuPG->adddecryptkey($fingerprint, \strval($passphrase)) || $this->gnupgError();
@@ -92,7 +92,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Add a key for encryption
 	 */
-	public function addEncryptKey(string $fingerprint) : bool
+	public function addEncryptKey(string $fingerprint): bool
 	{
 		return $this->GnuPG->addencryptkey($fingerprint) || $this->gnupgError();
 	}
@@ -100,7 +100,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Add a key for signing
 	 */
-	public function addSignKey(string $fingerprint, SensitiveString $passphrase) : bool
+	public function addSignKey(string $fingerprint, SensitiveString $passphrase): bool
 	{
 //		\SnappyMail\Log::debug('GnuPG', "addSignKey({$fingerprint}, {$passphrase})");
 		return $this->GnuPG->addsignkey($fingerprint, \strval($passphrase)) || $this->gnupgError();
@@ -109,7 +109,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Removes all keys which were set for decryption before
 	 */
-	public function clearDecryptKeys() : bool
+	public function clearDecryptKeys(): bool
 	{
 		return $this->GnuPG->cleardecryptkeys();
 	}
@@ -117,7 +117,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Removes all keys which were set for encryption before
 	 */
-	public function clearEncryptKeys() : bool
+	public function clearEncryptKeys(): bool
 	{
 		return $this->GnuPG->clearencryptkeys();
 	}
@@ -125,7 +125,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Removes all keys which were set for signing before
 	 */
-	public function clearSignKeys() : bool
+	public function clearSignKeys(): bool
 	{
 		return $this->GnuPG->clearsignkeys();
 	}
@@ -133,7 +133,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Decrypts a given text
 	 */
-	public function decrypt(string $text) /*: string|false */
+	public function decrypt(string $text): string|false
 	{
 		$result = $this->GnuPG->decrypt($text);
 		(false === $result) && $this->gnupgError();
@@ -143,7 +143,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Decrypts a given file
 	 */
-	public function decryptFile(string $filename) /*: string|false */
+	public function decryptFile(string $filename): string|false
 	{
 		$result = $this->GnuPG->decrypt(\file_get_contents($filename));
 		(false === $result) && $this->gnupgError();
@@ -153,7 +153,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Decrypts a given resource
 	 */
-	public function decryptStream(/*resource*/ $fp, /*string|resource*/ $output = null) /*: string|false */
+	public function decryptStream(/*resource*/ $fp, /*string|resource*/ $output = null): string|false
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');
@@ -167,7 +167,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Decrypts and verifies a given text
 	 */
-	public function decryptVerify(string $text, string &$plaintext) /*: array|false*/
+	public function decryptVerify(string $text, string &$plaintext): array|false
 	{
 		$result = $this->GnuPG->decryptverify($text, $plaintext);
 		(false === $result) && $this->gnupgError();
@@ -177,14 +177,14 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Decrypts and verifies a given file
 	 */
-	public function decryptVerifyFile(string $filename, string &$plaintext) /*: array|false*/
+	public function decryptVerifyFile(string $filename, string &$plaintext): array|false
 	{
 		$result = $this->GnuPG->decryptverify(\file_get_contents($filename), $plaintext);
 		(false === $result) && $this->gnupgError();
 		return $result;
 	}
 
-	public function deleteKey(string $keyId, bool $private) : bool
+	public function deleteKey(string $keyId, bool $private): bool
 	{
 		return $this->getGPG()->deleteKey($keyId, $private);
 	}
@@ -192,7 +192,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Encrypts a given text
 	 */
-	public function encrypt(string $plaintext) /*: string|false*/
+	public function encrypt(string $plaintext): string|false
 	{
 		return $this->GnuPG->encrypt($plaintext) ?: $this->gnupgError();
 	}
@@ -200,12 +200,12 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Encrypts a given text
 	 */
-	public function encryptFile(string $filename) /*: string|false*/
+	public function encryptFile(string $filename): string|false
 	{
 		return $this->GnuPG->encrypt(\file_get_contents($filename)) ?: $this->gnupgError();
 	}
 
-	public function encryptStream(/*resource*/ $fp, /*string|resource*/ $output = null) /*: string|false*/
+	public function encryptStream(/*resource*/ $fp, /*string|resource*/ $output = null): string|false
 	{
 		\rewind($fp);
 		return $this->GnuPG->encrypt(\stream_get_contents($fp)) ?: $this->gnupgError();
@@ -214,7 +214,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Exports a key
 	 */
-	public function export(string $fingerprint, ?SensitiveString $passphrase = null) /*: string|false*/
+	public function export(string $fingerprint, ?SensitiveString $passphrase = null): string|false
 	{
 		if (null !== $passphrase) {
 			return $this->getGPG()->export($fingerprint, $passphrase);
@@ -225,7 +225,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Returns the engine info
 	 */
-	public function getEngineInfo() : array
+	public function getEngineInfo(): array
 	{
 		return $this->GnuPG->getengineinfo();
 	}
@@ -233,7 +233,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Returns the errortext, if a function fails
 	 */
-	public function getError() /*: string|false*/
+	public function getError(): string|false
 	{
 		return $this->GnuPG->geterror();
 	}
@@ -241,7 +241,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Returns the error info
 	 */
-	public function getErrorInfo() : array
+	public function getErrorInfo(): array
 	{
 		return $this->GnuPG->geterrorinfo();
 	}
@@ -249,7 +249,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Returns the currently active protocol for all operations
 	 */
-	public function getProtocol() : int
+	public function getProtocol(): int
 	{
 		return $this->GnuPG->getprotocol();
 	}
@@ -257,7 +257,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Generates a key
 	 */
-	public function generateKey(string $uid, SensitiveString $passphrase) /*: string|false*/
+	public function generateKey(string $uid, SensitiveString $passphrase): string|false
 	{
 		$GPG = $this->getGPG(false);
 		return $GPG ? $GPG->generateKey($uid, $passphrase) : false;
@@ -266,7 +266,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Imports a key
 	 */
-	public function import(string $keydata) /*: array|false*/
+	public function import(string $keydata): array|false
 	{
 		return $this->GnuPG->import($keydata);
 	}
@@ -274,12 +274,12 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Imports a key
 	 */
-	public function importFile(string $filename) /*: array|false*/
+	public function importFile(string $filename): array|false
 	{
 		return $this->GnuPG->import(\file_get_contents($filename)) ?: $this->gnupgError();
 	}
 
-	public function keyInfo(string $pattern, bool $private = false) : array
+	public function keyInfo(string $pattern, bool $private = false): array
 	{
 		return $this->GnuPG->keyinfo($pattern, $private ? 1 : 0);
 	}
@@ -287,7 +287,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Returns an array with information about all keys that matches the given pattern
 	 */
-	public function allKeysInfo(string $pattern) : array
+	public function allKeysInfo(string $pattern): array
 	{
 		$keys = [
 			'public' => [],
@@ -312,7 +312,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	 * Toggle armored output
 	 * When true the output is ASCII
 	 */
-	public function setArmor(bool $armor = true) : bool
+	public function setArmor(bool $armor = true): bool
 	{
 		return $this->GnuPG->setarmor($armor ? 1 : 0);
 	}
@@ -322,7 +322,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	 * GNUPG_ERROR_WARNING, GNUPG_ERROR_EXCEPTION and GNUPG_ERROR_SILENT.
 	 * By default GNUPG_ERROR_SILENT is used.
 	 */
-	public function setErrorMode(int $errormode) : void
+	public function setErrorMode(int $errormode): void
 	{
 		$this->GnuPG->seterrormode($errormode);
 	}
@@ -332,7 +332,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	 * GNUPG_SIG_MODE_NORMAL, GNUPG_SIG_MODE_DETACH and GNUPG_SIG_MODE_CLEAR.
 	 * By default GNUPG_SIG_MODE_CLEAR
 	 */
-	public function setSignMode(int $signmode) : bool
+	public function setSignMode(int $signmode): bool
 	{
 		return $this->GnuPG->setsignmode($signmode);
 	}
@@ -340,7 +340,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Signs a given text
 	 */
-	public function sign(string $plaintext) /*: string|false*/
+	public function sign(string $plaintext): string|false
 	{
 		return $this->GnuPG->sign($plaintext) ?: $this->gnupgError();
 	}
@@ -348,7 +348,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Signs a given file
 	 */
-	public function signFile(string $filename) /*: string|false*/
+	public function signFile(string $filename): string|false
 	{
 		return $this->GnuPG->sign(\file_get_contents($filename)) ?: $this->gnupgError();
 	}
@@ -356,7 +356,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Signs a given file
 	 */
-	public function signStream($fp, /*string|resource*/ $output = null) /*: string|false*/
+	public function signStream($fp, /*string|resource*/ $output = null): string|false
 	{
 		\rewind($fp);
 		return $this->GnuPG->sign(\stream_get_contents($fp)) ?: $this->gnupgError();
@@ -365,7 +365,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Verifies a signed text
 	 */
-	public function verify(string $signed_text, string $signature, ?string &$plaintext = null) /*: array|false*/
+	public function verify(string $signed_text, string $signature, ?string &$plaintext = null): array|false
 	{
 		$result = $this->GnuPG->verify($signed_text, $signature ?: false, $plaintext) ?: $this->gnupgError();
 		if (!$result) {
@@ -378,7 +378,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null) /*: array|false*/
+	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null): array|false
 	{
 		return $this->GnuPG->verify(\file_get_contents($filename), $signature, $plaintext) ?: $this->gnupgError();
 	}
@@ -386,7 +386,7 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 	/**
 	 * Verifies a given resource
 	 */
-	public function verifyStream(/*resource*/ $fp, string $signature, ?string &$plaintext = null) /*: array|false */
+	public function verifyStream(/*resource*/ $fp, string $signature, ?string &$plaintext = null): array|false
 	{
 		if (!$fp || !\is_resource($fp)) {
 			throw new \Exception('Invalid stream resource');

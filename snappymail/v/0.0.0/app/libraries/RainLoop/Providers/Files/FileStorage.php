@@ -4,28 +4,21 @@ namespace RainLoop\Providers\Files;
 
 class FileStorage implements \RainLoop\Providers\Files\IFiles
 {
-	/**
-	 * @var array
-	 */
-	private $aResources;
+	private array $aResources = array();
 
-	/**
-	 * @var string
-	 */
-	private $sDataPath;
+	private ?string $sDataPath;
 
 	public function __construct(string $sStoragePath)
 	{
-		$this->aResources = array();
 		$this->sDataPath = \rtrim(\trim($sStoragePath), '\\/');
 	}
 
-	public function GenerateLocalFullFileName(\RainLoop\Model\Account $oAccount, string $sKey) : string
+	public function GenerateLocalFullFileName(\RainLoop\Model\Account $oAccount, string $sKey): string
 	{
 		return $this->generateFullFileName($oAccount, $sKey, true);
 	}
 
-	public function PutFile(\RainLoop\Model\Account $oAccount, string $sKey, /*resource*/ $rSource) : bool
+	public function PutFile(\RainLoop\Model\Account $oAccount, string $sKey, /*resource*/ $rSource): bool
 	{
 		$bResult = false;
 		if ($rSource) {
@@ -38,7 +31,7 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 		return $bResult;
 	}
 
-	public function MoveUploadedFile(\RainLoop\Model\Account $oAccount, string $sKey, string $sSource) : bool
+	public function MoveUploadedFile(\RainLoop\Model\Account $oAccount, string $sKey, string $sSource): bool
 	{
 		return \move_uploaded_file($sSource,
 			$this->generateFullFileName($oAccount, $sKey, true));
@@ -66,13 +59,13 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 		return $mResult;
 	}
 
-	public function GetFileName(\RainLoop\Model\Account $oAccount, string $sKey) /*: string|false*/
+	public function GetFileName(\RainLoop\Model\Account $oAccount, string $sKey): string|false
 	{
 		$sFileName = $this->generateFullFileName($oAccount, $sKey);
 		return \file_exists($sFileName) ? $sFileName : false;
 	}
 
-	public function Clear(\RainLoop\Model\Account $oAccount, string $sKey) : bool
+	public function Clear(\RainLoop\Model\Account $oAccount, string $sKey): bool
 	{
 		$sFileName = $this->generateFullFileName($oAccount, $sKey);
 		if (\file_exists($sFileName)) {
@@ -84,18 +77,18 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 		return false;
 	}
 
-	public function FileSize(\RainLoop\Model\Account $oAccount, string $sKey) /*: int|false*/
+	public function FileSize(\RainLoop\Model\Account $oAccount, string $sKey): int|false
 	{
 		$sFileName = $this->generateFullFileName($oAccount, $sKey);
 		return \file_exists($sFileName) ? \filesize($sFileName) : false;
 	}
 
-	public function FileExists(\RainLoop\Model\Account $oAccount, string $sKey) : bool
+	public function FileExists(\RainLoop\Model\Account $oAccount, string $sKey): bool
 	{
 		return \file_exists($this->generateFullFileName($oAccount, $sKey));
 	}
 
-	public function GC(int $iTimeToClearInHours = 24) : bool
+	public function GC(int $iTimeToClearInHours = 24): bool
 	{
 		if (0 < $iTimeToClearInHours) {
 			$iTimeToClear = 3600 * $iTimeToClearInHours;
@@ -113,7 +106,7 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 		return false;
 	}
 
-	public function CloseAllOpenedFiles() : bool
+	public function CloseAllOpenedFiles(): bool
 	{
 		if (\is_array($this->aResources) && \count($this->aResources))
 		{
@@ -129,7 +122,7 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 		return true;
 	}
 
-	private function generateFullFileName(\RainLoop\Model\Account $oAccount, string $sKey, bool $bMkDir = false) : string
+	private function generateFullFileName(\RainLoop\Model\Account $oAccount, string $sKey, bool $bMkDir = false): string
 	{
 		if ($oAccount instanceof \RainLoop\Model\AdditionalAccount) {
 			$sEmail = $oAccount->ParentEmail();

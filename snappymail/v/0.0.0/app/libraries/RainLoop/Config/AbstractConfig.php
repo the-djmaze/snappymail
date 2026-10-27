@@ -33,56 +33,47 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 			\MailSo\Base\Utils::FunctionsCallable(array('apcu_fetch', 'apcu_store'));
 	}
 
-	public function offsetExists($offset) : bool
+	public function offsetExists(mixed $offset): bool
 	{
 	}
 
-	#[\ReturnTypeWillChange]
-	public function offsetGet($offset)
+	public function offsetGet(mixed $offset): mixed
 	{
 		$offset = \explode('/', $offset, 2);
 		$this->Get($offset[0], $offset[1]);
 	}
 
-	public function offsetSet($offset, $value) : void
+	public function offsetSet(mixed $offset, mixed $value): void
 	{
 		$offset = \explode('/', $offset, 2);
 		$this->Set($offset[0], $offset[1], $value);
 	}
 
-	public function offsetUnset($offset) : void
+	public function offsetUnset(mixed $offset): void
 	{
 	}
 
-	protected abstract function defaultValues() : array;
+	protected abstract function defaultValues(): array;
 
-	public function IsInited() : bool
+	public function IsInited(): bool
 	{
 		return \is_array($this->aData) && \count($this->aData);
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return $this->aData;;
 	}
 
-	/**
-	 * @param mixed $mDefault = null
-	 *
-	 * @return mixed
-	 */
-	public function Get(string $sSection, string $sName, $mDefault = null)
+	public function Get(string $sSection, string $sName, mixed $mDefault = null): mixed
 	{
 		return isset($this->aData[$sSection][$sName][0])
 			? $this->aData[$sSection][$sName][0]
 			: $mDefault;
 	}
 
-	/**
-	 * @param mixed $mParamValue
-	 */
-	public function Set(string $sSectionKey, string $sParamKey, $mParamValue) : void
+	public function Set(string $sSectionKey, string $sParamKey, mixed $mParamValue): void
 	{
 		if (isset($this->aData[$sSectionKey][$sParamKey][0])) {
 			if (!\is_scalar($mParamValue)) {
@@ -109,7 +100,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		}
 	}
 
-	public function getDecrypted(string $sSection, string $sName, $mDefault = null)
+	public function getDecrypted(string $sSection, string $sName, mixed $mDefault = null)
 	{
 		// $salt = \basename($this->sFile) not possible due to RainLoop\Plugins\Property
 		if (!empty($this->aData[$sSection][$sName][0])) try {
@@ -119,19 +110,19 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		return $mDefault;
 	}
 
-	public function setEncrypted(string $sSectionKey, string $sParamKey, $mParamValue) : void
+	public function setEncrypted(string $sSectionKey, string $sParamKey, mixed $mParamValue): void
 	{
 		// $salt = \basename($this->sFile) not possible due to RainLoop\Plugins\Property
 		$mParamValue = \SnappyMail\Crypt::EncryptToJSON($mParamValue, \APP_SALT);
 		$this->Set($sSectionKey, $sParamKey, $mParamValue);
 	}
 
-	private function cacheKey() : string
+	private function cacheKey(): string
 	{
 		return 'config:'.\sha1($this->sFile).':'.\sha1($this->sAdditionalFile).':';
 	}
 
-	private function loadDataFromCache() : bool
+	private function loadDataFromCache(): bool
 	{
 		if ($this->bUseApcCache) {
 			$iMTime = \filemtime($this->sFile);
@@ -157,7 +148,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		return false;
 	}
 
-	private function storeDataToCache() : bool
+	private function storeDataToCache(): bool
 	{
 		if ($this->bUseApcCache) {
 			$iMTime = \filemtime($this->sFile);
@@ -179,7 +170,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		return false;
 	}
 
-	private function clearCache() : bool
+	private function clearCache(): bool
 	{
 		if ($this->bUseApcCache) {
 			$sKey = $this->cacheKey();
@@ -193,7 +184,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		return false;
 	}
 
-	public function Load() : bool
+	public function Load(): bool
 	{
 		$sFile = $this->sFile;
 		if (!\file_exists($sFile) && \str_ends_with($sFile, '.json')) {
@@ -248,7 +239,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		return $this->Save();
 	}
 
-	public function Save() : bool
+	public function Save(): bool
 	{
 		if (\file_exists($this->sFile) && !\is_writable($this->sFile)) {
 			return false;

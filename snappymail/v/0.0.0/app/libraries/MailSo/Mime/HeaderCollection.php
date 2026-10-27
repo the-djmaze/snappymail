@@ -27,30 +27,30 @@ class HeaderCollection extends \MailSo\Base\Collection
 		}
 	}
 
-	public function append($oHeader, bool $bToTop = false) : void
+	public function append($oHeader, bool $bToTop = false): void
 	{
 		assert($oHeader instanceof Header);
 		parent::append($oHeader, $bToTop);
 	}
 
-	public function AddByName(string $sName, string $sValue, bool $bToTop = false) : self
+	public function AddByName(string $sName, string $sValue, bool $bToTop = false): self
 	{
 		$this->append(new Header($sName, $sValue), $bToTop);
 		return $this;
 	}
 
-	public function SetByName(string $sName, string $sValue, bool $bToTop = false) : self
+	public function SetByName(string $sName, string $sValue, bool $bToTop = false): self
 	{
 		return $this->RemoveByName($sName)->Add(new Header($sName, $sValue), $bToTop);
 	}
 
-	public function ValueByName(string $sHeaderName, bool $bCharsetAutoDetect = false) : string
+	public function ValueByName(string $sHeaderName, bool $bCharsetAutoDetect = false): string
 	{
 		$oHeader = $this->GetByName($sHeaderName);
 		return $oHeader ? ($bCharsetAutoDetect ? $oHeader->ValueWithCharsetAutoDetect() : $oHeader->Value()) : '';
 	}
 
-	public function ValuesByName(string $sHeaderName) : array
+	public function ValuesByName(string $sHeaderName): array
 	{
 		$aResult = array();
 		$sHeaderNameLower = \strtolower($sHeaderName);
@@ -62,7 +62,7 @@ class HeaderCollection extends \MailSo\Base\Collection
 		return $aResult;
 	}
 
-	public function RemoveByName(string $sHeaderName) : self
+	public function RemoveByName(string $sHeaderName): self
 	{
 		$sHeaderName = \strtolower($sHeaderName);
 		$this->exchangeArray(array_filter($this->getArrayCopy(), function ($oHeader) use ($sHeaderName) {
@@ -71,7 +71,7 @@ class HeaderCollection extends \MailSo\Base\Collection
 		return $this;
 	}
 
-	public function GetAsEmailCollection(string $sHeaderName) : ?EmailCollection
+	public function GetAsEmailCollection(string $sHeaderName): ?EmailCollection
 	{
 		if ($oHeader = $this->GetByName($sHeaderName)) {
 			return new EmailCollection($oHeader->EncodedValue());
@@ -79,14 +79,14 @@ class HeaderCollection extends \MailSo\Base\Collection
 		return new EmailCollection();
 	}
 
-	public function ParameterValue(string $sHeaderName, string $sParamName) : string
+	public function ParameterValue(string $sHeaderName, string $sParamName): string
 	{
 		$oHeader = $this->GetByName($sHeaderName);
 		$oParameters = $oHeader ? $oHeader->Parameters() : null;
 		return (null !== $oParameters) ? $oParameters->ParameterValueByName($sParamName) : '';
 	}
 
-	public function GetByName(string $sHeaderName) : ?Header
+	public function GetByName(string $sHeaderName): ?Header
 	{
 		$sHeaderNameLower = \strtolower($sHeaderName);
 		foreach ($this as $oHeader) {
@@ -97,7 +97,7 @@ class HeaderCollection extends \MailSo\Base\Collection
 		return null;
 	}
 
-	public function SetParentCharset(string $sParentCharset) : self
+	public function SetParentCharset(string $sParentCharset): self
 	{
 		if (\strlen($sParentCharset) && $this->sParentCharset !== $sParentCharset) {
 			foreach ($this as $oHeader) {
@@ -108,7 +108,7 @@ class HeaderCollection extends \MailSo\Base\Collection
 		return $this;
 	}
 
-	public function Parse(string $sRawHeaders, string $sParentCharset = '') : self
+	public function Parse(string $sRawHeaders, string $sParentCharset = ''): self
 	{
 		$this->Clear();
 
@@ -180,7 +180,7 @@ class HeaderCollection extends \MailSo\Base\Collection
 	 * spf=pass (ORIGINATING: domain of "snappymail@domain.tld" designates 0.0.0.0 as permitted sender) smtp.mailfrom="snappymail@domain.tld";
 	 * dmarc=fail reason="SPF not aligned (relaxed), DKIM not aligned (relaxed)" header.from=domain.tld (policy=none)
 	 */
-	public function AuthStatuses() : array
+	public function AuthStatuses(): array
 	{
 		$aResult = [
 			'dkim' => [],
@@ -222,13 +222,13 @@ class HeaderCollection extends \MailSo\Base\Collection
 		return $aResult;
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return \implode("\r\n", $this->getArrayCopy());
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 			'@Object' => 'Collection/MimeHeaderCollection',

@@ -9,10 +9,7 @@ use
 
 class Legacy
 {
-	/**
-	 * @param mixed $oProp
-	 */
-	private static function yieldPropertyHelper($oArrayProp, int $iType) : iterable
+	private static function yieldPropertyHelper(mixed $oArrayProp, int $iType): iterable
 	{
 		$aTmp = [];
 		foreach ($oArrayProp as $oProp) {
@@ -31,10 +28,7 @@ class Legacy
 		}
 	}
 
-	/**
-	 * @param mixed $oProp
-	 */
-	private static function getPropertyValueHelper($oProp, bool $bOldVersion) : string
+	private static function getPropertyValueHelper(mixed $oProp, bool $bOldVersion): string
 	{
 		$sValue = \trim($oProp);
 		if ($bOldVersion && !isset($oProp->parameters['CHARSET'])) {
@@ -48,7 +42,7 @@ class Legacy
 		return \MailSo\Base\Utils::Utf8Clear($sValue);
 	}
 
-	public static function VCardToProperties(\Sabre\VObject\Component\VCard $oVCard) : iterable
+	public static function VCardToProperties(\Sabre\VObject\Component\VCard $oVCard): iterable
 	{
 		yield new Property(PropertyType::JCARD, \json_encode($oVCard));
 

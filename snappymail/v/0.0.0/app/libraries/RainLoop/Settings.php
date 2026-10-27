@@ -38,26 +38,18 @@ class Settings implements \JsonSerializable
 		return $this->aData;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return $this->aData;;
 	}
 
-	/**
-	 * @param mixed $mDefValue = null
-	 *
-	 * @return mixed
-	 */
-	public function GetConf(string $sName, $mDefValue = null)
+	public function GetConf(string $sName, mixed $mDefValue = null): mixed
 	{
 		return isset($this->aData[$sName]) ? $this->aData[$sName] : $mDefValue;
 	}
 
-	/**
-	 * @param mixed $mValue
-	 */
-	public function SetConf(string $sName, $mValue) : void
+	public function SetConf(string $sName, mixed $mValue): void
 	{
 		$this->aData[$sName] = $mValue;
 	}

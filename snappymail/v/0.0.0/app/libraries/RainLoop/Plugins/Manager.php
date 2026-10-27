@@ -45,7 +45,7 @@ class Manager
 		}
 	}
 
-	public function loadPlugin(string $sName) : bool
+	public function loadPlugin(string $sName): bool
 	{
 		if (!isset($this->aPlugins[$sName])) {
 			$oPlugin = $this->CreatePluginByName($sName);
@@ -57,7 +57,7 @@ class Manager
 		return isset($this->aPlugins[$sName]);
 	}
 
-	protected static function getPluginPath(string $sName) : ?string
+	protected static function getPluginPath(string $sName): ?string
 	{
 		$sPath = APP_PLUGINS_PATH.$sName;
 		if (\is_readable("{$sPath}/index.php")) {
@@ -69,7 +69,7 @@ class Manager
 		return null;
 	}
 
-	public function CreatePluginByName(string $sName) : ?\RainLoop\Plugins\AbstractPlugin
+	public function CreatePluginByName(string $sName): ?\RainLoop\Plugins\AbstractPlugin
 	{
 		$oPlugin = null;
 
@@ -90,7 +90,7 @@ class Manager
 		return $oPlugin;
 	}
 
-	public function InstalledPlugins() : array
+	public function InstalledPlugins(): array
 	{
 		$aList = array();
 
@@ -121,7 +121,7 @@ class Manager
 		return $aList;
 	}
 
-	public function convertPluginFolderNameToClassName(string $sFolderName) : string
+	public function convertPluginFolderNameToClassName(string $sFolderName): string
 	{
 		$aParts = \array_map('ucfirst', \array_map('strtolower',
 			\explode(' ', \preg_replace('/[^a-z0-9]+/', ' ', $sFolderName))));
@@ -129,7 +129,7 @@ class Manager
 		return \implode($aParts).'Plugin';
 	}
 
-	public function loadPluginByName(string $sName) : ?string
+	public function loadPluginByName(string $sName): ?string
 	{
 		if (\preg_match('/^[a-z0-9\\-]+$/', $sName)) {
 			$sClassName = $this->convertPluginFolderNameToClassName($sName);
@@ -148,12 +148,12 @@ class Manager
 		return null;
 	}
 
-	public function Actions() : \RainLoop\Actions
+	public function Actions(): \RainLoop\Actions
 	{
 		return $this->oActions;
 	}
 
-	public function Hash() : string
+	public function Hash(): string
 	{
 		return \md5(
 			\array_reduce($this->aPlugins, function($sResult, $oPlugin){
@@ -164,12 +164,12 @@ class Manager
 		);
 	}
 
-	public function HaveJs(bool $bAdminScope = false) : bool
+	public function HaveJs(bool $bAdminScope = false): bool
 	{
 		return $this->bIsEnabled && \count($this->aJs[$bAdminScope ? 1 : 0]);
 	}
 
-	public function CompileCss(bool $bAdminScope, bool &$bLess, bool $bMinified) : string
+	public function CompileCss(bool $bAdminScope, bool &$bLess, bool $bMinified): string
 	{
 		$aResult = array();
 		if ($this->bIsEnabled) {
@@ -189,7 +189,7 @@ class Manager
 		return \implode("\n", $aResult);
 	}
 
-	public function CompileJs(bool $bAdminScope = false, bool $bMinified = false) : string
+	public function CompileJs(bool $bAdminScope = false, bool $bMinified = false): string
 	{
 		$aResult = array();
 		if ($this->bIsEnabled) {
@@ -209,7 +209,7 @@ class Manager
 		return \implode("\n", $aResult);
 	}
 
-	public function CompileTemplate(array &$aList, bool $bAdminScope = false) : void
+	public function CompileTemplate(array &$aList, bool $bAdminScope = false): void
 	{
 		if ($this->bIsEnabled) {
 			$aTemplates = $bAdminScope ? $this->aAdminTemplates : $this->aTemplates;
@@ -222,7 +222,7 @@ class Manager
 		}
 	}
 
-	public function InitAppData(bool $bAdmin, array &$aAppData, ?\RainLoop\Model\Account $oAccount = null) : self
+	public function InitAppData(bool $bAdmin, array &$aAppData, ?\RainLoop\Model\Account $oAccount = null): self
 	{
 		if ($this->bIsEnabled && isset($aAppData['Plugins']) && \is_array($aAppData['Plugins'])) {
 			$bAuth = !empty($aAppData['Auth']);
@@ -255,10 +255,7 @@ class Manager
 		return $this;
 	}
 
-	/**
-	 * @param mixed $mCallbak
-	 */
-	public function AddHook(string $sHookName, $mCallbak) : self
+	public function AddHook(string $sHookName, callable $mCallbak): self
 	{
 		if ($this->bIsEnabled && \is_callable($mCallbak)) {
 			$sHookName = \strtolower($sHookName);
@@ -270,7 +267,7 @@ class Manager
 		return $this;
 	}
 
-	public function AddCss(string $sFile, bool $bAdminScope = false) : self
+	public function AddCss(string $sFile, bool $bAdminScope = false): self
 	{
 		if ($this->bIsEnabled) {
 			$this->aCss[$bAdminScope ? 1 : 0][] = $sFile;
@@ -278,7 +275,7 @@ class Manager
 		return $this;
 	}
 
-	public function AddJs(string $sFile, bool $bAdminScope = false) : self
+	public function AddJs(string $sFile, bool $bAdminScope = false): self
 	{
 		if ($this->bIsEnabled) {
 			$this->aJs[$bAdminScope ? 1 : 0][$sFile] = $sFile;
@@ -287,7 +284,7 @@ class Manager
 		return $this;
 	}
 
-	public function AddTemplate(string $sFile, bool $bAdminScope = false) : self
+	public function AddTemplate(string $sFile, bool $bAdminScope = false): self
 	{
 		if ($this->bIsEnabled) {
 			if ($bAdminScope) {
@@ -324,7 +321,7 @@ class Manager
 	}
 */
 
-	public function RunHook(string $sHookName, array $aArg = array(), bool $bLogHook = true) : self
+	public function RunHook(string $sHookName, array $aArg = array(), bool $bLogHook = true): self
 	{
 		if ($this->bIsEnabled) {
 			$sHookName = \strtolower($sHookName);
@@ -344,10 +341,7 @@ class Manager
 		return $this;
 	}
 
-	/**
-	 * @param mixed $mCallbak
-	 */
-	public function AddAdditionalPartAction(string $sActionName, $mCallbak) : self
+	public function AddAdditionalPartAction(string $sActionName, callable $mCallbak): self
 	{
 		if ($this->bIsEnabled && \is_callable($mCallbak)) {
 			$sActionName = \strtolower($sActionName);
@@ -361,7 +355,7 @@ class Manager
 		return $this;
 	}
 
-	public function RunAdditionalPart(string $sActionName, array $aParts = array()) : bool
+	public function RunAdditionalPart(string $sActionName, array $aParts = array()): bool
 	{
 		$bResult = false;
 		if ($this->bIsEnabled) {
@@ -376,7 +370,7 @@ class Manager
 		return $bResult;
 	}
 
-	public function AddAdditionalJsonAction(string $sActionName, callable $mCallback) : self
+	public function AddAdditionalJsonAction(string $sActionName, callable $mCallback): self
 	{
 		$sActionName = "DoPlugin{$sActionName}";
 		if ($this->bIsEnabled && \strlen($sActionName) && !isset($this->aAdditionalJson[$sActionName])) {
@@ -385,28 +379,22 @@ class Manager
 		return $this;
 	}
 
-	public function HasAdditionalJson(string $sActionName) : bool
+	public function HasAdditionalJson(string $sActionName): bool
 	{
 		return $this->bIsEnabled && isset($this->aAdditionalJson[$sActionName]);
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function RunAdditionalJson(string $sActionName)
+	public function RunAdditionalJson(string $sActionName): mixed
 	{
-		return $this->HasAdditionalJson($sActionName) ? $this->aAdditionalJson[$sActionName]() : false;
+		return $this->HasAdditionalJson($sActionName) ? $this->aAdditionalJson[$sActionName](): false;
 	}
 
-	/**
-	 * @param mixed $mData
-	 */
-	public function JsonResponseHelper(string $sFunctionName, $mData) : array
+	public function JsonResponseHelper(string $sFunctionName, mixed $mData): array
 	{
 		return $this->oActions->DefaultResponse($mData, [], $sFunctionName);
 	}
 
-	public function GetUserPluginSettings(string $sPluginName) : array
+	public function GetUserPluginSettings(string $sPluginName): array
 	{
 		$oAccount = $this->oActions->getAccountFromToken();
 		if ($oAccount) {
@@ -422,7 +410,7 @@ class Manager
 		return array();
 	}
 
-	public function SaveUserPluginSettings(string $sPluginName, array $aSettings) : bool
+	public function SaveUserPluginSettings(string $sPluginName, array $aSettings): bool
 	{
 		$oAccount = $this->oActions->getAccountFromToken();
 		if ($oAccount) {
@@ -452,7 +440,7 @@ class Manager
 		return false;
 	}
 
-	public function ReadLang(string $sLang, array &$aLang) : void
+	public function ReadLang(string $sLang, array &$aLang): void
 	{
 		if ($this->bIsEnabled) {
 			foreach ($this->aPlugins as $oPlugin) {
@@ -492,22 +480,22 @@ class Manager
 		}
 	}
 
-	public function IsEnabled() : bool
+	public function IsEnabled(): bool
 	{
 		return $this->bIsEnabled;
 	}
 
-	public function count() : int
+	public function count(): int
 	{
 		return $this->bIsEnabled ? \count($this->aPlugins) : 0;
 	}
 
-	public function WriteLog(string $sDesc, int $iType = \LOG_INFO) : void
+	public function WriteLog(string $sDesc, int $iType = \LOG_INFO): void
 	{
 		$this->logWrite($sDesc, $iType, 'PLUGIN');
 	}
 
-	public function WriteException(string $sDesc, int $iType = \LOG_INFO) : void
+	public function WriteException(string $sDesc, int $iType = \LOG_INFO): void
 	{
 		$this->logException($sDesc, $iType, 'PLUGIN');
 	}

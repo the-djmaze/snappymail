@@ -24,25 +24,25 @@ class ParameterCollection extends \MailSo\Base\Collection
 		\strlen($sRawParams) && $this->Parse($sRawParams);
 	}
 
-	public function append($oParameter, bool $bToTop = false) : void
+	public function append($oParameter, bool $bToTop = false): void
 	{
 		assert($oParameter instanceof Parameter);
 		parent::offsetSet(\strtolower($oParameter->Name()), $oParameter);
 	}
 
-	public function ParameterValueByName(string $sName) : string
+	public function ParameterValueByName(string $sName): string
 	{
 		$oParam = $this->getParameter($sName);
 		return $oParam ? $oParam->Value() : '';
 	}
 
-	public function getParameter(string $sName) : ?Parameter
+	public function getParameter(string $sName): ?Parameter
 	{
 		$sName = \strtolower(\trim($sName));
 		return parent::offsetExists($sName) ? parent::offsetGet($sName) : null;
 	}
 
-	public function setParameter(string $sName, string $sValue) : void
+	public function setParameter(string $sName, string $sValue): void
 	{
 		$oParam = $this->getParameter($sName);
 		if ($oParam) {
@@ -52,7 +52,7 @@ class ParameterCollection extends \MailSo\Base\Collection
 		}
 	}
 
-	public function Parse(string $sRawParams) : self
+	public function Parse(string $sRawParams): self
 	{
 		$this->Clear();
 
@@ -67,7 +67,7 @@ class ParameterCollection extends \MailSo\Base\Collection
 		return $this;
 	}
 
-	public function ToString(bool $bConvertSpecialsName = false) : string
+	public function ToString(bool $bConvertSpecialsName = false): string
 	{
 		$aResult = array();
 		foreach ($this as $oParam) {
@@ -79,14 +79,14 @@ class ParameterCollection extends \MailSo\Base\Collection
 		return \count($aResult) ? \implode('; ', $aResult) : '';
 	}
 
-	public function __toString() : string
+	public function __toString(): string
 	{
 		return $this->ToString();
 	}
 
 /*
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		$aResult = array();
 		foreach ($this as $oParam) {
@@ -99,7 +99,7 @@ class ParameterCollection extends \MailSo\Base\Collection
 	}
 */
 
-	private function reParseParameters() : void
+	private function reParseParameters(): void
 	{
 		$aDataToReParse = $this->getArrayCopy();
 		$sCharset = \MailSo\Base\Enumerations\Charset::UTF_8;

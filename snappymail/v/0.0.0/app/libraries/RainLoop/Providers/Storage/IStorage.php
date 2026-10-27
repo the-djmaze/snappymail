@@ -2,25 +2,15 @@
 
 namespace RainLoop\Providers\Storage;
 
+use RainLoop\Model\Account;
+
 interface IStorage
 {
-	/**
-	 * @param \RainLoop\Model\Account|null $mAccount
-	 */
-	public function Put($mAccount, int $iStorageType, string $sKey, string $sValue) : bool;
+	public function Put(Account|string|null $mAccount, int $iStorageType, string $sKey, string $sValue): bool;
 
-	/**
-	 * @param \RainLoop\Model\Account|null $mAccount
-	 * @param mixed $mDefault = false
-	 *
-	 * @return mixed
-	 */
-	public function Get($mAccount, int $iStorageType, string $sKey, $mDefault = false);
+	public function Get(Account|string|null $mAccount, int $iStorageType, string $sKey, mixed $mDefault = false): mixed;
 
-	/**
-	 * @param \RainLoop\Model\Account|null $mAccount
-	 */
-	public function Clear($mAccount, int $iStorageType, string $sKey) : bool;
+	public function Clear(Account|string|null $mAccount, int $iStorageType, string $sKey): bool;
 
-	public function IsLocal() : bool;
+	public function IsLocal(): bool;
 }

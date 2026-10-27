@@ -42,7 +42,7 @@ class THREAD extends Request
 		parent::__construct($oImapClient);
 	}
 
-	public function setAlgorithm(string $sAlgorithm) : void
+	public function setAlgorithm(string $sAlgorithm): void
 	{
 		$sAlgorithm = \strtoupper($sAlgorithm);
 		if (!$this->oImapClient->hasCapability("THREAD={$sAlgorithm}")) {
@@ -51,7 +51,7 @@ class THREAD extends Request
 		$this->sAlgorithm = $sAlgorithm;
 	}
 
-	public function SendRequestIterateResponse() : iterable
+	public function SendRequestIterateResponse(): iterable
 	{
 		$this->oImapClient->SendRequest(
 			($this->bUid ? 'UID THREAD' : 'THREAD'),
@@ -79,12 +79,7 @@ class THREAD extends Request
 		}
 	}
 
-	/**
-	 * @param mixed $mValue
-	 *
-	 * @return int | array | false
-	 */
-	private function validateThreadItem($mValue)
+	private function validateThreadItem(mixed $mValue): int|array|false
 	{
 		if (\is_numeric($mValue)) {
 			$mValue = (int) $mValue;

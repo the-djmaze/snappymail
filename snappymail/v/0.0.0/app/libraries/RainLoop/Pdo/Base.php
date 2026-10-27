@@ -19,15 +19,15 @@ abstract class Base
 		return !!\class_exists('PDO');
 	}
 
-	abstract protected function getPdoSettings() : \RainLoop\Pdo\Settings;
+	abstract protected function getPdoSettings(): \RainLoop\Pdo\Settings;
 
-	public function sqliteNoCaseCollationHelper(string $sStr1, string $sStr2) : int
+	public function sqliteNoCaseCollationHelper(string $sStr1, string $sStr2): int
 	{
 		$this->oLogger->WriteDump(array($sStr1, $sStr2));
 		return \strcmp(\mb_strtoupper($sStr1, 'UTF-8'), \mb_strtoupper($sStr2, 'UTF-8'));
 	}
 
-	public static function getAvailableDrivers() : array
+	public static function getAvailableDrivers(): array
 	{
 		return \class_exists('PDO', false)
 			? \array_values(\array_intersect(['mysql', 'pgsql', 'sqlite'], \PDO::getAvailableDrivers()))
@@ -38,7 +38,7 @@ abstract class Base
 	 *
 	 * @throws \Exception
 	 */
-	protected function getPDO() : \PDO
+	protected function getPDO(): \PDO
 	{
 		if ($this->oPDO) {
 			return $this->oPDO;
@@ -100,7 +100,7 @@ abstract class Base
 		return $oPdo;
 	}
 
-	protected function lastInsertId(?string $sTabelName = null, ?string $sColumnName = null) : string
+	protected function lastInsertId(?string $sTabelName = null, ?string $sColumnName = null): string
 	{
 		$mName = null;
 		if ('pgsql' === $this->sDbType && null !== $sTabelName && $sColumnName !== null) {
@@ -110,22 +110,22 @@ abstract class Base
 		return null === $mName ? $this->getPDO()->lastInsertId() : $this->getPDO()->lastInsertId($mName);
 	}
 
-	protected function beginTransaction() : bool
+	protected function beginTransaction(): bool
 	{
 		return $this->getPDO()->beginTransaction();
 	}
 
-	protected function commit() : bool
+	protected function commit(): bool
 	{
 		return $this->getPDO()->commit();
 	}
 
-	protected function rollBack() : bool
+	protected function rollBack(): bool
 	{
 		return $this->getPDO()->rollBack();
 	}
 
-	protected function prepareAndExecute(string $sSql, array $aParams = array(), bool $bMultiplyParams = false, bool $bLogParams = false) : ?\PDOStatement
+	protected function prepareAndExecute(string $sSql, array $aParams = array(), bool $bMultiplyParams = false, bool $bLogParams = false): ?\PDOStatement
 	{
 		if ($this->bExplain && !$bMultiplyParams) {
 			$this->prepareAndExplain($sSql, $aParams);
@@ -180,10 +180,7 @@ abstract class Base
 		}
 	}
 
-	/**
-	 * @param mixed $mData
-	 */
-	protected function writeLog($mData)
+	protected function writeLog(mixed $mData): void
 	{
 		if ($this->oLogger) {
 			if ($mData instanceof \Throwable) {
@@ -196,13 +193,13 @@ abstract class Base
 		}
 	}
 
-	public function quoteValue(string $sValue) : string
+	public function quoteValue(string $sValue): string
 	{
 		$oPdo = $this->getPDO();
 		return $oPdo ? $oPdo->quote((string) $sValue, \PDO::PARAM_STR) : '\'\'';
 	}
 
-	protected function getVersion(string $sName) : ?int
+	protected function getVersion(string $sName): ?int
 	{
 		$oPdo = $this->getPDO();
 		if ($oPdo) {
@@ -224,7 +221,7 @@ abstract class Base
 		return null;
 	}
 
-	protected function setVersion(string $sName, int $iVersion) : bool
+	protected function setVersion(string $sName, int $iVersion): bool
 	{
 		$bResult = false;
 		$oPdo = $this->getPDO();
@@ -283,7 +280,7 @@ abstract class Base
 		return $bResult;
 	}
 
-	protected function dataBaseUpgrade(string $sName, array $aData = array()) : bool
+	protected function dataBaseUpgrade(string $sName, array $aData = array()): bool
 	{
 		$iFromVersion = null;
 		try

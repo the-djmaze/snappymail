@@ -92,52 +92,52 @@ class Message implements \JsonSerializable
 		return \property_exists($this, $k) ? $this->$k : null;
 	}
 
-	public function Subject() : string
+	public function Subject(): string
 	{
 		return $this->sSubject;
 	}
 
-	public function From() : ?\MailSo\Mime\EmailCollection
+	public function From(): ?\MailSo\Mime\EmailCollection
 	{
 		return $this->oFrom;
 	}
 
-	public function Uid() : int
+	public function Uid(): int
 	{
 		return $this->Uid;
 	}
 
-	public function Attachments() : ?AttachmentCollection
+	public function Attachments(): ?AttachmentCollection
 	{
 		return $this->Attachments;
 	}
 
-	public function setPlain(string $value) : void
+	public function setPlain(string $value): void
 	{
 		$this->sPlain = $value;
 	}
 
-	public function setHtml(string $value) : void
+	public function setHtml(string $value): void
 	{
 		$this->sHtml = $value;
 	}
 
-	private function setSpamScore($value) : void
+	private function setSpamScore($value): void
 	{
 		$this->SpamScore = \intval(\max(0, \min(100, $value)));
 	}
 
-	public function SetThreads(array $aThreadUIDs)
+	public function SetThreads(array $aThreadUIDs): void
 	{
 		$this->aThreadUIDs = $aThreadUIDs;
 	}
 
-	public function SetThreadUnseen(array $aUnseenUIDs)
+	public function SetThreadUnseen(array $aUnseenUIDs): void
 	{
 		$this->aThreadUnseenUIDs = $aUnseenUIDs;
 	}
 
-	public static function fromFetchResponse(string $sFolder, \MailSo\Imap\FetchResponse $oFetchResponse, ?\MailSo\Imap\BodyStructure $oBodyStructure = null) : self
+	public static function fromFetchResponse(string $sFolder, \MailSo\Imap\FetchResponse $oFetchResponse, ?\MailSo\Imap\BodyStructure $oBodyStructure = null): self
 	{
 		$oMessage = new self;
 
@@ -463,7 +463,7 @@ class Message implements \JsonSerializable
 		return $oMessage;
 	}
 
-	public function ETag(string $sClientHash) : string
+	public function ETag(string $sClientHash): string
 	{
 		return \md5('MessageHash/' . \implode('/', [
 			$this->sFolder,
@@ -477,7 +477,7 @@ class Message implements \JsonSerializable
 	// https://datatracker.ietf.org/doc/html/rfc5788#section-3.4.1
 	// Thunderbird $label1 is same as $Important?
 	// Thunderbird $label4 is same as $todo?
-	protected function getFlags() : array
+	protected function getFlags(): array
 	{
 		return \array_unique(\str_replace(
 			['$readreceipt', '$replied',  /* 'junk',  'nonjunk',  '$queued',        '$sent',      'sent'*/],
@@ -486,8 +486,8 @@ class Message implements \JsonSerializable
 		));
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 /*
 		// JMAP-only RFC8621 keywords (RFC5788)

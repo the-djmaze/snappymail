@@ -39,7 +39,7 @@ class TAR
 		$this->close();
 	}
 
-	public function pushHttpHeaders(string $name) : void
+	public function pushHttpHeaders(string $name): void
 	{
 		if ($i = \ob_get_level()) {
 			# Clear buffers:
@@ -61,7 +61,7 @@ class TAR
 		\MailSo\Base\Http::setContentDisposition('attachment', ['filename' => $name]);
 	}
 
-	public function close() : void
+	public function close(): void
 	{
 		if ($this->out) {
 			if ($this->started) {
@@ -81,7 +81,7 @@ class TAR
 		}
 	}
 
-	public function addFile($fileinfo, ?string $name = null) : bool
+	public function addFile($fileinfo, ?string $name = null): bool
 	{
 		if (!($fileinfo instanceof \SplFileInfo)) {
 			$fileinfo = new \SplFileInfo($fileinfo);
@@ -113,7 +113,7 @@ class TAR
 		return true;
 	}
 
-	public function addFromStream($resource, string $name, int $time = 0) : bool
+	public function addFromStream($resource, string $name, int $time = 0): bool
 	{
 		if (\is_resource($resource)) {
 			$temp = new TarTempResource();
@@ -155,7 +155,7 @@ class TAR
 		return true;
 	}
 
-	public function addFromString(string $name, string $data, int $time = 0) : bool
+	public function addFromString(string $name, string $data, int $time = 0): bool
 	{
 		$this->writeEntryHeader(
 			\strtr($name, '\\', '/'),
@@ -174,7 +174,7 @@ class TAR
 		return true;
 	}
 
-	public function addDir(string $dirname, ?\SplFileInfo $fileinfo = null) : void
+	public function addDir(string $dirname, ?\SplFileInfo $fileinfo = null): void
 	{
 		$this->writeEntryHeader(
 			\rtrim(\strtr($dirname, '\\', '/'), '/') . '/',
@@ -187,7 +187,7 @@ class TAR
 		);
 	}
 
-	public function addRecursive(string $dir, string $target_dir = '', $ignore = '#/(\\.hg(/|$)|\\.hgignore)#') : void
+	public function addRecursive(string $dir, string $target_dir = '', $ignore = '#/(\\.hg(/|$)|\\.hgignore)#'): void
 	{
 		if (!$this->out) {
 			throw new \Exception('Stream closed');
@@ -217,7 +217,7 @@ class TAR
 		}
 	}
 
-	protected function start()
+	protected function start(): void
 	{
 		if ($this->started) {
 			return;
@@ -239,7 +239,7 @@ class TAR
 		}
 	}
 
-	protected function write($string)/* : int|bool*/
+	protected function write(string $string): int|bool
 	{
 		if (!$this->out) {
 			throw new \Exception('Stream closed');
@@ -265,7 +265,7 @@ class TAR
 		return $written;
 	}
 
-	protected function writeEntryHeader($name, $type, $size, $uid = 0, $gid = 0, $perm = 0, $mtime = 0, $link = '', $prefix  = '')
+	protected function writeEntryHeader($name, $type, $size, $uid = 0, $gid = 0, $perm = 0, $mtime = 0, $link = '', $prefix  = ''): void
 	{
 		// handle long filename length
 		$paxdata = $paxname = '';
@@ -331,7 +331,7 @@ class TAR
 	}
 
 	// Writes Pre-POSIX.1-1988 (i.e. v7) and POSIX UStar headers
-	protected function writeUStarEntryHeader($name, $type, $size, $uid = 0, $gid = 0, $perm = 0, $mtime = 0, $link = '', $prefix  = '')
+	protected function writeUStarEntryHeader($name, $type, $size, $uid = 0, $gid = 0, $perm = 0, $mtime = 0, $link = '', $prefix  = ''): void
 	{
 		$data = \pack('a100a8a8a8a12A12',
 			$name,
@@ -362,10 +362,7 @@ class TAR
 
 class TarTempResource extends \SplTempFileObject
 {
-	#[\ReturnTypeWillChange]
-	public function getOwner()/*: int|false*/ { return 0; }
-	#[\ReturnTypeWillChange]
-	public function getGroup()/*: int|false*/ { return 0; }
-	#[\ReturnTypeWillChange]
-	public function getPerms()/*: int|false*/ { return 420; }
+	public function getOwner(): int|false { return 0; }
+	public function getGroup(): int|false { return 0; }
+	public function getPerms(): int|false { return 420; }
 }

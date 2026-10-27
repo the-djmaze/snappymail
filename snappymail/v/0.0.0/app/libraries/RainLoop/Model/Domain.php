@@ -39,7 +39,7 @@ class Domain implements \JsonSerializable
 		$this->whiteList = \trim($this->whiteList);
 	}
 
-	public function Name() : string
+	public function Name(): string
 	{
 		return $this->Name;
 	}
@@ -47,7 +47,7 @@ class Domain implements \JsonSerializable
 	/**
 	 * @deprecated
 	 */
-	public function IncHost() : string
+	public function IncHost(): string
 	{
 		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
 		return $this->IMAP->host;
@@ -56,7 +56,7 @@ class Domain implements \JsonSerializable
 	/**
 	 * @deprecated
 	 */
-	public function IncPort() : int
+	public function IncPort(): int
 	{
 		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
 		return $this->IMAP->port;
@@ -65,7 +65,7 @@ class Domain implements \JsonSerializable
 	/**
 	 * @deprecated
 	 */
-	public function IncShortLogin() : bool
+	public function IncShortLogin(): bool
 	{
 		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
 		return $this->IMAP->shortLogin;
@@ -74,7 +74,7 @@ class Domain implements \JsonSerializable
 	/**
 	 * @deprecated
 	 */
-	public function UseSieve() : bool
+	public function UseSieve(): bool
 	{
 		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
 		return $this->Sieve->enabled;
@@ -83,7 +83,7 @@ class Domain implements \JsonSerializable
 	/**
 	 * @deprecated
 	 */
-	public function OutHost() : string
+	public function OutHost(): string
 	{
 		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
 		return $this->SMTP->host;
@@ -92,19 +92,19 @@ class Domain implements \JsonSerializable
 	/**
 	 * @deprecated
 	 */
-	public function OutPort() : int
+	public function OutPort(): int
 	{
 		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
 		return $this->SMTP->port;
 	}
 
-	public function SetAliasName(string $sAliasName) : void
+	public function SetAliasName(string $sAliasName): void
 	{
 //		$this->aliasName = \SnappyMail\IDN::toAscii($sAliasName);
 		$this->aliasName = \strtolower(\idn_to_ascii($sAliasName));
 	}
 
-	public function ValidateWhiteList(string $sEmail) : bool
+	public function ValidateWhiteList(string $sEmail): bool
 	{
 		$sW = $this->whiteList;
 		if (!$sW) {
@@ -125,17 +125,17 @@ class Domain implements \JsonSerializable
 		return false;
 	}
 
-	public function ImapSettings() : \MailSo\Imap\Settings
+	public function ImapSettings(): \MailSo\Imap\Settings
 	{
 		return $this->IMAP;
 	}
 
-	public function SieveSettings() : \MailSo\Sieve\Settings
+	public function SieveSettings(): \MailSo\Sieve\Settings
 	{
 		return $this->Sieve;
 	}
 
-	public function SmtpSettings() : \MailSo\Smtp\Settings
+	public function SmtpSettings(): \MailSo\Smtp\Settings
 	{
 		return $this->SMTP;
 	}
@@ -143,7 +143,7 @@ class Domain implements \JsonSerializable
 	/**
 	 * See jsonSerialize() for valid values
 	 */
-	public static function fromArray(string $sName, array $aDomain) : ?self
+	public static function fromArray(string $sName, array $aDomain): ?self
 	{
 		if (!\strlen($sName)) {
 			return null;
@@ -186,7 +186,7 @@ class Domain implements \JsonSerializable
 	/**
 	 * Used by old RainLoop ToIniString()
 	 */
-	public static function fromIniArray(string $sName, array $aDomain) : ?self
+	public static function fromIniArray(string $sName, array $aDomain): ?self
 	{
 		$oDomain = null;
 		if (\strlen($sName) && \strlen($aDomain['imap_host'])) {
@@ -220,7 +220,7 @@ class Domain implements \JsonSerializable
 	/**
 	 * Use by old RainLoop fromIniArray()
 	 */
-	public static function StrConnectionSecurityTypeToCons(string $sType) : int
+	public static function StrConnectionSecurityTypeToCons(string $sType): int
 	{
 		switch (\strtoupper($sType))
 		{
@@ -232,8 +232,8 @@ class Domain implements \JsonSerializable
 		return ConnectionSecurityType::NONE;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		$aResult = array(
 //			'@Object' => 'Object/Domain',

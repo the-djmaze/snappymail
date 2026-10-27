@@ -84,7 +84,7 @@ class Logger extends \SplFixedArray
 	/**
 	 * @staticvar string $sCache;
 	 */
-	public static function Guid() : string
+	public static function Guid(): string
 	{
 		static $sCache = null;
 		if (null === $sCache) {
@@ -94,7 +94,7 @@ class Logger extends \SplFixedArray
 		return $sCache;
 	}
 
-	public function append($oDriver) : void
+	public function append($oDriver): void
 	{
 		if ($oDriver) {
 			$this->setSize(1);
@@ -102,7 +102,7 @@ class Logger extends \SplFixedArray
 		}
 	}
 
-	public function IsEnabled() : bool
+	public function IsEnabled(): bool
 	{
 		return 0 < $this->count();
 	}
@@ -110,7 +110,7 @@ class Logger extends \SplFixedArray
 	public function AddSecret(
 		#[\SensitiveParameter]
 		string $sWord
-	) : void
+	): void
 	{
 //		$this->bShowSecrets && $this->Write("AddSecret '{$sWord}'", \LOG_INFO);
 		$sWord = \trim($sWord);
@@ -121,18 +121,18 @@ class Logger extends \SplFixedArray
 		}
 	}
 
-	public function SetShowSecrets(bool $bShow) : self
+	public function SetShowSecrets(bool $bShow): self
 	{
 		$this->bShowSecrets = $bShow;
 		return $this;
 	}
 
-	public function ShowSecrets() : bool
+	public function ShowSecrets(): bool
 	{
 		return $this->bShowSecrets;
 	}
 
-	public function SetLevel(int $iLevel) : self
+	public function SetLevel(int $iLevel): self
 	{
 		$this->iLevel = $iLevel;
 		return $this;
@@ -174,7 +174,7 @@ class Logger extends \SplFixedArray
 		\E_USER_DEPRECATED => '-USER_DEPRECATED'
 	);
 
-	public function __phpErrorHandler(int $iErrNo, string $sErrStr, string $sErrFile, int $iErrLine) : bool
+	public function __phpErrorHandler(int $iErrNo, string $sErrStr, string $sErrFile, int $iErrLine): bool
 	{
 		if (\error_reporting() & $iErrNo) {
 			$this->Write(
@@ -196,7 +196,7 @@ class Logger extends \SplFixedArray
 		\error_log('Uncaught exception: ' . $oException);
 	}
 
-	public function __loggerShutDown() : void
+	public function __loggerShutDown(): void
 	{
 		if ($this->bUsed) {
 			$error = \error_get_last();
@@ -206,7 +206,7 @@ class Logger extends \SplFixedArray
 		}
 	}
 
-	public function signalHandler($signo, /*?array*/$siginfo = null)
+	public function signalHandler(int $signo, mixed $siginfo = null): void
 	{
 		if (\SIGTERM == $signo) {
 			exit;
@@ -219,7 +219,7 @@ class Logger extends \SplFixedArray
 		}
 	}
 
-	public function Write(string $sDesc, int $iType = \LOG_INFO, string $sName = '', bool $bDiplayCrLf = false) : bool
+	public function Write(string $sDesc, int $iType = \LOG_INFO, string $sName = '', bool $bDiplayCrLf = false): bool
 	{
 		if ($this->iLevel < $iType) {
 			return true;
@@ -241,17 +241,14 @@ class Logger extends \SplFixedArray
 		return (bool) $iResult;
 	}
 
-	/**
-	 * @param mixed $mValue
-	 */
-	public function WriteDump($mValue, int $iType = \LOG_INFO, string $sName = '') : bool
+	public function WriteDump(mixed $mValue, int $iType = \LOG_INFO, string $sName = ''): bool
 	{
 		return $this->Write(\print_r($mValue, true), $iType, $sName);
 	}
 
 	private $aExceptions = [];
 
-	public function WriteException(\Throwable $oException, int $iType = \LOG_NOTICE, string $sName = '') : void
+	public function WriteException(\Throwable $oException, int $iType = \LOG_NOTICE, string $sName = ''): void
 	{
 		if (!\in_array($oException, $this->aExceptions)) {
 			$this->Write((string) $oException, $iType, $sName);
@@ -259,7 +256,7 @@ class Logger extends \SplFixedArray
 		}
 	}
 
-	public function WriteExceptionShort(\Throwable $oException, int $iType = \LOG_NOTICE, string $sName = '') : void
+	public function WriteExceptionShort(\Throwable $oException, int $iType = \LOG_NOTICE, string $sName = ''): void
 	{
 		if (!\in_array($oException, $this->aExceptions)) {
 			$this->Write($oException->getMessage(), $iType, $sName);

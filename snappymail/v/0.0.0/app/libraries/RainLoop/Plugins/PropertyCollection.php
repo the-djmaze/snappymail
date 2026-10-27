@@ -5,18 +5,15 @@ namespace RainLoop\Plugins;
 //class PropertyCollection extends \MailSo\Base\Collection
 class PropertyCollection extends \ArrayObject implements \JsonSerializable
 {
-	/**
-	 * @var string
-	 */
-	private $sLabel;
+	private string $sLabel;
 
 	function __construct(string $sLabel)
 	{
 		$this->sLabel = $sLabel;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 			'@Object' => 'Object/PluginProperty',

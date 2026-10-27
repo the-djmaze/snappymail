@@ -59,7 +59,7 @@ class NamespaceResult implements \JsonSerializable
 		}
 	}
 
-	public function GetPersonalPrefix() : string
+	public function GetPersonalPrefix(): string
 	{
 		$sPrefix = '';
 		if (isset($this->aPersonal[0])) {
@@ -72,8 +72,8 @@ class NamespaceResult implements \JsonSerializable
 		return $sPrefix;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 			'@Object' => 'Object/Namespaces',

@@ -91,7 +91,7 @@ abstract class Base
 		}
 	}
 
-	public static function isSupported() : bool
+	public static function isSupported(): bool
 	{
 		return \is_callable('shell_exec') && \is_callable('proc_open');
 	}
@@ -104,7 +104,7 @@ abstract class Base
 	/**
 	 * Decrypts a given text
 	 */
-	public function decrypt(string $text) /*: string|false */
+	public function decrypt(string $text): string|false
 	{
 		return false;
 	}
@@ -112,7 +112,7 @@ abstract class Base
 	/**
 	 * Decrypts a given file
 	 */
-	public function decryptFile(string $filename) /*: string|false */
+	public function decryptFile(string $filename): string|false
 	{
 		return false;
 	}
@@ -120,7 +120,7 @@ abstract class Base
 	/**
 	 * Decrypts a given stream
 	 */
-	public function decryptStream($fp, /*string|resource*/ $output = null) /*: string|false*/
+	public function decryptStream($fp, /*string|resource*/ $output = null): string|false
 	{
 		return false;
 	}
@@ -128,7 +128,7 @@ abstract class Base
 	/**
 	 * Decrypts and verifies a given text
 	 */
-	public function decryptVerify(string $text, string &$plaintext) /*: array|false*/
+	public function decryptVerify(string $text, string &$plaintext): array|false
 	{
 		return false;
 	}
@@ -136,7 +136,7 @@ abstract class Base
 	/**
 	 * Decrypts and verifies a given file
 	 */
-	public function decryptVerifyFile(string $filename, string &$plaintext) /*: array|false*/
+	public function decryptVerifyFile(string $filename, string &$plaintext): array|false
 	{
 		return false;
 	}
@@ -144,7 +144,7 @@ abstract class Base
 	/**
 	 * Encrypts a given text
 	 */
-	public function encrypt(string $plaintext, /*string|resource*/ $output = null) /*: string|false*/
+	public function encrypt(string $plaintext, /*string|resource*/ $output = null): string|false
 	{
 		return false;
 	}
@@ -152,20 +152,12 @@ abstract class Base
 	/**
 	 * Encrypts a given text
 	 */
-	public function encryptFile(string $filename, /*string|resource*/ $output = null) /*: string|false*/
+	public function encryptFile(string $filename, /*string|resource*/ $output = null): string|false
 	{
 		return false;
 	}
 
-	public function encryptStream(/*resource*/ $fp, /*string|resource*/ $output = null) /*: string|false*/
-	{
-		return false;
-	}
-
-	/**
-	 * Encrypts and signs a given text
-	 */
-	public function encryptSign(string $plaintext) /*: string|false*/
+	public function encryptStream(/*resource*/ $fp, /*string|resource*/ $output = null): string|false
 	{
 		return false;
 	}
@@ -173,7 +165,15 @@ abstract class Base
 	/**
 	 * Encrypts and signs a given text
 	 */
-	public function encryptSignFile(string $filename) /*: string|false*/
+	public function encryptSign(string $plaintext): string|false
+	{
+		return false;
+	}
+
+	/**
+	 * Encrypts and signs a given text
+	 */
+	public function encryptSignFile(string $filename): string|false
 	{
 		return false;
 	}
@@ -181,7 +181,7 @@ abstract class Base
 	/**
 	 * Exports a public or private key
 	 */
-	public function export(string $fingerprint, ?SensitiveString $passphrase = null) /*: string|false*/
+	public function export(string $fingerprint, ?SensitiveString $passphrase = null): string|false
 	{
 		return false;
 	}
@@ -189,7 +189,7 @@ abstract class Base
 	/**
 	 * Imports a key
 	 */
-	public function import(string $keydata) /*: array|false*/
+	public function import(string $keydata): array|false
 	{
 		return false;
 	}
@@ -197,7 +197,7 @@ abstract class Base
 	/**
 	 * Imports a key
 	 */
-	public function importFile(string $filename) /*: array|false*/
+	public function importFile(string $filename): array|false
 	{
 		return false;
 	}
@@ -210,7 +210,7 @@ abstract class Base
 	/**
 	 * Returns an array with information about all keys that matches the given pattern
 	 */
-	public function keyInfo(string $pattern, bool $private = false) : array
+	public function keyInfo(string $pattern, bool $private = false): array
 	{
 		return [];
 	}
@@ -220,14 +220,14 @@ abstract class Base
 	 * GNUPG_ERROR_WARNING, GNUPG_ERROR_EXCEPTION and GNUPG_ERROR_SILENT.
 	 * By default GNUPG_ERROR_SILENT is used.
 	 */
-	public function setErrorMode(int $errormode) : void
+	public function setErrorMode(int $errormode): void
 	{
 	}
 
 	/**
 	 * Signs a given text
 	 */
-	public function sign(string $plaintext, /*string|resource*/ $output = null) /*: string|false*/
+	public function sign(string $plaintext, /*string|resource*/ $output = null): string|false
 	{
 		return false;
 	}
@@ -235,7 +235,7 @@ abstract class Base
 	/**
 	 * Signs a given file
 	 */
-	public function signFile(string $filename, /*string|resource*/ $output = null) /*: string|false*/
+	public function signFile(string $filename, /*string|resource*/ $output = null): string|false
 	{
 		return false;
 	}
@@ -243,7 +243,7 @@ abstract class Base
 	/**
 	 * Signs a given file
 	 */
-	public function signStream($fp, /*string|resource*/ $output = null) /*: string|false*/
+	public function signStream($fp, /*string|resource*/ $output = null): string|false
 	{
 		return false;
 	}
@@ -251,7 +251,7 @@ abstract class Base
 	/**
 	 * Verifies a signed text
 	 */
-	public function verify(string $signed_text, string $signature, ?string &$plaintext = null) /*: array|false*/
+	public function verify(string $signed_text, string $signature, ?string &$plaintext = null): array|false
 	{
 		return false;
 	}
@@ -259,7 +259,7 @@ abstract class Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null) /*: array|false*/
+	public function verifyFile(string $filename, string $signature, ?string &$plaintext = null): array|false
 	{
 		return false;
 	}
@@ -267,12 +267,12 @@ abstract class Base
 	/**
 	 * Verifies a signed file
 	 */
-	public function verifyStream($fp, string $signature, ?string &$plaintext = null) /*: array|false*/
+	public function verifyStream($fp, string $signature, ?string &$plaintext = null): array|false
 	{
 		return false;
 	}
 
-	public function getEncryptedMessageKeys(/*string|resource*/ $data) : array
+	public function getEncryptedMessageKeys(/*string|resource*/ $data): array
 	{
 		return [];
 	}
@@ -284,7 +284,7 @@ abstract class Base
 	/**
 	 * Add a key for decryption
 	 */
-	public function addDecryptKey(string $fingerprint, SensitiveString $passphrase) : bool
+	public function addDecryptKey(string $fingerprint, SensitiveString $passphrase): bool
 	{
 		$this->addPinentry($fingerprint, $passphrase);
 		return true;
@@ -293,7 +293,7 @@ abstract class Base
 	/**
 	 * Add a key for encryption
 	 */
-	public function addEncryptKey(string $fingerprint) : bool
+	public function addEncryptKey(string $fingerprint): bool
 	{
 		$this->encryptKeys[$fingerprint] = 1;
 		return true;
@@ -302,13 +302,13 @@ abstract class Base
 	/**
 	 * Add a key for signing
 	 */
-	public function addSignKey(string $fingerprint, SensitiveString $passphrase) : bool
+	public function addSignKey(string $fingerprint, SensitiveString $passphrase): bool
 	{
 		$this->addPinentry($fingerprint, $passphrase);
 		return true;
 	}
 
-	public function clear() : bool
+	public function clear(): bool
 	{
 		$this->clearPinentries();
 		$this->clearEncryptKeys();
@@ -318,7 +318,7 @@ abstract class Base
 	/**
 	 * Removes all keys which were set for decryption before
 	 */
-	public function clearDecryptKeys() : bool
+	public function clearDecryptKeys(): bool
 	{
 		return $this->clearPinentries();
 	}
@@ -326,7 +326,7 @@ abstract class Base
 	/**
 	 * Removes all keys which were set for encryption before
 	 */
-	public function clearEncryptKeys() : bool
+	public function clearEncryptKeys(): bool
 	{
 		$this->encryptKeys = [];
 		return true;
@@ -335,7 +335,7 @@ abstract class Base
 	/**
 	 * Removes all keys which were set for signing before
 	 */
-	public function clearSignKeys() : bool
+	public function clearSignKeys(): bool
 	{
 		return $this->clearPinentries();
 	}
@@ -343,7 +343,7 @@ abstract class Base
 	/**
 	 * Returns the engine info
 	 */
-	public function getEngineInfo() : array
+	public function getEngineInfo(): array
 	{
 		return [
 			'protocol' => null,
@@ -357,7 +357,7 @@ abstract class Base
 	 * Add private key passphrase for decrypt, sign or export
 	 * $keyId or fingerprint
 	 */
-	public function addPinentry(string $keyId, SensitiveString $passphrase)
+	public function addPinentry(string $keyId, SensitiveString $passphrase): self
 	{
 		/**
 		 * Test first?
@@ -378,7 +378,7 @@ abstract class Base
 	/**
 	 * Removes all keys which were set for decryption, signing and export
 	 */
-	public function clearPinentries() : bool
+	public function clearPinentries(): bool
 	{
 		$this->pinentries = [];
 		return true;
@@ -388,18 +388,18 @@ abstract class Base
 	 * Toggle the armored output
 	 * When true the output is ASCII
 	 */
-	public function setArmor(bool $armor = true) : bool
+	public function setArmor(bool $armor = true): bool
 	{
 		$this->armor = $armor;
 		return true;
 	}
 
-	protected function _debug(string $msg) : void
+	protected function _debug(string $msg): void
 	{
 		\SnappyMail\Log::debug('GPG', $msg);
 	}
 
-	protected function setInput(&$input) : void
+	protected function setInput(&$input): void
 	{
 		if (\is_resource($input)) {
 			// https://github.com/the-djmaze/snappymail/issues/331
@@ -437,7 +437,7 @@ abstract class Base
 //		echo \shell_exec('gpg-agent --daemon --homedir $home 2>&1');
 	}
 
-	protected function getPassphrase($key)
+	protected function getPassphrase($key): string
 	{
 		$passphrase  = '';
 		$keyIdLength = \strlen($key);
@@ -454,7 +454,7 @@ abstract class Base
 		return '';
 	}
 
-	protected function proc_close() : int
+	protected function proc_close(): int
 	{
 		$exitCode = 0;
 
@@ -485,7 +485,7 @@ abstract class Base
 		return $exitCode;
 	}
 
-	protected static function findBinary($name) : ?string
+	protected static function findBinary($name): ?string
 	{
 		$binary = \function_exists('shell_exec') ? \trim((string) \shell_exec('which ' . \escapeshellarg($name))) : '';
 		if ($binary && \RainLoop\Utils::inOpenBasedir($binary) && \is_executable($binary)) {

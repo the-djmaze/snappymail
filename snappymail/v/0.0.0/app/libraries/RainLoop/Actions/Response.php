@@ -7,10 +7,7 @@ use RainLoop\Utils;
 
 trait Response
 {
-	/**
-	 * @param mixed $mResult
-	 */
-	public function DefaultResponse($mResult, array $aAdditionalParams = array(), string $sActionName = '') : array
+	public function DefaultResponse(mixed $mResult, array $aAdditionalParams = array(), string $sActionName = ''): array
 	{
 		if (false === $mResult) {
 			if (!isset($aAdditionalParams['code'])) {
@@ -28,12 +25,12 @@ trait Response
 		), $aAdditionalParams);
 	}
 
-	public function TrueResponse(array $aAdditionalParams = array()) : array
+	public function TrueResponse(array $aAdditionalParams = array()): array
 	{
 		return $this->DefaultResponse(true, $aAdditionalParams);
 	}
 
-	public function FalseResponse(int $iErrorCode = 0, string $sErrorMessage = '', string $sAdditionalErrorMessage = '') : array
+	public function FalseResponse(int $iErrorCode = 0, string $sErrorMessage = '', string $sAdditionalErrorMessage = ''): array
 	{
 		return $this->DefaultResponse(false, [
 			'code' => $iErrorCode,
@@ -42,7 +39,7 @@ trait Response
 		]);
 	}
 
-	public function ExceptionResponse(\Throwable $oException) : array
+	public function ExceptionResponse(\Throwable $oException): array
 	{
 		$iErrorCode = Notifications::UnknownError;
 		$sErrorMessage = $oException->getMessage();
@@ -69,13 +66,8 @@ trait Response
 		]);
 	}
 
-	/**
-	 * @param mixed $mResponse
-	 *
-	 * @return mixed
-	 */
 	private $aCheckableFolder = null;
-	private function responseObject($mResponse, string $sParent = '')
+	private function responseObject(mixed $mResponse, string $sParent = ''): mixed
 	{
 		if (!($mResponse instanceof \JsonSerializable)) {
 			if (\is_object($mResponse)) {

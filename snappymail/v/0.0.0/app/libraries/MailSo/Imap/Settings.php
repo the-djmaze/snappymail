@@ -40,7 +40,7 @@ class Settings extends \MailSo\Net\ConnectSettings
 	public array
 		$disabled_capabilities = [];
 
-	public static function fromArray(array $aSettings) : self
+	public static function fromArray(array $aSettings): self
 	{
 		$object = parent::fromArray($aSettings);
 
@@ -119,8 +119,8 @@ class Settings extends \MailSo\Net\ConnectSettings
 		return $object;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		if (\in_array('SORT', $this->disabled_capabilities)) {
 			$this->disabled_capabilities[] = 'ESORT';

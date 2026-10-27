@@ -23,38 +23,38 @@ abstract class Account implements \JsonSerializable
 
 	private ?Domain $oDomain = null;
 
-	public function Email() : string
+	public function Email(): string
 	{
 		return $this->sEmail;
 	}
 
-	public function Name() : string
+	public function Name(): string
 	{
 		return $this->sName;
 	}
 
-	public function ImapUser() : string
+	public function ImapUser(): string
 	{
 		return $this->sImapUser;
 	}
 
-	public function ImapPass() : string
+	public function ImapPass(): string
 	{
 		return $this->oImapPass ? $this->oImapPass->getValue() : '';
 	}
 
-	public function SmtpUser() : string
+	public function SmtpUser(): string
 	{
 		return $this->sSmtpUser ?: ($this->oDomain ? $this->oDomain->SmtpSettings()->fixUsername($this->sEmail) : '');
 //		return $this->sSmtpUser ?: $this->sEmail ?: $this->sImapUser;
 	}
 
-	public function Domain() : ?Domain
+	public function Domain(): ?Domain
 	{
 		return $this->oDomain;
 	}
 
-	public function Hash() : string
+	public function Hash(): string
 	{
 		return \sha1(\implode(APP_SALT, [
 			$this->sEmail,
@@ -64,28 +64,28 @@ abstract class Account implements \JsonSerializable
 		]));
 	}
 
-	public function setImapUser(string $sImapUser) : void
+	public function setImapUser(string $sImapUser): void
 	{
 		$this->sImapUser = $sImapUser;
 	}
 
-	public function setImapPass(SensitiveString $oPassword) : void
+	public function setImapPass(SensitiveString $oPassword): void
 	{
 		$this->oImapPass = $oPassword;
 	}
 
-	public function setSmtpUser(string $sSmtpUser) : void
+	public function setSmtpUser(string $sSmtpUser): void
 	{
 		$this->sSmtpUser = $sSmtpUser;
 	}
 
-	public function setSmtpPass(SensitiveString $oPassword) : void
+	public function setSmtpPass(SensitiveString $oPassword): void
 	{
 		$this->oSmtpPass = $oPassword;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		$result = [
 			'email' => $this->sEmail,
@@ -122,7 +122,7 @@ abstract class Account implements \JsonSerializable
 	/**
 	 * Converts old numeric array to new associative array
 	 */
-	public static function convertArray(array $aAccount) : array
+	public static function convertArray(array $aAccount): array
 	{
 		if (isset($aAccount['email'])) {
 			return $aAccount;
@@ -193,7 +193,7 @@ abstract class Account implements \JsonSerializable
 		return $oAccount;
 	}
 
-	public function ImapConnectAndLogin(\RainLoop\Plugins\Manager $oPlugins, \MailSo\Imap\ImapClient $oImapClient, \RainLoop\Config\Application $oConfig) : bool
+	public function ImapConnectAndLogin(\RainLoop\Plugins\Manager $oPlugins, \MailSo\Imap\ImapClient $oImapClient, \RainLoop\Config\Application $oConfig): bool
 	{
 		$oSettings = $this->Domain()->ImapSettings();
 		$oSettings->timeout = \max($oSettings->timeout, (int) $oConfig->Get('imap', 'timeout', $oSettings->timeout));
@@ -218,7 +218,7 @@ abstract class Account implements \JsonSerializable
 		return $this->netClientLogin($oImapClient, $oPlugins);
 	}
 
-	public function SmtpConnectAndLogin(\RainLoop\Plugins\Manager $oPlugins, \MailSo\Smtp\SmtpClient $oSmtpClient) : bool
+	public function SmtpConnectAndLogin(\RainLoop\Plugins\Manager $oPlugins, \MailSo\Smtp\SmtpClient $oSmtpClient): bool
 	{
 		$oSettings = $this->Domain()->SmtpSettings();
 		$oSettings->username = $this->SmtpUser();
@@ -257,7 +257,7 @@ abstract class Account implements \JsonSerializable
 		return $this->netClientLogin($oSieveClient, $oPlugins);
 	}
 
-	private function netClientLogin(\MailSo\Net\NetClient $oClient, \RainLoop\Plugins\Manager $oPlugins) : bool
+	private function netClientLogin(\MailSo\Net\NetClient $oClient, \RainLoop\Plugins\Manager $oPlugins): bool
 	{
 /*
 		$encrypted = !empty(\stream_get_meta_data($oClient->ConnectionResource())['crypto']);
@@ -280,7 +280,7 @@ abstract class Account implements \JsonSerializable
 
 /*
 	// Stores settings in AdditionalAccount else MainAccount
-	public function settingsLocal() : \RainLoop\Settings
+	public function settingsLocal(): \RainLoop\Settings
 	{
 		return \RainLoop\Api::Actions()->SettingsProvider(true)->Load($this);
 	}
@@ -289,19 +289,19 @@ abstract class Account implements \JsonSerializable
 	/**
 	 * @deprecated since v2.36.1
 	 */
-	public function IncLogin() : string
+	public function IncLogin(): string
 	{
 		return $this->ImapUser();
 	}
-	public function IncPassword() : string
+	public function IncPassword(): string
 	{
 		return $this->ImapPass();
 	}
-	public function OutLogin() : string
+	public function OutLogin(): string
 	{
 		return $this->SmtpUser();
 	}
-	public function SetPassword(SensitiveString $oPassword) : void
+	public function SetPassword(SensitiveString $oPassword): void
 	{
 		$this->oImapPass = $oPassword;
 	}

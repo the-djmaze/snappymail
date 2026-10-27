@@ -53,22 +53,22 @@ class Folder implements \JsonSerializable
 */
 	}
 
-	public function setAttributes(array $aAttributes) : void
+	public function setAttributes(array $aAttributes): void
 	{
 		$this->aAttributes = \array_map('mb_strtolower', $aAttributes);
 	}
 
-	public function setSubscribed() : void
+	public function setSubscribed(): void
 	{
 		$this->aAttributes = \array_unique(\array_merge($this->aAttributes, ['\\subscribed']));
 	}
 
-	public function setDelimiter(?string $sDelimiter) : void
+	public function setDelimiter(?string $sDelimiter): void
 	{
 		$this->sDelimiter = $sDelimiter;
 	}
 
-	public function Name() : string
+	public function Name(): string
 	{
 		$sNameRaw = $this->FullName;
 		if ($this->sDelimiter) {
@@ -78,49 +78,49 @@ class Folder implements \JsonSerializable
 		return $sNameRaw;
 	}
 
-	public function Delimiter() : ?string
+	public function Delimiter(): ?string
 	{
 		return $this->sDelimiter;
 	}
 
-	public function Selectable() : bool
+	public function Selectable(): bool
 	{
 		return !\in_array('\\noselect', $this->aAttributes)
 			&& !\in_array('\\nonexistent', $this->aAttributes);
 	}
 
-	public function IsSubscribed() : bool
+	public function IsSubscribed(): bool
 	{
 		return \in_array('\\subscribed', $this->aAttributes);
 	}
 
-	public function IsInbox() : bool
+	public function IsInbox(): bool
 	{
 		return 'INBOX' === \strtoupper($this->FullName) || \in_array('\\inbox', $this->aAttributes);
 	}
 
-	public function SetMetadata(string $sName, string $sData) : void
+	public function SetMetadata(string $sName, string $sData): void
 	{
 		$this->aMetadata[$sName] = $sData;
 	}
 
-	public function SetAllMetadata(array $aMetadata) : void
+	public function SetAllMetadata(array $aMetadata): void
 	{
 		$this->aMetadata = $aMetadata;
 	}
 
-	public function GetMetadata(string $sName) : ?string
+	public function GetMetadata(string $sName): ?string
 	{
 		return isset($this->aMetadata[$sName]) ? $this->aMetadata[$sName] : null;
 	}
 
-	public function Metadata() : array
+	public function Metadata(): array
 	{
 		return $this->aMetadata;
 	}
 
 	// JMAP RFC 8621
-	public function Role() : ?string
+	public function Role(): ?string
 	{
 		$role = \strtolower($this->GetMetadata(MetadataKeys::SPECIALUSE) ?: '');
 		if (!$role) {
@@ -145,8 +145,8 @@ class Folder implements \JsonSerializable
 		return $role ? \ltrim($role, '\\') : null;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		$selectable = $this->Selectable();
 		$result = array(

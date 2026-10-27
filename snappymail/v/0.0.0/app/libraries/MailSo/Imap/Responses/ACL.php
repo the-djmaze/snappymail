@@ -28,19 +28,19 @@ class ACL implements \JsonSerializable
 		$this->rights = $rights;
 	}
 
-	public function identifier() : string
+	public function identifier(): string
 	{
 		return $this->identifier;
 	}
 
 	/** PHP 8.1
-	public function hasRight(string|\MailSo\Imap\Enumerations\FolderACL $right)
+	public function hasRight(string|\MailSo\Imap\Enumerations\FolderACL $right): bool
 	{
 		if ($right instanceof \BackedEnum) {
 			return \str_contains($this->rights, $right->value);
 		}
 	*/
-	public function hasRight(string $right) : bool
+	public function hasRight(string $right): bool
 	{
 		$const = '\\MailSo\\Imap\\Enumerations\\FolderACL::' . \strtoupper($right);
 		if (\defined($const)) {
@@ -49,8 +49,8 @@ class ACL implements \JsonSerializable
 		return \str_contains($this->rights, $right);
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return [
 			'@Object' => 'Object/FolderACLRights',

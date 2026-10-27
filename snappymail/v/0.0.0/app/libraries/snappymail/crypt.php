@@ -10,7 +10,7 @@ abstract class Crypt
 {
 	protected static $cipher = '';
 
-	public static function listCiphers() : array
+	public static function listCiphers(): array
 	{
 		$list = array();
 		if (\function_exists('openssl_get_cipher_methods')) {
@@ -25,12 +25,12 @@ abstract class Crypt
 		return $list;
 	}
 
-	public static function cipherSupported(string $cipher) : bool
+	public static function cipherSupported(string $cipher): bool
 	{
 		return \in_array($cipher, static::listCiphers());
 	}
 
-	public static function setCipher(string $cipher) : bool
+	public static function setCipher(string $cipher): bool
 	{
 		if (static::cipherSupported($cipher)) {
 			static::$cipher = $cipher;
@@ -46,7 +46,7 @@ abstract class Crypt
 	private static function Passphrase(
 		#[\SensitiveParameter]
 		?string $key
-	) : string
+	): string
 	{
 		if (!$key) {
 			if (empty($_COOKIE['smctoken'])) {
@@ -61,7 +61,7 @@ abstract class Crypt
 	public static function Decrypt(array $data,
 		#[\SensitiveParameter]
 		?string $key = null
-	) /* : mixed */
+	): mixed
 	{
 		if (3 === \count($data) && isset($data[0], $data[1], $data[2]) && \strlen($data[0])) {
 			$fn = "{$data[0]}Decrypt";
@@ -86,7 +86,7 @@ abstract class Crypt
 	public static function DecryptFromJSON(string $data,
 		#[\SensitiveParameter]
 		?string $key = null
-	) /* : mixed */
+	): mixed
 	{
 		$data = static::jsonDecode($data);
 		if (!\is_array($data)) {
@@ -99,7 +99,7 @@ abstract class Crypt
 	public static function DecryptUrlSafe(string $data,
 		#[\SensitiveParameter]
 		?string $key = null
-	) /* : mixed */
+	): mixed
 	{
 		$data = \explode('.', $data);
 		if (!\is_array($data)) {
@@ -114,7 +114,7 @@ abstract class Crypt
 		$data,
 		#[\SensitiveParameter]
 		?string $key = null
-	) : array
+	): array
 	{
 		$data = \json_encode($data);
 
@@ -152,7 +152,7 @@ abstract class Crypt
 		$data,
 		#[\SensitiveParameter]
 		?string $key = null
-	) : string
+	): string
 	{
 		return \json_encode(\array_map('base64_encode', static::Encrypt($data, $key)));
 	}
@@ -162,7 +162,7 @@ abstract class Crypt
 		$data,
 		#[\SensitiveParameter]
 		?string $key = null
-	) : string
+	): string
 	{
 		return \implode('.', \array_map('MailSo\\Base\\Utils::UrlSafeBase64Encode', static::Encrypt($data, $key)));
 	}
@@ -170,7 +170,7 @@ abstract class Crypt
 	public static function SodiumDecrypt(string $data, string $nonce,
 		#[\SensitiveParameter]
 		?string $key = null
-	) /* : string|false */
+	): string|false
 	{
 		if (!\is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt')) {
 			throw new \Exception('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt not callable');
@@ -189,7 +189,7 @@ abstract class Crypt
 		string $nonce,
 		#[\SensitiveParameter]
 		?string $key = null
-	) : string
+	): string
 	{
 		if (!\is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt')) {
 			throw new \Exception('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt not callable');
@@ -209,7 +209,7 @@ abstract class Crypt
 	public static function OpenSSLDecrypt(string $data, string $iv,
 		#[\SensitiveParameter]
 		?string $key = null
-	) /* : string|false */
+	): string|false
 	{
 		if (!$data || !$iv) {
 			throw new \ValueError('$data or $iv is empty string');
@@ -236,7 +236,7 @@ abstract class Crypt
 		string $iv,
 		#[\SensitiveParameter]
 		?string $key = null
-	) : string
+	): string
 	{
 		if (!$data || !$iv) {
 			throw new \ValueError('$data or $iv is empty string');
@@ -264,7 +264,7 @@ abstract class Crypt
 	public static function XxteaDecrypt(string $data, string $salt,
 		#[\SensitiveParameter]
 		?string $key = null
-	) /* : mixed */
+	): mixed
 	{
 		if (!$data || !$salt) {
 			throw new \ValueError('$data or $salt is empty string');
@@ -281,7 +281,7 @@ abstract class Crypt
 		string $salt,
 		#[\SensitiveParameter]
 		?string $key = null
-	) : string
+	): string
 	{
 		if (!$data || !$salt) {
 			throw new \ValueError('$data or $salt is empty string');
@@ -296,7 +296,7 @@ abstract class Crypt
 		return $result;
 	}
 
-	private static function jsonDecode(string $data) /*: mixed*/
+	private static function jsonDecode(string $data): mixed
 	{
 		return \json_decode($data, true, 512, JSON_THROW_ON_ERROR);
 	}

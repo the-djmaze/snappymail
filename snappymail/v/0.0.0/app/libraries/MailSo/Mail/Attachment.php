@@ -32,7 +32,7 @@ class Attachment implements \JsonSerializable
 		$this->oBodyStructure = $oBodyStructure;
 	}
 
-	public function Clear() : self
+	public function Clear(): self
 	{
 		$this->sFolder = '';
 		$this->iUid = 0;
@@ -41,23 +41,23 @@ class Attachment implements \JsonSerializable
 		return $this;
 	}
 
-	public function Folder() : string
+	public function Folder(): string
 	{
 		return $this->sFolder;
 	}
 
-	public function Uid() : int
+	public function Uid(): int
 	{
 		return $this->iUid;
 	}
 
-	public function __call(string $name, array $arguments) //: mixed
+	public function __call(string $name, array $arguments): mixed
 	{
 		return $this->oBodyStructure->{$name}(...$arguments);
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return \array_merge([
 			'@Object' => 'Object/Attachment',

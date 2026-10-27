@@ -176,7 +176,7 @@ abstract class Keyservers
 	 * Sends a PGP public key to a public keyserver.
 	 *
 	 * @param string $host
-	 * @param mixed $key  The PGP public key.
+	 * @param string $key  The PGP public key.
 	 *
 	 * @throws Exception
 	 */

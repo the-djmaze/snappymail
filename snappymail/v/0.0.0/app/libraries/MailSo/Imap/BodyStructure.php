@@ -40,27 +40,27 @@ class BodyStructure implements \JsonSerializable
 	 */
 	private array $aSubParts;
 
-	public function Charset() : string
+	public function Charset(): string
 	{
 		return $this->sCharset;
 	}
 
-	public function ContentTransferEncoding() : string
+	public function ContentTransferEncoding(): string
 	{
 		return $this->sContentTransferEncoding;
 	}
 
-	public function ContentType() : string
+	public function ContentType(): string
 	{
 		return $this->sContentType;
 	}
 
-	public function PartID() : string
+	public function PartID(): string
 	{
 		return $this->sPartID;
 	}
 
-	public function FileName(bool $bCalculateOnEmpty = false) : string
+	public function FileName(bool $bCalculateOnEmpty = false): string
 	{
 		$sFileName = \trim($this->sFileName);
 		if (\strlen($sFileName) || !$bCalculateOnEmpty) {
@@ -90,7 +90,7 @@ class BodyStructure implements \JsonSerializable
 		return ($this->isInline() ? 'inline' : 'part' ) . $sIdx;
 	}
 
-	public function EstimatedSize() : int
+	public function EstimatedSize(): int
 	{
 		$fCoefficient = 1;
 		switch ($this->sContentTransferEncoding)
@@ -106,17 +106,17 @@ class BodyStructure implements \JsonSerializable
 		return (int) ($this->iSize * $fCoefficient);
 	}
 
-	public function SubParts() : array
+	public function SubParts(): array
 	{
 		return $this->aSubParts;
 	}
 
-	public function isInline() : bool
+	public function isInline(): bool
 	{
 		return 'inline' === $this->sDisposition || \strlen($this->sContentID);
 	}
 
-	public function isText() : bool
+	public function isText(): bool
 	{
 		return 'text/html' === $this->sContentType
 			|| 'text/plain' === $this->sContentType
@@ -125,7 +125,7 @@ class BodyStructure implements \JsonSerializable
 	}
 
 	// https://datatracker.ietf.org/doc/html/rfc3156#section-4
-	public function isPgpEncrypted() : bool
+	public function isPgpEncrypted(): bool
 	{
 		return 'multipart/encrypted' === $this->sContentType
 		 && !empty($this->aContentTypeParams['protocol'])
@@ -138,7 +138,7 @@ class BodyStructure implements \JsonSerializable
 	}
 
 	// https://datatracker.ietf.org/doc/html/rfc3156#section-5
-	public function isPgpSigned() : bool
+	public function isPgpSigned(): bool
 	{
 		return 'multipart/signed' === $this->sContentType
 		 && !empty($this->aContentTypeParams['protocol'])
@@ -149,7 +149,7 @@ class BodyStructure implements \JsonSerializable
 	}
 
 	// https://datatracker.ietf.org/doc/html/rfc2633#section-3.3
-	public function isSMimeEncrypted() : bool
+	public function isSMimeEncrypted(): bool
 	{
 		$type = \strtolower(\trim($this->aContentTypeParams['smime-type'] ?? ''));
 		return ContentType::isPkcs7Mime($this->sContentType)
@@ -158,7 +158,7 @@ class BodyStructure implements \JsonSerializable
 	}
 
 	// https://www.rfc-editor.org/rfc/rfc8551.html#section-3.5
-	public function isSMimeSigned() : bool
+	public function isSMimeSigned(): bool
 	{
 		return ('multipart/signed' === $this->sContentType
 			&& !empty($this->aContentTypeParams['protocol'])
@@ -172,7 +172,7 @@ class BodyStructure implements \JsonSerializable
 		);
 	}
 
-	protected function IsAttachment(/*BodyStructure*/ $oParent) : bool
+	protected function IsAttachment(/*BodyStructure*/ $oParent): bool
 	{
 //		return 'application/pgp-encrypted' !== $this->sContentType
 		return (!$oParent || !$oParent->isPgpEncrypted())
@@ -184,14 +184,14 @@ class BodyStructure implements \JsonSerializable
 		);
 	}
 
-	public function IsFlowedFormat() : bool
+	public function IsFlowedFormat(): bool
 	{
 		return !empty($this->aContentTypeParams['format'])
 			&& 'flowed' === \strtolower(\trim($this->aContentTypeParams['format']))
 			&& !\in_array($this->sContentTransferEncoding, array('base64', 'quoted-printable'));
 	}
 
-	public function GetHtmlAndPlainParts() : array
+	public function GetHtmlAndPlainParts(): array
 	{
 		$aParts = [];
 
@@ -231,7 +231,7 @@ class BodyStructure implements \JsonSerializable
 		return $aParts;
 	}
 
-	public function SearchCharset() : string
+	public function SearchCharset(): string
 	{
 		$gParts = $this->SearchByCallback(function ($oPart, $oParent) {
 			return $oPart->Charset() && $oPart->isText() && !$oPart->IsAttachment($oParent);
@@ -246,7 +246,7 @@ class BodyStructure implements \JsonSerializable
 		return $gParts->valid() ? $gParts->current()->Charset() : '';
 	}
 
-	public function SearchByCallback(callable $fCallback, /*BodyStructure*/ $parent = null) : iterable
+	public function SearchByCallback(callable $fCallback, /*?BodyStructure*/ $parent = null): iterable
 	{
 		if ($fCallback($this, $parent)) {
 			yield $this;
@@ -256,7 +256,7 @@ class BodyStructure implements \JsonSerializable
 		}
 	}
 
-	public function SearchAttachmentsParts() : iterable
+	public function SearchAttachmentsParts(): iterable
 	{
 		return $this->SearchByCallback(function ($oItem, $oParent) {
 //			return $oItem->IsAttachment();
@@ -264,7 +264,7 @@ class BodyStructure implements \JsonSerializable
 		});
 	}
 
-	public function SearchByContentType(string $sContentType) : iterable
+	public function SearchByContentType(string $sContentType): iterable
 	{
 		$sContentType = \strtolower($sContentType);
 		return $this->SearchByCallback(function ($oItem) use ($sContentType) {
@@ -272,14 +272,14 @@ class BodyStructure implements \JsonSerializable
 		});
 	}
 
-	public function SearchByContentTypes(array $aContentTypes) : iterable
+	public function SearchByContentTypes(array $aContentTypes): iterable
 	{
 		return $this->SearchByCallback(function ($oItem) use ($aContentTypes) {
 			return \in_array($oItem->sContentType, $aContentTypes);
 		});
 	}
 
-	public function GetPartByMimeIndex(string $sMimeIndex) : self
+	public function GetPartByMimeIndex(string $sMimeIndex): self
 	{
 		$oPart = null;
 		if (\strlen($sMimeIndex)) {
@@ -300,7 +300,7 @@ class BodyStructure implements \JsonSerializable
 		return $oPart;
 	}
 
-	private static function decodeAttrParameter(array $aParams, string $sParamName, string $sCharset) : string
+	private static function decodeAttrParameter(array $aParams, string $sParamName, string $sCharset): string
 	{
 		$sResult = '';
 		if (isset($aParams[$sParamName])) {
@@ -349,7 +349,7 @@ class BodyStructure implements \JsonSerializable
 		return $sResult;
 	}
 
-	public static function NewInstance(array $aBodyStructure, string $sPartID = '') : ?self
+	public static function NewInstance(array $aBodyStructure, string $sPartID = ''): ?self
 	{
 		if (2 > \count($aBodyStructure)) {
 			return null;
@@ -542,7 +542,7 @@ class BodyStructure implements \JsonSerializable
 	 * Returns dict with key="charset" and value="US-ASCII" for array ("CHARSET" "US-ASCII").
 	 * Keys are lowercased (StringDictionary itself does this), values are not altered.
 	 */
-	private static function getKeyValueListFromArrayList(array $aList) : array
+	private static function getKeyValueListFromArrayList(array $aList): array
 	{
 		$aDict = array();
 		$iLen = \count($aList);
@@ -557,8 +557,8 @@ class BodyStructure implements \JsonSerializable
 		return $aDict;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return array(
 			'mimeIndex' => $this->sPartID,

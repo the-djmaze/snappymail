@@ -40,15 +40,15 @@ class FolderInformation implements \JsonSerializable
 		$this->IsWritable = $bIsWritable;
 	}
 
-	public function IsFlagSupported(string $sFlag) : bool
+	public function IsFlagSupported(string $sFlag): bool
 	{
 		return \in_array('\\*', $this->PermanentFlags)
 			|| \in_array($sFlag, $this->PermanentFlags);
 //			|| \in_array($sFlag, $this->Flags);
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		$result = array(
 			'id' => $this->MAILBOXID,

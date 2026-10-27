@@ -23,7 +23,7 @@ class Settings extends \MailSo\Net\ConnectSettings
 
 	public bool $authLiteral = true;
 
-	public static function fromArray(array $aSettings) : self
+	public static function fromArray(array $aSettings): self
 	{
 		$object = parent::fromArray($aSettings);
 		$object->enabled = !empty($aSettings['enabled']);
@@ -31,8 +31,8 @@ class Settings extends \MailSo\Net\ConnectSettings
 		return $object;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		return \array_merge(
 			parent::jsonSerialize(),

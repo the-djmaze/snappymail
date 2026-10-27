@@ -31,13 +31,13 @@ class Plugin extends \RainLoop\Config\AbstractConfig
 		parent::__construct('plugin-'.$sPluginName.'.json');
 	}
 
-	protected function defaultValues() : array
+	protected function defaultValues(): array
 	{
 		return $this->aMap;
 	}
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
+//	public function jsonSerialize(): array
+	public function jsonSerialize(): mixed
 	{
 		$aData = [];
 		foreach (parent::jsonSerialize() as $sSectionKey => $aSectionValue) {
