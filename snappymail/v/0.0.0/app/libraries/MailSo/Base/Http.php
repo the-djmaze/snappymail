@@ -30,12 +30,7 @@ class Http
 		return $oInstance;
 	}
 
-	/**
-	 * @param mixed $mDefault = null
-	 *
-	 * @return mixed
-	 */
-	public static function GetServer(string $sKey, $mDefault = null)
+	public static function GetServer(string $sKey, mixed $mDefault = null): mixed
 	{
 		return isset($_SERVER[$sKey]) ? $_SERVER[$sKey] : $mDefault;
 	}

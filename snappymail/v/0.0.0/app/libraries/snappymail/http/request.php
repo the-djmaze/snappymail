@@ -76,7 +76,7 @@ abstract class Request
 		$this->stream = $stream;
 	}
 
-	public function setCABundleFile($file)
+	public function setCABundleFile(?string $file)
 	{
 		$this->ca_bundle = $file;
 	}
@@ -87,7 +87,7 @@ abstract class Request
 	 *
 	 * @return bool
 	 */
-	public function canFetchURI($uri)
+	public function canFetchURI(string $uri)
 	{
 		if ('https:' === \substr($uri, 0, 6) && !$this->supportsSSL()) {
 			\trigger_error('HTTPS URI unsupported fetching '.$uri, E_USER_WARNING);
@@ -111,7 +111,7 @@ abstract class Request
 
 	abstract protected function __doRequest(string &$method, string &$request_url, &$body, array $extra_headers) : Response;
 
-	public function doRequest($method, $request_url, /*string|array*/$body = null, array $extra_headers = array()) : ?Response
+	public function doRequest(string $method, string $request_url, string|array|null $body = null, array $extra_headers = array()) : ?Response
 	{
 		$method = \strtoupper($method);
 		$url    = $request_url;
@@ -157,12 +157,12 @@ abstract class Request
 	 * Return whether a URI should be allowed. Override this method to conform to your local policy.
 	 * By default, will attempt to fetch any http or https URI.
 	 */
-	public static function URIHasAllowedScheme($uri) : bool
+	public static function URIHasAllowedScheme(string $uri) : bool
 	{
 		return (bool) \preg_match('#^https?://#i', $uri);
 	}
 
-	public static function getSchemePort($scheme) : int
+	public static function getSchemePort(string $scheme) : int
 	{
 		return self::$scheme_ports[$scheme] ?? 0;
 	}

@@ -963,7 +963,7 @@ class Actions
 	 *
 	 * @return mixed
 	 */
-	public function GetActionParam(string $sKey, $mDefault = null)
+	public function GetActionParam(string $sKey, ?mixed $mDefault = null)
 	{
 		return isset($this->aCurrentActionParams[$sKey]) ?
 			$this->aCurrentActionParams[$sKey] : $mDefault;

@@ -18,10 +18,7 @@ class TAR
 		$this->alias = $alias ?: $filename;
 	}
 
-	/**
-	 * @param $files array|string|null
-	 */
-	public function extractTo(string $directory, $files = null, bool $overwrite = false) : bool
+	public function extractTo(string $directory, array|string|null $files = null, bool $overwrite = false) : bool
 	{
 		$fp = \gzopen($this->filename, 'rb');
 		if (!$fp) {

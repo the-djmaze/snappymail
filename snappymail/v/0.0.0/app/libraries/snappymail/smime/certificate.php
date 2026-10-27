@@ -34,7 +34,9 @@ class Certificate
 	 * A string having the format file://path/to/cert.pem; the named file must contain a PEM encoded certificate
 	 * A string containing the content of a certificate, PEM encoded, may start with -----BEGIN CERTIFICATE-----
 	 */
-	function __construct($x509cert = null, $privateKey = null)
+	function __construct(\OpenSSLCertificate|string $x509cert = null,
+		#[\SensitiveParameter]
+		\OpenSSLAsymmetricKey|\OpenSSLCertificate|array|string $privateKey = null)
 	{
 		if ($x509cert) {
 			$x509cert = \openssl_x509_read($x509cert);
