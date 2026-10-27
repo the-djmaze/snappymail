@@ -39,7 +39,7 @@ class ProcPipes
 		}
 	}
 
-	public function close(int $number): void
+	public function close(/*resource|int*/ $number): void
 	{
 		if (\array_key_exists($number, $this->pipes)) {
 			\fflush($this->pipes[$number]);
