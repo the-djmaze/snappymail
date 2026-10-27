@@ -50,8 +50,8 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 
 	function __destruct()
 	{
-		$this->GnuPG->cleardecryptkeys();
-		$this->GnuPG->clearsignkeys();
+		$this->GnuPG?->cleardecryptkeys();
+		$this->GnuPG?->clearsignkeys();
 	}
 
 	public static function isSupported(): bool
