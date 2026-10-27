@@ -80,7 +80,7 @@ abstract class DNS
 	public static function IP(string $domain): array
 	{
 		$ips = array();
-		foreach (\dns_get_record($host, \DNS_A | (\AF_INET6 ? \DNS_AAAA : 0)) ?: array() as $record) {
+		foreach (\dns_get_record($domain, \DNS_A | (\AF_INET6 ? \DNS_AAAA : 0)) ?: array() as $record) {
 			if (!empty($record['ip'])) {
 				$ips[] = $record['ip'];
 			}
