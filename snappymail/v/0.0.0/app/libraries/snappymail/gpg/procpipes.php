@@ -28,7 +28,7 @@ class ProcPipes
 
 	public function closeAll(): void
 	{
-		$this->pipes && \array_all($this->pipes, [$this, 'close']);
+		$this->pipes && \array_all(\array_keys($this->pipes), [$this, 'close']);
 		$this->pipes = [];
 	}
 
@@ -39,7 +39,7 @@ class ProcPipes
 		}
 	}
 
-	public function close(/*resource|int*/ $number): void
+	public function close(int $number): void
 	{
 		if (\array_key_exists($number, $this->pipes)) {
 			\fflush($this->pipes[$number]);
