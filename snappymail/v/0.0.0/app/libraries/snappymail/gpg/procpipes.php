@@ -26,21 +26,20 @@ class ProcPipes
 		$this->closeAll();
 	}
 
-	public function closeAll() : void
+	public function closeAll(): void
 	{
-		foreach (\array_keys($this->pipes) as $number) {
-			$this->close($number);
-		}
+		$this->pipes && \array_all($this->pipes, [$this, 'close']);
+		$this->pipes = [];
 	}
 
-	public function get(int $number)
+	public function get(int $number): mixed
 	{
 		if (\array_key_exists($number, $this->pipes) && \is_resource($this->pipes[$number])) {
 			return $this->pipes[$number];
 		}
 	}
 
-	public function close(int $number) : void
+	public function close(int $number): void
 	{
 		if (\array_key_exists($number, $this->pipes)) {
 			\fflush($this->pipes[$number]);
@@ -50,7 +49,7 @@ class ProcPipes
 	}
 
 	private $buffers = [];
-	public function readPipeLines(int $number) : iterable
+	public function readPipeLines(int $number): iterable
 	{
 		$pipe = $this->get($number);
 		if ($pipe) {
@@ -68,7 +67,7 @@ class ProcPipes
 		}
 	}
 
-	public function writePipe(int $number, string $data, int $length = 0) : int
+	public function writePipe(int $number, string $data, int $length = 0): int
 	{
 		$pipe = $this->get($number);
 		if ($pipe) {
