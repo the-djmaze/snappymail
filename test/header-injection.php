@@ -3,7 +3,7 @@
 // Run with: php test/header-injection.php
 // Enable SnappyMail Api and include index file
 $_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = true;
-require '../index.php';
+require __DIR__ . '/../index.php';
 
 function check(bool $condition, string $message): void
 {

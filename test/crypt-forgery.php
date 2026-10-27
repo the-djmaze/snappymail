@@ -27,7 +27,7 @@ namespace RainLoop {
 namespace {
 	// Enable SnappyMail Api and include index file
 	$_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = true;
-	require '../index.php';
+	require __DIR__ . '/../index.php';
 //	define('APP_SALT', 'test-salt-'.bin2hex(random_bytes(8)));
 
 	$_COOKIE['smctoken'] = base64_encode(random_bytes(16));
