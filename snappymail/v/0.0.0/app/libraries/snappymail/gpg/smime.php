@@ -1015,7 +1015,7 @@ class SMIME extends Base
 		];
 	}
 
-	protected function getPassphrase($key)
+	protected function getPassphrase(string $key): string
 	{
 		$passphrase  = '';
 		$keyIdLength = \strlen($key);

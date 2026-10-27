@@ -437,7 +437,7 @@ abstract class Base
 //		echo \shell_exec('gpg-agent --daemon --homedir $home 2>&1');
 	}
 
-	protected function getPassphrase($key): string
+	protected function getPassphrase(string $key): string
 	{
 		$passphrase  = '';
 		$keyIdLength = \strlen($key);
