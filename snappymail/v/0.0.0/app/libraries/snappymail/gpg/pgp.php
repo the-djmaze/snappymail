@@ -398,6 +398,11 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 		}
 	}
 
+	/**
+	 * Import remote key from WKD
+		gpg --auto-key-locate clear,wkd --locate-keys releases@snappymail.eu
+	 */
+
 	public function deleteKey(string $keyId, bool $private): bool
 	{
 		$key = $this->keyInfo($keyId, $private);

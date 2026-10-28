@@ -28,6 +28,7 @@ abstract class Keyservers
 		'https://pool.sks-keyservers.net',
 		'https://keys.mailvelope.com',
 		'https://keyserver.ubuntu.com',
+		'hkps://openpgpkeyserver.com',
 */
 	];
 
@@ -196,10 +197,18 @@ abstract class Keyservers
 */
 	}
 
-	/** https://wiki.gnupg.org/WKD */
-	public static function wkd(string $host, string $keyid)
+	/**
+	 * https://wiki.gnupg.org/WKD
+	 * gpg --with-wkd-hash --fingerprint releases@snappymail.eu
+	 * gpg --no-armor --export releases@snappymail.eu > i4cdqgcarfjdjnba6y4jnf498asg8c6p
+     */
+	public static function wkd(string $host, string $emailAddress)
 	{
 /*
+		$localPart = \explode('@', $emailAddress)[0];
+		$b32 = new \SnappyMail\Base32('ybndrfg8ejkmcpqxot1uwisza345h769');
+		$keyid = $b32->encode(\sha1($localPart, true));
+
 		"https://{$host}/.well-known/openpgpkey/hu/{$keyid}";
 		/** https://wiki.gnupg.org/WKD
 			DNS:
@@ -208,8 +217,8 @@ abstract class Keyservers
 			https://openpgpkey.example.com/.well-known/openpgpkey/example.com/hu/
 			else       https://example.com/.well-known/openpgpkey/hu/
 
-			An example: https://example.com/.well-known/openpgpkey/hu/it5sewh54rxz33fwmr8u6dy4bbz8itz4
-			is the direct method URL for "bernhard.reiter@example.com"
+			An example: https://snappymail.eu/.well-known/openpgpkey/hu/i4cdqgcarfjdjnba6y4jnf498asg8c6p
+			is the direct method URL for "releases@snappymail.eu"
 		*/
 	}
 
