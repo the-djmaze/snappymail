@@ -1,7 +1,7 @@
 <?php
 echo "\x1b[33;1m === Nextcloud === \x1b[0m\n";
 
-$cert_dir = $_SERVER['HOME'].'/.nextcloud/certificates';
+$cert_dir = $_SERVER['HOME'].'/.snappymail/nextcloud';
 
 $nc_destination = "{$destPath}snappymail-{$package->version}-nextcloud.tar";
 
