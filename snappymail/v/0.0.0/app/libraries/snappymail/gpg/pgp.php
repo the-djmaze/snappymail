@@ -437,7 +437,6 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 		$arguments = [
 			'--with-colons',
 			'--with-fingerprint',
-			'--with-fingerprint',
 			'--fixed-list-mode',
 			$private ? '--list-secret-keys' : '--list-public-keys'
 		];

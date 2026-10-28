@@ -184,8 +184,12 @@ class PECL implements \SnappyMail\PGP\PGPInterface
 		return $result;
 	}
 
+	/**
+	 * Delete a key from the keyring
+	 */
 	public function deleteKey(string $keyId, bool $private): bool
 	{
+//		return $this->GnuPG->deletekey($keyId, $private);
 		return $this->getGPG()->deleteKey($keyId, $private);
 	}
 
