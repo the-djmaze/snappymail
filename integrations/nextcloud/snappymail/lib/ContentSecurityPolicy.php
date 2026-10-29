@@ -37,7 +37,11 @@ class ContentSecurityPolicy extends \OCP\AppFramework\Http\ContentSecurityPolicy
 	public function getSnappyMailNonce() {
 		static $sNonce;
 		if (!$sNonce) {
-			$cspManager = \OC::$server->getContentSecurityPolicyNonceManager();
+			$cspManager = (\method_exists(\OC::$server, 'getContentSecurityPolicyNonceManager')
+				? \OC::$server->getContentSecurityPolicyNonceManager()
+				// Nextcloud 34+
+				: \OC::$server->get(\OC\Security\CSP\ContentSecurityPolicyNonceManager::class)
+			);
 			$sNonce = $cspManager->getNonce() ?: \SnappyMail\UUID::generate();
 			if (\method_exists($cspManager, 'browserSupportsCspV3') && !$cspManager->browserSupportsCspV3()) {
 				$this->addAllowedScriptDomain("'nonce-{$sNonce}'");

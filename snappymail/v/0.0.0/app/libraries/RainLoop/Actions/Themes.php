@@ -3,6 +3,7 @@
 namespace RainLoop\Actions;
 
 use RainLoop\Enumerations\Capa;
+use SnappyMail\Nextcloud;
 
 trait Themes
 {
@@ -71,8 +72,8 @@ trait Themes
 		}
 
 		if (\class_exists('OC', false)) {
-			$sDir = \OC::$SERVERROOT . '/themes'; // custom user themes
-			if (\is_dir($sDir) && ($rDirH = \opendir($sDir))) {
+			$sDir = Nextcloud::themesDir();
+			if ($sDir && ($rDirH = \opendir($sDir))) {
 				while (($sFile = \readdir($rDirH)) !== false) {
 					if ('.' !== $sFile[0] && \is_dir("{$sDir}/{$sFile}") && \file_exists("{$sDir}/{$sFile}/snappymail/style.css")) {
 						$aCache[] = $sFile . '@nextcloud';
@@ -113,8 +114,8 @@ trait Themes
 		$bLess = false;
 
 		if ('@nextcloud' === \substr($sTheme, -10)) {
-			$sBase = \OC::$WEBROOT . '/';
-			$sThemeCSSFile = \OC::$SERVERROOT . '/themes/' . \str_replace('@nextcloud', '/snappymail/style.css', $sTheme);
+			$sBase = Nextcloud::webRoot() . '/';
+			$sThemeCSSFile = Nextcloud::themesDir() . '/' . \str_replace('@nextcloud', '/snappymail/style.css', $sTheme);
 		} else {
 			$bCustomTheme = '@custom' === \substr($sTheme, -7);
 			if ($bCustomTheme) {

@@ -63,8 +63,7 @@ abstract class Log
 			}
 
 			if (\class_exists('OC')) {
-//				\OCP\Log\logger('snappymail')->log(\intval($level), $msg);
-				\OCP\Log\logger('snappymail')->{static::$levels[$level]}($msg);
+				\SnappyMail\Nextcloud::log($level, $msg);
 			}
 */
 		}
