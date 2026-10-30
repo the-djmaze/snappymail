@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Guardar alterações?",
 		"SEARCH": "Pesquisar",
 		"SPAM": "Spam",
+		"SNOOZED": "Adiados",
 		"SUBJECT": "Assunto",
 		"TEST": "Testar",
 		"TO": "Para",
@@ -43,6 +44,16 @@
 		"HELP": "Ajuda",
 		"TEXT": "Texto",
 		"ATTACHMENTS": "Anexos"
+	},
+	"SNOOZE": {
+		"TITLE": "Adiar mensagem",
+		"BUTTON": "Adiar mensagem ou alterar hora",
+		"QUICK_TOMORROW": "Até amanhã às 8h",
+		"QUICK_NEXT_WEEK": "Até à próxima semana (segunda-feira às 8h)",
+		"QUICK_LATER": "Mais tarde (daqui a 5 horas)",
+		"UNTIL": "Adiada até",
+		"RETURNED": "A mensagem adiada regressou",
+		"INVALID_DATE": "Escolha uma data e hora futuras."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Utilizador",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Não escolheu a pasta de sistema \"Rascunhos\", onde as mensagens são guardadas enquanto são escritas.",
 		"NOTIFICATION_SPAM": "Não escolheu a pasta de sistema \"Spam\", onde as mensagens de spam são colocadas.\nSe quiser eliminar as mensagens definitivamente, por favor escolha a opção \"Não usar\".\n",
 		"NOTIFICATION_TRASH": "Não escolheu a pasta de sistema \"Lixo\", onde as mensagens eliminadas são colocadas.\nSe quiser eliminar as mensagens definitivamente, por favor escolha a opção \"Não usar\".\n",
-		"NOTIFICATION_ARCHIVE": "Não escolheu a pasta de sistema \"Arquivo\", onde as mensagens arquivadas são colocadas."
+		"NOTIFICATION_ARCHIVE": "Não escolheu a pasta de sistema \"Arquivo\", onde as mensagens arquivadas são colocadas.",
+		"NOTIFICATION_SNOOZED": "Não selecionou uma pasta para mensagens adiadas. A pasta «Snoozed» será criada automaticamente quando adiar a primeira mensagem."
 	},
 	"TITLES": {
 		"MAILBOX": "Caixa de correio",

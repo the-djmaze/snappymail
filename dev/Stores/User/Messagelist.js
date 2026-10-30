@@ -355,6 +355,7 @@ MessagelistUserStore.setAction = (sFolderFullName, iSetAction, messages) => {
 		messages.forEach(oMessage => {
 			if (oMessage.isUnseen() && rootUids.push(oMessage.uid)) {
 				oMessage.flags.push('\\seen');
+				oMessage.flags.remove('snoozed');
 				if (oMessage.threads().length > 0 && oMessage.threadUnseen().includes(oMessage.uid)) {
 					oMessage.threadUnseen.remove(oMessage.uid);
 				}

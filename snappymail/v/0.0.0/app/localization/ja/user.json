@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "検索",
 		"SPAM": "迷惑メール",
+		"SNOOZED": "スヌーズ中",
 		"SUBJECT": "件名",
 		"TEST": "テスト",
 		"TO": "宛先",
@@ -43,6 +44,16 @@
 		"HELP": "ヘルプ",
 		"TEXT": "キーワード",
 		"ATTACHMENTS": "添付ファイル"
+	},
+	"SNOOZE": {
+		"TITLE": "メッセージをスヌーズ",
+		"BUTTON": "メッセージをスヌーズまたは時刻を変更",
+		"QUICK_TOMORROW": "明日の午前8時まで",
+		"QUICK_NEXT_WEEK": "来週（月曜日の午前8時）まで",
+		"QUICK_LATER": "あとで（5時間後）",
+		"UNTIL": "スヌーズ期限",
+		"RETURNED": "スヌーズしたメッセージが戻りました",
+		"INVALID_DATE": "未来の日付と時刻を選択してください。"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "ログイン",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "下書きメッセージを置くための\"Sent\"システムフォルダが選択されていません。",
 		"NOTIFICATION_SPAM": "迷惑メールを置くための\"Spam\"システムフォルダが選択されていません。\n迷惑メールが完全に削除されるのを望むのなら、\"使用しない\"オプションを選択してください。\n",
 		"NOTIFICATION_TRASH": "削除されたメッセージを置くための\"Trash\"システムフォルダが選択されていません。\n削除されたメッセージが完全に削除されるのを望むのなら、\"使用しない\"オプションを選択してください。\n",
-		"NOTIFICATION_ARCHIVE": "アーカイブされたメッセージを置くための\"Archive\"システムフォルダが選択されていません。"
+		"NOTIFICATION_ARCHIVE": "アーカイブされたメッセージを置くための\"Archive\"システムフォルダが選択されていません。",
+		"NOTIFICATION_SNOOZED": "スヌーズしたメッセージ用のフォルダーが選択されていません。最初のメッセージをスヌーズすると「Snoozed」フォルダーが自動的に作成されます。"
 	},
 	"TITLES": {
 		"MAILBOX": "メールボックス",

@@ -55,8 +55,20 @@ trait Folders
 		}
 
 		$oFolderCollection = $this->MailClient()->Folders('', '*', $HideUnsubscribed);
-
 		$oNamespaces = $this->ImapClient()->GetNamespaces();
+
+		$sSnoozeFolder = $oSettingsLocal instanceof \RainLoop\Settings
+			? \trim((string) $oSettingsLocal->GetConf('SnoozeFolder', ''))
+			: '';
+		if ('' === $sSnoozeFolder) {
+			foreach ($oFolderCollection as $oFolder) {
+				if (0 === \strcasecmp($oFolder->Name(), 'Snoozed')) {
+					$sSnoozeFolder = $oFolder->FullName;
+					break;
+				}
+			}
+		}
+
 		if ($oNamespaces) {
 			if (isset($oNamespaces->aOtherUsers[0])) try {
 				$oCollection = $this->MailClient()->Folders($oNamespaces->aOtherUsers[0]['prefix'], '*', $HideUnsubscribed);
@@ -102,6 +114,7 @@ trait Folders
 					'quotaUsage' => $aQuota ? $aQuota[0] * 1024 : null,
 					'quotaLimit' => $aQuota ? $aQuota[1] * 1024 : null,
 					'namespace' => $oNamespaces ? $oNamespaces->GetPersonalPrefix() : '',
+					'snoozeFolder' => $sSnoozeFolder,
 					'namespaces' => $oNamespaces,
 					'capabilities' => $aCapabilities
 				)
@@ -406,6 +419,7 @@ trait Folders
 		$oSettingsLocal->SetConf('JunkFolder', $this->GetActionParam('junk', ''));
 		$oSettingsLocal->SetConf('TrashFolder', $this->GetActionParam('trash', ''));
 		$oSettingsLocal->SetConf('ArchiveFolder', $this->GetActionParam('archive', ''));
+		$oSettingsLocal->SetConf('SnoozeFolder', $this->GetActionParam('snooze', ''));
 
 		return $this->DefaultResponse($oSettingsLocal->save());
 	}

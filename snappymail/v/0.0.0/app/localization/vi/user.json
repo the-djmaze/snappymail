@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Tìm kiếm",
 		"SPAM": "Thư rác",
+		"SNOOZED": "Đã tạm hoãn",
 		"SUBJECT": "Tiêu đề",
 		"TEST": "Thử nghiệm",
 		"TO": "Gửi đến",
@@ -43,6 +44,16 @@
 		"HELP": "Hỗ trợ",
 		"TEXT": "Nội dung trong mail",
 		"ATTACHMENTS": "Phần đính kèm"
+	},
+	"SNOOZE": {
+		"TITLE": "Tạm hoãn thư",
+		"BUTTON": "Tạm hoãn thư hoặc đổi thời gian",
+		"QUICK_TOMORROW": "Đến 8 giờ sáng mai",
+		"QUICK_NEXT_WEEK": "Đến tuần sau (thứ Hai, 8 giờ sáng)",
+		"QUICK_LATER": "Để sau (5 giờ nữa)",
+		"UNTIL": "Tạm hoãn đến",
+		"RETURNED": "Thư đã tạm hoãn đã quay lại",
+		"INVALID_DATE": "Hãy chọn ngày và giờ trong tương lai."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Đăng nhập",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Bạn vẫn chưa chọn thư mục hệ thống cho mục \"Thư nháp\" nơi mà những bản nháp sẽ được lưu lại lúc bạn viết thư.",
 		"NOTIFICATION_SPAM": "Bạn vẫn chưa chọn thư mục hệ thống \"Thư rác\" nơi mà những bức thư rác sẽ được lưu vào.\nNếu bạn muốn xóa hẳn những bức thư rác này, xin hãy chọn \"Không dùng thư mục này\"\n",
 		"NOTIFICATION_TRASH": "Bạn vẫn chưa chọn thư mục hệ thống \"Thùng rác\" nơi mà những bức thư bạn xóa đi sẽ được bỏ vào.\nNếu bạn muốn xóa hẳn những bức thư này, xin hãy chọn \"Không dùng thư mục này\"\n",
-		"NOTIFICATION_ARCHIVE": "Bạn vẫn chưa chọn thư mục hệ thống \"Kho lưu trữ\" nơi mà những bức thư được lưu kho sẽ được đưa vào."
+		"NOTIFICATION_ARCHIVE": "Bạn vẫn chưa chọn thư mục hệ thống \"Kho lưu trữ\" nơi mà những bức thư được lưu kho sẽ được đưa vào.",
+		"NOTIFICATION_SNOOZED": "Bạn chưa chọn thư mục cho thư tạm hoãn. Thư mục \"Snoozed\" sẽ tự động được tạo khi bạn tạm hoãn thư đầu tiên."
 	},
 	"TITLES": {
 		"MAILBOX": "Hộp thư",

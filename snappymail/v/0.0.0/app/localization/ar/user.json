@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "لم يتم ايجاد جهة الإتصال",
 		"SPAM": "رسائل إلكترونية مزعجة",
+		"SNOOZED": "مؤجل",
 		"SUBJECT": "الموضوع",
 		"TEST": "تجريب",
 		"TO": "الى",
@@ -43,6 +44,16 @@
 		"HELP": "المساعدة",
 		"TEXT": "النص",
 		"ATTACHMENTS": "الملحقات"
+	},
+	"SNOOZE": {
+		"TITLE": "تأجيل الرسالة",
+		"BUTTON": "تأجيل الرسالة أو تغيير موعدها",
+		"QUICK_TOMORROW": "غدًا، الساعة 8 صباحًا",
+		"QUICK_NEXT_WEEK": "الأسبوع القادم (الاثنين، الساعة 8 صباحًا)",
+		"QUICK_LATER": "لاحقًا (بعد 5 ساعات)",
+		"UNTIL": "مؤجلة حتى",
+		"RETURNED": "عادت الرسالة المؤجلة",
+		"INVALID_DATE": "اختر تاريخًا ووقتًا في المستقبل."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "تسيجيل الدخول",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "You haven't selected \"Drafts\" system folder messages are saved to while composing.\n",
 		"NOTIFICATION_SPAM": "You haven't selected \"Spam\" system folder spamed messages are placed to.\nIf you wish to remove messages permanently, please select \"Do not use\" option.\n",
 		"NOTIFICATION_TRASH": "You haven't selected \"Trash\" system folder deleted messages are placed to.\nIf you wish to remove messages permanently, please select \"Do not use\" option.\n",
-		"NOTIFICATION_ARCHIVE": "You haven't selected \"Archive\" system folder achived messages are placed to.\n"
+		"NOTIFICATION_ARCHIVE": "You haven't selected \"Archive\" system folder achived messages are placed to.\n",
+		"NOTIFICATION_SNOOZED": "لم تختر مجلدًا للرسائل المؤجلة. سيُنشأ مجلد «Snoozed» تلقائيًا عند تأجيل أول رسالة."
 	},
 	"TITLES": {
 		"MAILBOX": "صندوق البريد",

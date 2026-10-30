@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Enregistrer les modifications?",
 		"SEARCH": "Rechercher",
 		"SPAM": "Indésirable",
+		"SNOOZED": "En attente",
 		"SUBJECT": "Sujet",
 		"TEST": "Test",
 		"TO": "À",
@@ -43,6 +44,16 @@
 		"HELP": "Aide",
 		"TEXT": "Texte",
 		"ATTACHMENTS": "Pièces jointes"
+	},
+	"SNOOZE": {
+		"TITLE": "Reporter le message",
+		"BUTTON": "Reporter le message ou modifier l’heure",
+		"QUICK_TOMORROW": "Jusqu’à demain, 8 h",
+		"QUICK_NEXT_WEEK": "Jusqu’à la semaine prochaine (lundi, 8 h)",
+		"QUICK_LATER": "Plus tard (dans 5 heures)",
+		"UNTIL": "En attente jusqu’au",
+		"RETURNED": "Un message reporté est revenu",
+		"INVALID_DATE": "Choisissez une date et une heure futures."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Identifiant",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Vous n'avez pas sélectionné de dossier \"Brouillons\" où enregistrer les messages en cours de rédaction.",
 		"NOTIFICATION_SPAM": "Vous n'avez pas sélectionné de dossier \"Spam\" où placer les indésirables.\nSi vous ne souhaitez pas supprimer définitivement les messages, sélectionnez l'option \"Ne pas utiliser\".",
 		"NOTIFICATION_TRASH": "Vous n'avez pas sélectionné de dossier \"Corbeille\" où placer les messages supprimés.\nSi vous ne souhaitez pas supprimer définitivement les messages, sélectionnez l'option \"Ne pas utiliser\".",
-		"NOTIFICATION_ARCHIVE": "Vous n'avez pas sélectionné de dossier \"Archive\" où placer les messages archivés."
+		"NOTIFICATION_ARCHIVE": "Vous n'avez pas sélectionné de dossier \"Archive\" où placer les messages archivés.",
+		"NOTIFICATION_SNOOZED": "Vous n’avez pas choisi de dossier pour les messages reportés. Un dossier « Snoozed » sera créé automatiquement lors du premier report."
 	},
 	"TITLES": {
 		"MAILBOX": "Boîte mail",

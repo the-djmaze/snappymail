@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Ni ujemajočih stikov",
 		"SPAM": "Vsiljena pošta",
+		"SNOOZED": "Odloženo",
 		"SUBJECT": "Zadeva",
 		"TEST": "Preizkusi",
 		"TO": "Za",
@@ -43,6 +44,16 @@
 		"HELP": "Pomoč",
 		"TEXT": "Besedilo",
 		"ATTACHMENTS": "Priloge"
+	},
+	"SNOOZE": {
+		"TITLE": "Odloži sporočilo",
+		"BUTTON": "Odloži sporočilo ali spremeni čas",
+		"QUICK_TOMORROW": "Do jutri ob 8.00",
+		"QUICK_NEXT_WEEK": "Do naslednjega tedna (ponedeljek ob 8.00)",
+		"QUICK_LATER": "Pozneje (čez 5 ur)",
+		"UNTIL": "Odloženo do",
+		"RETURNED": "Odloženo sporočilo se je vrnilo",
+		"INVALID_DATE": "Izberite prihodnji datum in uro."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Prijava",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Niste izbrali sistemske mape \"Osnutki\" za začasno shranjevanje sporočil med sestavljanjem.",
 		"NOTIFICATION_SPAM": "Niste izbrali sistemske mape \"Vsiljena pošta\" za shranjevanje vsiljene pošte.\nČe želite vsiljeno pošto sproti brisati, izberite možnost \"Ne uporabi\".\n",
 		"NOTIFICATION_TRASH": "Niste izbrali sistemske mape \"Smetnjak\" za izbrisana sporočila pred trajnim brisanjem.\nČe jih želite vedno trajno izbrisati, izberite možnost \"Ne uporabi\".\n",
-		"NOTIFICATION_ARCHIVE": "Niste izbrali sistemske mape \"Arhiv\" za trajno arhiviranje sporočil."
+		"NOTIFICATION_ARCHIVE": "Niste izbrali sistemske mape \"Arhiv\" za trajno arhiviranje sporočil.",
+		"NOTIFICATION_SNOOZED": "Niste izbrali mape za odložena sporočila. Mapa »Snoozed« bo samodejno ustvarjena, ko odložite prvo sporočilo."
 	},
 	"TITLES": {
 		"MAILBOX": "Nabiralnik",
