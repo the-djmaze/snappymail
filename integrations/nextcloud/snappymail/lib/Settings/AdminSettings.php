@@ -17,7 +17,7 @@ class AdminSettings implements ISettings
 
 	public function getForm()
 	{
-		\OCA\SnappyMail\Util\SnappyMailHelper::loadApp();
+		SnappyMailHelper::loadApp();
 
 		$keys = [
 			'snappymail-autologin',
@@ -27,10 +27,9 @@ class AdminSettings implements ISettings
 		];
 		$parameters = [];
 		foreach ($keys as $k) {
-			$v = $this->config->getAppValue('snappymail', $k);
-			$parameters[$k] = $v;
+			$parameters[$k] = $this->config->getAppValue('snappymail', $k);
 		}
-		$uid = \OC::$server->getUserSession()->getUser()->getUID();
+		$uid = SnappyMailHelper::getUID();
 		if (\OC_User::isAdminUser($uid)) {
 //			$parameters['snappymail-admin-panel-link'] = SnappyMailHelper::getAppUrl().'?admin';
 			SnappyMailHelper::loadApp();
@@ -49,7 +48,7 @@ class AdminSettings implements ISettings
 		$parameters['snappymail-admin-password'] = $sPassword;
 
 		$parameters['can-import-rainloop'] = $sPassword && \is_dir(
-			\rtrim(\trim(\OC::$server->getSystemConfig()->getValue('datadirectory', '')), '\\/')
+			\rtrim(\trim(SnappyMailHelper::getSystemConfigValue('datadirectory', '')), '\\/')
 			. '/rainloop-storage'
 		);
 

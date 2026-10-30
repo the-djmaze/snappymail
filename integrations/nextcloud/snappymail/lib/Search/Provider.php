@@ -91,8 +91,7 @@ class Provider implements IProvider
 			$MessageCollection = $oMailClient->MessageList($oParams);
 
 			$baseURL = $this->urlGenerator->linkToRoute('snappymail.page.index');
-//			$config = \OC::$server->getConfig();
-//			if ($config->getAppValue('snappymail', 'snappymail-no-embed')) {
+//			if (SnappyMailHelper::getAppConfigValue('snappymail-no-embed')) {
 //				$baseURL .= '?target=';
 //			} else {
 				$baseURL .= '#';

@@ -1,6 +1,7 @@
 <?php
 namespace OCA\SnappyMail\Settings;
 
+use OCA\SnappyMail\Util\SnappyMailHelper;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IConfig;
 use OCP\Settings\ISettings;
@@ -16,7 +17,7 @@ class PersonalSettings implements ISettings
 
 	public function getForm()
 	{
-		$uid = \OC::$server->getUserSession()->getUser()->getUID();
+		$uid = SnappyMailHelper::getUID();
 		$sEmail = $this->config->getUserValue($uid, 'snappymail', 'snappymail-email');
 		if ($sPass = $this->config->getUserValue($uid, 'snappymail', 'snappymail-password')) {
 			$this->config->deleteUserValue($uid, 'snappymail', 'snappymail-password');
