@@ -16,6 +16,8 @@ class PageController extends Controller
 	 */
 	public function index()
 	{
+        $nav = SnappyMailHelper::getNavigationManager();
+
 		$bAdmin = false;
 		if (!empty($_SERVER['QUERY_STRING'])) {
 			SnappyMailHelper::loadApp();
@@ -26,7 +28,7 @@ class PageController extends Controller
 		}
 
 		if (!$bAdmin && SnappyMailHelper::getAppConfigValue('snappymail-no-embed')) {
-			\OC::$server->getNavigationManager()->setActiveEntry('snappymail');
+            $nav->setActiveEntry('snappymail');
 			\OCP\Util::addScript('snappymail', 'snappymail');
 			\OCP\Util::addStyle('snappymail', 'style');
 			SnappyMailHelper::startApp();
@@ -41,7 +43,7 @@ class PageController extends Controller
 			return $response;
 		}
 
-		\OC::$server->getNavigationManager()->setActiveEntry('snappymail');
+		$nav->setActiveEntry('snappymail');
 
 		\OCP\Util::addStyle('snappymail', 'embed');
 

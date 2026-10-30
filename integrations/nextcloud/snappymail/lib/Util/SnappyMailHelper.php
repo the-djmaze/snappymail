@@ -42,6 +42,14 @@ class SnappyMailHelper
 		)->getAppValue('snappymail', $key, $default);
 	}
 
+	public static function getNavigationManager(): object
+	{
+		return \method_exists(\OC::$server, 'getNavigationManager')
+			? \OC::$server->getNavigationManager()
+			// Nextcloud 32+
+			: \OCP\Server::get(\OCP\INavigationManager::class);
+	}
+
 	public static function getSystemConfigValue(string $key, mixed $default = null): mixed
 	{
 		return \method_exists(\OC::$server, 'getSystemConfig')
