@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Engir tengiliðir fundust",
 		"SPAM": "Ruslpóstur",
+		"SNOOZED": "Frestað",
 		"SUBJECT": "Viðfangsefni",
 		"TEST": "Prófa",
 		"TO": "Til",
@@ -43,6 +44,16 @@
 		"HELP": "Hjálp",
 		"TEXT": "Texti",
 		"ATTACHMENTS": "Viðhengi"
+	},
+	"SNOOZE": {
+		"TITLE": "Fresta skilaboðum",
+		"BUTTON": "Fresta skilaboðum eða breyta tíma",
+		"QUICK_TOMORROW": "Til morguns kl. 8",
+		"QUICK_NEXT_WEEK": "Til næstu viku (mánudags kl. 8)",
+		"QUICK_LATER": "Síðar (eftir 5 klukkustundir)",
+		"UNTIL": "Frestað til",
+		"RETURNED": "Frestuð skilaboð komu til baka",
+		"INVALID_DATE": "Veldu dagsetningu og tíma í framtíðinni."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Innskráning",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Þú hefur ekki valið kerfismöppuna \"Drög\" þar sem skilaboð sem eru vistuð í á meðan þú skrifar.",
 		"NOTIFICATION_SPAM": "Þú hefur ekki valið kerfismöppuna \"Ruslpóstur\" sem ruslsendingar eru settar í.\nEf þú vilt fjarlægja skilaboðin endanlega, veldu þá valkostinn \"Ekki nota\".\n",
 		"NOTIFICATION_TRASH": "Þú hefur ekki valið kerfismöppuna \"Ruslafata\" sem eydd skilaboð eru sett í.\nEf þú vilt fjarlægja skilaboðin endanlega, veldu þá valkostinn \"Ekki nota\".\n",
-		"NOTIFICATION_ARCHIVE": "Þú hefur ekki valið kerfismöppuna \"Safnskrá\" undir skilaboð sem á að geyma til langs tíma."
+		"NOTIFICATION_ARCHIVE": "Þú hefur ekki valið kerfismöppuna \"Safnskrá\" undir skilaboð sem á að geyma til langs tíma.",
+		"NOTIFICATION_SNOOZED": "Þú hefur ekki valið möppu fyrir frestuð skilaboð. Mappan „Snoozed“ verður sjálfkrafa búin til þegar fyrstu skilaboðunum er frestað."
 	},
 	"TITLES": {
 		"MAILBOX": "Pósthólf",

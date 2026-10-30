@@ -226,6 +226,7 @@ trait Accounts
 			$aResult['JunkFolder'] = (string) $oSettingsLocal->GetConf('JunkFolder', '');
 			$aResult['TrashFolder'] = (string) $oSettingsLocal->GetConf('TrashFolder', '');
 			$aResult['ArchiveFolder'] = (string) $oSettingsLocal->GetConf('ArchiveFolder', '');
+			$aResult['SnoozeFolder'] = (string) $oSettingsLocal->GetConf('SnoozeFolder', '');
 			$aResult['HideUnsubscribed'] = (bool) $oSettingsLocal->GetConf('HideUnsubscribed', $aResult['HideUnsubscribed']);
 			$aResult['defaultSort'] = (string) $oSettingsLocal->GetConf('defaultSort', $aResult['defaultSort']);
 			$aResult['useThreads'] = (bool) $oSettingsLocal->GetConf('UseThreads', $aResult['useThreads']);

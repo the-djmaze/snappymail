@@ -209,6 +209,11 @@ export class MessageModel extends AbstractModel {
 			isUnseen: () => !this.flags().includes('\\seen'),
 			isFlagged: () => this.flags().includes('\\flagged'),
 			isDeleted: () => this.flags().includes('\\deleted'),
+			snoozedUntil: () => {
+				const flag = this.flags().find(value => /^snoozed_[0-9]+$/.test(value));
+				return flag ? Number(flag.slice(8)) : 0;
+			},
+			isSnoozed: () => this.snoozedUntil() || this.flags().includes('snoozed'),
 //			isJunk: () => this.flags().includes('$junk') && !this.flags().includes('$nonjunk'),
 //			isPhishing: () => this.flags().includes('$phishing'),
 
@@ -371,6 +376,8 @@ export class MessageModel extends AbstractModel {
 			unseen: this.isUnseen(),
 			focused: this.focused(),
 			priorityHigh: this.priority === 1,
+			snoozed: this.isSnoozed(),
+			'snoozed-returned': this.flags().includes('snoozed') && this.isUnseen(),
 			withAttachments: !!this.attachments().length,
 			// hasChildrenMessage: 1 < this.threadsLen()
 		}, (key, value) => value && classes.push(key));

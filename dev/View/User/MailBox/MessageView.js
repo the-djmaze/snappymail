@@ -54,6 +54,7 @@ import { MessageModel } from 'Model/Message';
 
 import { showScreenPopup } from 'Knoin/Knoin';
 import { OpenPgpImportPopupView } from 'View/Popup/OpenPgpImport';
+import { SnoozePopupView } from 'View/Popup/Snooze';
 import { GnuPGUserStore } from 'Stores/User/GnuPG';
 import { OpenPGPUserStore } from 'Stores/User/OpenPGP';
 
@@ -171,6 +172,10 @@ export class MailMessageView extends AbstractViewRight {
 			tagsAllowed: () => FolderUserStore.currentFolder()?.tagsAllowed(),
 
 			messageVisible: () => !MessageUserStore.loading() && !!currentMessage(),
+
+			canSnooze: () => this.messageVisible()
+				&& !MessagelistUserStore.isDraftFolder()
+				&& !MessagelistUserStore.isSentFolder(),
 
 			tagsToHTML: () => currentMessage()?.flags().map(value =>
 					isAllowedKeyword(value)
@@ -310,6 +315,11 @@ export class MailMessageView extends AbstractViewRight {
 
 	closeMessage() {
 		currentMessage(null);
+	}
+
+	snoozeMessage() {
+		const message = currentMessage();
+		message && showScreenPopup(SnoozePopupView, [message]);
 	}
 
 	editCommand() {

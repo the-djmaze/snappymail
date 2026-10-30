@@ -154,6 +154,10 @@
 					<div class="flagParent fontastic"></div>
 					<div class="senderParent" data-bind="attr: {title: senderClearEmailsString}, text: senderEmailsString"></div>
 					<div class="subjectParent" data-bind="text: subject"></div>
+					<div class="snoozedDate" data-bind="visible: snoozedUntil()">
+						<i class="icon-file-calendar"></i>
+						<time data-time-format="FULL" data-bind="time: snoozedUntil"></time>
+					</div>
 					<div class="threads-len" data-bind="visible: 1 < threadsLen(), text: threadsLenText(), attr: {'data-unseen': threadUnseenLen() || null}"></div>
 					<div class="attachmentParent">
 						<i data-bind="css: attachmentIconClass"></i>
@@ -174,6 +178,10 @@
 					<div class="flagParent fontastic"></div>
 					<div class="senderParent" data-bind="attr: {title: senderClearEmailsString}, text: senderEmailsString"></div>
 					<div class="subjectParent" data-bind="text: subject"></div>
+					<div class="snoozedDate" data-bind="visible: snoozedUntil()">
+						<i class="icon-file-calendar"></i>
+						<time data-time-format="FULL" data-bind="time: snoozedUntil"></time>
+					</div>
 					<div class="threads-len" data-bind="visible: 1 < threadsLen(), text: threadsLenText(), attr: {'data-unseen': threadUnseenLen() || null}"></div>
 					<div class="attachmentParent">
 						<i data-bind="css: attachmentIconClass"></i>

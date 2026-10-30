@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Kontaktų nerasta",
 		"SPAM": "Žymėti kaip šlamštas",
+		"SNOOZED": "Atidėti",
 		"SUBJECT": "Tema",
 		"TEST": "Bandyti",
 		"TO": "Kam",
@@ -43,6 +44,16 @@
 		"HELP": "Pagalba",
 		"TEXT": "Laiško Tekstas",
 		"ATTACHMENTS": "Priedai"
+	},
+	"SNOOZE": {
+		"TITLE": "Atidėti laišką",
+		"BUTTON": "Atidėti laišką arba pakeisti laiką",
+		"QUICK_TOMORROW": "Iki rytojaus 8 val.",
+		"QUICK_NEXT_WEEK": "Iki kitos savaitės (pirmadienio 8 val.)",
+		"QUICK_LATER": "Vėliau (po 5 valandų)",
+		"UNTIL": "Atidėta iki",
+		"RETURNED": "Atidėtas laiškas grįžo",
+		"INVALID_DATE": "Pasirinkite būsimą datą ir laiką."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Prisijungimo vardas",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Nepasirinkote  \"Juodraščiai\" sisteminio katalogo žinutėms, kurios saugomos kol jas rašote.",
 		"NOTIFICATION_SPAM": "Nepasirinkote \"Šlamštas\" sisteminio katalogo laikyti nepageidaujamies laiškams.\nJei norite nekaupti šlamšto ir iškart išmesti, pasirinkite \"Nenaudoti\" variantą.\n",
 		"NOTIFICATION_TRASH": "Nepasirinkote \"Šiukšliadėžė\" sisteminio katalogo ištrintoms žinutėms.\nJei nenorite naudotis šiukšliadėže ir išmesti laiškus visam laikui iškart juos trinant, pasirinkite  \"Nenaudoti\" variantą.\n",
-		"NOTIFICATION_ARCHIVE": "Nepasirinkote \"Archyvas\" sisteminio katalogo."
+		"NOTIFICATION_ARCHIVE": "Nepasirinkote \"Archyvas\" sisteminio katalogo.",
+		"NOTIFICATION_SNOOZED": "Nepasirinkote aplanko atidėtiems laiškams. Pirmą kartą atidėjus laišką, aplankas „Snoozed“ bus sukurtas automatiškai."
 	},
 	"TITLES": {
 		"MAILBOX": "Pašto dėžutė",

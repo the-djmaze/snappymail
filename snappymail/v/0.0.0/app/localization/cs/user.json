@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Uložit změny?",
 		"SEARCH": "Nebyly nalezeny žádné kontakty",
 		"SPAM": "Spam",
+		"SNOOZED": "Odložené",
 		"SUBJECT": "Předmět",
 		"TEST": "Test",
 		"TO": "Příjemce",
@@ -43,6 +44,16 @@
 		"HELP": "Nápověda",
 		"TEXT": "Text",
 		"ATTACHMENTS": "Přílohy"
+	},
+	"SNOOZE": {
+		"TITLE": "Odložit zprávu",
+		"BUTTON": "Odložit zprávu nebo změnit čas",
+		"QUICK_TOMORROW": "Do zítřka, 8:00",
+		"QUICK_NEXT_WEEK": "Do příštího týdne (pondělí, 8:00)",
+		"QUICK_LATER": "Později (za 5 hodin)",
+		"UNTIL": "Odloženo do",
+		"RETURNED": "Odložená zpráva se vrátila",
+		"INVALID_DATE": "Vyberte budoucí datum a čas."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Uživatelské jméno",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Nevybrali jste systémovou složku pro \"Koncepty\" kam jsou ukládány zprávy během jejich psaní.",
 		"NOTIFICATION_SPAM": "Nevybrali jste systémovou složku pro \"Spam\" kam je ukládána nevyžádaná pošta.\nPokud chcete tyto zprávy odstranit natrvalo, vyberte prosím možnost \"Nepoužívat\".\n",
 		"NOTIFICATION_TRASH": "Nevybrali jste systémovou složku pro \"Koš\" kam jsou zprávy přesunuté pro jejich odstranění.\nPokud chcete zprávy odstranit natrvalo, vyberte prosím možnost \"Nepoužívat\".\n",
-		"NOTIFICATION_ARCHIVE": "Nevybrali jste systémovou složku \"Archiv\", kam se ukládají archivované zprávy."
+		"NOTIFICATION_ARCHIVE": "Nevybrali jste systémovou složku \"Archiv\", kam se ukládají archivované zprávy.",
+		"NOTIFICATION_SNOOZED": "Nevybrali jste složku pro odložené zprávy. Při prvním odložení zprávy se automaticky vytvoří složka „Snoozed“."
 	},
 	"TITLES": {
 		"MAILBOX": "Schránka zpráv",

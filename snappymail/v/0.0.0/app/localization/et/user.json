@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Kontakte ei leitud",
 		"SPAM": "Märgi rämpspostiks",
+		"SNOOZED": "Edasilükatud",
 		"SUBJECT": "Pealkiri",
 		"TEST": "Kontrolli",
 		"TO": "Saaja",
@@ -43,6 +44,16 @@
 		"HELP": "Abi",
 		"TEXT": "Tekst",
 		"ATTACHMENTS": "Manused"
+	},
+	"SNOOZE": {
+		"TITLE": "Lükka kiri edasi",
+		"BUTTON": "Lükka kiri edasi või muuda aega",
+		"QUICK_TOMORROW": "Homseni kell 8",
+		"QUICK_NEXT_WEEK": "Järgmise nädalani (esmaspäev kell 8)",
+		"QUICK_LATER": "Hiljem (5 tunni pärast)",
+		"UNTIL": "Edasi lükatud kuni",
+		"RETURNED": "Edasilükatud kiri saabus tagasi",
+		"INVALID_DATE": "Vali tulevane kuupäev ja kellaaeg."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Logi sisse",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Sa pole valinud kausta, kuhu mustandid kirjutamise ajal salvestatakse.",
 		"NOTIFICATION_SPAM": "Sa pole valinud süsteemset kausta rämpspostiks märgitud kirjadele.\nKui sa ei soovi rämpspostiks märgitud kirju salvestada, vali \"Ära kasuta\".\n",
 		"NOTIFICATION_TRASH": "Sa pole valinud süsteemset kausta kustutatud kirjadele.\nKui sa ei soovi kustutatud kirju salvestada, vali \"Ära kasuta\".\n",
-		"NOTIFICATION_ARCHIVE": "Sa pole valinud kausta, kuhu arhiveeritud kirjad salvestatakse."
+		"NOTIFICATION_ARCHIVE": "Sa pole valinud kausta, kuhu arhiveeritud kirjad salvestatakse.",
+		"NOTIFICATION_SNOOZED": "Sa pole edasilükatud kirjade jaoks kausta valinud. Esimese kirja edasilükkamisel luuakse automaatselt kaust „Snoozed”."
 	},
 	"TITLES": {
 		"MAILBOX": "Postkast",

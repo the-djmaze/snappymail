@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Nenašli sa žiadne kontakty",
 		"SPAM": "Spam",
+		"SNOOZED": "Odložené",
 		"SUBJECT": "Predmet",
 		"TEST": "Test",
 		"TO": "Príjemca",
@@ -43,6 +44,16 @@
 		"HELP": "Pomoc",
 		"TEXT": "Text",
 		"ATTACHMENTS": "Prílohy"
+	},
+	"SNOOZE": {
+		"TITLE": "Odložiť správu",
+		"BUTTON": "Odložiť správu alebo zmeniť čas",
+		"QUICK_TOMORROW": "Do zajtra, 8:00",
+		"QUICK_NEXT_WEEK": "Do budúceho týždňa (pondelok, 8:00)",
+		"QUICK_LATER": "Neskôr (o 5 hodín)",
+		"UNTIL": "Odložené do",
+		"RETURNED": "Odložená správa sa vrátila",
+		"INVALID_DATE": "Vyberte dátum a čas v budúcnosti."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Používateľské meno",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Nepriradili ste systémový priečinok pre \"Koncepty\" kam sú správy ukladané počas ich písania.",
 		"NOTIFICATION_SPAM": "Nepriradili ste systémový priečinok pre \"Spam\" kam sú ukladané nevyžiadané správy.\nAk si želáte takéto správy odstraňovať natrvalo, vyberte prosím možnosť \"Nepoužívať\".\n",
 		"NOTIFICATION_TRASH": "Nepriradili ste systémový priečinok pre \"Kôš\" kam sú správy presunuté po ich odstránení.\nAk si želáte takéto správy odstraňovať natrvalo, vyberte prosím možnosť \"Nepoužívať\".\n",
-		"NOTIFICATION_ARCHIVE": "Nepriradili ste systémový priečinok  pre \"Archív\" kam budú uložené archivované správy."
+		"NOTIFICATION_ARCHIVE": "Nepriradili ste systémový priečinok  pre \"Archív\" kam budú uložené archivované správy.",
+		"NOTIFICATION_SNOOZED": "Nevybrali ste priečinok pre odložené správy. Pri prvom odložení správy sa automaticky vytvorí priečinok „Snoozed“."
 	},
 	"TITLES": {
 		"MAILBOX": "Schránka správ",

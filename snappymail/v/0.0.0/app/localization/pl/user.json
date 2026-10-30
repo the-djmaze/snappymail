@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Zapisać zmiany?",
 		"SEARCH": "Szukaj",
 		"SPAM": "Spam",
+		"SNOOZED": "Odłożone",
 		"SUBJECT": "Temat",
 		"TEST": "Testuj",
 		"TO": "Do",
@@ -43,6 +44,16 @@
 		"HELP": "Pomoc",
 		"TEXT": "Tekst",
 		"ATTACHMENTS": "Załączniki"
+	},
+	"SNOOZE": {
+		"TITLE": "Odłóż wiadomość",
+		"BUTTON": "Odłóż wiadomość lub zmień czas",
+		"QUICK_TOMORROW": "Do jutra, godz. 8:00",
+		"QUICK_NEXT_WEEK": "Do przyszłego tygodnia (poniedziałek, godz. 8:00)",
+		"QUICK_LATER": "Później (za 5 godzin)",
+		"UNTIL": "Odłożono do",
+		"RETURNED": "Odłożona wiadomość wróciła",
+		"INVALID_DATE": "Wybierz przyszłą datę i godzinę."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Nie wybrano folderu \"Wersje robocze\", do którego są zapisywane wiadomości w trakcie ich tworzenia.",
 		"NOTIFICATION_SPAM": "Nie wybrano folderu \"Spam\", do którego przenoszone są niepożądane wiadomości.\nJeżeli niechciane wiadomości mają być usuwane trwale, proszę o zaznaczenie opcji \"Nie używaj\".\n",
 		"NOTIFICATION_TRASH": "Nie wybrano folderu \"Kosz\", do którego przenoszone są wszystkie usunięte wiadomości.\nJeżeli wiadomości mają być usuwane trwale, proszę o zaznaczenie opcji \"Nie używaj\".\n",
-		"NOTIFICATION_ARCHIVE": "Nie został wybrany folder \"Archiwum\", zostanie użyty systemowy folder archiwizacji wiadomości."
+		"NOTIFICATION_ARCHIVE": "Nie został wybrany folder \"Archiwum\", zostanie użyty systemowy folder archiwizacji wiadomości.",
+		"NOTIFICATION_SNOOZED": "Nie wybrano folderu dla odłożonych wiadomości. Folder „Snoozed” zostanie utworzony automatycznie po odłożeniu pierwszej wiadomości."
 	},
 	"TITLES": {
 		"MAILBOX": "Skrzynka odbiorcza",

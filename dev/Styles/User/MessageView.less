@@ -36,6 +36,10 @@
 	visibility: visible;
 }
 
+.icon-file-calendar::before {
+	font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+}
+
 .messageView {
 	background-color: var(--panel-bg-clr, #fff);
 	border: 1px solid var(--border-color, #aaa);
@@ -47,6 +51,18 @@
 		content: '! '; /*❗*/
 		color: red;
 		font-weight: bolder;
+	}
+
+	.snoozedNotice {
+		background-color: rgba(243, 201, 105, 0.22);
+		border-bottom: 1px solid var(--border-color, #aaa);
+		color: #8a5a00;
+		padding: 6px 12px;
+	}
+	.snoozedNotice.snoozedReturned {
+		background-color: rgba(243, 174, 54, 0.36);
+		color: #8a5a00;
+		font-weight: 600;
 	}
 
 	.b-message {

@@ -62,6 +62,14 @@ import {
 } from 'Common/Folders';
 import { loadFolders } from 'Model/FolderCollection';
 
+let snoozeProcessTimer = 0;
+const
+	hasSnoozedFolder = folders => folders().some(folder =>
+		(folder.fullName === FolderUserStore.snoozedFolder()
+			|| 'snoozed' === folder.name().toLowerCase())
+		|| hasSnoozedFolder(folder.subFolders)
+	);
+
 export class AppUser extends AbstractApp {
 	constructor() {
 		super(Remote);
@@ -195,6 +203,19 @@ export class AppUser extends AbstractApp {
 						setRefreshFoldersInterval(SettingsGet('CheckMailInterval'));
 
 						loadAccountsAndIdentities();
+						const processSnoozes = () => {
+							if (hasSnoozedFolder(FolderUserStore.folderList)) {
+								Remote.request('SnoozeProcess', (iError, oData) => {
+									if (iError) {
+										console.error('Snooze processing failed', iError);
+									} else if (oData?.Result?.moved > 0) {
+										loadFolders(() => MessagelistUserStore.reload(true, true));
+									}
+								});
+							}
+						};
+						processSnoozes();
+						snoozeProcessTimer || (snoozeProcessTimer = setInterval(processSnoozes, 60000));
 
 						setTimeout(() => {
 							const cF = FolderUserStore.currentFolderFullName();
