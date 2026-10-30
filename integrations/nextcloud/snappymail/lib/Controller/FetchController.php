@@ -105,14 +105,15 @@ class FetchController extends Controller {
 			$sEmail = '';
 			if (isset($_POST['appname'], $_POST['snappymail-password'], $_POST['snappymail-email']) && 'snappymail' === $_POST['appname']) {
 				$sUser = SnappyMailHelper::getUID();
+				if ($sUser) {
+					$sEmail = $_POST['snappymail-email'];
+					$this->config->setUserValue($sUser, 'snappymail', 'snappymail-email', $sEmail);
 
-				$sEmail = $_POST['snappymail-email'];
-				$this->config->setUserValue($sUser, 'snappymail', 'snappymail-email', $sEmail);
-
-				$sPass = $_POST['snappymail-password'];
-				if ('******' !== $sPass) {
-					$this->config->setUserValue($sUser, 'snappymail', 'passphrase',
-						$sPass ? SnappyMailHelper::encodePassword($sPass, \md5($sEmail)) : '');
+					$sPass = $_POST['snappymail-password'];
+					if ('******' !== $sPass) {
+						$this->config->setUserValue($sUser, 'snappymail', 'passphrase',
+							$sPass ? SnappyMailHelper::encodePassword($sPass, \md5($sEmail)) : '');
+					}
 				}
 			} else {
 				return new JSONResponse([
