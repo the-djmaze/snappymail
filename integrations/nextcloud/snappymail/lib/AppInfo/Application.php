@@ -5,7 +5,6 @@ namespace OCA\SnappyMail\AppInfo;
 use OCA\SnappyMail\Util\SnappyMailHelper;
 use OCA\SnappyMail\Controller\FetchController;
 use OCA\SnappyMail\Controller\PageController;
-use OCA\SnappyMail\Dashboard\UnreadMailWidget;
 use OCA\SnappyMail\Search\Provider;
 use OCA\SnappyMail\Listeners\AccessTokenUpdatedListener;
 
@@ -13,11 +12,12 @@ use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\Bootstrap\IBootContext;
-use OCP\IL10N;
-use OCP\IUser;
 use OCP\User\Events\PostLoginEvent;
 use OCP\User\Events\BeforeUserLoggedOutEvent;
+
 use OCA\OIDCLogin\Events\AccessTokenUpdatedEvent;
+
+use Psr\Container\ContainerInterface;
 
 class Application extends App implements IBootstrap
 {
@@ -30,26 +30,27 @@ class Application extends App implements IBootstrap
 
 	public function register(IRegistrationContext $context): void
 	{
+//		SnappyMailHelper::$server = $c->query('ServerContainer');
+
 		/**
 		 * Controllers
 		 */
 		$context->registerService(
-			'PageController', function($c) {
+			'PageController', function(ContainerInterface $c) {
 				return new PageController(
 					$c->query('AppName'),
-					$c->query('Request')
+					$c->query('Request'),
+					$c
 				);
 			}
 		);
 
 		$context->registerService(
-			'FetchController', function($c) {
+			'FetchController', function(ContainerInterface $c) {
 				return new FetchController(
 					$c->query('AppName'),
 					$c->query('Request'),
-					$c->getServer()->getAppManager(),
-					$c->query('ServerContainer')->getConfig(),
-					$c->query(IL10N::class)
+					$c
 				);
 			}
 		);
@@ -67,16 +68,18 @@ class Application extends App implements IBootstrap
 		$context->registerEventListener(AccessTokenUpdatedEvent::class, AccessTokenUpdatedListener::class);
 
 		// TODO: Not working yet, needs a Vue UI
-//		$context->registerDashboardWidget(UnreadMailWidget::class);
+//		$context->registerDashboardWidget(\OCA\SnappyMail\Dashboard\UnreadMailWidget::class);
 	}
 
 	public function boot(IBootContext $context): void
 	{
+//		SnappyMailHelper::$server = $context->getServerContainer();
+
 		if (!\is_dir(\rtrim(\trim(SnappyMailHelper::getSystemConfigValue('datadirectory', '')), '\\/') . '/appdata_snappymail')) {
 			return;
 		}
 
-		$dispatcher = $context->getAppContainer()->query('OCP\EventDispatcher\IEventDispatcher');
+		$dispatcher = $context->getAppContainer()->query(\OCP\EventDispatcher\IEventDispatcher::class);
 		$dispatcher->addListener(PostLoginEvent::class, function (PostLoginEvent $Event) {
 /*
 			// Only store the user's password in the current session if they have

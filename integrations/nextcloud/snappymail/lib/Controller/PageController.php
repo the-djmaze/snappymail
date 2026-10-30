@@ -8,16 +8,28 @@ use OCA\SnappyMail\ContentSecurityPolicy;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
 
+use OCP\IConfig;
+use OCP\INavigationManager;
+use OCP\IRequest;
+
 class PageController extends Controller
 {
+	private IConfig $config;
+	private INavigationManager $navigationManager;
+
+	public function __construct($appName, IRequest $request, \Psr\Container\ContainerInterface $container)
+	{
+		parent::__construct($appName, $request);
+		$this->config = $container->query(IConfig::class);
+		$this->navigationManager = $container->query(INavigationManager::class);
+	}
+
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 */
 	public function index()
 	{
-        $nav = SnappyMailHelper::getNavigationManager();
-
 		$bAdmin = false;
 		if (!empty($_SERVER['QUERY_STRING'])) {
 			SnappyMailHelper::loadApp();
@@ -28,7 +40,7 @@ class PageController extends Controller
 		}
 
 		if (!$bAdmin && SnappyMailHelper::getAppConfigValue('snappymail-no-embed')) {
-            $nav->setActiveEntry('snappymail');
+			$this->navigationManager->setActiveEntry('snappymail');
 			\OCP\Util::addScript('snappymail', 'snappymail');
 			\OCP\Util::addStyle('snappymail', 'style');
 			SnappyMailHelper::startApp();
@@ -43,7 +55,7 @@ class PageController extends Controller
 			return $response;
 		}
 
-		$nav->setActiveEntry('snappymail');
+		$this->navigationManager->setActiveEntry('snappymail');
 
 		\OCP\Util::addStyle('snappymail', 'embed');
 

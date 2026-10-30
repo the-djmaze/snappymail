@@ -40,7 +40,7 @@ There, click on the link to go to the SnappyMail admin panel.
 	<repository>https://github.com/the-djmaze/snappymail/tree/master/integrations/nextcloud</repository>
 	<bugs>https://github.com/the-djmaze/snappymail/issues</bugs>
 	<dependencies>
-		<php min-version="7.4" min-int-size="32" />
+		<php min-version="8.2" min-int-size="32" />
 		<lib>mbstring</lib>
 		<lib>zlib</lib>
 <!--
@@ -63,9 +63,9 @@ There, click on the link to go to the SnappyMail admin panel.
 		<lib>uuid</lib>
 		<lib>xxtea</lib>
 		<lib>zip</lib>
-		<nextcloud min-version="20" max-version="34" />
+		<nextcloud min-version="25" max-version="33" />
 -->
-		<nextcloud min-version="20" />
+		<nextcloud min-version="25" />
 	</dependencies>
 	<settings>
 		<admin>OCA\SnappyMail\Settings\AdminSettings</admin>

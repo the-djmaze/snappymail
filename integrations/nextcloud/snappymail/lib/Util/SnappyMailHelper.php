@@ -25,6 +25,13 @@ class SnappyMailResponse extends \OCP\AppFramework\Http\Response
 
 class SnappyMailHelper
 {
+	public static $server;
+
+	public static function getServerContainer(): object
+	{
+		return static::$server || \OC::$server;
+	}
+
 	public static function getConfig(): object
 	{
 		return \method_exists(\OC::$server, 'getConfig')
@@ -60,7 +67,7 @@ class SnappyMailHelper
 
 	public static function getUID(): mixed
 	{
-		return static::getUser()->getUID();
+		return static::getUser()?->getUID();
 	}
 
 	public static function getUser(): object

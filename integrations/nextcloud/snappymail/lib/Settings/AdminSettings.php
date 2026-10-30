@@ -6,13 +6,32 @@ use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IConfig;
 use OCP\Settings\ISettings;
 
+use OCP\IUserSession;
+use OCP\IGroupManager;
+use OCP\IURLGenerator;
+use OCP\App\IAppManager;
+use OCP\Util;
+
 class AdminSettings implements ISettings
 {
-	private $config;
+	private IConfig $config;
+	private IUserSession $userSession;
+	private IGroupManager $groupManager;
+	private IURLGenerator $urlGenerator;
+	private IAppManager $appManager;
 
-	public function __construct(IConfig $config)
-	{
+	public function __construct(
+		IConfig $config,
+		IUserSession $userSession,
+		IGroupManager $groupManager,
+		IURLGenerator $urlGenerator,
+		IAppManager $appManager
+	) {
 		$this->config = $config;
+		$this->userSession = $userSession;
+		$this->groupManager = $groupManager;
+		$this->urlGenerator = $urlGenerator;
+		$this->appManager = $appManager;
 	}
 
 	public function getForm()
@@ -29,12 +48,13 @@ class AdminSettings implements ISettings
 		foreach ($keys as $k) {
 			$parameters[$k] = $this->config->getAppValue('snappymail', $k);
 		}
-		$uid = SnappyMailHelper::getUID();
-		if (\OC_User::isAdminUser($uid)) {
+
+		$uid = $this->userSession->getUser()?->getUID();
+		if ($uid && $this->groupManager->isAdmin($uid)) {
 //			$parameters['snappymail-admin-panel-link'] = SnappyMailHelper::getAppUrl().'?admin';
 			SnappyMailHelper::loadApp();
 			$parameters['snappymail-admin-panel-link'] =
-				\OC::$server->getURLGenerator()->linkToRoute('snappymail.page.index')
+				$this->urlGenerator->linkToRoute('snappymail.page.index')
 				. '?' . \RainLoop\Api::Config()->Get('security', 'admin_panel_key', 'admin');
 		}
 
@@ -48,7 +68,7 @@ class AdminSettings implements ISettings
 		$parameters['snappymail-admin-password'] = $sPassword;
 
 		$parameters['can-import-rainloop'] = $sPassword && \is_dir(
-			\rtrim(\trim(SnappyMailHelper::getSystemConfigValue('datadirectory', '')), '\\/')
+			\rtrim(\trim($this->config->getSystemValue('datadirectory', '')), '\\/')
 			. '/rainloop-storage'
 		);
 
@@ -64,7 +84,7 @@ class AdminSettings implements ISettings
 		// Prevent "Failed loading /nextcloud/snappymail/v/2.N.N/static/js/min/libs.min.js"
 		$app_path = $oConfig->Get('webmail', 'app_path');
 		if (!$app_path) {
-			$app_path = \OC::$server->getAppManager()->getAppWebPath('snappymail') . '/app/';
+			$app_path = $this->appManager->getAppWebPath('snappymail') . '/app/';
 			$oConfig->Set('webmail', 'app_path', $app_path);
 			$oConfig->Set('webmail', 'theme', 'NextcloudV25+');
 			$oConfig->Save();
