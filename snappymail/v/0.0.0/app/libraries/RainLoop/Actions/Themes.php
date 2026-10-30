@@ -72,15 +72,7 @@ trait Themes
 		}
 
 		if (\class_exists('OC', false)) {
-			$sDir = Nextcloud::themesDir();
-			if ($sDir && ($rDirH = \opendir($sDir))) {
-				while (($sFile = \readdir($rDirH)) !== false) {
-					if ('.' !== $sFile[0] && \is_dir("{$sDir}/{$sFile}") && \file_exists("{$sDir}/{$sFile}/snappymail/style.css")) {
-						$aCache[] = $sFile . '@nextcloud';
-					}
-				}
-				\closedir($rDirH);
-			}
+			$aCache = \array_merge($aCache, Nextcloud::themes());
 		}
 
 		$aCache = \array_unique($aCache);

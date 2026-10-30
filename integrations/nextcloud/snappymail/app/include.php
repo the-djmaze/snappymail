@@ -29,6 +29,7 @@
  */
 if (class_exists('OC')) {
 	define('APP_DATA_FOLDER_PATH', \rtrim(\trim(
+//		\OCA\SnappyMail\Util\SnappyMailHelper::getSystemConfigValue('datadirectory', '')
 		\method_exists(\OC::$server, 'getSystemConfig')
 			? \OC::$server->getSystemConfig()->getValue('datadirectory', '')
 			// Nextcloud 34+

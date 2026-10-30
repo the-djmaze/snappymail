@@ -1,5 +1,7 @@
 <?php
 
+use OCA\SnappyMail\Util\SnappyMailHelper;
+
 class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
@@ -43,7 +45,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			$this->addHook('sieve.before-login', 'beforeLogin');
 		} else {
 			\SnappyMail\Log::debug('Nextcloud', 'NOT integrated');
-			// \OC::$server->getConfig()->getAppValue('snappymail', 'snappymail-no-embed');
+			// SnappyMailHelper::getConfig()->getAppValue('snappymail', 'snappymail-no-embed');
 			$this->addHook('main.content-security-policy', 'ContentSecurityPolicy');
 		}
 	}
@@ -67,7 +69,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 	public static function IsLoggedIn()
 	{
-		return static::IsIntegrated() && \OC::$server->getUserSession()->isLoggedIn();
+		return static::IsIntegrated() && SnappyMailHelper::getUserSession()->isLoggedIn();
 	}
 
 	public function loginCredentials(string &$sEmail, string &$sLogin, ?string &$sPassword = null) : void
@@ -77,13 +79,13 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 		 * When user changes email address, all settings are gone as the new
 		 * _data_/_default_/storage/{domain}/{local-part} is used
 		 */
-//		$ocUser = \OC::$server->getUserSession()->getUser();
+//		$ocUser = SnappyMailHelper::getUser();
 //		$sEmail = $ocUser->getEMailAddress() ?: $ocUser->getPrimaryEMailAddress() ?: $sEmail;
 	}
 
 	public function loginCredentials2(string &$sEmail, ?string &$sPassword = null) : void
 	{
-		$ocUser = \OC::$server->getUserSession()->getUser();
+		$ocUser = SnappyMailHelper::getUser();
 		$sEmail = $ocUser->getEMailAddress() ?: $ocUser->getPrimaryEMailAddress() ?: $sEmail;
 	}
 
@@ -93,12 +95,12 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 		// it is enabled in config, the user is currently logged in with OIDC,
 		// the current snappymail account is the OIDC account and no account defined explicitly
 		if ($oAccount instanceof \RainLoop\Model\MainAccount
-		 && \OCA\SnappyMail\Util\SnappyMailHelper::isOIDCLogin()
+		 && SnappyMailHelper::isOIDCLogin()
 //		 && $oClient->supportsAuthType('OAUTHBEARER') // v2.28
 		 && \str_starts_with($oSettings->passphrase, 'oidc_login|')
 		) {
-//			$oSettings->passphrase = \OC::$server->getSession()->get('snappymail-passphrase');
-			$oSettings->passphrase = \OC::$server->getSession()->get('oidc_access_token');
+//			$oSettings->passphrase = SnappyMailHelper::getSessionValue('snappymail-passphrase');
+			$oSettings->passphrase = SnappyMailHelper::getSessionValue('oidc_access_token');
 			\array_unshift($oSettings->SASLMechanisms, 'OAUTHBEARER');
 		}
 	}
@@ -213,7 +215,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 	public function FilterAppData($bAdmin, &$aResult) : void
 	{
 		if (!$bAdmin && \is_array($aResult)) {
-			$ocUser = \OC::$server->getUserSession()->getUser();
+			$ocUser = SnappyMailHelper::getUser();
 			$sUID = $ocUser->getUID();
 			$oUrlGen = \OC::$server->getURLGenerator();
 			$sWebDAV = $oUrlGen->getAbsoluteURL($oUrlGen->linkTo('', 'remote.php') . '/dav');
@@ -225,7 +227,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 //				'WebDAV_files' => $sWebDAV . '/files/' . $sUID
 			];
 			if (empty($aResult['Auth'])) {
-				$config = \OC::$server->getConfig();
+				$config = SnappyMailHelper::getConfig();
 				$sEmail = '';
 				// Only store the user's password in the current session if they have
 				// enabled auto-login using Nextcloud username or email address.
@@ -248,9 +250,9 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 				}
 /*
 				if ($config->getAppValue('snappymail', 'snappymail-autologin-oidc', false)) {
-					if (\OC::$server->getSession()->get('is_oidc')) {
+					if (SnappyMailHelper::getSessionValue('is_oidc')) {
 						$sEmail = "{$sUID}@nextcloud";
-						$aResult['DevPassword'] = \OC::$server->getSession()->get('oidc_access_token');
+						$aResult['DevPassword'] = SnappyMailHelper::getSessionValue('oidc_access_token');
 					} else {
 						\SnappyMail\Log::debug('Nextcloud', 'Not an OIDC login');
 					}
@@ -269,7 +271,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 					$aResult['ContactsSync']['User'] = $sUID;
 					$bSave = true;
 				}
-				$pass = \OC::$server->getSession()['snappymail-passphrase'];
+				$pass = SnappyMailHelper::getSessionValue('snappymail-passphrase');
 				if ($pass/* && empty($aResult['ContactsSync']['Password'])*/) {
 					$pass = \SnappyMail\Crypt::DecryptUrlSafe($pass, $sUID);
 					if ($pass) {
@@ -297,8 +299,8 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 	{
 		if (!\RainLoop\Api::Config()->Get('webmail', 'allow_languages_on_settings', true)) {
 			$aResultLang = \SnappyMail\L10n::getLanguages($bAdmin);
-			$userId = \OC::$server->getUserSession()->getUser()->getUID();
-			$userLang = \OC::$server->getConfig()->getUserValue($userId, 'core', 'lang', 'en');
+			$userId = SnappyMailHelper::getUID();
+			$userLang = SnappyMailHelper::getConfig()->getUserValue($userId, 'core', 'lang', 'en');
 			$userLang = \strtr($userLang, '_', '-');
 			$sLanguage = $this->determineLocale($userLang, $aResultLang);
 			// Check if $sLanguage is null

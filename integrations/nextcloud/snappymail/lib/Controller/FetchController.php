@@ -104,7 +104,7 @@ class FetchController extends Controller {
 		try {
 			$sEmail = '';
 			if (isset($_POST['appname'], $_POST['snappymail-password'], $_POST['snappymail-email']) && 'snappymail' === $_POST['appname']) {
-				$sUser =  \OC::$server->getUserSession()->getUser()->getUID();
+				$sUser = SnappyMailHelper::getUID();
 
 				$sEmail = $_POST['snappymail-email'];
 				$this->config->setUserValue($sUser, 'snappymail', 'snappymail-email', $sEmail);

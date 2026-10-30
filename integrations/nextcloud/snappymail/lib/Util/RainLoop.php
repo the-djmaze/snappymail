@@ -13,9 +13,9 @@ class RainLoop
 	 * skips: /data/rainloop-storage/INSTALLED
 	 * skips: /data/rainloop-storage/index.php
 	 */
-	public static function import() : array
+	public static function import(): array
 	{
-		$dir = \rtrim(\trim(\OC::$server->getSystemConfig()->getValue('datadirectory', '')), '\\/');
+		$dir = \rtrim(\trim(SnappyMailHelper::getSystemConfigValue('datadirectory', '')), '\\/');
 		$dir_snappy = $dir . '/appdata_snappymail/';
 		$dir_rainloop = $dir . '/rainloop-storage';
 		$result = [];
