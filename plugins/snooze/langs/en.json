@@ -1,0 +1,15 @@
+{
+	"SNOOZE": {
+		"TITLE": "Snooze",
+		"BUTTON": "Snooze message",
+		"QUICK_TOMORROW": "Tomorrow",
+		"QUICK_NEXT_WEEK": "Next week",
+		"QUICK_LATER": "In 5 hours",
+		"UNTIL": "Snoozed until",
+		"RETURNED": "Returned from snooze",
+		"FOLDER": "Snoozed folder",
+		"FOLDER_AUTO": "Automatic (Snoozed)",
+		"INVALID_DATE": "Please choose a date and time in the future.",
+		"ERROR": "Could not snooze the message."
+	}
+}

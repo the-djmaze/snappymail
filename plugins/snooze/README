@@ -1,0 +1,59 @@
+# Snooze plugin
+
+Snoozes messages and returns them to the inbox at a chosen date and time.
+
+## How it works
+
+A snoozed message gets a `Snoozed_<unix-timestamp>` keyword and is moved to a
+dedicated folder (default `Snoozed`, created on first use). Due messages are
+moved back to the inbox and marked with the `Snoozed` keyword so the message
+list can highlight them as returned. Opening such a message removes the marker.
+
+The plugin stores the folder choice in the user plugin settings under
+`SnoozeFolder`, so every account can use its own folder.
+
+The snooze folder is shown in the system folder section at the top of the
+folder list with a 💤 icon and is hidden from the normal folder list.
+
+The mail server must support custom IMAP keywords (`PERMANENTFLAGS` containing
+`\*` or the keyword itself), otherwise snoozing is rejected with an error.
+
+## Installation
+
+`plugins/snooze` in this repository is only the plugin source. SnappyMail
+loads plugins from its runtime plugin folder `APP_PLUGINS_PATH`, which is
+`<data>/_data_/_default_/plugins/` for a normal installation. With Docker the
+path is `/var/lib/snappymail/_data_/_default_/plugins/`.
+
+1. Copy the folder into the runtime plugin folder:
+
+   ```sh
+   cp -a plugins/snooze "<data>/_data_/_default_/plugins/snooze"
+   ```
+
+2. Enable plugin support and the plugin in
+   `<data>/_data_/_default_/configs/application.ini`:
+
+   ```ini
+   [plugins]
+   enable = 1
+   enabled_list = "snooze"
+   ```
+
+   Alternatively use *Admin → Packages*: enable plugin support, then enable
+   *Snooze* in the *Installed packages* list.
+
+3. Make sure the web server user can read the copied files.
+
+The *available for installation* list is loaded from the remote SnappyMail
+package repository. A locally developed plugin never appears there; after
+copying it is listed as an installed package (without a remote version).
+
+## Usage
+
+1. Open a message and click the 💤 button in the toolbar.
+2. Choose a quick option or a date and time and confirm.
+3. The folder can be changed in *Settings → Folders → System folders*.
+
+Due messages are returned when the message list is loaded and every minute while
+the webmail stays open.

@@ -1,0 +1,43 @@
+.messageListItem .snoozedDate {
+	color: #a66a00;
+	flex: 0 0 auto;
+	font-size: 80%;
+	font-weight: 600;
+	line-height: 2.2;
+	margin-right: 5px;
+	white-space: nowrap;
+}
+
+.messageListItem.snoozed-returned {
+	background-color: rgba(243, 174, 54, 0.28);
+	border-left-color: #e89b16;
+}
+
+.messageListItem.snoozed-returned.unseen {
+	background-color: rgba(243, 174, 54, 0.36);
+	border-left-color: #d88700;
+}
+
+.messageListItem.snoozed-returned .subjectParent::before {
+	color: #a66a00;
+	content: '↶ ';
+	font-family: sans-serif;
+	font-weight: bold;
+}
+
+.messageView .snoozedNotice {
+	background-color: rgba(243, 201, 105, 0.22);
+	border-bottom: 1px solid var(--border-color, #aaa);
+	color: #8a5a00;
+	padding: 6px 12px;
+}
+
+.messageView .snoozedNotice.snoozedReturned {
+	background-color: rgba(243, 174, 54, 0.36);
+	color: #8a5a00;
+	font-weight: 600;
+}
+
+.snoozedFolderSelect {
+	max-width: 100%;
+}
