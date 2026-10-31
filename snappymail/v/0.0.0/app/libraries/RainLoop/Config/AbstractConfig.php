@@ -21,7 +21,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		$sAdditionalFileName = \trim($sAdditionalFileName);
 		if ($sAdditionalFileName) {
 			$sAdditionalFileName = \APP_PRIVATE_DATA.'configs/'.$sAdditionalFileName;
-			if (\file_exists($this->sAdditionalFile)) {
+			if (\file_exists($sAdditionalFileName)) {
 				$this->sAdditionalFile = $sAdditionalFileName;
 			}
 		}
