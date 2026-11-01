@@ -2,6 +2,7 @@
 <?php
 define('ROOT_DIR', dirname(__DIR__));
 chdir(ROOT_DIR);
+require(ROOT_DIR . '/snappymail/v/0.0.0/app/libraries/snappymail/tar.php');
 
 $options = getopt('', ['aur','docker','plugins','skip-gulp','debian','nextcloud','owncloud','cpanel','sign']);
 
@@ -98,7 +99,9 @@ if (!$zip->open($zip_destination, ZIPARCHIVE::CREATE)) {
 	exit("Failed to create {$zip_destination}");
 }
 
-$tar = new PharData($tar_destination);
+$tar_destination .= '.gz';
+$tar = new \SnappyMail\TAR($tar_destination);
+//$tar = new PharData($tar_destination);
 
 $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('snappymail/v'), RecursiveIteratorIterator::SELF_FIRST);
 foreach ($files as $file) {
@@ -158,10 +161,13 @@ $zip->addFile('README.md');
 $tar->addFile('README.md');
 
 $zip->close();
-
-$tar->compress(Phar::GZ);
-unlink($tar_destination);
-$tar_destination .= '.gz';
+if ($tar instanceof PharData) {
+	$tar->compress(Phar::GZ);
+	unlink($tar_destination);
+	$tar_destination .= '.gz';
+} else {
+	$tar->close();
+}
 
 echo "{$zip_destination} created\n{$tar_destination} created\n";
 
