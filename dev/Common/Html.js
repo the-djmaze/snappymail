@@ -312,6 +312,8 @@ export const
 			// https://github.com/the-djmaze/snappymail/issues/1860
 			.replace(/<(\/?)x-html(\s[^>]*)?>/gi, '')
 			.replace(/<(\/?)head(\s[^>]*)?>/gi, '')
+//			.replace(/<body(\s[^>]*)?>/i, '<article class="mail-body"$1>')
+//			.replace(/<\/?body(\s[^>]*)?>.*?$/gi, '<$1article$2>')
 			.replace(/<body(\s[^>]*)?>/i, '<div class="mail-body"$1>')
 			.replace(/<(\/?)body(\s[^>]*)?>/gi, '<$1div$2>')
 //			.replace(/<\/?(html|head)[^>]*>/gi, '')
@@ -359,18 +361,6 @@ export const
 				node = oElement;
 			}
 		});
-*/
-
-		// https://github.com/the-djmaze/snappymail/issues/1641
-		let body = tmpl.content.querySelector('.mail-body');
-		[...tmpl.content.querySelectorAll('.mail-body + .mail-body')]
-			.forEach(oElement => body.append(...oElement.childNodes));
-/*
-			.forEach(oElement => {
-				let bq = createElement('blockquote');
-				bq.append(...oElement.childNodes);
-				body.replaceWith(bq);
-			});
 */
 
 		[...tmpl.content.querySelectorAll('*')].forEach(oElement => {
