@@ -23,7 +23,7 @@ import {
 	registerShortcut,
 	formFieldFocused
 } from 'Common/Globals';
-
+import { encodeHtml } from 'Common/Html';
 import { arrayLength } from 'Common/Utils';
 import { download, downloadZip, mailToHelper, showMessageComposer, moveAction } from 'Common/UtilsUser';
 import { isFullscreen, exitFullscreen, toggleFullscreen } from 'Common/Fullscreen';
@@ -174,7 +174,7 @@ export class MailMessageView extends AbstractViewRight {
 
 			tagsToHTML: () => currentMessage()?.flags().map(value =>
 					isAllowedKeyword(value)
-					? '<span class="focused msgflag-'+value+'">' + i18n('MESSAGE_TAGS/'+value,0,value) + '</span>'
+					? '<span class="focused msgflag-'+encodeHtml(value)+'">' + encodeHtml(i18n('MESSAGE_TAGS/'+value,0,value)) + '</span>'
 					: ''
 				).join(' '),
 
