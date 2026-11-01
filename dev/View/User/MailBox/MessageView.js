@@ -174,7 +174,8 @@ export class MailMessageView extends AbstractViewRight {
 
 			tagsToHTML: () => currentMessage()?.flags().map(value =>
 					isAllowedKeyword(value)
-					? '<span class="focused msgflag-'+encodeHtml(value)+'">' + encodeHtml(i18n('MESSAGE_TAGS/'+value,0,value)) + '</span>'
+					? '<span class="focused msgflag-'+encodeHtml(value)+'">'
+						+ encodeHtml(i18n('MESSAGE_TAGS/'+value,0,value)) + '</span>'
 					: ''
 				).join(' '),
 
