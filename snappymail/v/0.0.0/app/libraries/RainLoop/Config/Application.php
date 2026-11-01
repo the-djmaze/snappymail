@@ -226,6 +226,14 @@ Warning: only enable when server does not do this, else double compression error
 				'openpgp'                 => array(true),
 				'auto_verify_signatures'  => array(false),
 
+				'trusted_authserv_ids'    => array('', 'Which servers\' DKIM, SPF and DMARC results to believe,
+by authserv-id (the first field of an Authentication-Results header), separated by
+spaces or commas. A sender can add that header itself, so a result not tied to a
+server that handled the message says nothing.
+Empty: the authserv-id of the topmost header is taken as the local one. That covers
+the usual case, but a server which adds no results of its own leaves the sender\'s
+header as the topmost, so name your own id here if these results are shown.'),
+
 				'allow_admin_panel'       => array(true, 'Access settings'),
 				'admin_login'             => array('admin', 'Login and password for web admin panel'),
 				'admin_password'          => array(''),
