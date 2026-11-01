@@ -779,6 +779,12 @@ class Actions
 		$aResult['StaticLibsJs'] = Utils::WebStaticPath('js/' . ($bAppJsDebug ? '' : 'min/') .
 			'libs' . ($bAppJsDebug ? '' : '.min') . '.js');
 
+		if (!$bAppJsDebug) {
+			$aSri = \SnappyMail\Integrity::loadSriHashes();
+			$aResult['StaticLibsJsSri'] = $aSri['libs.min.js'] ?? '';
+			$aResult['StaticAppJsSri'] = $aSri[($bAdmin ? 'admin' : 'app') . '.min.js'] ?? '';
+		}
+
 		$this->oPlugins->InitAppData($bAdmin, $aResult, $oAccount);
 
 		return $aResult;

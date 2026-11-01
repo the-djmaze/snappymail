@@ -8,7 +8,7 @@ abstract class Integrity
 	/**
 	 * Called by https://webmail.tld/?/Test
 	 */
-	public static function test()
+	public static function test(): void
 	{
 		$result = static::phpVersion();
 		if ($result) {
@@ -89,14 +89,15 @@ abstract class Integrity
 		}
 	}
 
-	public static function phpVersion()
+	public static function phpVersion(): ?string
 	{
 		if (PHP_VERSION_ID < 80200) {
 			return 'Your PHP version ('.PHP_VERSION.') is lower than the minimal required 8.2.0!';
 		}
+		return null;
 	}
 
-	public static function phpExtensions()
+	public static function phpExtensions(): array
 	{
 		$aRequirements = array(
 			'openssl'  => extension_loaded('openssl'),
@@ -123,4 +124,23 @@ abstract class Integrity
 		return $aMissing;
 	}
 
+	// https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Subresource_Integrity
+	private static $aSri;
+	public static function loadSriHashes(): array
+	{
+		if (!\is_array($aSri)) {
+			$sSriPath = APP_VERSION_ROOT_PATH . 'static/sri.json';
+			$aSri = \is_readable($sSriPath) ? \json_decode(\file_get_contents($sSriPath), true) : [];
+			if (!$aSri) {
+				$aSri = [
+					'libs.min.js'   => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/js/min/libs.min.js'),
+					'admin.min.js'  => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/js/min/admin.min.js'),
+					'app.min.js'    => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/js/min/app.min.js'),
+					'admin.min.css' => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/css/admin.min.css'),
+					'app.min.css'   => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/css/app.min.css'),
+				];
+			}
+		}
+		return $aSri;
+	}
 }
