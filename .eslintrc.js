@@ -13,35 +13,35 @@ module.exports = {
 	},
 	globals: {
 		// SnappyMail
-		'rainloopI18N': "readonly",
-		'rainloopTEMPLATES': "readonly",
-		'rl': "readonly",
-		'shortcuts': "readonly",
-//		'__APP_BOOT': "readonly",
+		rainloopI18N: 'readonly',
+		rainloopTEMPLATES: 'readonly',
+		rl: 'readonly',
+		shortcuts: 'readonly',
+//		__APP_BOOT: 'readonly',
 		// deb/boot.js
-		'progressJs': "readonly",
+		progressJs: 'readonly',
 		// others
-		'openpgp': "readonly",
-		'CKEDITOR': "readonly",
-		'Squire': "readonly",
-		'SquireUI': "readonly",
+		openpgp: 'readonly',
+		CKEDITOR: 'readonly',
+		Squire: 'readonly',
+		SquireUI: 'readonly',
 		// node_modules/knockout but dev/External/ko.js is used
-		'ko': "readonly",
+		ko: 'readonly',
 		// vendors/routes/
-		'hasher': "readonly",
-		'Crossroads': "readonly",
+		hasher: 'readonly',
+		Crossroads: 'readonly',
 		// vendors/jua
-		'Jua': "readonly",
+		Jua: 'readonly',
 		// vendors/bootstrap/bootstrap.native.js
-		'BSN': "readonly",
+		BSN: 'readonly',
 		// Mailvelope
-		'mailvelope': "readonly",
+		mailvelope: 'readonly',
 		// Punycode
-		'IDN': "readonly",
+		IDN: 'readonly',
 		// Turndown
-		'TurndownService': "readonly",
+		TurndownService: 'readonly',
 		// Marked
-		'marked': "readonly"
+		marked: 'readonly'
 	},
 	// http://eslint.org/docs/rules/
 	rules: {

@@ -1,6 +1,9 @@
 <?php
 echo "\x1b[33;1m === cPanel === \x1b[0m\n";
 
+$file = ROOT_DIR . '/integrations/cpanel/var/cpanel/webmail/webmail_snappymail.yaml';
+file_put_contents($file, preg_replace('@/[0-9.]+/@', "/{$package->version}/", file_get_contents($file)));
+
 $cpanel_destination = "{$destPath}snappymail-{$package->version}-cpanel.tar";
 
 @unlink($cpanel_destination);
