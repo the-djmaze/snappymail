@@ -150,6 +150,12 @@ foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 			ksort($manifest_item);
 			$manifest[$name] = $manifest_item;
 
+			foreach (glob("{$dir}/*.min.js") as $file) {
+				unlink($file);
+			}
+			foreach (glob("{$dir}/js/*.min.js") as $file) {
+				unlink($file);
+			}
 		} else {
 			echo "- {$name} {$version}\n";
 		}

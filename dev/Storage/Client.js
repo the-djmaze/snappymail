@@ -6,7 +6,7 @@ const
 		try {
 			const value = localStorage.getItem(CLIENT_SIDE_STORAGE_INDEX_NAME);
 			return value ? JSON.parse(value) : null;
-		} catch (e) {
+		} catch {
 			return null;
 		}
 	};
@@ -45,7 +45,7 @@ export function set(key, data) {
 	try {
 		localStorage.setItem(CLIENT_SIDE_STORAGE_INDEX_NAME, JSON.stringify(storageResult));
 		return true;
-	} catch (e) {
+	} catch {
 		return false;
 	}
 }
@@ -57,7 +57,7 @@ export function set(key, data) {
 export function get(key) {
 	try {
 		return (getStorage() || {})['p' + key];
-	} catch (e) {
+	} catch {
 		return null;
 	}
 }

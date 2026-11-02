@@ -30,6 +30,7 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		// https://github.com/the-djmaze/snappymail/issues/714
 		if ($this->Config()->Get('plugin', 'service', true)
 //		 || !$this->Config()->Get('plugin', 'delay', true)
+		 || $this->Config()->Get('plugin', 'contacts', false)
 		 || $this->Config()->Get('plugin', 'gravatar', false)
 		 || $this->Config()->Get('plugin', 'bimi', false)
 		 || $this->Config()->Get('plugin', 'favicon', false)
@@ -75,7 +76,8 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		}
 		if (\is_array($mFrom)) {
 			if (/*!$this->Config()->Get('plugin', 'delay', true)
-			 && */($this->Config()->Get('plugin', 'gravatar', false)
+			 && */($this->Config()->Get('plugin', 'contacts', false)
+			    || $this->Config()->Get('plugin', 'gravatar', false)
 				|| ($this->Config()->Get('plugin', 'bimi', false) && 'pass' == $mFrom['dkimStatus'])
 				|| ($this->Config()->Get('plugin', 'favicon', false) && 'pass' == $mFrom['dkimStatus'])
 			 )
