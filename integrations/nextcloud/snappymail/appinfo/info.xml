@@ -68,7 +68,9 @@ There, click on the link to go to the SnappyMail admin panel.
 		<nextcloud min-version="25" />
 	</dependencies>
 	<settings>
+		<admin-section>OCA\SnappyMail\Settings\Section</admin-section>
 		<admin>OCA\SnappyMail\Settings\AdminSettings</admin>
+		<personal-section>OCA\SnappyMail\Settings\Section</personal-section>
 		<personal>OCA\SnappyMail\Settings\PersonalSettings</personal>
 	</settings>
 	<navigations>

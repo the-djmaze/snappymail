@@ -15,9 +15,8 @@ class RainLoop
 	 */
 	public static function import(): array
 	{
-		$dir = \rtrim(\trim(SnappyMailHelper::getSystemConfigValue('datadirectory', '')), '\\/');
-		$dir_snappy = $dir . '/appdata_snappymail/';
-		$dir_rainloop = $dir . '/rainloop-storage';
+		$dir_snappy = SnappyMailHelper::getAppDataFolder();
+		$dir_rainloop = SnappyMailHelper::getDataDirectory() . '/rainloop-storage';
 		$result = [];
 		$rainloop_plugins = [];
 		if (\is_dir($dir_rainloop)) {

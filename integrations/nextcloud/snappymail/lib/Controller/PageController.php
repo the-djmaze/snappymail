@@ -33,13 +33,18 @@ class PageController extends Controller
 		$bAdmin = false;
 		if (!empty($_SERVER['QUERY_STRING'])) {
 			SnappyMailHelper::loadApp();
-			$bAdmin = \RainLoop\Api::Config()->Get('security', 'admin_panel_key', 'admin') == $_SERVER['QUERY_STRING'];
+			$bAdmin = $this->getAdminPanelKey() == $_SERVER['QUERY_STRING'];
+			if ($this->isAdminServiceRequest()) {
+				$this->ensureNextcloudAdminSession();
+			}
 			if (!$bAdmin) {
 				return SnappyMailHelper::startApp(true);
 			}
 		}
 
-		if (!$bAdmin && SnappyMailHelper::getAppConfigValue('snappymail-no-embed')) {
+		if (!$bAdmin && $this->config->getAppValue('snappymail', 'snappymail-no-embed')) {
+//		if (!$bAdmin && SnappyMailHelper::getAppConfigValue('snappymail-no-embed')) {
+//			SnappyMailHelper::getNavigationManager()->setActiveEntry('snappymail');
 			$this->navigationManager->setActiveEntry('snappymail');
 			\OCP\Util::addScript('snappymail', 'snappymail');
 			\OCP\Util::addStyle('snappymail', 'style');
@@ -51,10 +56,119 @@ class PageController extends Controller
 			$csp = new ContentSecurityPolicy();
 			$csp->addAllowedFrameDomain("'self'");
 //			$csp->addAllowedFrameAncestorDomain("'self'");
-			$response->setContentSecurityPolicy($csp);
+			$response->setContentSecurityPolicy($csp->getPolicy());
 			return $response;
 		}
 
+		return $this->renderEmbeddedApp($bAdmin);
+	}
+
+	/**
+	 * Integrated administration entry point.
+	 *
+	 * Unlike the legacy ?admin URL this route is protected by Nextcloud's
+	 * default admin middleware. No @NoAdminRequired annotation must be added.
+	 *
+	 * @NoCSRFRequired
+	 */
+	public function admin()
+	{
+		$this->ensureNextcloudAdminSession();
+
+		if (!empty($_SERVER['QUERY_STRING'])) {
+			return $this->handleIntegratedAdminRequest();
+		}
+
+		return $this->renderEmbeddedApp(true, true);
+	}
+
+	/**
+	 * SnappyMail uses its own X-SM-Token for the legacy admin JSON API. The
+	 * Nextcloud CSRF middleware cannot validate that token, therefore this
+	 * endpoint opts out of the Nextcloud request token check. It remains admin
+	 * protected and SnappyMail validates X-SM-Token for every modifying call.
+	 *
+	 * @NoCSRFRequired
+	 */
+	public function adminPost()
+	{
+		$this->ensureNextcloudAdminSession();
+		return $this->handleIntegratedAdminRequest();
+	}
+
+	private function ensureNextcloudAdminSession(): void
+	{
+		$user = \OC::$server->get(\OCP\IUserSession::class)->getUser();
+		if (!$user || !\OC_User::isAdminUser($user->getUID())) {
+			throw new \RuntimeException('SnappyMail administration requires a Nextcloud administrator session.');
+		}
+
+		SnappyMailHelper::loadApp();
+		$config = \RainLoop\Api::Config();
+		if (!$config->Get('security', 'allow_admin_panel', true)) {
+			throw new \RuntimeException('SnappyMail administration is disabled.');
+		}
+
+		$actions = \RainLoop\Api::Actions();
+		if (!$actions->IsAdminLoggined(false)) {
+			$random = \MailSo\Base\Utils::Sha1Rand();
+			if (!$actions->Cacher(null, true)->Set(\RainLoop\KeyPathHelper::SessionAdminKey($random), \time())) {
+				throw new \RuntimeException('Could not create the SnappyMail administrator session.');
+			}
+
+			$token = \RainLoop\Utils::EncodeKeyValuesQ(['token', $random]);
+			if (!$token) {
+				throw new \RuntimeException('Could not encode the SnappyMail administrator session.');
+			}
+			\SnappyMail\Cookies::set('smadmin', $token);
+		}
+	}
+
+	private function handleIntegratedAdminRequest(): void
+	{
+		$adminKey = $this->getAdminPanelKey();
+		$query = \trim((string) ($_SERVER['QUERY_STRING'] ?? ''), " \t\n\r\0\x0B/");
+		// The SnappyMail admin client already includes its configured admin
+		// path in JSON and asset requests. Prefix only requests that do not
+		// contain it yet; otherwise "admin/admin/Json" is produced and domain
+		// as well as extension requests are routed to a non-existing service.
+		if ($query !== $adminKey && 0 !== \strpos($query, $adminKey . '/')) {
+			$query = $adminKey . ($query ? '/' . $query : '');
+		}
+		$_SERVER['QUERY_STRING'] = $query;
+		$_GET[$adminKey] = '1';
+
+		SnappyMailHelper::startApp(true);
+	}
+
+	private function getAdminPanelKey(): string
+	{
+		$key = (string) \RainLoop\Api::Config()->Get('admin_panel', 'key', '');
+		return '' !== $key ? $key : 'admin';
+	}
+
+	private function isAdminServiceRequest(): bool
+	{
+		$query = \trim((string) ($_SERVER['QUERY_STRING'] ?? ''), " \t\n\r\0\x0B/");
+		$ampersand = \strpos($query, '&');
+		if (false !== $ampersand) {
+			$query = \substr($query, 0, $ampersand);
+		}
+		$adminKey = $this->getAdminPanelKey();
+		return $query === $adminKey || 0 === \strpos($query, $adminKey . '/');
+	}
+
+	private function protectLegacyAdminRequest(): void
+	{
+		SnappyMailHelper::loadApp();
+		if ($this->isAdminServiceRequest()) {
+			$this->ensureNextcloudAdminSession();
+		}
+	}
+
+	private function renderEmbeddedApp(bool $bAdmin, bool $blank = false)
+	{
+//		SnappyMailHelper::getNavigationManager()->setActiveEntry('snappymail');
 		$this->navigationManager->setActiveEntry('snappymail');
 
 		\OCP\Util::addStyle('snappymail', 'embed');
@@ -93,9 +207,9 @@ class PageController extends Controller
 		\OCP\Util::addHeader('link', ['type'=>'text/css','rel'=>'stylesheet','href'=>\RainLoop\Utils::WebStaticPath('css/'.($bAdmin?'admin':'app').$sAppCssMin.'.css')], '');
 //		\OCP\Util::addHeader('style', ['id'=>'app-theme-style','data-href'=>$params['BaseAppThemeCssLink']], $params['BaseAppThemeCss']);
 
-		$response = new TemplateResponse('snappymail', 'index_embed', $params);
+		$response = new TemplateResponse('snappymail', 'index_embed', $params, $blank ? 'blank' : 'user');
 
-		$response->setContentSecurityPolicy($csp);
+		$response->setContentSecurityPolicy($csp->getPolicy());
 
 		return $response;
 	}
@@ -106,6 +220,7 @@ class PageController extends Controller
 	 */
 	public function appGet()
 	{
+		$this->protectLegacyAdminRequest();
 		return SnappyMailHelper::startApp(true);
 	}
 
@@ -115,6 +230,7 @@ class PageController extends Controller
 	 */
 	public function appPost()
 	{
+		$this->protectLegacyAdminRequest();
 		return SnappyMailHelper::startApp(true);
 	}
 
@@ -124,6 +240,7 @@ class PageController extends Controller
 	 */
 	public function indexPost()
 	{
+		$this->protectLegacyAdminRequest();
 		return SnappyMailHelper::startApp(true);
 	}
 }

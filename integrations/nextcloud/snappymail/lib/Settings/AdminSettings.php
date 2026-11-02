@@ -68,6 +68,7 @@ class AdminSettings implements ISettings
 		$parameters['snappymail-admin-password'] = $sPassword;
 
 		$parameters['can-import-rainloop'] = $sPassword && \is_dir(
+//			SnappyMailHelper::getAppDataFolder()
 			\rtrim(\trim($this->config->getSystemValue('datadirectory', '')), '\\/')
 			. '/rainloop-storage'
 		);
@@ -98,7 +99,7 @@ class AdminSettings implements ISettings
 
 	public function getSection()
 	{
-		return 'additional';
+		return 'snappymail';
 	}
 
 	public function getPriority()

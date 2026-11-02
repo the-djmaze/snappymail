@@ -8,7 +8,7 @@ use OCP\Settings\ISettings;
 
 class PersonalSettings implements ISettings
 {
-	private $config;
+	private IConfig $config;
 
 	public function __construct(IConfig $config)
 	{
@@ -33,7 +33,7 @@ class PersonalSettings implements ISettings
 
 	public function getSection()
 	{
-		return 'additional';
+		return 'snappymail';
 	}
 
 	public function getPriority()

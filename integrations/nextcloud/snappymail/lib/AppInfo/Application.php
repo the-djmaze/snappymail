@@ -75,7 +75,7 @@ class Application extends App implements IBootstrap
 	{
 //		SnappyMailHelper::$server = $context->getServerContainer();
 
-		if (!\is_dir(\rtrim(\trim(SnappyMailHelper::getSystemConfigValue('datadirectory', '')), '\\/') . '/appdata_snappymail')) {
+		if (!\is_dir(SnappyMailHelper::getAppDataFolder())) {
 			return;
 		}
 

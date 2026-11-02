@@ -10,17 +10,20 @@ use OCP\AppFramework\Http\JSONResponse;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IRequest;
+//use OCP\IUserSession;
 
 class FetchController extends Controller
 {
 	private IConfig $config;
 	private IL10N $l10n;
+//	private IUserSession $userSession;
 
 	public function __construct(string $appName, IRequest $request, \Psr\Container\ContainerInterface $container)
 	{
 		parent::__construct($appName, $request);
 		$this->config = $container->query(IConfig::class);
 		$this->l10n = $container->query(IL10N::class);
+//		$this->userSession = $container->query(IUserSession::class);
 	}
 
 	public function upgrade(): JSONResponse
@@ -34,7 +37,7 @@ class FetchController extends Controller
 					'Message' => $this->l10n->t('Upgraded successfully')
 				]);
 			}
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			$error .= ': ' . $e->getMessage();
 		}
 		return new JSONResponse([
@@ -91,7 +94,7 @@ class FetchController extends Controller
 				'status' => 'success',
 				'Message' => $this->l10n->t('Saved successfully')
 			]);
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			return new JSONResponse([
 				'status' => 'error',
 				'Message' => $e->getMessage()
@@ -136,7 +139,7 @@ class FetchController extends Controller
 				'Message' => $this->l10n->t('Saved successfully'),
 				'Email' => $sEmail
 			]);
-		} catch (Exception $e) {
+		} catch (\Throwable $e) {
 			// Logout as the credentials might have changed, as exception could be in one attribute
 			// TODO: Handle both exceptions separately?
 			SnappyMailHelper::loadApp();

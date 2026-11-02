@@ -34,6 +34,16 @@ class SnappyMailHelper
 		return static::$server || \OC::$server;
 	}
 
+	public static function getAppDataFolder(): string
+	{
+		return static::getDataDirectory() . '/appdata_snappymail/';
+	}
+
+	public static function getDataDirectory(): string
+	{
+		return \rtrim(\trim(static::getSystemConfigValue('datadirectory', '')), '\\/');
+	}
+
 	public static function getConfig(): object
 	{
 		return \method_exists(\OC::$server, 'getConfig')
@@ -110,10 +120,26 @@ class SnappyMailHelper
 		}
 	}
 
+	public static function linkToRoute(string $value): string
+	{
+		return (\method_exists(\OC::$server, 'getURLGenerator')
+			? \OC::$server->getURLGenerator()
+			// Nextcloud 34+
+			: \OCP\Server::get(\OCP\IURLGenerator::class)
+		)->linkToRoute($value);
+	}
+
 	public static function loadApp(): void
 	{
+		$app_dir = \dirname(\dirname(__DIR__)) . '/app';
+
 		if (\class_exists('RainLoop\\Api')) {
-			return;
+			$expected = \realpath($app_dir);
+			$actual = \defined('APP_INDEX_ROOT_PATH') ? \realpath(APP_INDEX_ROOT_PATH) : false;
+			if ($expected && $actual && $expected === $actual) {
+				return;
+			}
+			throw new \RuntimeException('SnappyMail cannot start because another SnappyMail-compatible app is already loaded in the same request.');
 		}
 
 		// Nextcloud the default spl_autoload_register() not working
@@ -129,9 +155,8 @@ class SnappyMailHelper
 //		define('APP_VERSION', '0.0.0');
 //		define('APP_INDEX_ROOT_PATH', __DIR__ . DIRECTORY_SEPARATOR);
 //		include APP_INDEX_ROOT_PATH.'snappymail/v/'.APP_VERSION.'/include.php';
-//		define('APP_DATA_FOLDER_PATH', \rtrim(\trim(static::getSystemConfigValue('datadirectory', '')), '\\/').'/appdata_snappymail/');
+//		define('APP_DATA_FOLDER_PATH', static::getAppDataFolder());
 
-		$app_dir = \dirname(\dirname(__DIR__)) . '/app';
 		require_once $app_dir . '/index.php';
 	}
 
@@ -173,7 +198,7 @@ class SnappyMailHelper
 				if (24 < $OC_Version[0]) {
 					$ocSession = static::getSession();
 					$ocSession->reopen();
-					if (!$doLogin && $ocSession['snappymail-uid'] && $ocSession['snappymail-uid'] != $aCredentials[0]) {
+					if (!$doLogin && $ocSession->get('snappymail-uid') && $ocSession->get('snappymail-uid') != $aCredentials[0]) {
 						// UID changed, Impersonate plugin probably active
 						$oActions->Logout(true);
 						$doLogin = true;
@@ -193,9 +218,20 @@ class SnappyMailHelper
 					} catch (\Throwable $e) {
 						// Login failure, reset password to prevent more attempts
 						if (!$isOIDC) {
-							$sUID = static::getUID();
-							static::setSessionValue('snappymail-passphrase', '');
-							static::getConfig()->setUserValue($sUID, 'snappymail', 'passphrase', '');
+							// Credentials saved in the user's personal settings must never be
+							// deleted as a side effect of a failed login. A temporary network,
+							// DNS, TLS, or mail server outage is not a password change.
+							//
+							// Only discard the password captured from the current Nextcloud
+							// session when the IMAP server explicitly rejected authentication.
+							// Persisted credentials remain available for the user to inspect or
+							// replace in their personal settings.
+							if ($e instanceof \RainLoop\Exceptions\ClientException
+							 && \RainLoop\Notifications::AuthError === $e->getCode()
+							) {
+								static::setSessionValue('snappymail-passphrase', '');
+//								static::getConfig()->setUserValue(static::getUID(), 'snappymail', 'passphrase', '');
+							}
 							\SnappyMail\Log::error('Nextcloud', $e->getMessage());
 						}
 					}
@@ -261,7 +297,7 @@ class SnappyMailHelper
 
 		// If the current user ID is identical to login ID (not valid when using account switching),
 		// this has the second priority.
-		if ($ocSession['snappymail-nc-uid'] == $sUID) {
+		if ($ocSession->get('snappymail-nc-uid') == $sUID) {
 
 			// If OpenID Connect (OIDC) is enabled and used for login, use this.
 			if (static::isOIDCLogin()) {
@@ -276,10 +312,10 @@ class SnappyMailHelper
 			$sPassword = '';
 			if ($config->getAppValue('snappymail', 'snappymail-autologin', false)) {
 				$sEmail = $sUID;
-				$sPassword = $ocSession['snappymail-passphrase'];
+				$sPassword = $ocSession->get('snappymail-passphrase');
 			} else if ($config->getAppValue('snappymail', 'snappymail-autologin-with-email', false)) {
 				$sEmail = $config->getUserValue($sUID, 'settings', 'email');
-				$sPassword = $ocSession['snappymail-passphrase'];
+				$sPassword = $ocSession->get('snappymail-passphrase');
 			} else {
 				\SnappyMail\Log::debug('Nextcloud', 'snappymail-autologin is off');
 			}
@@ -287,7 +323,7 @@ class SnappyMailHelper
 				return [$sUID, $sEmail, static::decodePassword($sPassword, $sUID)];
 			}
 		} else {
-			\SnappyMail\Log::debug('Nextcloud', "snappymail-nc-uid mismatch '{$ocSession['snappymail-nc-uid']}' != '{$sUID}'");
+			\SnappyMail\Log::debug('Nextcloud', "snappymail-nc-uid mismatch '{$ocSession->get('snappymail-nc-uid')}' != '{$sUID}'");
 		}
 
 		return [$sUID, '', ''];
@@ -295,7 +331,7 @@ class SnappyMailHelper
 
 	public static function getAppUrl(): string
 	{
-		return \OC::$server->getURLGenerator()->linkToRoute('snappymail.page.appGet');
+		return static::linkToRoute('snappymail.page.appGet');
 	}
 
 	public static function normalizeUrl(string $sUrl): string
@@ -308,13 +344,13 @@ class SnappyMailHelper
 		return $sUrl;
 	}
 
-	public static function encodePassword(string $sPassword, string $sSalt): string
+	public static function encodePassword(#[\SensitiveParameter] string $sPassword, string $sSalt): string
 	{
 		static::loadApp();
 		return \SnappyMail\Crypt::EncryptUrlSafe($sPassword, $sSalt);
 	}
 
-	public static function decodePassword(string $sPassword, string $sSalt): ?\SnappyMail\SensitiveString
+	public static function decodePassword(#[\SensitiveParameter] string $sPassword, string $sSalt): ?\SnappyMail\SensitiveString
 	{
 		static::loadApp();
 		$result = \SnappyMail\Crypt::DecryptUrlSafe($sPassword, $sSalt);
