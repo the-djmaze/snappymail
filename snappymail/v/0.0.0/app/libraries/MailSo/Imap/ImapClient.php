@@ -503,8 +503,8 @@ class ImapClient extends \MailSo\Net\NetClient
 
 					if ($oResponse->IsStatusResponse
 					 && ResponseType::UNTAGGED === $oResponse->ResponseType
-					 && Enumerations\ResponseStatus::PREAUTH === $oResponse->StatusOrIndex
-//					 && (Enumerations\ResponseStatus::PREAUTH === $oResponse->StatusOrIndex || Enumerations\ResponseStatus::BYE === $oResponse->StatusOrIndex)
+					 && Enumerations\ResponseStatus::PREAUTH === $oResponse->ResponseStatus
+//					 && (Enumerations\ResponseStatus::PREAUTH === $oResponse->ResponseStatus || Enumerations\ResponseStatus::BYE === $oResponse->ResponseStatus)
 					) {
 						break;
 					}

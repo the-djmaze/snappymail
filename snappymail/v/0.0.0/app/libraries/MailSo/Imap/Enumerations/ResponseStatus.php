@@ -16,11 +16,11 @@ namespace MailSo\Imap\Enumerations;
  * @package Imap
  * @subpackage Enumerations
  */
-abstract class ResponseStatus
+enum ResponseStatus: string
 {
-	const OK = 'OK';
-	const NO = 'NO';
-	const BAD = 'BAD';
-	const BYE = 'BYE';
-	const PREAUTH = 'PREAUTH';
+	case OK = 'OK';
+	case NO = 'NO';
+	case BAD = 'BAD';
+	case BYE = 'BYE';
+	case PREAUTH = 'PREAUTH';
 }

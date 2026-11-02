@@ -42,7 +42,7 @@ class ResponseCollection extends \MailSo\Base\Collection
 				throw new Exceptions\InvalidResponseException($this);
 			}
 
-			if (Enumerations\ResponseStatus::OK !== $oItem->StatusOrIndex) {
+			if (Enumerations\ResponseStatus::OK !== $oItem->ResponseStatus) {
 				throw new Exceptions\NegativeResponseException($this);
 			}
 		}

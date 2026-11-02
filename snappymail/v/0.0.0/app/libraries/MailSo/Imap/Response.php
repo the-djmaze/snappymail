@@ -11,6 +11,7 @@
 
 namespace MailSo\Imap;
 
+use MailSo\Imap\Enumerations\ResponseStatus;
 use MailSo\Imap\Enumerations\ResponseType;
 
 /**
@@ -29,6 +30,8 @@ class Response
 
 	public bool $IsStatusResponse = false;
 
+	public ?ResponseStatus $ResponseStatus = null;
+
 	public ResponseType $ResponseType = ResponseType::UNKNOWN;
 
 	public ?string $Tag = null;
@@ -46,7 +49,8 @@ class Response
 	{
 		$value = \strtoupper($value);
 		$this->StatusOrIndex = $value;
-		$this->IsStatusResponse = \defined("\\MailSo\\Imap\\Enumerations\\ResponseStatus::{$value}");
+		$this->ResponseStatus = ResponseStatus::tryFrom($value);
+		$this->IsStatusResponse = !!$this->ResponseStatus;
 	}
 
 	public function setTag(string $value) : void
