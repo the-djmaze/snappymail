@@ -94,8 +94,6 @@ export class MailMessageList extends AbstractViewRight {
 	constructor() {
 		super();
 
-		this.allowDangerousActions = SettingsCapa('DangerousActions');
-
 		this.messageList = MessagelistUserStore;
 		this.archiveAllowed = MessagelistUserStore.archiveAllowed;
 		this.canMarkAsSpam = MessagelistUserStore.canMarkAsSpam;
@@ -147,6 +145,8 @@ export class MailMessageList extends AbstractViewRight {
 				read: MessagelistUserStore.mainSearch,
 				write: value => sLastSearchValue = value
 			},
+
+			allowDangerousActions: () => SettingsCapa('DangerousActions') || MessagelistUserStore.isTrashFolder(),
 
 			isIncompleteChecked: () => {
 				const c = MessagelistUserStore.listChecked().length;
@@ -360,7 +360,7 @@ export class MailMessageList extends AbstractViewRight {
 	}
 
 	clear() {
-		SettingsCapa('DangerousActions')
+		this.allowDangerousActions()
 		&& showScreenPopup(FolderClearPopupView, [FolderUserStore.currentFolder()]);
 	}
 
