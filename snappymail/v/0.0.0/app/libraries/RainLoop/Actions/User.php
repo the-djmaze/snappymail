@@ -160,11 +160,11 @@ trait User
 			return \min(100, \max(10, $iValue));
 		});
 
-		$this->setSettingsFromParams($oSettings, 'Layout', 'int', function ($iValue) {
-			return (int) (\in_array((int) $iValue, array(\RainLoop\Enumerations\Layout::NO_PREVIEW,
-				\RainLoop\Enumerations\Layout::SIDE_PREVIEW, \RainLoop\Enumerations\Layout::BOTTOM_PREVIEW)) ?
-					$iValue : \RainLoop\Enumerations\Layout::SIDE_PREVIEW);
-		});
+		$this->setSettingsFromParams($oSettings, 'Layout', 'int',
+			fn(int $iValue) => (
+				\RainLoop\Enumerations\Layout::tryFrom($iValue) ?: \RainLoop\Enumerations\Layout::SIDE_PREVIEW
+			)->value
+		);
 
 		$this->setSettingsFromParams($oSettings, 'EditorDefaultType', 'string');
 		$this->setSettingsFromParams($oSettings, 'editorWysiwyg', 'string');

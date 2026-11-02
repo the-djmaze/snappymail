@@ -16,10 +16,10 @@ namespace MailSo\Imap\Enumerations;
  * @package Imap
  * @subpackage Enumerations
  */
-abstract class ResponseType
+enum ResponseType
 {
-	const UNKNOWN = 0;
-	const TAGGED = 1;
-	const UNTAGGED = 2;
-	const CONTINUATION = 3;
+	case UNKNOWN;
+	case TAGGED;
+	case UNTAGGED;
+	case CONTINUATION;
 }

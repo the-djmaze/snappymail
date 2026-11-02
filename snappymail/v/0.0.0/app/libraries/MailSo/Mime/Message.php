@@ -196,26 +196,9 @@ class Message extends Part
 		return $this;
 	}
 
-	public function SetPriority(int $iValue) : self
+	public function SetPriority(Enumerations\MessagePriority $eValue) : self
 	{
-		$sResult = '';
-		switch ($iValue)
-		{
-			case Enumerations\MessagePriority::HIGH:
-				$sResult = Enumerations\MessagePriority::HIGH.' (Highest)';
-				break;
-			case Enumerations\MessagePriority::NORMAL:
-				$sResult = Enumerations\MessagePriority::NORMAL.' (Normal)';
-				break;
-			case Enumerations\MessagePriority::LOW:
-				$sResult = Enumerations\MessagePriority::LOW.' (Lowest)';
-				break;
-		}
-
-		if (\strlen($sResult)) {
-			$this->aHeadersValue[Enumerations\Header::X_PRIORITY] = $sResult;
-		}
-
+		$this->aHeadersValue[Enumerations\Header::X_PRIORITY] = $eValue->toMIME();
 		return $this;
 	}
 

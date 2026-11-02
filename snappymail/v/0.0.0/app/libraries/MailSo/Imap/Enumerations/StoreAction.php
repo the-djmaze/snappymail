@@ -16,12 +16,12 @@ namespace MailSo\Imap\Enumerations;
  * @package Imap
  * @subpackage Enumerations
  */
-abstract class StoreAction
+enum StoreAction: string
 {
-//	const SET_FLAGS = 'FLAGS';
-//	const SET_FLAGS_SILENT = 'FLAGS.SILENT';
-	const ADD_FLAGS = '+FLAGS';
-	const ADD_FLAGS_SILENT = '+FLAGS.SILENT';
-	const REMOVE_FLAGS = '-FLAGS';
-	const REMOVE_FLAGS_SILENT = '-FLAGS.SILENT';
+//	case SET_FLAGS = 'FLAGS';
+//	case SET_FLAGS_SILENT = 'FLAGS.SILENT';
+	case ADD_FLAGS = '+FLAGS';
+	case ADD_FLAGS_SILENT = '+FLAGS.SILENT';
+	case REMOVE_FLAGS = '-FLAGS';
+	case REMOVE_FLAGS_SILENT = '-FLAGS.SILENT';
 }

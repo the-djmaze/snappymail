@@ -2,6 +2,8 @@
 
 namespace OCA\SnappyMail\Util;
 
+use RainLoop\Enumerations\SignMeType;
+
 class SnappyMailResponse extends \OCP\AppFramework\Http\Response
 {
 	public function render(): string
@@ -184,7 +186,7 @@ class SnappyMailHelper
 					try {
 						$oAccount = $oActions->LoginProcess($aCredentials[1], $aCredentials[2]);
 						if (!$isOIDC && $oAccount
-						 && $oConfig->Get('login', 'sign_me_auto', \RainLoop\Enumerations\SignMeType::DefaultOff) === \RainLoop\Enumerations\SignMeType::DefaultOn
+						 && $oConfig->Get('login', 'sign_me_auto', SignMeType::DefaultOff->value) === SignMeType::DefaultOn->value
 						) {
 							$oActions->SetSignMeToken($oAccount);
 						}

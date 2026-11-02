@@ -2,9 +2,9 @@
 
 namespace RainLoop\Enumerations;
 
-abstract class Layout
+enum Layout: int
 {
-	const NO_PREVIEW = 0;
-	const SIDE_PREVIEW = 1;
-	const BOTTOM_PREVIEW = 2;
+	case NO_PREVIEW = 0;
+	case SIDE_PREVIEW = 1;
+	case BOTTOM_PREVIEW = 2;
 }

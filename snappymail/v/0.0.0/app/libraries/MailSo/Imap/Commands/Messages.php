@@ -354,11 +354,10 @@ trait Messages
 	 * @throws \MailSo\RuntimeException
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
-	 * $sStoreAction = \MailSo\Imap\Enumerations\StoreAction::ADD_FLAGS_SILENT
 	 */
-	public function MessageStoreFlag(SequenceSet $oRange, array $aInputStoreItems, string $sStoreAction) : ?ResponseCollection
+	public function MessageStoreFlag(SequenceSet $oRange, array $aInputStoreItems, StoreAction $eStoreAction) : ?ResponseCollection
 	{
-		if (!\count($oRange) || !\strlen(\trim($sStoreAction)) || !\count($aInputStoreItems)) {
+		if (!\count($oRange) || !\count($aInputStoreItems)) {
 			return null;
 		}
 
@@ -372,7 +371,7 @@ trait Messages
 
 		return $this->SendRequestGetResponse(
 			$oRange->UID ? 'UID STORE' : 'STORE',
-			array((string) $oRange, $sStoreAction, $aInputStoreItems)
+			array((string) $oRange, $eStoreAction->value, $aInputStoreItems)
 		);
 	}
 

@@ -12,6 +12,7 @@
 namespace MailSo\Imap;
 
 use MailSo\Net\Enumerations\ConnectionSecurityType;
+use MailSo\Imap\Enumerations\ResponseType;
 
 /**
  * @category MailSo
@@ -147,7 +148,7 @@ class ImapClient extends \MailSo\Net\NetClient
 			if ('CRAM-MD5' === $type)
 			{
 				$oResponse = $this->SendRequestGetResponse('AUTHENTICATE', array($type));
-				$sChallenge = $this->getResponseValue($oResponse, Enumerations\ResponseType::CONTINUATION);
+				$sChallenge = $this->getResponseValue($oResponse, ResponseType::CONTINUATION);
 				$sAuth = $SASL->authenticate($sLogin, $sPassword, $sChallenge);
 				$this->logMask($sAuth);
 				$this->sendRaw($sAuth);
@@ -164,13 +165,13 @@ class ImapClient extends \MailSo\Net\NetClient
 					$this->sendRaw($sAuth);
 				}
 				$oResponse = $this->getResponse();
-//				if ($oResponse->getLast()->ResponseType === Enumerations\ResponseType::CONTINUATION)
+//				if ($oResponse->getLast()->ResponseType === ResponseType::CONTINUATION)
 				if ($SASL->hasChallenge()) {
-					$sChallenge = $SASL->challenge($this->getResponseValue($oResponse, Enumerations\ResponseType::CONTINUATION));
+					$sChallenge = $SASL->challenge($this->getResponseValue($oResponse, ResponseType::CONTINUATION));
 					$this->logMask($sChallenge);
 					$this->sendRaw($sChallenge);
 					$oResponse = $this->getResponse();
-					$SASL->verify($this->getResponseValue($oResponse, Enumerations\ResponseType::CONTINUATION));
+					$SASL->verify($this->getResponseValue($oResponse, ResponseType::CONTINUATION));
 					$this->sendRaw('');
 					$oResponse = $this->getResponse();
 				}
@@ -181,7 +182,7 @@ class ImapClient extends \MailSo\Net\NetClient
 				$this->logMask($sAuth);
 				$oResponse = $this->SendRequestGetResponse('AUTHENTICATE', array($type, $sAuth));
 				$oR = $oResponse->getLast();
-				if ($oR && Enumerations\ResponseType::CONTINUATION === $oR->ResponseType) {
+				if ($oR && ResponseType::CONTINUATION === $oR->ResponseType) {
 					if (!empty($oR->ResponseList[1]) && \preg_match('/^[a-zA-Z0-9=+\/]+$/', $oR->ResponseList[1])) {
 						$this->logWrite(\base64_decode($oR->ResponseList[1]), \LOG_WARNING);
 					}
@@ -192,7 +193,7 @@ class ImapClient extends \MailSo\Net\NetClient
 			else if ($this->hasCapability('LOGINDISABLED'))
 			{
 				$oResponse = $this->SendRequestGetResponse('AUTHENTICATE', array($type));
-				$sB64 = $this->getResponseValue($oResponse, Enumerations\ResponseType::CONTINUATION);
+				$sB64 = $this->getResponseValue($oResponse, ResponseType::CONTINUATION);
 				$sAuth = $SASL->authenticate($sLogin, $sPassword, $sB64);
 				$this->logMask($sAuth);
 				$this->sendRaw($sAuth, true);
@@ -363,7 +364,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		try {
 			$oResponseCollection = $this->SendRequestGetResponse('NAMESPACE');
 			foreach ($oResponseCollection as $oResponse) {
-				if (Enumerations\ResponseType::UNTAGGED === $oResponse->ResponseType
+				if (ResponseType::UNTAGGED === $oResponse->ResponseType
 				 && 'NAMESPACE' === $oResponse->StatusOrIndex)
 				{
 					return new NamespaceResult($oResponse);
@@ -444,10 +445,10 @@ class ImapClient extends \MailSo\Net\NetClient
 		return $this->getResponse();
 	}
 
-	protected function getResponseValue(ResponseCollection $oResponseCollection, int $type = 0): string
+	protected function getResponseValue(ResponseCollection $oResponseCollection, ResponseType $type): string
 	{
 		$oResponse = $oResponseCollection->getLast();
-		if ($oResponse && (!$type || $type === $oResponse->ResponseType)) {
+		if ($oResponse && ($type === ResponseType::UNKNOWN || $type === $oResponse->ResponseType)) {
 			$sResult = $oResponse->ResponseList[1] ?? null;
 			if ($sResult) {
 				return $sResult;
@@ -501,7 +502,7 @@ class ImapClient extends \MailSo\Net\NetClient
 					$oResult->append($oResponse);
 
 					if ($oResponse->IsStatusResponse
-					 && Enumerations\ResponseType::UNTAGGED === $oResponse->ResponseType
+					 && ResponseType::UNTAGGED === $oResponse->ResponseType
 					 && Enumerations\ResponseStatus::PREAUTH === $oResponse->StatusOrIndex
 //					 && (Enumerations\ResponseStatus::PREAUTH === $oResponse->StatusOrIndex || Enumerations\ResponseStatus::BYE === $oResponse->StatusOrIndex)
 					) {
@@ -514,7 +515,7 @@ class ImapClient extends \MailSo\Net\NetClient
 //						\SnappyMail\Log::warning('IMAP', "{$oResponse->OptionalResponse[0]}: {$this->lastCommand}");
 					}
 
-					if ($sEndTag === $oResponse->Tag || Enumerations\ResponseType::CONTINUATION === $oResponse->ResponseType) {
+					if ($sEndTag === $oResponse->Tag || ResponseType::CONTINUATION === $oResponse->ResponseType) {
 						if (isset($this->aTagTimeouts[$sEndTag])) {
 							$this->writeLog((\microtime(true) - $this->aTagTimeouts[$sEndTag]).' ('.$sEndTag.')', \LOG_DEBUG);
 
@@ -546,7 +547,7 @@ class ImapClient extends \MailSo\Net\NetClient
 
 				while (true) {
 					$oResponse = $this->partialParseResponse();
-					if (Enumerations\ResponseType::UNTAGGED === $oResponse->ResponseType) {
+					if (ResponseType::UNTAGGED === $oResponse->ResponseType) {
 						yield $oResponse;
 					} else {
 						$oResult->append($oResponse);
@@ -558,7 +559,7 @@ class ImapClient extends \MailSo\Net\NetClient
 //						\SnappyMail\Log::warning('IMAP', "{$oResponse->OptionalResponse[0]}: {$this->lastCommand}");
 					}
 
-					if ($sEndTag === $oResponse->Tag || Enumerations\ResponseType::CONTINUATION === $oResponse->ResponseType) {
+					if ($sEndTag === $oResponse->Tag || ResponseType::CONTINUATION === $oResponse->ResponseType) {
 						if (isset($this->aTagTimeouts[$sEndTag])) {
 							$this->writeLog((\microtime(true) - $this->aTagTimeouts[$sEndTag]).' ('.$sEndTag.')', \LOG_DEBUG);
 

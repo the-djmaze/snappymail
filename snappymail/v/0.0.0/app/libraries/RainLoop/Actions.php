@@ -600,7 +600,7 @@ class Actions
 						'SoundNotification' => true,
 						'NotificationSound' => 'new-mail',
 						'DesktopNotifications' => true,
-						'Layout' => (int) $oConfig->Get('defaults', 'view_layout', Enumerations\Layout::SIDE_PREVIEW),
+						'Layout' => (int) $oConfig->Get('defaults', 'view_layout', Enumerations\Layout::SIDE_PREVIEW->value),
 						'EditorDefaultType' => \str_replace('Forced', '', $oConfig->Get('defaults', 'view_editor_type', '')),
 						'editorWysiwyg' => 'Squire',
 						'UseCheckboxesInList' => (bool) $oConfig->Get('defaults', 'view_use_checkboxes', true),
@@ -736,10 +736,10 @@ class Actions
 				}
 
 				$aResult['signMe'] = [
-					SignMeType::DefaultOff => 0,
-					SignMeType::DefaultOn => 1,
-					SignMeType::Unused => 2
-				][(string) $oConfig->Get('login', 'sign_me_auto', SignMeType::DefaultOff)];
+					SignMeType::DefaultOff->value => 0,
+					SignMeType::DefaultOn->value => 1,
+					SignMeType::Unused->value => 2
+				][(string) $oConfig->Get('login', 'sign_me_auto', SignMeType::DefaultOff->value)];
 			}
 		}
 

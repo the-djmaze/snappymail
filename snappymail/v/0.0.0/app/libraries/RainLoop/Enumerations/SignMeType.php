@@ -2,9 +2,9 @@
 
 namespace RainLoop\Enumerations;
 
-abstract class SignMeType
+enum SignMeType: string
 {
-	const DefaultOff = 'DefaultOff';
-	const DefaultOn = 'DefaultOn';
-	const Unused = 'Unused';
+	case DefaultOff = 'DefaultOff';
+	case DefaultOn = 'DefaultOn';
+	case Unused = 'Unused';
 }

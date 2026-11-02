@@ -300,7 +300,7 @@ When this value is gethostname, the gethostname() value is used.
 				'determine_user_language' => array(true, 'Detect language from browser header `Accept-Language`'),
 				'determine_user_domain' => array(false, 'Like default_domain but then HTTP_HOST/SERVER_NAME without www.'),
 
-				'sign_me_auto' => array(\RainLoop\Enumerations\SignMeType::DefaultOff,
+				'sign_me_auto' => array(\RainLoop\Enumerations\SignMeType::DefaultOff->value,
 					'This option allows webmail to remember the logged in user
 once they closed the browser window.
 

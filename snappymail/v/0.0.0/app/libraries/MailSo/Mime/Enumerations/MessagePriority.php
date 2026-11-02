@@ -16,9 +16,14 @@ namespace MailSo\Mime\Enumerations;
  * @package Mime
  * @subpackage Enumerations
  */
-abstract class MessagePriority
+enum MessagePriority: int
 {
-	const LOW = 5;
-	const NORMAL = 3;
-	const HIGH = 1;
+	case Lowest = 5;
+	case Normal = 3;
+	case Highest = 1;
+
+	public function toMIME() : string
+	{
+		return $this->value . ' (' . $this->name . ')';
+	}
 }

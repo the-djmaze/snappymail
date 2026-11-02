@@ -29,7 +29,7 @@ class Response
 
 	public bool $IsStatusResponse = false;
 
-	public int $ResponseType = 0;
+	public ResponseType $ResponseType = ResponseType::UNKNOWN;
 
 	public ?string $Tag = null;
 
