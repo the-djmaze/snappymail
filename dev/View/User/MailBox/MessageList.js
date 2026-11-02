@@ -350,12 +350,12 @@ export class MailMessageList extends AbstractViewRight {
 
 	clearListIsVisible() {
 		return (
-			!this.messageListSearchDesc()
+		    this.allowDangerousActions()
+		 && !this.messageListSearchDesc()
 		 && !MessagelistUserStore.error()
 		 && !MessagelistUserStore.endThreadUid()
 		 && MessagelistUserStore().length
 		 && (MessagelistUserStore.isSpamFolder() || MessagelistUserStore.isTrashFolder())
-		 && SettingsCapa('DangerousActions')
 		);
 	}
 
