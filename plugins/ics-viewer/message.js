@@ -92,12 +92,23 @@
 					// A scheduling mail does not always carry a text/calendar
 					// attachment either: the part is often inline inside
 					// multipart/alternative and repeated as application/ics.
+					// The message is set before its body is fetched
+					// (populateMessageBody), so attachments are usually still
+					// empty at this point: read them again when they arrive,
+					// once per message, and stop listening when it is done or
+					// when another message is shown.
+					let subscription = null, found = false;
+					const stop = () => subscription && (subscription.dispose(), subscription = null);
+					const readIcs = () => {
+					if (view.message() !== msg) return stop();
 					let ics = (msg.attachments() || []).find(attachment =>
 						'text/calendar' == attachment.mimeType
 						|| 'application/ics' == attachment.mimeType
 						|| 'text/x-vcalendar' == attachment.mimeType
 						|| /\.ics$/i.test(attachment.fileName || ''));
 					if (ics && ics.download) {
+						found = true;
+						stop();
 
 						// fetch it and parse the VEVENT
 						rl.fetch(ics.linkDownload())
@@ -131,9 +142,15 @@
 									isCancelled: VEVENT.isCancelled(),
 									shouldReply: VEVENT.shouldReply()
 								});
-								view.ICSViewer(VEVENT);
+								view.message() === msg && view.ICSViewer(VEVENT);
 							}
-						});
+						})
+						.catch(e => console.error('[ics-viewer]', e));
+					}
+					};
+					readIcs();
+					if (!found && view.message() === msg) {
+						subscription = msg.attachments.subscribe(readIcs);
 					}
 				}
 			});
