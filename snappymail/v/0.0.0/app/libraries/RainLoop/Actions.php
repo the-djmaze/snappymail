@@ -735,11 +735,7 @@ class Actions
 					$aResult['DevPassword'] = '';
 				}
 
-				$aResult['signMe'] = [
-					SignMeType::DefaultOff->value => 0,
-					SignMeType::DefaultOn->value => 1,
-					SignMeType::Unused->value => 2
-				][(string) $oConfig->Get('login', 'sign_me_auto', SignMeType::DefaultOff->value)];
+				$aResult['signMe'] = (SignMeType::tryFrom($oConfig->Get('login', 'sign_me_auto', '')) ?: SignMeType::DefaultOff)->toInt();
 			}
 		}
 
