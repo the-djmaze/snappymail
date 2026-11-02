@@ -125,7 +125,7 @@ abstract class Integrity
 	}
 
 	// https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Subresource_Integrity
-	private static $aSri;
+	private static ?array $aSri = null;
 	public static function loadSriHashes(): array
 	{
 		if (!\is_array(static::$aSri)) {
