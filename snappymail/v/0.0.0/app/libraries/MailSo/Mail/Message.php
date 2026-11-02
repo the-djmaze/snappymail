@@ -299,7 +299,7 @@ class Message implements \JsonSerializable
 				foreach ($oMessage->oFrom as $oEmail) {
 					$sEmail = $oEmail->GetEmail();
 					foreach ($aAuth['dkim'] as $aDkimData) {
-						if (\strpos($sEmail, $aDkimData[1])) {
+						if (\str_contains($sEmail, $aDkimData[1])) {
 							$oEmail->SetDkimStatus($aDkimData[0]);
 						}
 					}
