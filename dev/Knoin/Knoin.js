@@ -94,7 +94,13 @@ const
 							i18nToNodes(vmDom);
 							visiblePopups.add(vm);
 							vmDom.style.zIndex = 3001 + (visiblePopups.size * 2);
-							vmDom.showModal();
+							// The dialog is only closed on transitionend, so reopening
+							// during the fade out finds it still open, and showModal on
+							// an open dialog throws. That threw out of this subscriber
+							// and out of modalVisible(true), so showScreenPopup never
+							// reached vm.onShow and the popup kept the previous item's
+							// values until it was closed and opened again.
+							vmDom.open || vmDom.showModal();
 							if (vmDom.backdrop) {
 								vmDom.backdrop.style.zIndex = 3000 + (visiblePopups.size * 2);
 							}
