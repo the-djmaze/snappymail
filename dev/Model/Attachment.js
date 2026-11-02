@@ -104,7 +104,18 @@ export class AttachmentModel extends AbstractModel {
 	 * @returns {boolean}
 	 */
 	pdfPreview() {
-		return null != navigator.mimeTypes['application/pdf'] && FileType.Pdf === this.fileType;
+		/**
+		 * navigator.pdfViewerEnabled is the supported way to ask this.
+		 * navigator.mimeTypes is deprecated and browsers now expose a PDF entry
+		 * there only while the built in viewer is on, so the old check quietly
+		 * returned false in cases where a preview would have worked and took
+		 * the eye badge with it.
+		 */
+		return FileType.Pdf === this.fileType
+			&& (undefined !== navigator.pdfViewerEnabled
+				? navigator.pdfViewerEnabled
+				: null != navigator.mimeTypes['application/pdf']
+			);
 	}
 
 	/**
