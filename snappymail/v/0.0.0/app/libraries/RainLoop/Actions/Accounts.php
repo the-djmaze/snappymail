@@ -81,7 +81,7 @@ trait Accounts
 		$oMainAccount = $this->getMainAccountFromToken();
 		$aAccounts = $this->GetAccounts($oMainAccount);
 
-		$sEmail = \trim($this->GetActionParam('email', ''));
+		$sEmail = IDN::emailToAscii(\trim($this->GetActionParam('email', '')));
 		$oPassword = new \SnappyMail\SensitiveString($this->GetActionParam('password', ''));
 		$bNew = !empty($this->GetActionParam('new', 1));
 
@@ -176,8 +176,7 @@ trait Accounts
 			return $this->FalseResponse();
 		}
 
-		$sEmailToDelete = \trim($this->GetActionParam('emailToDelete', ''));
-		$sEmailToDelete = IDN::emailToAscii($sEmailToDelete);
+		$sEmailToDelete = IDN::emailToAscii(\trim($this->GetActionParam('emailToDelete', '')));
 
 		$aAccounts = $this->GetAccounts($oMainAccount);
 
@@ -252,7 +251,7 @@ trait Accounts
 	 */
 	public function DoAccountSwitch(): array
 	{
-		if ($this->switchAccount(\trim($this->GetActionParam('Email', '')))) {
+		if ($this->switchAccount(new \MailSo\Mime\Email($this->GetActionParam('Email', '')))) {
 			$oAccount = $this->getAccountFromToken();
 			$aResult = $this->getAccountData($oAccount);
 //			$this->Plugins()->InitAppData($bAdmin, $aResult, $oAccount);

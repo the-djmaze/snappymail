@@ -64,7 +64,7 @@ trait AdminDomains
 	public function DoAdminDomainMatch() : array
 	{
 		$sCredentials = $this->resolveLoginCredentials(
-			$this->GetActionParam('username'),
+			new \MailSo\Mime\Email($this->GetActionParam('username')),
 			new \SnappyMail\SensitiveString('********')
 		);
 		$sEmail = $sCredentials['email'];

@@ -28,6 +28,16 @@ abstract class Account implements \JsonSerializable
 		return $this->sEmail;
 	}
 
+	public function EmailAscii(): string
+	{
+		return \SnappyMail\IDN::emailToAscii($this->sEmail);
+	}
+
+	public function EmailUtf8(): string
+	{
+		return \SnappyMail\IDN::emailToUtf8($this->sEmail);
+	}
+
 	public function Name(): string
 	{
 		return $this->sName;

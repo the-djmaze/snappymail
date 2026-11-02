@@ -1022,7 +1022,7 @@ class PdoAddressBook
 
 			$aEmailsToCreate = \array_filter($aEmailsObjects, function ($oItem) use ($aExists, &$aEmailsToUpdate) {
 				if ($oItem) {
-					$sEmail = \trim($oItem->GetEmail(true));
+					$sEmail = $oItem->GetEmailUtf8();
 					if (\strlen($sEmail)) {
 						$aEmailsToUpdate[] = $sEmail;
 						return !\in_array(\mb_strtolower($sEmail), $aExists);
@@ -1033,7 +1033,7 @@ class PdoAddressBook
 		} else {
 			foreach ($aEmailsObjects as $oItem) {
 				if ($oItem) {
-					$sEmailUpdate = \trim($oItem->GetEmail(true));
+					$sEmailUpdate = $oItem->GetEmailUtf8();
 					if (\strlen($sEmailUpdate)) {
 						$aEmailsToUpdate[] = $sEmailUpdate;
 					}
@@ -1048,7 +1048,7 @@ class PdoAddressBook
 				$oVCard = new VCard;
 				$bValid = false;
 				if ('' !== \trim($oEmail->GetEmail())) {
-					$oVCard->add('EMAIL', \trim($oEmail->GetEmail(true)));
+					$oVCard->add('EMAIL', $oEmail->GetEmailUtf8());
 					$bValid = true;
 				}
 				if ('' !== \trim($oEmail->GetDisplayName())) {

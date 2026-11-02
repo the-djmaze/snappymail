@@ -198,6 +198,7 @@ trait Pgp
 		$sKey = $this->GetActionParam('key', '');
 		$sKeyId = $this->GetActionParam('keyId', '');
 		$sEmail = $this->GetActionParam('email', '');
+//		$sEmail = \SnappyMail\IDN::emailToAscii($this->GetActionParam('email', ''));
 
 		if (!$sKey) {
 			try {

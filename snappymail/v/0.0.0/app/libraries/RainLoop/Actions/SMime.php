@@ -62,6 +62,7 @@ trait SMime
 		$cert = new Certificate();
 		$cert->distinguishedName['commonName'] = $this->GetActionParam('name', '') ?: $oAccount->Name();
 		$cert->distinguishedName['emailAddress'] = $this->GetActionParam('email', '') ?: $oAccount->Email();
+//		$cert->distinguishedName['emailAddress'] = \SnappyMail\IDN::emailToAscii($this->GetActionParam('email', '') ?: $oAccount->Email());
 		$result = $cert->createSelfSigned($oPassphrase, $this->GetActionParam('privateKey', ''));
 		return $this->DefaultResponse($result ?: false);
 	}

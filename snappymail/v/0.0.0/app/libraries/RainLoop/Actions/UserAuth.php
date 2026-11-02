@@ -2,6 +2,7 @@
 
 namespace RainLoop\Actions;
 
+use MailSo\Mime\Email;
 use RainLoop\Enumerations\Capa;
 use RainLoop\Notifications;
 use RainLoop\Utils;
@@ -33,9 +34,9 @@ trait UserAuth
 	/**
 	 * @throws \RainLoop\Exceptions\ClientException
 	 */
-	protected function resolveLoginCredentials(string $sEmail, SensitiveString $oPassword): array
+	protected function resolveLoginCredentials(Email $oEmail, SensitiveString $oPassword): array
 	{
-		$sEmail = \SnappyMail\IDN::emailToAscii(\MailSo\Base\Utils::Trim($sEmail));
+		$sEmail = $oEmail->GetEmail();
 
 		$sNewEmail = $sEmail;
 		$this->Plugins()->RunHook('login.credentials.step-1', array(&$sNewEmail));
@@ -139,9 +140,10 @@ trait UserAuth
 	/**
 	 * @throws \RainLoop\Exceptions\ClientException
 	 */
+//	public function LoginProcess(Email $sEmail, SensitiveString $oPassword, bool $bMainAccount = true): Account
 	public function LoginProcess(string $sEmail, SensitiveString $oPassword, bool $bMainAccount = true): Account
 	{
-		$aCredentials = $this->resolveLoginCredentials($sEmail, $oPassword);
+		$aCredentials = $this->resolveLoginCredentials(new Email($sEmail), $oPassword);
 
 		if (!\str_contains($aCredentials['email'], '@') || !\strlen($oPassword)) {
 			throw new ClientException(Notifications::InvalidInputArgument);
@@ -184,14 +186,14 @@ trait UserAuth
 		return $oAccount;
 	}
 
-	public function switchAccount(string $sEmail) : bool
+	public function switchAccount(Email $oEmail): bool
 	{
+		$sEmail = $oEmail->GetEmail();
 		$this->Http()->ServerNoCache();
 		$oMainAccount = $this->getMainAccountFromToken(false);
 		if ($sEmail && $oMainAccount && $this->GetCapa(Capa::ADDITIONAL_ACCOUNTS)) {
 			$oAccount = null;
-			if ($oMainAccount->Email() !== $sEmail) {
-				$sEmail = \SnappyMail\IDN::emailToAscii($sEmail);
+			if ($oMainAccount->EmailAscii() !== $sEmail) {
 				$aAccounts = $this->GetAccounts($oMainAccount);
 				if (!isset($aAccounts[$sEmail])) {
 					throw new ClientException(Notifications::AccountDoesNotExist);

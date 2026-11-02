@@ -335,7 +335,7 @@ trait Messages
 				$oToCollection = $oMessage->GetTo();
 				if ($oToCollection) {
 					foreach ($oToCollection as /* @var $oEmail \MailSo\Mime\Email */ $oEmail) {
-						$aArrayToFrec[$oEmail->GetEmail(true)] = $oEmail->ToString(false, true);
+						$aArrayToFrec[$oEmail->GetEmailUtf8()] = $oEmail->ToString(false, true);
 					}
 				}
 
