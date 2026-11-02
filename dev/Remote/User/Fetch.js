@@ -24,23 +24,27 @@ class RemoteUserFetch extends AbstractFetchRemote {
 		sFolderFullName = pString(sFolderFullName);
 		iUid = pInt(iUid);
 
-		if (getFolderFromCacheList(sFolderFullName) && 0 < iUid) {
-			this.abort('Message').request('Message',
-				fCallback,
-				{},
-				null,
-				'Message/' +
-					SUB_QUERY_PREFIX +
-					'/' +
-					b64EncodeJSONSafe([
-						sFolderFullName,
-						iUid,
-						AppUserStore.threadsAllowed() && SettingsUserStore.useThreads() ? 1 : 0,
-						SettingsGet('accountHash')
-					])
-			);
+		if (0 < iUid) {
+			if (getFolderFromCacheList(sFolderFullName)) {
+				this.abort('Message').request('Message',
+					fCallback,
+					{},
+					null,
+					'Message/' +
+						SUB_QUERY_PREFIX +
+						'/' +
+						b64EncodeJSONSafe([
+							sFolderFullName,
+							iUid,
+							AppUserStore.threadsAllowed() && SettingsUserStore.useThreads() ? 1 : 0,
+							SettingsGet('accountHash')
+						])
+				);
 
-			return true;
+				return true;
+			} else {
+				console.warn(`Remote.message: no such folder ${JSON.stringify(sFolderFullName)}, not fetching uid ${iUid}`);
+			}
 		}
 
 		return false;
