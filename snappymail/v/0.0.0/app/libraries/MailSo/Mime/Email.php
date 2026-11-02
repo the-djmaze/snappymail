@@ -155,7 +155,7 @@ class Email implements \JsonSerializable
 
 	public function GetEmail(bool $bUtf8 = false): string
 	{
-		return $bUtf8 ? \SnappyMail\IDN::emailToUtf8($this->sEmail) : $this->sEmail;
+		return $this->sEmail;
 	}
 
 	public function GetEmailUtf8(): string
@@ -173,9 +173,14 @@ class Email implements \JsonSerializable
 		return Utils::getEmailAddressLocalPart($this->sEmail);
 	}
 
-	public function GetDomain(bool $bIdn = false): string
+	public function GetDomain(): string
 	{
-		return Utils::getEmailAddressDomain($this->GetEmail($bIdn));
+		return Utils::getEmailAddressDomain($this->GetEmail());
+	}
+
+	public function GetDomainUtf8(): string
+	{
+		return Utils::getEmailAddressDomain($this->GetEmailUtf8());
 	}
 
 	public function SetDkimStatus(string $sDkimStatus): void
@@ -187,7 +192,7 @@ class Email implements \JsonSerializable
 	{
 		$sReturn = '';
 		if (\strlen($this->sEmail)) {
-			$sReturn = $this->GetEmail($bUtf8);
+			$sReturn = $bUtf8 ? $this->GetEmailUtf8() : $this->GetEmail();
 			$sDisplayName = $this->sDisplayName;
 			if (\strlen($sDisplayName)) {
 				$sDisplayName = \str_replace('"', '\"', $sDisplayName);
