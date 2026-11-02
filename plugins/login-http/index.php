@@ -18,22 +18,22 @@ class LoginHttpPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$this->addPartHook('ExternalHTTP', 'ServiceExternalHTTP');
 	}
 
-	public function ServiceExternalHTTP() : string
+	public function ServiceExternalHTTP(): bool
 	{
 		$oActions = \RainLoop\Api::Actions();
 		$oActions->Http()->ServerNoCache();
-		$sUser=$_SERVER['PHP_AUTH_USER'] ?? '';
-		$sPassword=$_SERVER['PHP_AUTH_PW'] ?? '';
+		$sUser = $_SERVER['PHP_AUTH_USER'] ?? '';
+		$sPassword = $_SERVER['PHP_AUTH_PW'] ?? '';
 		try {
-                	$oAccount = $oActions->LoginProcess($sUser, new \SnappyMail\SensitiveString($sPassword));
-                if ($oAccount) {
-                    \MailSo\Base\Http::Location('./');
-                    return true;
-                }
-            } catch (\Throwable $e) {
-                // Log l'erreur si besoin
-            }
-                \MailSo\Base\Http::Location('./?ExternalHTTP');
+			$oAccount = $oActions->LoginProcess($sUser, new \SnappyMail\SensitiveString($sPassword));
+			if ($oAccount) {
+				\MailSo\Base\Http::Location('./');
+				return true;
+			}
+		} catch (\Throwable $e) {
+			// Log l'erreur si besoin
+		}
+		\MailSo\Base\Http::Location('./?ExternalHTTP');
 		return true;
 	}
 }
