@@ -13,7 +13,7 @@ import { EmailModel } from 'Model/Email';
 export function MimeToMessage(data, message)
 {
 	const struct = ParseMime(data);
-	if (struct.headers) {
+	if (struct.headRaw) {
 		let html = struct.getByContentType('text/html'),
 			subject = struct.headerValue('subject');
 		html = html ? html.body : '';
