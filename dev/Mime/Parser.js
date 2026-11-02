@@ -75,9 +75,18 @@ export function ParseMime(text)
 		get raw() {
 			return text.slice(this.start, this.end);
 		}
-
+/*
 		get headRaw() {
-			return Object.keys(this.headers || {}).length ? text.slice(this.start, this.bodyStart) : '';
+			return this.hasHeader ? text.slice(this.start, this.bodyStart) : '';
+		}
+*/
+		get hasHeader() {
+			for (const prop in this.headers) {
+				if (Object.hasOwn(this.headers, prop)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		get bodyRaw() {
