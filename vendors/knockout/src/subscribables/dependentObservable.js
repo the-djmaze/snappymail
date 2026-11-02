@@ -175,7 +175,7 @@ var computedFn = {
     haveDependenciesChanged() {
         var id, dependency, dependencyTracking = this[computedState].dependencyTracking;
         for (id in dependencyTracking) {
-            if (Object.prototype.hasOwnProperty.call(dependencyTracking, id)) {
+            if (Object.hasOwn(dependencyTracking, id)) {
                 dependency = dependencyTracking[id];
                 if ((this._evalDelayed && dependency._target._notificationIsPending) || dependency._target.hasChanged(dependency._version)) {
                     return true;
