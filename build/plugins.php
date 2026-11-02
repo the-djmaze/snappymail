@@ -28,7 +28,7 @@ $keys = [
 	'url',
 	'version'
 ];
-/*
+
 $released = [
 	'add-x-originating-ip-header',
 	'attachments-force-open',
@@ -80,12 +80,15 @@ $released = [
 	'view-ics',
 	'white-list'
 ];
-*/
+
 foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 	if (is_file("{$dir}/index.php") && !strpos($dir, '.bak')) {
-		require "{$dir}/index.php";
 		$name = basename($dir);
-//		if (!in_array($name, $released)) continue;
+		if (!isset($options['plugins-all']) && !in_array($name, $released)) {
+			echo "s {$name}\n";
+			continue;
+		}
+		require "{$dir}/index.php";
 		$class = new ReflectionClass(str_replace('-', '', $name) . 'Plugin');
 		$manifest_item = [];
 		foreach ($class->getConstants() as $key => $value) {
@@ -119,11 +122,16 @@ foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 			$tgz_destination = PLUGINS_DEST_DIR . "/{$name}-{$version}.tgz";
 			@unlink($tgz_destination);
 			@unlink("{$tar_destination}.gz");
-			$tar = new PharData($tar_destination);
+			$tar = new \SnappyMail\TAR($tgz_destination);
+//			$tar = new PharData($tar_destination);
 			$tar->buildFromDirectory('./plugins/', '/' . \preg_quote("./plugins/{$name}/", '/') . '((?!\.bak).)*$/');
-			$tar->compress(Phar::GZ);
-			unlink($tar_destination);
-			rename("{$tar_destination}.gz", $tgz_destination);
+			if ($tar instanceof PharData) {
+				$tar->compress(Phar::GZ);
+				unlink($tar_destination);
+				rename("{$tar_destination}.gz", $tgz_destination);
+			} else {
+				$tar->close();
+			}
 /*
 			if (Phar::canWrite()) {
 				$phar_destination = PLUGINS_DEST_DIR . "/{$name}.phar";
@@ -146,7 +154,7 @@ foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 			echo "- {$name} {$version}\n";
 		}
 	} else {
-		echo "- {$name}\n";
+		echo "x {$name}\n";
 	}
 }
 

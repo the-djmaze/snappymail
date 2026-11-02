@@ -109,7 +109,16 @@ class TAR
 		$stream = null,
 		$stream_info = null;
 
-	public function start(): void
+/*
+	const
+		OVERWRITE = 1,
+		CREATE    = 2,
+		RDONLY    = 4,
+		EXCL      = 8,
+		CHECKCONS = 16;
+	public function open(string $filename, int $flags = 0): bool|int
+*/
+	public function open(): void
 	{
 		if ($this->stream) {
 			return;
@@ -159,7 +168,7 @@ class TAR
 
 	public function addFile(string $name, ?string $localName = null, ?\SplFileInfo $fileinfo = null): void
 	{
-		$this->start();
+		$this->open();
 		if (!$fileinfo) {
 			$fileinfo = new \SplFileInfo($name);
 		}
@@ -211,7 +220,7 @@ class TAR
 
 	public function addFromString(string $name, string $contents): void
 	{
-		$this->start();
+		$this->open();
 		$this->writeEntryHeader(
 			$name,
 			static::TYPE_FILE,
@@ -227,7 +236,7 @@ class TAR
 
 	public function buildFromDirectory(string $dir, string $pattern = ''): array
 	{
-		$this->start();
+		$this->open();
 		\clearstatcache();
 		$dir = \rtrim($dir,'\\/') . '/';
 		$dirl = \strlen($dir);
