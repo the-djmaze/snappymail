@@ -188,7 +188,7 @@ class LdapIdentities implements IIdentities
 				return false;
 			}
 		}
-		
+
 		$this->ldap = $ldap;
 		$this->ldapConnected = true;
 		return true;
