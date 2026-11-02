@@ -128,11 +128,11 @@ abstract class Integrity
 	private static $aSri;
 	public static function loadSriHashes(): array
 	{
-		if (!\is_array($aSri)) {
+		if (!\is_array(static::$aSri)) {
 			$sSriPath = APP_VERSION_ROOT_PATH . 'static/sri.json';
-			$aSri = \is_readable($sSriPath) ? \json_decode(\file_get_contents($sSriPath), true) : [];
-			if (!$aSri) {
-				$aSri = [
+			static::$aSri = \is_readable($sSriPath) ? \json_decode(\file_get_contents($sSriPath), true) : [];
+			if (!static::$aSri) {
+				static::$aSri = [
 					'libs.min.js'   => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/js/min/libs.min.js'),
 					'admin.min.js'  => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/js/min/admin.min.js'),
 					'app.min.js'    => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/js/min/app.min.js'),
@@ -141,6 +141,6 @@ abstract class Integrity
 				];
 			}
 		}
-		return $aSri;
+		return static::$aSri;
 	}
 }
