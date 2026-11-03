@@ -435,7 +435,9 @@ class ServiceActions
 		$bCacheEnabled = !$bAppDebug && $this->Config()->Get('cache', 'system_data', true);
 		$sCacheFileName = '';
 		if ($bCacheEnabled) {
-			$sCacheFileName = KeyPathHelper::PluginsJsCache($this->oActions->Plugins()->Hash()) . $sMinify;
+			$sCacheFileName = KeyPathHelper::PluginsJsCache($this->oActions->Plugins()->Hash())
+				. ($bAdmin ? 'admin' : 'user')
+				. $sMinify;
 			$this->oActions->verifyCacheByKey(\md5($sCacheFileName));
 			$sResult = $this->Cacher()->Get($sCacheFileName);
 		}
