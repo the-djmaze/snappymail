@@ -7,13 +7,13 @@ use SnappyMail\PGP\Keyservers;
 
 abstract class Signature
 {
-	const KEY_ARMOR_URL = 'https://snappymail.eu/repository/releases.asc';
+	const KEY_URL = 'https://snappymail.eu/repository/releases.asc';
+	const KEY_SUM = 'bfa5df5ab2e782940f6b2eede9e62b5b7a44415b';
 	// Long Key ID is the last 16 bytes of the fingerprint
 	const KEY_FINGERPRINT = '1016E47079145542F8BA133548208BA13290F3EB';
-	const KEY_SUM = 'bfa5df5ab2e782940f6b2eede9e62b5b7a44415b';
 
-	const X509_URL = 'https://snappymail.eu/repository/releases.pub';
-	const X509_SUM = '5c01f3d3b2defa1e9d7c31fc67ca3291e2a129f4';
+	const SSL_URL = 'https://snappymail.eu/repository/releases.pub';
+	const SSL_SUM = 'e5ecc30b52fa64012b15f7cec3c04f7bd083193e';
 
 	public static function verifyPGP(string $data, string $signature): void
 	{
@@ -73,24 +73,24 @@ abstract class Signature
 		}
 	}
 
-	// Verify x509 signature
+	// Verify SSL signature
 	public static function verifySSL(string $data, string $signature): void
 	{
 		if (!\is_readable($data)) {
 			throw new \ValueError('$data is not a file');
 		}
-		if (!$signature) {
-			throw new \ValueError('Plugin x509 signature is missing');
+		if (512 !== \strlen($signature)) {
+			throw new \ValueError('Plugin SSL signature is missing');
 		}
 
 		$pkey = __DIR__ . '/repository/releases.pub';
-		if (!\is_readable($pkey) || static::KEY_SUM !== \sha1_file($pkey)) {
-			throw new \Exception('Repository invalid x509 public key');
+		if (!\is_readable($pkey) || static::SSL_SUM !== \sha1_file($pkey)) {
+			throw new \Exception('Repository invalid SSL public key');
 		}
 
 		$result = \openssl_verify(
 			\file_get_contents($data),
-			$signature,
+			$signature, // binary data
 			\file_get_contents($pkey),
 			\OPENSSL_ALGO_SHA256,
 			0
@@ -99,9 +99,9 @@ abstract class Signature
 			return;
 		}
 		if (0 === $result) {
-			throw new \RuntimeException('Plugin x509 signature bad');
+			throw new \RuntimeException('Plugin SSL signature bad');
 		}
-		throw new \RuntimeException('Plugin x509 signature check failed');
+		throw new \RuntimeException('Plugin SSL signature check failed');
 	}
 
 }

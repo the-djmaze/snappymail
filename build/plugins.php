@@ -1,6 +1,28 @@
 <?php
 define('PLUGINS_DEST_DIR', __DIR__ . '/dist/releases/plugins');
 
+if (isset($options['sign'])) {
+	$pkey_file = $_SERVER['HOME'].'/.snappymail/sign_releases.pem';
+	if (is_file($pkey_file)) {
+		$private_key = openssl_pkey_get_private('file://'.$pkey_file);
+/*
+	} else {
+		$private_key = openssl_pkey_new(array(
+			'digest_alg' => 'sha512',
+			'private_key_bits' => 4096,
+			'private_key_type' => OPENSSL_KEYTYPE_RSA,
+		));
+		openssl_pkey_export($private_key, $private_key_pem);
+		file_put_contents($pkey_file, $private_key_pem);
+		$public_key_pem = openssl_pkey_get_details($private_key)['key'];
+		file_put_contents(str_replace('.pem', '.pub', $pkey_file), $public_key_pem);
+*/
+	}
+	if (!$private_key) {
+		exit("\n{$pkey_file} failed\n");
+	}
+}
+
 is_dir(PLUGINS_DEST_DIR) || mkdir(PLUGINS_DEST_DIR, 0777, true);
 $files = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator(PLUGINS_DEST_DIR, RecursiveDirectoryIterator::SKIP_DOTS),
@@ -156,11 +178,12 @@ foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 				passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '.$arg, $return_var);
 				$manifest_item['pgp_sig'] = trim(preg_replace('/-----(BEGIN|END) PGP SIGNATURE-----/', '', file_get_contents($tgz_destination.'.asc')));
 
-				$cert_dir = $_SERVER['HOME'].'/.snappymail/certificates';
-				$out = escapeshellarg($tgz_destination . '.sig');
-				passthru("openssl dgst -sha256 -sign {$cert_dir}/sign_releases.key -out {$out} {$arg}", $return_var);
-//				passthru("openssl dgst -sha512 -sign {$cert_dir}/sign_releases.key -out {$out} {$arg}", $return_var);
-//				$manifest_item['ssl_sig'] = base64_encode(file_get_contents($tgz_destination.'.sig'));
+				$signature = '';
+				if (true !== openssl_sign(file_get_contents($tgz_destination), $signature, $private_key, \OPENSSL_ALGO_SHA256, 0)) {
+					exit;
+				}
+				file_put_contents($tgz_destination . '.sig', $signature);
+				$manifest_item['ssl_sig'] = base64_encode($signature);
 			}
 			ksort($manifest_item);
 			$manifest[$name] = $manifest_item;
