@@ -445,6 +445,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 			$arguments[] = \escapeshellarg($pattern);
 		}
 
+		$result = null;
 		try {
 			$result = $this->exec($arguments);
 		} catch (\RuntimeException $e) {
