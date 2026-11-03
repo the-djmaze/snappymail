@@ -212,6 +212,21 @@ trait Raw
 						}
 					}
 
+					// The type comes from the message: whoever sent the mail decides it.
+					// Viewed inline under this origin, text/html (or SVG, XML, ...)
+					// becomes a page of the sender's choosing; the CSP stops scripts
+					// but not forms, meta refresh or remote styles. Only a few types
+					// are shown inline as declared.
+					if (!$bDownload) {
+						$sInlineType = static::inlineContentType($sContentType);
+						if (null === $sInlineType) {
+							$bDownload = true;
+							$sContentType = 'application/octet-stream';
+						} else {
+							$sContentType = $sInlineType;
+						}
+					}
+
 					if (!\headers_sent()) {
 						\header('Content-Type: '.$sContentType);
 						\MailSo\Base\Http::setContentDisposition($bDownload ? 'attachment' : 'inline', ['filename' => $sFileName]);
@@ -260,6 +275,27 @@ trait Raw
 				}
 			}, $sFolder, $iUid, $sMimeIndex
 		);
+	}
+
+	/**
+	 * The Content-Type to view an attachment inline with, or null to make it a
+	 * download. Raster images, PDF, audio, video and plain text are shown as
+	 * declared; any other text/* is shown as text/plain, so an HTML attachment
+	 * displays its source instead of rendering as a page on this origin.
+	 */
+	public static function inlineContentType(string $sContentType) : ?string
+	{
+		$sType = \strtolower(\trim(\explode(';', $sContentType, 2)[0]));
+		if (\in_array($sType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/bmp',
+			'application/pdf', 'text/plain'], true)
+		 || \preg_match('#^(audio|video)/[a-z0-9.+-]+$#', $sType)
+		) {
+			return $sType;
+		}
+		if (\str_starts_with($sType, 'text/')) {
+			return 'text/plain';
+		}
+		return null;
 	}
 
 	private static function loadImage($resource, bool $bDetectImageOrientation = false, int $iThumbnailBoxSize = 0) : \SnappyMail\Image

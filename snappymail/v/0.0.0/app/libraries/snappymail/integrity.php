@@ -10,6 +10,16 @@ abstract class Integrity
 	 */
 	public static function test(): void
 	{
+		// The integrity test sends HEAD requests to a URL built from the request's
+		// Host header and prints back every response header. Open to anyone, that
+		// lets a client choose the target (nginx ignores the port when matching
+		// server_name, so Host: <this host>:<port> reaches it) and read the result.
+		// It is an admin diagnostic; an admin's own browser sends the real Host.
+		if (!\RainLoop\Api::Actions()->IsAdminLoggined(false)) {
+			\MailSo\Base\Http::StatusHeader(404);
+			return '';
+		}
+
 		$result = static::phpVersion();
 		if ($result) {
 			echo '<p style="color: red">' . $result . '</p>';

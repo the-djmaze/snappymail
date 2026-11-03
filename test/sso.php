@@ -2,7 +2,7 @@
 
 // Enable SnappyMail Api and include index file
 $_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = true;
-require '../index.php';
+require __DIR__ . '/../index.php';
 
 /**
  * Get SSO hash

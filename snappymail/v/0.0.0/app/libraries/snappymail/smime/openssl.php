@@ -324,10 +324,11 @@ class OpenSSL
 			$opaque |= \str_contains($input, 'application/pkcs7-mime') || \str_contains($input, 'application/x-pkcs7-mime');
 			$input = $tmp;
 		}
+		// First pass extracts the content and nothing else: PKCS7_NOSIGS skips the
+		// signature check, so a message with a broken signature can still be read.
 		$output = $opaque ? new Temporary('smimeout-') : null;
 		if (true !== \openssl_pkcs7_verify(
 			$input->filename(),
-//			$flags = 0, // \PKCS7_NOVERIFY | \PKCS7_NOCHAIN | \PKCS7_NOSIGS
 			\PKCS7_NOVERIFY | \PKCS7_NOCHAIN | \PKCS7_NOSIGS,
 			$signers_certificates_filename ?: null,
 			$ca_info = [],
@@ -337,9 +338,23 @@ class OpenSSL
 		)) {
 			throw new \RuntimeException('OpenSSL verify: ' . \openssl_error_string());
 		}
+		// Second pass is the verdict. It used to be the first pass returning true,
+		// which with PKCS7_NOSIGS it does for any well-formed message, so altered
+		// or forged content was reported as validly signed. This checks the
+		// signature against the signer certificate in the message. PKCS7_NOVERIFY
+		// stays: the signer's chain is not checked against any CA, so 'success'
+		// means the content is what the certificate holder signed, not that the
+		// certificate itself is trusted.
+		$verified = \openssl_pkcs7_verify(
+			$input->filename(),
+			\PKCS7_NOVERIFY,
+			null,
+			[],
+			$this->untrusted_certificates_filename
+		);
 		return [
 			'body' => $output ? $output->getContents() : null,
-			'success' => true
+			'success' => true === $verified
 		];
 	}
 }

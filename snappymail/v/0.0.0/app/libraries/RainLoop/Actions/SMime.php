@@ -9,6 +9,7 @@ use MailSo\Imap\Enumerations\FetchType;
 trait SMime
 {
 	private $SMIME = null;
+
 	public function SMIME() : OpenSSL
 	{
 		if (!$this->SMIME) {
@@ -85,7 +86,7 @@ trait SMime
 	{
 		$sFolderName = $this->GetActionParam('folder', '');
 		$iUid = (int) $this->GetActionParam('uid', 0);
-		$sPartId = $this->GetActionParam('partId', '');
+		$sPartId = $this->smimePartIdParam('partId');
 		$sCertificate = $this->GetActionParam('certificate', '');
 		$sPrivateKey = $this->GetActionParam('privateKey', '');
 		$oPassphrase = new \SnappyMail\SensitiveString($this->GetActionParam('passphrase', ''));
@@ -138,7 +139,7 @@ trait SMime
 	public function DoSMimeVerifyMessage() : array
 	{
 		$sBody = $this->GetActionParam('bodyPart', '');
-		$sPartId = $this->GetActionParam('partId', '');
+		$sPartId = $this->smimePartIdParam('partId');
 		$bDetached = !empty($this->GetActionParam('detached', 0));
 		if (!$sBody && $sPartId) {
 			$iUid = (int) $this->GetActionParam('uid', 0);
@@ -153,7 +154,7 @@ trait SMime
 
 		// Import the certificates automatically
 		$sBody = $this->GetActionParam('sigPart', '');
-		$sPartId = $this->GetActionParam('sigPartId', '') ?: $sPartId;
+		$sPartId = $this->smimePartIdParam('sigPartId') ?: $sPartId;
 		if (!$sBody && $sPartId && $oImapClient) {
 			$sBody = $oImapClient->Fetch(
 				[FetchType::BODY_PEEK.'['.$sPartId.']'],
@@ -190,7 +191,7 @@ trait SMime
 /*
 		$sBody = $this->GetActionParam('sigPart', '');
 		if (!$sBody) {
-			$sPartId = $this->GetActionParam('sigPartId', '') ?: $this->GetActionParam('partId', '');
+			$sPartId = $this->smimePartIdParam('sigPartId') ?: $this->smimePartIdParam('partId');
 			$this->initMailClientConnection();
 			$oImapClient = $this->ImapClient();
 			$oImapClient->FolderExamine($this->GetActionParam('folder', ''));
@@ -212,5 +213,19 @@ trait SMime
 
 		return $this->DefaultResponse($certificates);
 */
+	}
+
+	/**
+	 * A part id from the client goes into an IMAP FETCH section, BODY.PEEK[...],
+	 * as is. Accept only a section number (1, 1.2.3) or TEXT, so the value cannot
+	 * close the bracket or the line and add commands of its own.
+	 */
+	private function smimePartIdParam(string $sKey): string
+	{
+		$sPartId = \trim((string) $this->GetActionParam($sKey, ''));
+		if ('' !== $sPartId && !\preg_match('/^(TEXT|[1-9][0-9]*(\.[1-9][0-9]*)*)$/D', $sPartId)) {
+			throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::InvalidInputArgument);
+		}
+		return $sPartId;
 	}
 }

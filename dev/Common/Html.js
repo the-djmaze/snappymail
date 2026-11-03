@@ -283,7 +283,11 @@ export const
 				// hr
 				'noshade',
 				// img
-				'hspace', 'sizes', 'srcset', 'vspace',
+				// srcset and sizes are not allowed: only src goes through the
+				// remote content consent and proxy rewrite below, so a srcset
+				// URL loaded without asking (directly, or relative to this
+				// origin through ?/ProxyExternal as a read receipt).
+				'hspace', 'vspace',
 				// meter
 				'low', 'high', 'optimum', 'value',
 				// ol
@@ -567,6 +571,19 @@ export const
 
 			if (hasAttribute('color')) {
 				oStyle.color = delAttribute('color');
+			}
+
+			// Only the three properties below go through the remote content and
+			// cid: handling. A url() in any other property (border-image-source,
+			// mask-image, filter, ...) would load without consent, a relative one
+			// through ?/ProxyExternal on this origin, so drop those outright.
+			let i = oStyle.length;
+			while (i--) {
+				const property = oStyle[i];
+				if (!['background-image', 'list-style-image', 'content'].includes(property)
+				 && /url\s*\(/i.test(oStyle.getPropertyValue(property))) {
+					oStyle.removeProperty(property);
+				}
 			}
 
 			if (!skipStyle) {
