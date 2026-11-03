@@ -51,51 +51,31 @@ abstract class Integrity
 			'static/js/min/openpgp.min.js'
 		];
 		foreach ($files as $file) {
-			echo "<h2>{$uri}{$file}</h2>";
+			echo "<h2>{$file}</h2>";
 			$response = $HTTP->doRequest('HEAD', $uri . $file);
-			echo '<details><summary>Status: ' . $response->status . '</summary><pre>' . \print_r($response->headers, 1) . '</pre></details>';
-			$size = \filesize(APP_VERSION_ROOT_PATH.$file);
-			if ($size == intval($response->getHeader('content-length'))) {
-				echo '<div>content-length matches size ' . $size . '</div>';
-			} else {
-				echo '<div style="color: red">content-length mismatch, should be: ' . $size . '</div>';
-			}
-/*
-			echo "<h3>encoding</h3>";
-			$response = $HTTP->doRequest('GET', $uri . $file, null, ['Accept-Encoding' => 'gzip, deflate, br']);
-			echo '<details><summary>Status: ' . $response->status . '</summary><pre>' . \print_r($response->headers, 1) . '</pre></details>';
-*/
-			echo "<h3>gzip encoded</h3>";
-			$response = $HTTP->doRequest('HEAD', $uri . $file . '.gz');
-//			$response = $HTTP->doRequest('HEAD', $uri . $file, null, ['Accept-Encoding: gzip']);
-			echo '<details><summary>Status: ' . $response->status . '</summary><pre>' . \print_r($response->headers, 1) . '</pre></details>';
-			$size = \filesize(APP_VERSION_ROOT_PATH.$file . '.gz');
-			if ($size == intval($response->getHeader('content-length'))) {
-				echo '<div>content-length matches size ' . $size . '</div>';
-			} else {
-				echo '<div style="color: red">content-length mismatch, should be: ' . $size . '</div>';
-			}
-			if ('gzip' == $response->getHeader('content-encoding')) {
-				echo '<div>content-encoding matches</div>';
-			} else {
-				echo '<div style="color: red">content-encoding mismatch, should be: gzip</div>';
-			}
-
-			echo "<h3>brotli encoded</h3>";
-			$response = $HTTP->doRequest('HEAD', $uri . $file, null, ['Accept-Encoding: br']);
-//			$response = $HTTP->doRequest('HEAD', $uri . $file . '.br');
-			echo '<details><summary>Status: ' . $response->status . '</summary><pre>' . \print_r($response->headers, 1) . '</pre></details>';
-			$size = \filesize(APP_VERSION_ROOT_PATH.$file . '.br');
-			if ($size == intval($response->getHeader('content-length'))) {
-				echo '<div>content-length matches size ' . $size . '</div>';
-			} else {
-				echo '<div style="color: red">content-length mismatch, should be: ' . $size . '</div>';
-			}
-			if ('br' == $response->getHeader('content-encoding')) {
-				echo '<div>content-encoding matches</div>';
-			} else {
-				echo '<div style="color: red">content-encoding mismatch, should be: br</div>';
-			}
+//			$response_enc = $HTTP->doRequest('GET', $uri . $file, null, ['Accept-Encoding: gzip, deflate, br']);
+			$response_gz = $HTTP->doRequest('GET', $uri . $file, null, ['Accept-Encoding: gzip']);
+			$response_br = $HTTP->doRequest('GET', $uri . $file, null, ['Accept-Encoding: br']);
+			echo '<table><thead>
+				<tr><th>type</th><th>Status</th><th>Encoding</th><th>Type</th><th>Length</th></tr>
+			</thead><tbody>
+				<tr><td></td><td>' . $response->status . '</td>
+					<td>' . $response->getHeader('content-encoding') . '</td>
+					<td>' . $response->getHeader('content-type') . '</td>
+					<td>' . ($response->getHeader('content-length') ?: \strlen($response->body)) . ' ('.\filesize(APP_VERSION_ROOT_PATH.$file).')</td>
+				</tr>
+				<tr><td>gzip</td>
+					<td>' . $response_gz->status . '</td>
+					<td>' . $response_gz->getHeader('content-encoding') . '</td>
+					<td>' . $response_gz->getHeader('content-type') . '</td>
+					<td>' . ($response_gz->getHeader('content-length') ?: \strlen($response_gz->body)) . ' ('.\filesize(APP_VERSION_ROOT_PATH.$file . '.gz').')</td>
+				</tr>
+				<tr><td>brotli</td><td>' . $response_br->status . '</td>
+					<td>' . $response_br->getHeader('content-encoding') . '</td>
+					<td>' . $response_br->getHeader('content-type') . '</td>
+					<td>' . ($response_br->getHeader('content-length') ?: \strlen($response_br->body)) . ' ('.\filesize(APP_VERSION_ROOT_PATH.$file . '.br').')</td>
+				</tr>
+			</tbody></table>';
 		}
 	}
 
