@@ -13,7 +13,7 @@ Passphrases.ask = async (key, sAskDesc, btnText) => {
 	} else {
 		const pass = await AskPopupView.password(sAskDesc, btnText,
 			window.crypto.subtle && canUseLocalStorage(key) ? 0b1101 : 0b0101);
-		pass.rememberPermanent && await saveToLocalStorage(key, pass.password);
+		pass?.rememberPermanent && await saveToLocalStorage(key, pass.password);
 		return pass;
 	}
 };
