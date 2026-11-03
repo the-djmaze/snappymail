@@ -27,14 +27,16 @@ abstract class Signature
 		// Like: gpg --no-default-keyring --keyring /path/to/pubkey.gpg --verify /path/to/file.txt.gpg
 		$gnupg = GnuPG::getInstance('');
 		static::importKey($gnupg);
-		$result = $gnupg->verifyFile($sTmp, $signature);
+		$result = $gnupg->verifyFile($data, $signature);
+
 		if (!empty($result[0]['keyid'])) {
-			throw new \RuntimeException("Plugin PGP signature wrong key: {$result[0]['keyid']}");
-		}
-		if (empty($result[0]['fingerprint'])) {
+			// Long Key ID is the last 16 bytes of the fingerprint
+			if (\substr(static::KEY_FINGERPRINT, -16) !== $result[0]['keyid']) {
+				throw new \RuntimeException("Plugin PGP signature wrong key: {$result[0]['keyid']}");
+			}
+		} else if (empty($result[0]['fingerprint'])) {
 			throw new \RuntimeException('Plugin PGP signature invalid');
-		}
-		if (static::KEY_FINGERPRINT !== $result[0]['fingerprint']) {
+		} else if (static::KEY_FINGERPRINT !== $result[0]['fingerprint']) {
 			throw new \RuntimeException("Plugin PGP signature wrong key: {$result[0]['fingerprint']}");
 		}
 	}
