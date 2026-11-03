@@ -56,7 +56,7 @@ class PageController extends Controller
 			$csp = new ContentSecurityPolicy();
 			$csp->addAllowedFrameDomain("'self'");
 //			$csp->addAllowedFrameAncestorDomain("'self'");
-			$response->setContentSecurityPolicy($csp->getPolicy());
+			$response->setContentSecurityPolicy($csp);
 			return $response;
 		}
 
@@ -209,7 +209,7 @@ class PageController extends Controller
 
 		$response = new TemplateResponse('snappymail', 'index_embed', $params, $blank ? 'blank' : 'user');
 
-		$response->setContentSecurityPolicy($csp->getPolicy());
+		$response->setContentSecurityPolicy($csp);
 
 		return $response;
 	}

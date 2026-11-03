@@ -6,11 +6,11 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Nextcloud',
-		VERSION = '2.38.1',
-		RELEASE  = '2024-10-08',
+		VERSION = '3.0.0',
+		RELEASE  = '2026-11-03',
 		CATEGORY = 'Integrations',
-		DESCRIPTION = 'Integrate with Nextcloud v20+',
-		REQUIRED = '2.38.0';
+		DESCRIPTION = 'Integrate with Nextcloud v25+',
+		REQUIRED = '3.0.0';
 
 	public function Init() : void
 	{
@@ -217,7 +217,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 		if (!$bAdmin && \is_array($aResult)) {
 			$ocUser = SnappyMailHelper::getUser();
 			$sUID = $ocUser->getUID();
-			$oUrlGen = \OC::$server->getURLGenerator();
+			$oUrlGen = SnappyMailHelper::getURLGenerator();
 			$sWebDAV = $oUrlGen->getAbsoluteURL($oUrlGen->linkTo('', 'remote.php') . '/dav');
 //			$sWebDAV = \OCP\Util::linkToRemote('dav');
 			$aResult['Nextcloud'] = [

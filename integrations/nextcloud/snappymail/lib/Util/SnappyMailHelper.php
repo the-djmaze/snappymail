@@ -52,13 +52,13 @@ class SnappyMailHelper
 			: \OCP\Server::get(\OCP\IConfig::class);
 	}
 
-	public static function getAppConfigValue(string $key, mixed $default = null): object
+	public static function getAppConfigValue(string $key, mixed $default = null): mixed
 	{
 		return (\method_exists(\OC::$server, 'getConfig')
-			? \OC::$server->getConfig()
+			? \OC::$server->getConfig()->getAppValue('snappymail', $key, $default)
 			// Nextcloud 34+
-			: \OCP\Server::get(\OCP\IAppConfig::class)
-		)->getAppValue('snappymail', $key, $default);
+			: \OCP\Server::get(\OCP\IAppConfig::class)->getValue('snappymail', $key, $default)
+		);
 	}
 
 	public static function getNavigationManager(): object
@@ -120,13 +120,18 @@ class SnappyMailHelper
 		}
 	}
 
-	public static function linkToRoute(string $value): string
+	public static function getURLGenerator(): object
 	{
 		return (\method_exists(\OC::$server, 'getURLGenerator')
 			? \OC::$server->getURLGenerator()
 			// Nextcloud 34+
 			: \OCP\Server::get(\OCP\IURLGenerator::class)
-		)->linkToRoute($value);
+		);
+	}
+
+	public static function linkToRoute(string $value): string
+	{
+		return static::getURLGenerator()->linkToRoute($value);
 	}
 
 	public static function loadApp(): void

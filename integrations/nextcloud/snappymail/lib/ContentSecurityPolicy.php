@@ -2,52 +2,54 @@
 
 namespace OCA\SnappyMail;
 
-class ContentSecurityPolicy extends \OCP\AppFramework\Http\ContentSecurityPolicy {
+class ContentSecurityPolicy extends \OCP\AppFramework\Http\ContentSecurityPolicy
+{
+	private string $nonce;
 
-	/** @var bool Whether inline JS snippets are allowed */
-	protected $inlineScriptAllowed = false;
-	/** @var bool Whether eval in JS scripts is allowed */
-	protected $evalScriptAllowed = true;
-	/** @var bool Whether strict-dynamic should be set */
-//	protected $strictDynamicAllowed = true; // NC24+
-	/** @var bool Whether inline CSS is allowed */
-	protected $inlineStyleAllowed = true;
-
-	function __construct() {
+	function __construct()
+	{
 		$CSP = \RainLoop\Api::getCSP();
 
-		$this->allowedScriptDomains = \array_unique(\array_merge($this->allowedScriptDomains, $CSP->get('script-src')));
-		$this->allowedScriptDomains = \array_diff($this->allowedScriptDomains, ["'unsafe-inline'", "'unsafe-eval'"]);
-
-		// Nextcloud only sets 'strict-dynamic' when browserSupportsCspV3() ?
-		\method_exists($this, 'useStrictDynamic')
-			? $this->useStrictDynamic(true) // NC24+
-			: $this->addAllowedScriptDomain("'strict-dynamic'");
-
-		$this->allowedImageDomains = \array_unique(\array_merge($this->allowedImageDomains, $CSP->get('img-src')));
-
-		$this->allowedStyleDomains = \array_unique(\array_merge($this->allowedStyleDomains, $CSP->get('style-src')));
-		$this->allowedStyleDomains = \array_diff($this->allowedStyleDomains, ["'unsafe-inline'"]);
-
-		$this->allowedFrameDomains = \array_unique(\array_merge($this->allowedFrameDomains, $CSP->get('frame-src')));
-
-		$this->reportTo = \array_unique(\array_merge($this->reportTo, $CSP->report_to));
-	}
-
-	public function getSnappyMailNonce() {
-		static $sNonce;
-		if (!$sNonce) {
-			$cspManager = (\method_exists(\OC::$server, 'getContentSecurityPolicyNonceManager')
-				? \OC::$server->getContentSecurityPolicyNonceManager()
-				// Nextcloud 34+
-				: \OCP\Server::get(\OC\Security\CSP\ContentSecurityPolicyNonceManager::class)
-			);
-			$sNonce = $cspManager->getNonce() ?: \SnappyMail\UUID::generate();
-			if (\method_exists($cspManager, 'browserSupportsCspV3') && !$cspManager->browserSupportsCspV3()) {
-				$this->addAllowedScriptDomain("'nonce-{$sNonce}'");
+		foreach ($CSP->get('script-src') as $domain) {
+			// Knockout's legacy binding parser still evaluates binding strings.
+			// Keep unsafe-eval until those bindings have been migrated.
+			if ("'unsafe-inline'" !== $domain) {
+				$this->addAllowedScriptDomain($domain);
 			}
 		}
-		return $sNonce;
+
+		if (\method_exists($this, 'useStrictDynamic')) {
+			$this->useStrictDynamic(true);
+		} else {
+			$this->addAllowedScriptDomain("'strict-dynamic'");
+		}
+
+		foreach ($CSP->get('img-src') as $domain) {
+			$this->addAllowedImageDomain($domain);
+		}
+
+		foreach ($CSP->get('style-src') as $domain) {
+			if ("'unsafe-inline'" !== $domain) {
+				$this->addAllowedStyleDomain($domain);
+			}
+		}
+
+		foreach ($CSP->get('frame-src') as $domain) {
+			$this->addAllowedFrameDomain($domain);
+		}
+
+		if (\method_exists($this, 'addReportTo')) {
+			foreach ($CSP->report_to as $reportTo) {
+				$this->addReportTo($reportTo);
+			}
+		}
+
+		$this->nonce = \SnappyMail\UUID::generate();
+		$this->addAllowedScriptDomain("'nonce-{$this->nonce}'");
 	}
 
+	public function getSnappyMailNonce()
+	{
+		return $this->nonce;
+	}
 }
