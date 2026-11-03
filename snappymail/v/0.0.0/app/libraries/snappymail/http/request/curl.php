@@ -93,7 +93,6 @@ class CURL extends \SnappyMail\HTTP\Request
 			}
 			return new Response($request_url, $code, $this->response_headers, $this->response_body);
 		} finally {
-			\curl_close($c);
 			$this->response_headers = array();
 			$this->response_body = '';
 		}

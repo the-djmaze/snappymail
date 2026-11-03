@@ -76,7 +76,6 @@ class WebdisConnection implements NodeConnectionInterface
      */
     public function __destruct()
     {
-        curl_close($this->resource);
         phpiredis_reader_destroy($this->reader);
     }
 

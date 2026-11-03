@@ -290,7 +290,6 @@ class jsonapi
 		if ($result == false) {
 			throw new \Exception("curl_exec threw error \"" . \curl_error($curl) . "\" for " . $url . "?" . $postdata );
 		}
-		\curl_close($curl);
 
 		return $result;
 	}

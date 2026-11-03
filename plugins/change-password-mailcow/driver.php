@@ -60,7 +60,6 @@ class ChangePasswordMailcowDriver
         curl_setopt($ch, CURLOPT_HTTPHEADER, array_map(function($k, $v) {return "$k: $v";}, array_keys($headers), $headers));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
-        curl_close($ch);
 
         $status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
 

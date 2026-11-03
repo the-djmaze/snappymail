@@ -474,7 +474,6 @@ class Client
         } else {
             $json_decode = json_decode($result, true);
         }
-        curl_close($ch);
 
         return array(
             'result' => (null === $json_decode) ? $result : $json_decode,
