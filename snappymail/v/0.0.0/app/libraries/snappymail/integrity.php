@@ -116,6 +116,12 @@ abstract class Integrity
 
 	// https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Subresource_Integrity
 	private static ?array $aSri = null;
+
+	public static function sriHash(string $file): string
+	{
+		return 'sha384-' . \base64_encode(\hash_file('sha384', $file, true));
+	}
+
 	public static function loadSriHashes(): array
 	{
 		if (!\is_array(static::$aSri)) {
@@ -123,11 +129,11 @@ abstract class Integrity
 			static::$aSri = \is_readable($sSriPath) ? \json_decode(\file_get_contents($sSriPath), true) : [];
 			if (!static::$aSri) {
 				static::$aSri = [
-					'libs.min.js'   => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/js/min/libs.min.js'),
-					'admin.min.js'  => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/js/min/admin.min.js'),
-					'app.min.js'    => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/js/min/app.min.js'),
-					'admin.min.css' => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/css/admin.min.css'),
-					'app.min.css'   => \hash_file('sha384', APP_VERSION_ROOT_PATH . 'static/css/app.min.css'),
+					'libs.min.js'   => static::sriHash(APP_VERSION_ROOT_PATH . 'static/js/min/libs.min.js'),
+					'admin.min.js'  => static::sriHash(APP_VERSION_ROOT_PATH . 'static/js/min/admin.min.js'),
+					'app.min.js'    => static::sriHash(APP_VERSION_ROOT_PATH . 'static/js/min/app.min.js'),
+					'admin.min.css' => static::sriHash(APP_VERSION_ROOT_PATH . 'static/css/admin.min.css'),
+					'app.min.css'   => static::sriHash(APP_VERSION_ROOT_PATH . 'static/css/app.min.css'),
 				];
 			}
 		}
