@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Inga kontakter funna",
 		"SPAM": "Spam",
+		"SNOOZED": "Senarelagda",
 		"SUBJECT": "Ämne",
 		"TEST": "Test",
 		"TO": "Till",
@@ -43,6 +44,16 @@
 		"HELP": "Hjälp",
 		"TEXT": "Text",
 		"ATTACHMENTS": "Bilagor"
+	},
+	"SNOOZE": {
+		"TITLE": "Senarelägg meddelande",
+		"BUTTON": "Senarelägg meddelande eller ändra tid",
+		"QUICK_TOMORROW": "Till i morgon kl. 8",
+		"QUICK_NEXT_WEEK": "Till nästa vecka (måndag kl. 8)",
+		"QUICK_LATER": "Senare (om 5 timmar)",
+		"UNTIL": "Senarelagt till",
+		"RETURNED": "Senarelagt meddelande har återkommit",
+		"INVALID_DATE": "Välj ett datum och en tid i framtiden."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Användarnamn",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Du har inte valt \"Drafts\" systemmapp, där meddelanden sparas medan det skrivs.",
 		"NOTIFICATION_SPAM": "Du har inte valt \"Spam\"-systemmapp, där spam-meddelanden ska sparas.\nOm du vill ta bort meddelanden permanent, välj då \"Använd inte\"-valet.\n",
 		"NOTIFICATION_TRASH": "Du har inte valt \"Papperskorg\" systemmapp, där borttagna meddelanden ska sparas.\nOm du vill ta meddelanden permanent, väl då \"Använd inte\" valet.\n",
-		"NOTIFICATION_ARCHIVE": "Du har inte valt \"Arkiv\" systemmapp, där arkiverade meddelanden ska läggas."
+		"NOTIFICATION_ARCHIVE": "Du har inte valt \"Arkiv\" systemmapp, där arkiverade meddelanden ska läggas.",
+		"NOTIFICATION_SNOOZED": "Du har inte valt en mapp för senarelagda meddelanden. Mappen ”Snoozed” skapas automatiskt när du senarelägger det första meddelandet."
 	},
 	"TITLES": {
 		"MAILBOX": "Brevlåda",

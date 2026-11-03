@@ -64,7 +64,11 @@ trait Messages
 		}
 
 		$oAccount = $this->initMailClientConnection();
-
+		try {
+			$this->processSnoozedMessages();
+		} catch (\Throwable $oException) {
+			$this->logException($oException);
+		}
 		$oSettingsLocal = $this->SettingsProvider(true)->Load($oAccount);
 		if ($oSettingsLocal instanceof \RainLoop\Settings) {
 			$oParams->bHideDeleted = !empty($oSettingsLocal->GetConf('HideDeleted', 1));
@@ -429,11 +433,17 @@ trait Messages
 
 		try
 		{
+			$sFolder = $this->GetActionParam('folder', '');
+			$bSetSeen = !empty($this->GetActionParam('setAction', '0'));
 			$this->MailClient()->MessageSetFlag(
-				$this->GetActionParam('folder', ''),
+				$sFolder,
 				empty($sThreadUids) ? new SequenceSet('1:*', false) : new SequenceSet(\explode(',', $sThreadUids)),
 				MessageFlag::SEEN,
-				!empty($this->GetActionParam('setAction', '0'))
+				$bSetSeen
+			);
+			$bSetSeen && $this->clearSnoozedReturnedFlags(
+				$sFolder,
+				empty($sThreadUids) ? new SequenceSet('1:*', false) : new SequenceSet(\explode(',', $sThreadUids))
 			);
 		}
 		catch (\Throwable $oException)
@@ -592,6 +602,8 @@ trait Messages
 		$sFolder = $this->GetActionParam('folder', '');
 		$aUids = \explode(',', (string) $this->GetActionParam('uids', ''));
 
+		$this->clearSnoozeFlags($sFolder, new SequenceSet($aUids));
+
 		try
 		{
 			$this->ImapClient()->MessageDelete($sFolder, new SequenceSet($aUids), true);
@@ -617,6 +629,8 @@ trait Messages
 		$sToFolder = $this->GetActionParam('toFolder', '');
 
 		$oUids = new SequenceSet(\explode(',', (string) $this->GetActionParam('uids', '')));
+
+		$this->clearSnoozeFlags($sFromFolder, $oUids);
 
 		if (!empty($this->GetActionParam('markAsRead', '0'))) {
 			try
@@ -661,6 +675,248 @@ trait Messages
 		$sHash = $this->MailClient()->FolderHash($sFromFolder);
 
 		return $this->DefaultResponse($sHash ? array($sFromFolder, $sHash) : array($sFromFolder));
+	}
+
+	public function DoMessageSnooze() : array
+	{
+		$this->initMailClientConnection();
+
+		$sFromFolder = (string) $this->GetActionParam('folder', '');
+		$iUid = (int) $this->GetActionParam('uid', 0);
+		$iUntil = (int) $this->GetActionParam('until', 0);
+		if (!$sFromFolder || 0 >= $iUid || \time() >= $iUntil) {
+			throw new ClientException(Notifications::UnknownError);
+		}
+
+		$oUids = new SequenceSet([$iUid]);
+		$sSnoozedFolder = $this->findSnoozedFolder();
+		if (!$sSnoozedFolder) {
+			try {
+				$oNamespaces = $this->ImapClient()->GetNamespaces();
+				$sNamespace = $oNamespaces ? $oNamespaces->GetPersonalPrefix() : '';
+				$sSnoozedFolder = $sNamespace.'Snoozed';
+				$this->ImapClient()->FolderCreate($sSnoozedFolder, true);
+			} catch (\Throwable $oException) {
+				$sSnoozedFolder = $this->findSnoozedFolder();
+				if (!$sSnoozedFolder) {
+					throw new ClientException(Notifications::CantCreateFolder, $oException);
+				}
+			}
+		}
+		$this->saveSnoozedFolderSetting($sSnoozedFolder);
+
+		try {
+			$oSnoozedInfo = $this->ImapClient()->FolderStatusAndSelect($sSnoozedFolder);
+			if (!$oSnoozedInfo->IsFlagSupported('Snoozed_'.$iUntil)) {
+				throw new \MailSo\RuntimeException('The Snoozed folder does not support custom flags.');
+			}
+
+			$oSourceInfo = $this->ImapClient()->FolderStatusAndSelect($sFromFolder);
+			if (!$oSourceInfo->IsFlagSupported('Snoozed_'.$iUntil)) {
+				throw new \MailSo\RuntimeException('The source folder does not support custom flags.');
+			}
+
+			$aOriginalFlags = $this->snoozeFlags($sFromFolder, $oUids)[$iUid] ?? [];
+			$bWasSeen = \in_array(MessageFlag::SEEN, $aOriginalFlags);
+			$this->clearSnoozeFlags($sFromFolder, $oUids);
+			$this->MailClient()->MessageSetFlag($sFromFolder, $oUids, 'Snoozed_'.$iUntil);
+			$this->MailClient()->MessageSetFlag($sFromFolder, $oUids, MessageFlag::SEEN);
+
+			if ($sFromFolder !== $sSnoozedFolder) {
+				$this->ImapClient()->MessageMove($sFromFolder, $sSnoozedFolder, $oUids);
+			}
+		} catch (\Throwable $oException) {
+			if (isset($aOriginalFlags)) try {
+				$this->clearSnoozeFlags($sFromFolder, $oUids);
+				foreach ($aOriginalFlags as $sFlag) {
+					if ('snoozed' === $sFlag || \preg_match('/^snoozed_[0-9]+$/', $sFlag)) {
+						$this->MailClient()->MessageSetFlag($sFromFolder, $oUids, $sFlag, true, true);
+					}
+				}
+				$this->MailClient()->MessageSetFlag(
+					$sFromFolder,
+					$oUids,
+					MessageFlag::SEEN,
+					$bWasSeen,
+					true
+				);
+			} catch (\Throwable $oRollbackException) {
+				$this->logException($oRollbackException, \LOG_ERR);
+			}
+			throw new ClientException(Notifications::CantMoveMessage, $oException);
+		}
+
+		return $this->DefaultResponse(['folder' => $sSnoozedFolder]);
+	}
+
+	public function DoSnoozeProcess() : array
+	{
+		$this->initMailClientConnection();
+		return $this->DefaultResponse(['moved' => $this->processSnoozedMessages()]);
+	}
+
+	private function findSnoozedFolder() : string
+	{
+		$sConfiguredFolder = $this->snoozedFolderSetting();
+		$sDefaultFolder = '';
+		foreach ($this->MailClient()->Folders('', '*', false) as $oFolder) {
+			if ($sConfiguredFolder && $oFolder->FullName === $sConfiguredFolder) {
+				return $oFolder->FullName;
+			}
+			if (!$sDefaultFolder && 0 === \strcasecmp($oFolder->Name(), 'Snoozed')) {
+				$sDefaultFolder = $oFolder->FullName;
+			}
+		}
+		return $sDefaultFolder;
+	}
+
+	private function snoozedFolderSetting() : string
+	{
+		$oSettingsLocal = $this->SettingsProvider(true)->Load($this->getAccountFromToken());
+		$sFolder = $oSettingsLocal instanceof \RainLoop\Settings
+			? (string) $oSettingsLocal->GetConf('SnoozeFolder', '')
+			: '';
+		return '__UNUSE__' === $sFolder || '0' === $sFolder ? '' : \trim($sFolder);
+	}
+
+	private function saveSnoozedFolderSetting(string $sFolder) : void
+	{
+		$oSettingsLocal = $this->SettingsProvider(true)->Load($this->getAccountFromToken());
+		if ($oSettingsLocal instanceof \RainLoop\Settings) {
+			$oSettingsLocal->SetConf('SnoozeFolder', $sFolder);
+			$oSettingsLocal->save();
+		}
+	}
+
+	private function snoozeFlags(string $sFolder, SequenceSet $oUids) : array
+	{
+		$aResult = [];
+		$this->ImapClient()->FolderSelect($sFolder);
+		$aResponses = $this->ImapClient()->Fetch(
+			[FetchType::UID, FetchType::FLAGS, FetchType::RFC822_SIZE],
+			(string) $oUids,
+			$oUids->UID
+		);
+		foreach ($aResponses as $oResponse) {
+			$iUid = (int) $oResponse->GetFetchValue(FetchType::UID);
+			$aFlags = $oResponse->GetFetchValue(FetchType::FLAGS) ?: [];
+			$aResult[$iUid] = \array_map(
+				'mb_strtolower',
+				\array_map('\\MailSo\\Base\\Utils::Utf7ModifiedToUtf8', $aFlags)
+			);
+		}
+		return $aResult;
+	}
+
+	private function clearSnoozeFlags(string $sFolder, SequenceSet $oUids) : void
+	{
+		if (!\count($oUids)) {
+			return;
+		}
+
+		foreach ($this->snoozeFlags($sFolder, $oUids) as $iUid => $aFlags) {
+			foreach ($aFlags as $sFlag) {
+				if ('snoozed' === $sFlag || \preg_match('/^snoozed_[0-9]+$/', $sFlag)) {
+					$this->MailClient()->MessageSetFlag(
+						$sFolder,
+						new SequenceSet([$iUid]),
+						$sFlag,
+						false,
+						true
+					);
+				}
+			}
+		}
+	}
+
+	private function processSnoozedMessages() : int
+	{
+		$sSnoozedFolder = $this->findSnoozedFolder();
+		if (!$sSnoozedFolder) {
+			return 0;
+		}
+
+		$sInboxFolder = '';
+		foreach ($this->MailClient()->Folders('', '*', false) as $oFolder) {
+			if ($oFolder->IsInbox()) {
+				$sInboxFolder = $oFolder->FullName;
+				break;
+			}
+		}
+		if (!$sInboxFolder) {
+			return 0;
+		}
+
+		$oInfo = $this->ImapClient()->FolderStatusAndSelect($sSnoozedFolder);
+		$aDue = [];
+		for ($iStart = 1; $iStart <= $oInfo->MESSAGES; $iStart += 250) {
+			$iEnd = \min($oInfo->MESSAGES, $iStart + 249);
+			$aResponses = $this->ImapClient()->Fetch(
+				[FetchType::UID, FetchType::FLAGS, FetchType::RFC822_SIZE],
+				$iStart.':'.$iEnd,
+				false
+			);
+			foreach ($aResponses as $oResponse) {
+				$iUid = (int) $oResponse->GetFetchValue(FetchType::UID);
+				$aFlags = \array_map(
+					'mb_strtolower',
+					\array_map('\\MailSo\\Base\\Utils::Utf7ModifiedToUtf8',
+						$oResponse->GetFetchValue(FetchType::FLAGS) ?: [])
+				);
+				foreach ($aFlags as $sFlag) {
+					if (\preg_match('/^snoozed_([0-9]+)$/', $sFlag, $aMatch)
+						&& (int) $aMatch[1] <= \time()) {
+						$aDue[$aMatch[1]][$iUid] = [
+							'flag' => $sFlag,
+							'seen' => \in_array(MessageFlag::SEEN, $aFlags)
+						];
+					}
+				}
+			}
+		}
+
+		$iMoved = 0;
+		foreach ($aDue as $aMessages) {
+			$oDueUids = new SequenceSet(\array_keys($aMessages));
+			try {
+				foreach ($aMessages as $iUid => $aMessage) {
+					$this->MailClient()->MessageSetFlag(
+						$sSnoozedFolder,
+						new SequenceSet([$iUid]),
+						$aMessage['flag'],
+						false,
+						true
+					);
+				}
+				$this->MailClient()->MessageSetFlag($sSnoozedFolder, $oDueUids, 'Snoozed');
+				$this->MailClient()->MessageSetFlag($sSnoozedFolder, $oDueUids, MessageFlag::SEEN, false);
+				$this->ImapClient()->MessageMove($sSnoozedFolder, $sInboxFolder, $oDueUids);
+			} catch (\Throwable $oException) {
+				foreach ($aMessages as $iUid => $aMessage) try {
+					$oUid = new SequenceSet([$iUid]);
+					$this->MailClient()->MessageSetFlag($sSnoozedFolder, $oUid, 'Snoozed', false, true);
+					$this->MailClient()->MessageSetFlag(
+						$sSnoozedFolder,
+						$oUid,
+						$aMessage['flag'],
+						true,
+						true
+					);
+					$this->MailClient()->MessageSetFlag(
+						$sSnoozedFolder,
+						$oUid,
+						MessageFlag::SEEN,
+						$aMessage['seen'],
+						true
+					);
+				} catch (\Throwable $oRollbackException) {
+					$this->logException($oRollbackException, \LOG_ERR);
+				}
+				throw new ClientException(Notifications::CantMoveMessage, $oException);
+			}
+			$iMoved += \count($aMessages);
+		}
+		return $iMoved;
 	}
 
 	/**
@@ -882,16 +1138,22 @@ trait Messages
 	private function messageSetFlag(string $sMessageFlag, bool $bSkipUnsupportedFlag = false) : array
 	{
 		$this->initMailClientConnection();
+		$sFolder = $this->GetActionParam('folder', '');
+		$oUids = new SequenceSet(\explode(',', (string) $this->GetActionParam('uids', '')));
+		$bSet = !empty($this->GetActionParam('setAction', '0'));
 
 		try
 		{
 			$this->MailClient()->MessageSetFlag(
-				$this->GetActionParam('folder', ''),
-				new SequenceSet(\explode(',', (string) $this->GetActionParam('uids', ''))),
+				$sFolder,
+				$oUids,
 				$sMessageFlag,
-				!empty($this->GetActionParam('setAction', '0')),
+				$bSet,
 				$bSkipUnsupportedFlag
 			);
+			if (MessageFlag::SEEN === $sMessageFlag && $bSet) {
+				$this->clearSnoozedReturnedFlags($sFolder, $oUids);
+			}
 		}
 		catch (\Throwable $oException)
 		{
@@ -899,6 +1161,21 @@ trait Messages
 		}
 
 		return $this->TrueResponse();
+	}
+
+	private function clearSnoozedReturnedFlags(string $sFolder, SequenceSet $oUids) : void
+	{
+		foreach ($this->snoozeFlags($sFolder, $oUids) as $iUid => $aFlags) {
+			if (\in_array('snoozed', $aFlags)) {
+				$this->MailClient()->MessageSetFlag(
+					$sFolder,
+					new SequenceSet([$iUid]),
+					'Snoozed',
+					false,
+					true
+				);
+			}
+		}
 	}
 
 	private function deleteMessageAttachments(Account $oAccount) : void

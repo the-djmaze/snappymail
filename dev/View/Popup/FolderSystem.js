@@ -26,12 +26,21 @@ export class FolderSystemPopupView extends AbstractViewPopup {
 				]
 			)
 		);
+		this.snoozedFolderSelectList = koComputable(() =>
+			folderListOptionsBuilder(
+				FolderUserStore.systemFoldersNames().filter(
+					name => name !== FolderUserStore.snoozedFolder()
+				),
+				[['', i18n('POPUPS_SYSTEM_FOLDERS/SELECT_CHOOSE_ONE')]]
+			)
+		);
 
 		this.sentFolder = FolderUserStore.sentFolder;
 		this.draftsFolder = FolderUserStore.draftsFolder;
 		this.spamFolder = FolderUserStore.spamFolder;
 		this.trashFolder = FolderUserStore.trashFolder;
 		this.archiveFolder = FolderUserStore.archiveFolder;
+		this.snoozedFolder = FolderUserStore.snoozedFolder;
 
 		const fSaveSystemFolders = (()=>FolderUserStore.saveSystemFolders()).debounce(1000);
 
@@ -40,7 +49,8 @@ export class FolderSystemPopupView extends AbstractViewPopup {
 			draftsFolder: fSaveSystemFolders,
 			spamFolder: fSaveSystemFolders,
 			trashFolder: fSaveSystemFolders,
-			archiveFolder: fSaveSystemFolders
+			archiveFolder: fSaveSystemFolders,
+			snoozedFolder: fSaveSystemFolders
 		});
 
 		this.defaultOptionsAfterRender = defaultOptionsAfterRender;
@@ -66,6 +76,9 @@ export class FolderSystemPopupView extends AbstractViewPopup {
 				break;
 			case FolderType.Archive:
 				notification = i18n(prefix + 'ARCHIVE');
+				break;
+			case FolderType.Snoozed:
+				notification = i18n(prefix + 'SNOOZED');
 				break;
 			// no default
 		}

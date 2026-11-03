@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "是否保存修改？",
 		"SEARCH": "搜索",
 		"SPAM": "垃圾邮件",
+		"SNOOZED": "已延后",
 		"SUBJECT": "主题",
 		"TEST": "测试",
 		"TO": "收件人",
@@ -43,6 +44,16 @@
 		"HELP": "帮助",
 		"TEXT": "内容",
 		"ATTACHMENTS": "附件"
+	},
+	"SNOOZE": {
+		"TITLE": "延后邮件",
+		"BUTTON": "延后邮件或更改时间",
+		"QUICK_TOMORROW": "延后至明天上午 8 点",
+		"QUICK_NEXT_WEEK": "延后至下周一上午 8 点",
+		"QUICK_LATER": "稍后（5 小时后）",
+		"UNTIL": "延后至",
+		"RETURNED": "已延后的邮件已返回",
+		"INVALID_DATE": "请选择未来的日期和时间。"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "登录",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "您没有选择“草稿”文件夹来存储邮件草稿。",
 		"NOTIFICATION_SPAM": "您没有选择“垃圾邮件”文件夹来存储垃圾邮件。\n如果您希望永久删除邮件，请选择“无”选项。\n",
 		"NOTIFICATION_TRASH": "您没有选择 已删除邮件 文件夹来存储垃圾邮件。\n如果您希望永久删除邮件，请选择“无”选项。\n",
-		"NOTIFICATION_ARCHIVE": "您没有选择“已归档邮件”文件夹来存储归档邮件。"
+		"NOTIFICATION_ARCHIVE": "您没有选择“已归档邮件”文件夹来存储归档邮件。",
+		"NOTIFICATION_SNOOZED": "您尚未选择延后邮件的文件夹。延后第一封邮件时，系统会自动创建“Snoozed”文件夹。"
 	},
 	"TITLES": {
 		"MAILBOX": "邮箱",

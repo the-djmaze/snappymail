@@ -34,6 +34,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Search",
 		"SPAM": "Spam",
+		"SNOOZED": "Snoozed",
 		"SUBJECT": "Subject",
 		"TEST": "Test",
 		"TO": "To",
@@ -45,6 +46,16 @@
 		"HELP": "Help",
 		"TEXT": "Text",
 		"ATTACHMENTS": "Attachments"
+	},
+	"SNOOZE": {
+		"TITLE": "Snooze message",
+		"BUTTON": "Snooze or change snooze time",
+		"QUICK_TOMORROW": "Tomorrow, 8 AM",
+		"QUICK_NEXT_WEEK": "Next week (Mon, 8 AM)",
+		"QUICK_LATER": "Later (in 5 hours)",
+		"UNTIL": "Snoozed until",
+		"RETURNED": "Snoozed message returned",
+		"INVALID_DATE": "Choose a future date and time."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
@@ -394,7 +405,8 @@
 		"NOTIFICATION_DRAFTS": "You haven't selected \"Drafts\" system folder messages are saved to while composing.",
 		"NOTIFICATION_SPAM": "You haven't selected \"Spam\" system folder spamed messages are placed to.\nIf you wish to remove messages permanently, please select \"Do not use\" option.\n",
 		"NOTIFICATION_TRASH": "You haven't selected \"Trash\" system folder deleted messages are placed to.\nIf you wish to remove messages permanently, please select \"Do not use\" option.\n",
-		"NOTIFICATION_ARCHIVE": "You haven't selected \"Archive\" system folder achived messages are placed to."
+		"NOTIFICATION_ARCHIVE": "You haven't selected \"Archive\" system folder achived messages are placed to.",
+		"NOTIFICATION_SNOOZED": "You haven't selected a folder for snoozed messages. A \"Snoozed\" folder will be created automatically when you snooze your first message."
 	},
 	"TITLES": {
 		"MAILBOX": "MailBox",

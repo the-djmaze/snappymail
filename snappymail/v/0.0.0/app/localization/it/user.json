@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Salvare le modifiche?",
 		"SEARCH": "Cerca",
 		"SPAM": "Segnala come spam",
+		"SNOOZED": "Posticipati",
 		"SUBJECT": "Oggetto",
 		"TEST": "Esegui test",
 		"TO": "A",
@@ -43,6 +44,16 @@
 		"HELP": "Aiuto",
 		"TEXT": "Messaggio",
 		"ATTACHMENTS": "Allegati"
+	},
+	"SNOOZE": {
+		"TITLE": "Posticipa messaggio",
+		"BUTTON": "Posticipa il messaggio o modifica l’orario",
+		"QUICK_TOMORROW": "Fino a domani alle 8",
+		"QUICK_NEXT_WEEK": "Fino alla prossima settimana (lunedì alle 8)",
+		"QUICK_LATER": "Più tardi (tra 5 ore)",
+		"UNTIL": "Posticipato fino al",
+		"RETURNED": "Il messaggio posticipato è tornato",
+		"INVALID_DATE": "Scegli una data e un’ora future."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Non hai selezionato una cartella di sistema per le bozze.",
 		"NOTIFICATION_SPAM": "Non hai selezionato una cartella di sistema per i messaggi spam.\nSe li vuoi eliminare permanentemente seleziona \"Non usarla\".",
 		"NOTIFICATION_TRASH": "Non hai selezionato una cartella di sistema per il cestino.\nSe non lo vuoi usare (e quindi eliminare i messaggi permanentemente) seleziona \"Non usarla\".",
-		"NOTIFICATION_ARCHIVE": "Non hai selezionato una cartella di sistema per i messaggi archiviati."
+		"NOTIFICATION_ARCHIVE": "Non hai selezionato una cartella di sistema per i messaggi archiviati.",
+		"NOTIFICATION_SNOOZED": "Non hai selezionato una cartella per i messaggi posticipati. La cartella «Snoozed» verrà creata automaticamente quando posticipi il primo messaggio."
 	},
 	"TITLES": {
 		"MAILBOX": "Casella di posta",

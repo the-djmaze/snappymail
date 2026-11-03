@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Kontakti nav atrasti",
 		"SPAM": "Spams",
+		"SNOOZED": "Atliktie",
 		"SUBJECT": "Tēma",
 		"TEST": "Test",
 		"TO": "Kam",
@@ -43,6 +44,16 @@
 		"HELP": "Palīdzība",
 		"TEXT": "Teksts",
 		"ATTACHMENTS": "Pielikumi"
+	},
+	"SNOOZE": {
+		"TITLE": "Atlikt ziņojumu",
+		"BUTTON": "Atlikt ziņojumu vai mainīt laiku",
+		"QUICK_TOMORROW": "Līdz rītdienas plkst. 8.00",
+		"QUICK_NEXT_WEEK": "Līdz nākamajai nedēļai (pirmdien plkst. 8.00)",
+		"QUICK_LATER": "Vēlāk (pēc 5 stundām)",
+		"UNTIL": "Atlikts līdz",
+		"RETURNED": "Atliktais ziņojums ir atgriezies",
+		"INVALID_DATE": "Izvēlieties nākotnes datumu un laiku."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Ielogoties",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Tu neesi izvēlējies \"Melnraksti\" sistemas mapi, kurā tiktu saglabāti ziņojumi, kamēr tie tiek rakstīti.",
 		"NOTIFICATION_SPAM": "Tu neesi izvēlējies \"Spams\" sistēmas mapi, kurā tiks ievietoti spam ziņojumi.\nJa tu vēlies izdzēst ziņojumus pavisam, izvēlies \"Neizmantot\" opciju.\n",
 		"NOTIFICATION_TRASH": "Tu neesi izvēlējies \"Miskaste\" sistēmas mapi.\nJa tu vēlies izdzēst ziņojumus pavisam, izvēlies \"Neizmantot\" opciju.\n",
-		"NOTIFICATION_ARCHIVE": "You haven't selected \"Archive\" system folder achived messages are placed to.\n"
+		"NOTIFICATION_ARCHIVE": "You haven't selected \"Archive\" system folder achived messages are placed to.\n",
+		"NOTIFICATION_SNOOZED": "Nav izvēlēta mape atliktajiem ziņojumiem. Pirmo reizi atliekot ziņojumu, mape „Snoozed” tiks izveidota automātiski."
 	},
 	"TITLES": {
 		"MAILBOX": "Pastkastīte",

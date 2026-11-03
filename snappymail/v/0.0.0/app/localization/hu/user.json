@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Nem találtam névjegyeket",
 		"SPAM": "Levélszemét",
+		"SNOOZED": "Elhalasztott",
 		"SUBJECT": "Tárgy",
 		"TEST": "Tesztelés",
 		"TO": "Címzett",
@@ -43,6 +44,16 @@
 		"HELP": "Súgó",
 		"TEXT": "Szöveg",
 		"ATTACHMENTS": "Mellékletek"
+	},
+	"SNOOZE": {
+		"TITLE": "Üzenet elhalasztása",
+		"BUTTON": "Üzenet elhalasztása vagy időpont módosítása",
+		"QUICK_TOMORROW": "Holnap reggel 8 óráig",
+		"QUICK_NEXT_WEEK": "Jövő hétig (hétfő reggel 8 óráig)",
+		"QUICK_LATER": "Később (5 óra múlva)",
+		"UNTIL": "Elhalasztva eddig",
+		"RETURNED": "Az elhalasztott üzenet visszatért",
+		"INVALID_DATE": "Válasszon egy jövőbeli dátumot és időpontot."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Bejelentkezés",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Nem választottál \"Piszkozatok\" rendszermappát a szerkesztett üzenetek tárolásához.",
 		"NOTIFICATION_SPAM": "Nem választottál \"Levélszemét\" rendszermappát a kéretlen üzenetek tárolásához.\nAz üzenetek végleges törléséhez válaszd a \"Ne használd\" lehetőséget.\n\n",
 		"NOTIFICATION_TRASH": "Nem választottál \"Lomtár\" rendszermappát a törölt levelek tárolásához.\nAz üzenetek végleges törléséhez válaszd a \"Ne használd\" lehetőséget.\n",
-		"NOTIFICATION_ARCHIVE": "Nem választottál \"Archívum\" rendszermappát az archivált üzenetek tárolásához."
+		"NOTIFICATION_ARCHIVE": "Nem választottál \"Archívum\" rendszermappát az archivált üzenetek tárolásához.",
+		"NOTIFICATION_SNOOZED": "Nem választott mappát az elhalasztott üzenetekhez. Az első üzenet elhalasztásakor automatikusan létrejön egy „Snoozed” mappa."
 	},
 	"TITLES": {
 		"MAILBOX": "Postaláda",

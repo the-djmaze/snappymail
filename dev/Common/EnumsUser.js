@@ -9,7 +9,8 @@ export const FolderType = {
 	Drafts: 3,
 	Junk: 4, // Spam
 	Trash: 5,
-	Archive: 6
+	Archive: 6,
+	Snoozed: 7
 /*
 	IMPORTANT : 10;
 	FLAGGED : 11;

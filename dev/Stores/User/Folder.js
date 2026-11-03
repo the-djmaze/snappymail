@@ -44,7 +44,9 @@ ignoredKeywords = [
 	'$notdelivered'
 ],
 
-isAllowedKeyword = value => '\\' != value[0] && !ignoredKeywords.includes(value.toLowerCase()),
+isAllowedKeyword = value => '\\' != value[0]
+	&& !/^snoozed(?:_|$)/i.test(value)
+	&& !ignoredKeywords.includes(value.toLowerCase()),
 
 FolderUserStore = new class {
 	constructor() {
@@ -69,6 +71,7 @@ FolderUserStore = new class {
 			spamFolder: '',
 			trashFolder: '',
 			archiveFolder: '',
+			snoozedFolder: '',
 
 			optimized: false,
 			error: '',
@@ -101,7 +104,10 @@ FolderUserStore = new class {
 
 			systemFoldersNames: () => {
 				const list = [getFolderInboxName()],
-				others = [self.sentFolder(), self.draftsFolder(), self.spamFolder(), self.trashFolder(), self.archiveFolder()];
+				others = [
+					self.sentFolder(), self.draftsFolder(), self.spamFolder(),
+					self.trashFolder(), self.archiveFolder(), self.snoozedFolder()
+				];
 
 				self.folderList().length &&
 					others.forEach(name => name && UNUSED_OPTION_VALUE !== name && list.push(name));
@@ -124,13 +130,15 @@ FolderUserStore = new class {
 		subscribeRemoveSystemFolder(self.spamFolder);
 		subscribeRemoveSystemFolder(self.trashFolder);
 		subscribeRemoveSystemFolder(self.archiveFolder);
+		subscribeRemoveSystemFolder(self.snoozedFolder);
 
 		addSubscribablesTo(self, {
 			sentFolder: fSetSystemFolderType(FolderType.Sent),
 			draftsFolder: fSetSystemFolderType(FolderType.Drafts),
 			spamFolder: fSetSystemFolderType(FolderType.Junk),
 			trashFolder: fSetSystemFolderType(FolderType.Trash),
-			archiveFolder: fSetSystemFolderType(FolderType.Archive)
+			archiveFolder: fSetSystemFolderType(FolderType.Archive),
+			snoozedFolder: fSetSystemFolderType(FolderType.Snoozed)
 		});
 
 		self.quotaPercentage = koComputable(() => {
@@ -201,9 +209,21 @@ FolderUserStore = new class {
 			drafts: FolderUserStore.draftsFolder(),
 			junk: FolderUserStore.spamFolder(),
 			trash: FolderUserStore.trashFolder(),
-			archive: FolderUserStore.archiveFolder()
+			archive: FolderUserStore.archiveFolder(),
+			snooze: FolderUserStore.snoozedFolder()
 		};
-		forEachObjectEntry(folders, (k,v)=>Settings.set(k+'Folder',v));
+		folders = {
+			sent: folders.sent ?? folders.Sent,
+			drafts: folders.drafts ?? folders.Drafts,
+			junk: folders.junk ?? folders.Junk,
+			trash: folders.trash ?? folders.Trash,
+			archive: folders.archive ?? folders.Archive,
+			snooze: folders.snooze ?? folders.Snoozed
+		};
+		forEachObjectEntry(folders, (k,v)=>Settings.set(
+			'snooze' === k ? 'SnoozeFolder' : k+'Folder',
+			v
+		));
 		rl.app.Remote.request('SystemFoldersUpdate', null, folders);
 	}
 };

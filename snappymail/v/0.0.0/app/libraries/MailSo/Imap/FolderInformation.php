@@ -42,8 +42,13 @@ class FolderInformation implements \JsonSerializable
 
 	public function IsFlagSupported(string $sFlag): bool
 	{
-		return \in_array('\\*', $this->PermanentFlags)
-			|| \in_array($sFlag, $this->PermanentFlags);
+		$sFlag = \strtolower($sFlag);
+		foreach ($this->PermanentFlags as $sPermanentFlag) {
+			if ('\\*' === \strtolower($sPermanentFlag) || $sFlag === \strtolower($sPermanentFlag)) {
+				return true;
+			}
+		}
+		return false;
 //			|| \in_array($sFlag, $this->Flags);
 	}
 

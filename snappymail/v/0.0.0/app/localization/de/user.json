@@ -34,6 +34,7 @@
 		"SAVE_CHANGES": "Änderungen speichern?",
 		"SEARCH": "Suchen",
 		"SPAM": "Spam",
+		"SNOOZED": "Zurückgestellt",
 		"SUBJECT": "Betreff",
 		"TEST": "Testen",
 		"TO": "An",
@@ -45,6 +46,16 @@
 		"HELP": "Hilfe",
 		"TEXT": "Text",
 		"ATTACHMENTS": "Anhänge"
+	},
+	"SNOOZE": {
+		"TITLE": "Nachricht zurückstellen",
+		"BUTTON": "Nachricht zurückstellen oder Zeitpunkt ändern",
+		"QUICK_TOMORROW": "Bis morgen, 8 Uhr",
+		"QUICK_NEXT_WEEK": "Bis nächste Woche (Mo., 8 Uhr)",
+		"QUICK_LATER": "Nachher (in 5 Stunden)",
+		"UNTIL": "Zurückgestellt bis",
+		"RETURNED": "Zurückgestellte Nachricht",
+		"INVALID_DATE": "Bitte wählen Sie ein zukünftiges Datum und eine zukünftige Uhrzeit."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Anmeldung",
@@ -394,7 +405,8 @@
 		"NOTIFICATION_DRAFTS": "Sie haben keinen \"Entwürfe\"-Systemordner gewählt, in dem Nachrichten beim Erstellen gespeichert werden.",
 		"NOTIFICATION_SPAM": "Sie haben keinen \"Spam\"-Systemordner gewählt, in dem die Spam-Nachrichten abgelegt werden.\nFalls Sie Spam-Nachrichten endgültig löschen möchten, wählen Sie die Option \"Nicht anwenden\".\n",
 		"NOTIFICATION_TRASH": "Sie haben keinen  \"Papierkorb\"-Systemordner gewählt, in dem die gelöschten Nachrichten abgelegt werden.\nFalls Sie gelöschte Nachrichten endgültig löschen möchten, wählen Sie die Option \"Nicht anwenden\".\n",
-		"NOTIFICATION_ARCHIVE": "Sie haben keinen \"Archiv\"-Systemordner gewählt, in dem die archivierten Nachrichten abgelegt werden."
+		"NOTIFICATION_ARCHIVE": "Sie haben keinen \"Archiv\"-Systemordner gewählt, in dem die archivierten Nachrichten abgelegt werden.",
+		"NOTIFICATION_SNOOZED": "Sie haben keinen Ordner für zurückgestellte Nachrichten gewählt. Beim ersten Zurückstellen wird automatisch ein Ordner \"Snoozed\" angelegt."
 	},
 	"TITLES": {
 		"MAILBOX": "Postfach",

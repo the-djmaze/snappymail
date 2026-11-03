@@ -46,7 +46,8 @@ const
 		Drafts:  0,
 		Junk:    0, // Spam
 		Trash:   0,
-		Archive: 0
+		Archive: 0,
+		Snoozed: 0
 	},
 
 	kolabTypes = {
@@ -71,6 +72,8 @@ const
 				return i18n('FOLDER_LIST/' + getKeyByValue(FolderType, type).toUpperCase() + '_NAME');
 			case FolderType.Junk:
 				return i18n('GLOBAL/SPAM');
+			case FolderType.Snoozed:
+				return i18n('GLOBAL/SNOOZED');
 			// no default
 		}
 		return def;
@@ -130,7 +133,9 @@ export class FolderCollectionModel extends AbstractCollectionModel
 		const expandedFolders = Local.get(ClientSideKeyNameExpandedFolders);
 
 		forEachObjectEntry(SystemFolders, (key, value) =>
-			value || (SystemFolders[key] = SettingsGet(key+'Folder'))
+			value || (SystemFolders[key] = SettingsGet(
+				'Snoozed' === key ? 'SnoozeFolder' : key+'Folder'
+			))
 		);
 
 		const result = super.reviveFromJson(object, oFolder => {
@@ -201,6 +206,9 @@ export class FolderCollectionModel extends AbstractCollectionModel
 				role = role[0].toUpperCase() + role.slice(1);
 				SystemFolders[role] || (SystemFolders[role] = oFolder.fullName);
 			}
+			if (!SystemFolders.Snoozed && 'snoozed' === oFolder.name.toLowerCase()) {
+				SystemFolders.Snoozed = oFolder.fullName;
+			}
 
 			oCacheFolder.type(FolderType[getKeyByValue(SystemFolders, oFolder.fullName)] || 0);
 
@@ -266,13 +274,18 @@ export class FolderCollectionModel extends AbstractCollectionModel
 
 	storeIt() {
 		FolderUserStore.displaySpecSetting(Settings.app('folderSpecLimit') < this.CountRec);
+		if (this.snoozeFolder) {
+			Settings.set('SnoozeFolder', this.snoozeFolder);
+			SystemFolders.Snoozed = this.snoozeFolder;
+		}
 
 		if (!(
 				SettingsGet('SentFolder') +
 				SettingsGet('DraftsFolder') +
 				SettingsGet('JunkFolder') +
 				SettingsGet('TrashFolder') +
-				SettingsGet('ArchiveFolder')
+				SettingsGet('ArchiveFolder') +
+				SettingsGet('SnoozeFolder')
 			)
 		) {
 			FolderUserStore.saveSystemFolders(SystemFolders);
@@ -295,6 +308,7 @@ export class FolderCollectionModel extends AbstractCollectionModel
 		FolderUserStore.spamFolder(normalizeFolder(SystemFolders.Junk));
 		FolderUserStore.trashFolder(normalizeFolder(SystemFolders.Trash));
 		FolderUserStore.archiveFolder(normalizeFolder(SystemFolders.Archive));
+		FolderUserStore.snoozedFolder(normalizeFolder(SystemFolders.Snoozed));
 
 //		FolderUserStore.folderList.valueHasMutated();
 	}
@@ -480,6 +494,7 @@ export class FolderModel extends AbstractModel {
 					case 4: return '⚠'; // FolderType.Junk
 					case 5: return '🗑'; // FolderType.Trash
 					case 6: return '🗄'; // FolderType.Archive
+					case 7: return '📅'; // FolderType.Snoozed
 				}
 				return null;
 			},

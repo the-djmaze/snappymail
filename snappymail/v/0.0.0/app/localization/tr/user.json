@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Kişi bulunamadı",
 		"SPAM": "Spam",
+		"SNOOZED": "Ertelenenler",
 		"SUBJECT": "Konu",
 		"TEST": "Test",
 		"TO": "Kime",
@@ -43,6 +44,16 @@
 		"HELP": "Yardım",
 		"TEXT": "Metin",
 		"ATTACHMENTS": "Ekler"
+	},
+	"SNOOZE": {
+		"TITLE": "İletiyi ertele",
+		"BUTTON": "İletiyi ertele veya zamanı değiştir",
+		"QUICK_TOMORROW": "Yarın saat 8’e kadar",
+		"QUICK_NEXT_WEEK": "Gelecek haftaya kadar (Pazartesi saat 8)",
+		"QUICK_LATER": "Daha sonra (5 saat içinde)",
+		"UNTIL": "Şu zamana kadar ertelendi:",
+		"RETURNED": "Ertelenen ileti geri döndü",
+		"INVALID_DATE": "Gelecekte bir tarih ve saat seçin."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Giriş",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Herhangi bir sistem taslak klasörü seçmediniz.\"Taslak\" klasörü otomatik mesajınızı kaydeder",
 		"NOTIFICATION_SPAM": "Herhangi bir sistem spam klasörü seçmediniz.\"Spam\" klasörü spam iletileri barındırır.",
 		"NOTIFICATION_TRASH": "Herhangi bir sistem çöp kutusu klasörü seçmediniz normalde mesaj silindikten sonra \"Çöp Kutusu\" klasörüne kaydedilir",
-		"NOTIFICATION_ARCHIVE": "Herhangi bir sistem arşiv klasörü seçmediniz."
+		"NOTIFICATION_ARCHIVE": "Herhangi bir sistem arşiv klasörü seçmediniz.",
+		"NOTIFICATION_SNOOZED": "Ertelenen iletiler için bir klasör seçmediniz. İlk ileti ertelendiğinde \"Snoozed\" klasörü otomatik olarak oluşturulur."
 	},
 	"TITLES": {
 		"MAILBOX": "PostaKutusu",

@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "是否要儲存變更？",
 		"SEARCH": "搜尋",
 		"SPAM": "垃圾郵件",
+		"SNOOZED": "已延後",
 		"SUBJECT": "主旨",
 		"TEST": "測試",
 		"TO": "收件者",
@@ -43,6 +44,16 @@
 		"HELP": "協助",
 		"TEXT": "內文",
 		"ATTACHMENTS": "附件"
+	},
+	"SNOOZE": {
+		"TITLE": "延後郵件",
+		"BUTTON": "延後郵件或變更時間",
+		"QUICK_TOMORROW": "延後至明天上午 8 點",
+		"QUICK_NEXT_WEEK": "延後至下週一上午 8 點",
+		"QUICK_LATER": "稍後（5 小時後）",
+		"UNTIL": "延後至",
+		"RETURNED": "延後的郵件已返回",
+		"INVALID_DATE": "請選擇未來的日期與時間。"
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "登入",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "尚未選取「草稿」系統資料夾以在撰寫時存放草稿。",
 		"NOTIFICATION_SPAM": "尚未選取「垃圾郵件」系統資料夾以存放垃圾郵件。\n如果希望永久刪除郵件，請選取 [不使用] 選項。\n",
 		"NOTIFICATION_TRASH": "尚未選取「垃圾桶」系統資料夾以存放已刪除的郵件。\n如果希望永久刪除郵件，請選取 [不使用] 選項。\n",
-		"NOTIFICATION_ARCHIVE": "尚未選取「封存」系統資料夾以存放封存郵件。\n"
+		"NOTIFICATION_ARCHIVE": "尚未選取「封存」系統資料夾以存放封存郵件。\n",
+		"NOTIFICATION_SNOOZED": "您尚未選取延後郵件的資料夾。延後第一封郵件時，系統會自動建立「Snoozed」資料夾。"
 	},
 	"TITLES": {
 		"MAILBOX": "信箱",

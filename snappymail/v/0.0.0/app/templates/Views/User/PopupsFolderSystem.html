@@ -30,5 +30,10 @@
 			<select data-bind="options: folderSelectList, value: archiveFolder,
 				optionsText: 'name', optionsValue: 'id', optionsAfterRender: $root.defaultOptionsAfterRender"></select>
 		</div>
+		<div class="control-group">
+			<label data-icon="📅" data-i18n="GLOBAL/SNOOZED"></label>
+			<select data-bind="options: snoozedFolderSelectList, value: snoozedFolder,
+				optionsText: 'name', optionsValue: 'id', optionsAfterRender: $root.defaultOptionsAfterRender"></select>
+		</div>
 	</div>
 </div>

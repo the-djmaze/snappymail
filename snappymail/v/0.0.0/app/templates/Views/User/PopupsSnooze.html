@@ -1,0 +1,25 @@
+<header>
+	<a href="#" class="close" data-bind="click: close">×</a>
+	<h3 data-i18n="SNOOZE/TITLE"></h3>
+</header>
+<form id="snoozeform" class="modal-body form-horizontal" autocomplete="off" data-bind="submit: submitForm">
+	<div class="control-group">
+		<div class="controls">
+			<button type="button" class="btn" data-bind="click: snoozeTomorrow, disable: saving" data-i18n="SNOOZE/QUICK_TOMORROW"></button>
+			<button type="button" class="btn" data-bind="click: snoozeNextWeek, disable: saving" data-i18n="SNOOZE/QUICK_NEXT_WEEK"></button>
+			<button type="button" class="btn" data-bind="click: snoozeLater, disable: saving" data-i18n="SNOOZE/QUICK_LATER"></button>
+		</div>
+	</div>
+	<div class="control-group">
+		<label for="snooze-until" data-i18n="SNOOZE/UNTIL"></label>
+		<input id="snooze-until" name="until" type="datetime-local" required step="60"
+			data-bind="value: until, attr: { min: minUntil }">
+	</div>
+</form>
+<footer>
+	<button form="snoozeform" class="btn btn-success" data-bind="disable: saving">
+		<i class="icon-file-calendar"></i>
+		<span data-i18n="GLOBAL/SAVE"></span>
+	</button>
+	<button class="btn buttonNo" data-bind="click: close, disable: saving" data-i18n="GLOBAL/CANCEL"></button>
+</footer>

@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Ingen kontakter fundet",
 		"SPAM": "Uønsket",
+		"SNOOZED": "Udsat",
 		"SUBJECT": "Emne",
 		"TEST": "Test",
 		"TO": "Til",
@@ -43,6 +44,16 @@
 		"HELP": "Hjælp",
 		"TEXT": "Tekst",
 		"ATTACHMENTS": "Vedhæftninger"
+	},
+	"SNOOZE": {
+		"TITLE": "Udsæt besked",
+		"BUTTON": "Udsæt besked eller ændr tidspunkt",
+		"QUICK_TOMORROW": "Til i morgen kl. 8",
+		"QUICK_NEXT_WEEK": "Til næste uge (mandag kl. 8)",
+		"QUICK_LATER": "Senere (om 5 timer)",
+		"UNTIL": "Udsat indtil",
+		"RETURNED": "Udsat besked vendte tilbage",
+		"INVALID_DATE": "Vælg en dato og et tidspunkt i fremtiden."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Brugernavn",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Du har ikke valgt en systemmappe til kladder.",
 		"NOTIFICATION_SPAM": "Du har ikke valgt en systemmappe til uønskede meddelelser.\n",
 		"NOTIFICATION_TRASH": "Du har ikke valgt en systemmappe til slettede meddelelser.\nHvis du vil slette meddelelser permanent, vælg \"Brug ikke\".\n",
-		"NOTIFICATION_ARCHIVE": "Du har ikke valgt en systemmappe til arkiverede meddelelser."
+		"NOTIFICATION_ARCHIVE": "Du har ikke valgt en systemmappe til arkiverede meddelelser.",
+		"NOTIFICATION_SNOOZED": "Du har ikke valgt en mappe til udsatte beskeder. Mappen \"Snoozed\" oprettes automatisk, når du udsætter den første besked."
 	},
 	"TITLES": {
 		"MAILBOX": "Postkasse",

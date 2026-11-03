@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Voleu desar els canvis?",
 		"SEARCH": "Cerca",
 		"SPAM": "Correu brossa",
+		"SNOOZED": "Posposats",
 		"SUBJECT": "Assumpte",
 		"TEST": "Prova",
 		"TO": "Per a",
@@ -43,6 +44,16 @@
 		"HELP": "Ajuda",
 		"TEXT": "Text",
 		"ATTACHMENTS": "Adjunts"
+	},
+	"SNOOZE": {
+		"TITLE": "Posposa el missatge",
+		"BUTTON": "Posposa el missatge o canvia l’hora",
+		"QUICK_TOMORROW": "Fins demà, a les 8",
+		"QUICK_NEXT_WEEK": "Fins la setmana vinent (dilluns, a les 8)",
+		"QUICK_LATER": "Més tard (d’aquí a 5 hores)",
+		"UNTIL": "Posposat fins a",
+		"RETURNED": "Ha tornat un missatge posposat",
+		"INVALID_DATE": "Trieu una data i una hora futures."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Nom d’usuari",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "No heu seleccionat la carpeta del sistema «Esborranys», on es desen els missatges mentre els redacteu.",
 		"NOTIFICATION_SPAM": "No heu seleccionat la carpeta del sistema «Correu brossa», on es mouen els missatges marcats com a correu brossa.\nSi els voleu suprimir definitivament, seleccioneu l’opció «No l’utilitzis».\n",
 		"NOTIFICATION_TRASH": "No heu seleccionat la carpeta del sistema «Paperera», on es mouen els missatges suprimits.\nSi els voleu suprimir definitivament, seleccioneu l’opció «No l’utilitzis».\n",
-		"NOTIFICATION_ARCHIVE": "No heu seleccionat la carpeta del sistema «Arxiu», on es desen els missatges arxivats."
+		"NOTIFICATION_ARCHIVE": "No heu seleccionat la carpeta del sistema «Arxiu», on es desen els missatges arxivats.",
+		"NOTIFICATION_SNOOZED": "No heu seleccionat una carpeta per als missatges posposats. Es crearà automàticament una carpeta «Snoozed» quan posposeu el primer missatge."
 	},
 	"TITLES": {
 		"MAILBOX": "Bústia de correu",

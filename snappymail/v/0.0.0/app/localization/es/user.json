@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "¿Guardar cambios?",
 		"SEARCH": "Buscar",
 		"SPAM": "Correo no deseado",
+		"SNOOZED": "Pospuestos",
 		"SUBJECT": "Asunto",
 		"TEST": "Probar",
 		"TO": "Para",
@@ -43,6 +44,16 @@
 		"HELP": "Ayuda",
 		"TEXT": "Texto",
 		"ATTACHMENTS": "Adjuntos"
+	},
+	"SNOOZE": {
+		"TITLE": "Posponer mensaje",
+		"BUTTON": "Posponer mensaje o cambiar la hora",
+		"QUICK_TOMORROW": "Hasta mañana a las 8",
+		"QUICK_NEXT_WEEK": "Hasta la semana que viene (lunes a las 8)",
+		"QUICK_LATER": "Más tarde (dentro de 5 horas)",
+		"UNTIL": "Pospuesto hasta",
+		"RETURNED": "Ha vuelto un mensaje pospuesto",
+		"INVALID_DATE": "Elija una fecha y hora futuras."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Usted no ha seleccionado la carpeta del sistema para guardar los \"Borradores\".",
 		"NOTIFICATION_SPAM": "Usted no ha seleccionado la carpeta del sistema para alojar los mensajes marcados como \"Spam\".\nSi desea eliminar los mensajes permanentemente, por favor seleccione la opción \"No usar\".\n",
 		"NOTIFICATION_TRASH": "Usted no ha seleccionado la carpeta del sistema para alojar los mensajes enviados a la \"Papelera\" .\nSi desea eliminar los mensajes permanentemente, por favor seleccione la opción \"No usar\".\n",
-		"NOTIFICATION_ARCHIVE": "Usted no ha seleccionado la carpeta del sistema para alojar los mensajes enviados al \"Archivo\"."
+		"NOTIFICATION_ARCHIVE": "Usted no ha seleccionado la carpeta del sistema para alojar los mensajes enviados al \"Archivo\".",
+		"NOTIFICATION_SNOOZED": "No ha seleccionado una carpeta para los mensajes pospuestos. Se creará automáticamente una carpeta «Snoozed» al posponer el primer mensaje."
 	},
 	"TITLES": {
 		"MAILBOX": "Buzón",

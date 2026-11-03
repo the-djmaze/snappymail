@@ -2,6 +2,11 @@
 	<div class="btn-group" data-i18n="[title]GLOBAL/CLOSE">
 		<a class="btn buttonClose fontastic" data-bind="click: closeMessage">✖</a>
 	</div>
+	<div class="btn-group" data-i18n="[title]SNOOZE/BUTTON">
+		<a class="btn" data-bind="visible: canSnooze, click: snoozeMessage">
+			<i class="icon-file-calendar"></i>
+		</a>
+	</div>
 	<div class="btn-group" data-bind="visible: isDraftFolder()" data-i18n="[title]MESSAGE/BUTTON_EDIT">
 		<a class="btn btn-success buttonEdit fontastic" data-bind="command: editCommand">🖉</a>
 	</div>
@@ -146,6 +151,16 @@
 				<i class="fontastic" data-bind="text: dmarcIcon, css: dmarcIconClass, attr:{ title: dmarcTitle }"></i>
 				<i class="fontastic" data-bind="text: spfIcon, css: spfIconClass, attr:{ title: spfTitle }"></i>
 			</div>
+		</div>
+		<div class="snoozedNotice" data-bind="visible: message()?.snoozedUntil() || (message()?.flags().includes('snoozed') && message()?.isUnseen()),
+			css: { snoozedReturned: message()?.flags().includes('snoozed') && message()?.isUnseen() }">
+			<i class="icon-file-calendar"></i>
+			<span data-bind="visible: message()?.snoozedUntil()">
+				<span data-i18n="SNOOZE/UNTIL"></span>:
+				<time data-time-format="FULL" data-bind="time: message()?.snoozedUntil()"></time>
+			</span>
+			<span data-bind="visible: message()?.flags().includes('snoozed') && message()?.isUnseen()"
+				data-i18n="SNOOZE/RETURNED"></span>
 		</div>
 		<div id="messageItem">
 			<div class="messageItemHeader" data-bind="if: message, i18nUpdate: message">

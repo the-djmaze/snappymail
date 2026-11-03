@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Aldaketak gorde?",
 		"SEARCH": "Bilatu",
 		"SPAM": "Spam",
+		"SNOOZED": "Atzeratuak",
 		"SUBJECT": "Gaia",
 		"TEST": "Probatu",
 		"TO": "Nori",
@@ -43,6 +44,16 @@
 		"HELP": "Laguntza",
 		"TEXT": "Testua",
 		"ATTACHMENTS": "Eranskinak"
+	},
+	"SNOOZE": {
+		"TITLE": "Atzeratu mezua",
+		"BUTTON": "Atzeratu mezua edo aldatu ordua",
+		"QUICK_TOMORROW": "Bihar arte, 8:00etan",
+		"QUICK_NEXT_WEEK": "Datorren astera arte (astelehena, 8:00etan)",
+		"QUICK_LATER": "Geroago (5 ordu barru)",
+		"UNTIL": "Atzeratuta honako ordura arte:",
+		"RETURNED": "Atzeratutako mezua itzuli da",
+		"INVALID_DATE": "Aukeratu etorkizuneko data eta ordua."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Hasi saioa",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Ez duzu sistemako \"Zirriborroak\"  karpeta hautatu mezuak editatu bitartean gordetzeko.",
 		"NOTIFICATION_SPAM": "Ez duzu sistemako \"Zabor-posta\" karpeta hautatu zabor-mezuak kokatzeko.\nMezu hauek betirako ezabatu nahi badituzu, aukeratu \"Ez erabili\" aukera.\n",
 		"NOTIFICATION_TRASH": "Ez duzu sistemako \"Zakarrontzia\" karpeta hautatu zabor-mezuak kokatzeko.\nMezu hauek betirako ezabatu nahi badituzu, aukeratu \"Ez erabili\" aukera.\n",
-		"NOTIFICATION_ARCHIVE": "Ez duzu sistemako \"Artxiboa\" karpeta hautatu artxibatutako mezuak gordetzeko."
+		"NOTIFICATION_ARCHIVE": "Ez duzu sistemako \"Artxiboa\" karpeta hautatu artxibatutako mezuak gordetzeko.",
+		"NOTIFICATION_SNOOZED": "Ez duzu atzeratutako mezuetarako karpetarik hautatu. «Snoozed» karpeta automatikoki sortuko da lehen mezua atzeratzen duzunean."
 	},
 	"TITLES": {
 		"MAILBOX": "Sarrera-ontzia",

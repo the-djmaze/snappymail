@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Tidak ditemukan kontak",
 		"SPAM": "Spam",
+		"SNOOZED": "Ditunda",
 		"SUBJECT": "Judul",
 		"TEST": "Uji",
 		"TO": "Kepada",
@@ -43,6 +44,16 @@
 		"HELP": "Bantuan",
 		"TEXT": "Teks",
 		"ATTACHMENTS": "Lampiran"
+	},
+	"SNOOZE": {
+		"TITLE": "Tunda pesan",
+		"BUTTON": "Tunda pesan atau ubah waktunya",
+		"QUICK_TOMORROW": "Sampai besok pukul 8",
+		"QUICK_NEXT_WEEK": "Sampai minggu depan (Senin pukul 8)",
+		"QUICK_LATER": "Nanti (5 jam lagi)",
+		"UNTIL": "Ditunda sampai",
+		"RETURNED": "Pesan yang ditunda telah kembali",
+		"INVALID_DATE": "Pilih tanggal dan waktu di masa mendatang."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Anda belum memilih folder sistem untuk \"Konsep\", tempat pesan yang sedang dibuat.",
 		"NOTIFICATION_SPAM": "Anda belum memilih folder \"Spam\" tempat pesan spam disimpan.\nJika anda ingin membuang pesan secara permanen, gunakan opsi \"Jangan Gunakan\".\n",
 		"NOTIFICATION_TRASH": "Anda belum memilih folder \"Sampah\" tempat pesan buangan ditempatkan.\nJika anda ingin membuang pesan secara permanen, gunakan opsi \"Jangan gunakan\".\n",
-		"NOTIFICATION_ARCHIVE": "Anda belum memilih folder \"Arsip\" untuk menempatkan pesan arsip."
+		"NOTIFICATION_ARCHIVE": "Anda belum memilih folder \"Arsip\" untuk menempatkan pesan arsip.",
+		"NOTIFICATION_SNOOZED": "Anda belum memilih folder untuk pesan yang ditunda. Folder \"Snoozed\" akan dibuat otomatis saat Anda menunda pesan pertama."
 	},
 	"TITLES": {
 		"MAILBOX": "Kotak surat",

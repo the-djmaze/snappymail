@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Fant ingen kontakter",
 		"SPAM": "Søppelpost",
+		"SNOOZED": "Utsatt",
 		"SUBJECT": "Emne",
 		"TEST": "Test",
 		"TO": "Til",
@@ -43,6 +44,16 @@
 		"HELP": "Hjelp",
 		"TEXT": "Tekst",
 		"ATTACHMENTS": "Vedlegg"
+	},
+	"SNOOZE": {
+		"TITLE": "Utsett melding",
+		"BUTTON": "Utsett melding eller endre tidspunkt",
+		"QUICK_TOMORROW": "Til i morgen kl. 8",
+		"QUICK_NEXT_WEEK": "Til neste uke (mandag kl. 8)",
+		"QUICK_LATER": "Senere (om 5 timer)",
+		"UNTIL": "Utsatt til",
+		"RETURNED": "Utsatt melding er tilbake",
+		"INVALID_DATE": "Velg en dato og et tidspunkt i fremtiden."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Logg inn",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Du har ikke valgt «Kladd» som mappe hvor meldinger lagres mens du skriver.",
 		"NOTIFICATION_SPAM": "Du har ikke valgt «Søppelpost» som mappe for søppelpost.\nVelg «Ikke bruk» hvis du vil slette slike meldinger for godt.\n",
 		"NOTIFICATION_TRASH": "Du har ikke valgt «Papirkurv» som mappe for slettede meldinger.\nVelg «Ikke bruk» hvis du vil slette slike meldinger for godt.\n",
-		"NOTIFICATION_ARCHIVE": "Du har ikke valgt «Arkiv» som mappe for arkiverte meldinger."
+		"NOTIFICATION_ARCHIVE": "Du har ikke valgt «Arkiv» som mappe for arkiverte meldinger.",
+		"NOTIFICATION_SNOOZED": "Du har ikke valgt en mappe for utsatte meldinger. Mappen «Snoozed» opprettes automatisk når du utsetter den første meldingen."
 	},
 	"TITLES": {
 		"MAILBOX": "E-post",

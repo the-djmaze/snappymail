@@ -1,3 +1,8 @@
+## Unreleased
+### Added
+- Snooze messages until a selected date and time; due messages return to the inbox as unread when SnappyMail processes them. Processing runs while a client session is active and resumes on the next mail-list request.
+
+
 ## 2.38.2 – 2024-10-09
 ### Fixed
 - error '$index is not defined' in Settings > Accounts

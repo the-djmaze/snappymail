@@ -276,6 +276,33 @@
 			border-color: #666;
 		}
 	}
+
+	&.snoozed-returned {
+		background-color: rgba(243, 174, 54, 0.28);
+		border-left-color: #e89b16;
+	}
+
+	&.snoozed-returned.unseen {
+		background-color: rgba(243, 174, 54, 0.36);
+		border-left-color: #d88700;
+	}
+
+	&.snoozed-returned .subjectParent::before {
+		color: #a66a00;
+		content: '↶ ';
+		font-family: sans-serif;
+		font-weight: bold;
+	}
+
+	.snoozedDate {
+		color: #a66a00;
+		flex: 0 0 auto;
+		font-size: 80%;
+		font-weight: 600;
+		line-height: 2.2;
+		margin-right: 5px;
+		white-space: nowrap;
+	}
 	.threads-len::after {
 		content: ' ›';
 	}

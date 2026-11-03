@@ -34,6 +34,7 @@
 		"SAVE_CHANGES": "Wijzigingen opslaan?",
 		"SEARCH": "Zoeken",
 		"SPAM": "Ongewenste e-mail",
+		"SNOOZED": "Uitgesteld",
 		"SUBJECT": "Onderwerp",
 		"TEST": "Test",
 		"TO": "Naar",
@@ -45,6 +46,16 @@
 		"HELP": "Help",
 		"TEXT": "Tekst",
 		"ATTACHMENTS": "Bijlagen"
+	},
+	"SNOOZE": {
+		"TITLE": "Bericht uitstellen",
+		"BUTTON": "Bericht uitstellen of tijd wijzigen",
+		"QUICK_TOMORROW": "Tot morgen 8:00 uur",
+		"QUICK_NEXT_WEEK": "Tot volgende week (maandag 8:00 uur)",
+		"QUICK_LATER": "Later (over 5 uur)",
+		"UNTIL": "Uitgesteld tot",
+		"RETURNED": "Uitgesteld bericht is teruggekeerd",
+		"INVALID_DATE": "Kies een datum en tijd in de toekomst."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Inlognaam",
@@ -393,7 +404,8 @@
 		"NOTIFICATION_DRAFTS": "U heeft nog geen \"Concepten\" folder aangeduid waar de berichten bewaard worden tijdens het opstellen.",
 		"NOTIFICATION_SPAM": "U heeft nog geen \"Ongewenste e-mail\" folder aangeduid waar de spam berichten geplaatst worden.\nIndien u berichten permanent wilt verwijderen, kies de \"Niet gebruiken\" optie.",
 		"NOTIFICATION_TRASH": "U heeft nog geen \"Verwijderde items\" folder aangeduid waar de verwijderde berichten geplaatst worden.\nIndien u berichten permanent wilt verwijderen, kies de \"Niet gebruiken\" optie.",
-		"NOTIFICATION_ARCHIVE": "U heeft nog geen \"Archief\" map aangeduid waar de gearchiveerde berichten geplaatst worden."
+		"NOTIFICATION_ARCHIVE": "U heeft nog geen \"Archief\" map aangeduid waar de gearchiveerde berichten geplaatst worden.",
+		"NOTIFICATION_SNOOZED": "U hebt geen map voor uitgestelde berichten geselecteerd. De map \"Snoozed\" wordt automatisch aangemaakt wanneer u het eerste bericht uitstelt."
 	},
 	"TITLES": {
 		"MAILBOX": "Mailbox",

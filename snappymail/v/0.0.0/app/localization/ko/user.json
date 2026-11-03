@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "연락처를 찾지 못했습니다.",
 		"SPAM": "스팸",
+		"SNOOZED": "다시 알림 대기",
 		"SUBJECT": "제목",
 		"TEST": "테스트",
 		"TO": "받는 사람",
@@ -43,6 +44,16 @@
 		"HELP": "도움말",
 		"TEXT": "본문",
 		"ATTACHMENTS": "첨부파일"
+	},
+	"SNOOZE": {
+		"TITLE": "메일 다시 알림",
+		"BUTTON": "메일 다시 알림 또는 시간 변경",
+		"QUICK_TOMORROW": "내일 오전 8시까지",
+		"QUICK_NEXT_WEEK": "다음 주 월요일 오전 8시까지",
+		"QUICK_LATER": "나중에 (5시간 후)",
+		"UNTIL": "다시 알림 시간",
+		"RETURNED": "다시 알림 메일이 돌아왔습니다",
+		"INVALID_DATE": "미래 날짜와 시간을 선택하세요."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "아이디",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "임시 보관함 폴더가 지정되지 않았습니다.",
 		"NOTIFICATION_SPAM": "스팸함 폴더가 지정되지 않았습니다. 스팸처리한 메시지를 보관하지 않고 바로 삭제하려면 \"사용하지 않음\" 옵션을 선택해주세요.",
 		"NOTIFICATION_TRASH": "휴지통 폴더가 지정되지 않았습니다. 삭제한 메시지를 휴지통에 보관하지 않고 바로 삭제하려면 \"사용하지 않음\" 옵션을 선택해주세요.",
-		"NOTIFICATION_ARCHIVE": "보관 메시지가 위치할 \"보관함\" 시스템 폴더를 선택하지 않으셨습니다."
+		"NOTIFICATION_ARCHIVE": "보관 메시지가 위치할 \"보관함\" 시스템 폴더를 선택하지 않으셨습니다.",
+		"NOTIFICATION_SNOOZED": "다시 알림 메일을 위한 폴더를 선택하지 않았습니다. 첫 메일을 다시 알림으로 설정하면 \"Snoozed\" 폴더가 자동으로 생성됩니다."
 	},
 	"TITLES": {
 		"MAILBOX": "메일함",

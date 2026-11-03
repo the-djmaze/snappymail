@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Yhtään yhteystietoa ei löytynyt",
 		"SPAM": "Merkitse roskapostiksi",
+		"SNOOZED": "Torkutetut",
 		"SUBJECT": "Aihe",
 		"TEST": "Testaa",
 		"TO": "Vastaanottaja",
@@ -43,6 +44,16 @@
 		"HELP": "Ohje",
 		"TEXT": "Teksti",
 		"ATTACHMENTS": "Liite"
+	},
+	"SNOOZE": {
+		"TITLE": "Torkuta viesti",
+		"BUTTON": "Torkuta viesti tai muuta aikaa",
+		"QUICK_TOMORROW": "Huomiseen klo 8",
+		"QUICK_NEXT_WEEK": "Ensi viikkoon (maanantai klo 8)",
+		"QUICK_LATER": "Myöhemmin (5 tunnin kuluttua)",
+		"UNTIL": "Torkutettu asti",
+		"RETURNED": "Torkutettu viesti palasi",
+		"INVALID_DATE": "Valitse tuleva päivämäärä ja aika."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Tunnus",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Et ole valinnut \"Luonnokset\" kansiota minne tallennetaan viestit kirjoitettaessa.",
 		"NOTIFICATION_SPAM": "Et ole valinnut \"Roskaposti\" kansiota mihin roskapostiksi merkityt viestit siirretään.\nJos haluat positaa viestit lopullisesti, valitse \"Älä käytä\".\n",
 		"NOTIFICATION_TRASH": "Et ole valinnut \"Roskakori\" järjestelmäkansiota mihin poistetut viestit laitetaan.\nJos haluat positaa viestit lopullisesti, valitse \"Älä käytä\".\n",
-		"NOTIFICATION_ARCHIVE": "Et ole valinnut \"Arkisto\" järjestelmäkansiota."
+		"NOTIFICATION_ARCHIVE": "Et ole valinnut \"Arkisto\" järjestelmäkansiota.",
+		"NOTIFICATION_SNOOZED": "Et ole valinnut kansiota torkutetuille viesteille. Kansio ”Snoozed” luodaan automaattisesti, kun torkutat ensimmäisen viestin."
 	},
 	"TITLES": {
 		"MAILBOX": "Postilaatikko",

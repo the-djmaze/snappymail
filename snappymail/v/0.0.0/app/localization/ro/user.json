@@ -32,6 +32,7 @@
 		"SAVE_CHANGES": "Save changes?",
 		"SEARCH": "Nu am găsit nimic.",
 		"SPAM": "SPAM",
+		"SNOOZED": "Amânate",
 		"SUBJECT": "Subiect",
 		"TEST": "Test",
 		"TO": "către",
@@ -43,6 +44,16 @@
 		"HELP": "Help",
 		"TEXT": "Conținut",
 		"ATTACHMENTS": "Atașament"
+	},
+	"SNOOZE": {
+		"TITLE": "Amână mesajul",
+		"BUTTON": "Amână mesajul sau modifică ora",
+		"QUICK_TOMORROW": "Până mâine la ora 8",
+		"QUICK_NEXT_WEEK": "Până săptămâna viitoare (luni la ora 8)",
+		"QUICK_LATER": "Mai târziu (peste 5 ore)",
+		"UNTIL": "Amânat până la",
+		"RETURNED": "Mesajul amânat a revenit",
+		"INVALID_DATE": "Alegeți o dată și o oră din viitor."
 	},
 	"LOGIN": {
 		"LABEL_LOGIN": "Conectare",
@@ -391,7 +402,8 @@
 		"NOTIFICATION_DRAFTS": "Вы еще не выбрали системную папку \"Черновики\", в которую складываются все сохраненые сообщения.",
 		"NOTIFICATION_SPAM": "Вы еще не выбрали системную папку \"Спам\", в которую складываются все спамовые сообщения.\nЕсли же вы хотите удалять письма сразу, пожалуйста, выберите пункт \"Не использовать\".\n",
 		"NOTIFICATION_TRASH": "Вы еще не выбрали системную папку \"Удаленные\", в которую складываются все сообщения после удаления.\nЕсли же вы хотите удалять письма сразу, пожалуйста, выберите пункт \"Не использовать\".\n",
-		"NOTIFICATION_ARCHIVE": "You haven't selected \"Archive\" system folder achived messages are placed to.\n"
+		"NOTIFICATION_ARCHIVE": "You haven't selected \"Archive\" system folder achived messages are placed to.\n",
+		"NOTIFICATION_SNOOZED": "Nu ați selectat un dosar pentru mesajele amânate. Dosarul „Snoozed” va fi creat automat când amânați primul mesaj."
 	},
 	"TITLES": {
 		"MAILBOX": "Poștă",
