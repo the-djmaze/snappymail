@@ -7,11 +7,19 @@ abstract class Repository
 	// snappyMailRepo
 	const BASE_URL = 'https://snappymail.eu/repository/v2/';
 
+	const KEY_ARMOR_URL = 'https://snappymail.eu/repository/releases.asc';
+//	const KEY_RAW_URL = 'https://snappymail.eu/.well-known/openpgpkey/hu/i4cdqgcarfjdjnba6y4jnf498asg8c6p';
+	// Long Key ID is the last 16 bytes of the fingerprint
+	const KEY_FINGERPRINT = '1016E47079145542F8BA133548208BA13290F3EB';
+
+	const X509_PUB = "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAOtwedIGp7T+3q5Hx+Gf/MoUqU6Ac3AHoI6KWlNaJH2g=\n-----END PUBLIC KEY-----";
+
 	private static function get(string $path) : string
 	{
 		$oHTTP = HTTP\Request::factory(/*'socket' or 'curl'*/);
 		$oHTTP->proxy = \RainLoop\Api::Config()->Get('labs', 'curl_proxy', '');
 		$oHTTP->proxy_auth = \RainLoop\Api::Config()->Get('labs', 'curl_proxy_auth', '');
+		$oHTTP->verify_peer = \RainLoop\Api::Config()->Get('labs', 'curl_verify_peer', true);
 		$oHTTP->max_response_kb = 0;
 		$oHTTP->timeout = 15; // timeout in seconds.
 		$oResponse = $oHTTP->doRequest('GET', static::BASE_URL . $path);
@@ -37,6 +45,7 @@ abstract class Repository
 		$oHTTP = HTTP\Request::factory(/*'socket' or 'curl'*/);
 		$oHTTP->proxy = \RainLoop\Api::Config()->Get('labs', 'curl_proxy', '');
 		$oHTTP->proxy_auth = \RainLoop\Api::Config()->Get('labs', 'curl_proxy_auth', '');
+		$oHTTP->verify_peer = \RainLoop\Api::Config()->Get('labs', 'curl_verify_peer', true);
 		$oHTTP->max_response_kb = 0;
 		$oHTTP->timeout = 15; // timeout in seconds.
 		$oHTTP->streamBodyTo($pDest);
@@ -262,7 +271,7 @@ abstract class Repository
 		$sRealFile = '';
 
 		$bResult = false;
-		$sTmp = null;
+		$sTmp = $sTmpSignature = null;
 		try {
 			if ('plugin' === $sType) {
 				$bReal = false;
@@ -274,6 +283,73 @@ abstract class Repository
 				if (isset($aList[$sId]) && (!$sFile || $sFile === $aList[$sId]['file'])) {
 					$sRealFile = $aList[$sId]['file'];
 					$sTmp = static::download($aList[$sId]['file']);
+
+					// https://github.com/the-djmaze/snappymail/security/advisories/GHSA-j9c4-gf64-rph2
+					// Verify PGP signature
+					$sTmpSignature = static::download($aList[$sId]['file'] . '.asc');
+					if (!$sTmpSignature) {
+						throw new \Exception('Plugin PGP signature is missing');
+					}
+/*
+					if ($aList[$sId]['pgp_sig'] !== \trim(\preg_replace('/-----(BEGIN|END) PGP SIGNATURE-----/', '', $sTmpSignature))) {
+						throw new \Exception('Plugin PGP signature invalid');
+					}
+*/
+/*
+					// Like: gpg --no-default-keyring --keyring /path/to/pubkey.gpg --verify /path/to/file.txt.gpg
+					$gnupg = PGP\GnuPG::getInstance('');
+					if (!\count($gnupg->keyinfo(static::KEY_FINGERPRINT))) {
+						$sKey = null;
+						$file = __DIR__ . '/repository/releases.asc';
+						if (\is_readable($file)) {
+							if ('bfa5df5ab2e782940f6b2eede9e62b5b7a44415b' !== \sha1_file($file)) {
+								throw new \Exception('Repository invalid public key');
+							}
+							$sKey = \file_get_contents($file);
+						}
+						if (!$sKey) {
+							$sKey = PGP\Keyservers::get(static::KEY_FINGERPRINT);
+							if (!$sKey) {
+								$aKeys = PGP\Keyservers::index('releases@snappymail.eu');
+								if ($aKeys) {
+									$sKey = PGP\Keyservers::get($aKeys[0]['keyid']);
+								}
+							}
+						}
+						if (!$sKey) {
+							throw new \Exception('Repository public key is missing');
+						}
+						$gnupg->import($sKey);
+						if (!\count($gnupg->keyinfo(static::KEY_FINGERPRINT))) {
+							throw new \Exception('Repository public key not imported');
+						}
+					}
+					$result = $gnupg->verifyFile($sTmp, $sTmpSignature);
+					if (!empty($result[0]['keyid'])) {
+						throw new \Exception("Plugin PGP signature wrong key: {$result[0]['keyid']}");
+					}
+					if (empty($result[0]['fingerprint'])) {
+						throw new \Exception('Plugin PGP signature invalid');
+					}
+					if (static::KEY_FINGERPRINT !== $result[0]['fingerprint']) {
+						throw new \Exception("Plugin PGP signature wrong key: {$result[0]['fingerprint']}");
+					}
+
+					// Verify x509 signature
+/*
+					// openssl rsautl -verify -inkey my-pub.pem -in in.txt.rsa -pubin
+					$sTmpSignature = static::download($aList[$sId]['file'] . '.sig');
+					if (!$sTmpSignature) {
+						throw new \Exception('Plugin x509 signature is missing');
+					}
+					openssl_verify(
+						\file_get_contents($sTmp),
+						\file_get_contents($sTmpSignature),
+						static::X509_PUB,
+						\OPENSSL_ALGO_SHA256,
+						0
+					): int|false
+*/
 				}
 			}
 

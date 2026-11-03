@@ -126,6 +126,14 @@ foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 //			$tar = new PharData($tar_destination);
 			$tar->buildFromDirectory('./plugins/', '/' . \preg_quote("./plugins/{$name}/", '/') . '((?!\.bak).)*$/');
 			if ($tar instanceof PharData) {
+/*
+				$private = \openssl_get_privatekey(\file_get_contents('private.pem'));
+				$pkey = '';
+				\openssl_pkey_export($private, $pkey);
+				$tar->setSignatureAlgorithm(Phar::OPENSSL, $pkey);
+				$tar->setSignatureAlgorithm(Phar::Phar::PGP, file_get_contents($private_key));
+				$signature = $tar->getSignature();
+*/
 				$tar->compress(Phar::GZ);
 				unlink($tar_destination);
 				rename("{$tar_destination}.gz", $tgz_destination);
@@ -144,8 +152,15 @@ foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 			}
 */
 			if (isset($options['sign'])) {
-				passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '.escapeshellarg($tgz_destination), $return_var);
+				$arg = escapeshellarg($tgz_destination);
+				passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '.$arg, $return_var);
 				$manifest_item['pgp_sig'] = trim(preg_replace('/-----(BEGIN|END) PGP SIGNATURE-----/', '', file_get_contents($tgz_destination.'.asc')));
+
+				$cert_dir = $_SERVER['HOME'].'/.snappymail/certificates';
+				$out = escapeshellarg($tgz_destination . '.sig');
+				passthru("openssl dgst -sha256 -sign {$cert_dir}/sign_releases.key -out {$out} {$arg}", $return_var);
+//				passthru("openssl dgst -sha512 -sign {$cert_dir}/sign_releases.key -out {$out} {$arg}", $return_var);
+//				$manifest_item['ssl_sig'] = base64_encode(file_get_contents($tgz_destination.'.sig'));
 			}
 			ksort($manifest_item);
 			$manifest[$name] = $manifest_item;
