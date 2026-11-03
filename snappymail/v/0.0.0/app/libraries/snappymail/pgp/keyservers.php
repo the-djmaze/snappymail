@@ -212,9 +212,19 @@ abstract class Keyservers
 		$b32 = new \SnappyMail\Base32('ybndrfg8ejkmcpqxot1uwisza345h769');
 		$keyid = $b32->encode(\sha1($localPart, true));
 
-		$oResponse = static::HTTP()->doRequest('GET', "https://openpgpkey.{$host}/.well-known/openpgpkey/{$host}/hu/{$keyid}");
-		if (!$oResponse || 200 !== $oResponse->status) {
-			$oResponse = static::HTTP()->doRequest('GET', "https://{$host}/.well-known/openpgpkey/hu/{$keyid}");
+		$oResponse = null;
+		try {
+			$oResponse = static::HTTP()->doRequest('GET', "https://openpgpkey.{$host}/.well-known/openpgpkey/{$host}/hu/{$keyid}");
+		} catch (\Throwable $e) {
+			\SnappyMail\Log::info('PGP', "WKD: {$e->getMessage()}");
+		}
+		if (200 !== $oResponse?->status) {
+			try {
+				$oResponse = static::HTTP()->doRequest('GET', "https://{$host}/.well-known/openpgpkey/hu/{$keyid}");
+			} catch (\Throwable $e) {
+				\SnappyMail\Log::info('PGP', "WKD: {$e->getMessage()}");
+				return false;
+			}
 		}
 		if (!$oResponse) {
 			\SnappyMail\Log::info('PGP', "No response for WKD key {$keyId} on {$host}");
