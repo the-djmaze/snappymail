@@ -45,7 +45,7 @@ abstract class Signature
 	{
 		if (!\count($gnupg->keyInfo(static::KEY_FINGERPRINT))) {
 			// Try local key
-			$file = __DIR__ . '/repository/releases.asc';
+			$file = __DIR__ . '/releases.asc';
 			if (\is_readable($file)) {
 				if (static::KEY_SUM !== \sha1_file($file)) {
 					throw new \Exception('Repository invalid PGP public key');
@@ -85,7 +85,7 @@ abstract class Signature
 			throw new \ValueError('Plugin SSL signature is missing');
 		}
 
-		$pkey = __DIR__ . '/repository/releases.pub';
+		$pkey = __DIR__ . '/releases.pub';
 		if (!\is_readable($pkey) || static::SSL_SUM !== \sha1_file($pkey)) {
 			throw new \Exception('Repository invalid SSL public key');
 		}
