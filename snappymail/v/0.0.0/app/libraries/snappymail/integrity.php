@@ -17,7 +17,7 @@ abstract class Integrity
 		// It is an admin diagnostic; an admin's own browser sends the real Host.
 		if (!\RainLoop\Api::Actions()->IsAdminLoggined(false)) {
 			\MailSo\Base\Http::StatusHeader(404);
-			return '';
+			return;
 		}
 
 		$result = static::phpVersion();
