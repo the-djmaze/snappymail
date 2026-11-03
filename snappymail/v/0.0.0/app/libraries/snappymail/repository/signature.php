@@ -41,7 +41,7 @@ abstract class Signature
 
 	private static function importKey($gnupg): void
 	{
-		if (!\count($gnupg->keyinfo(static::KEY_FINGERPRINT))) {
+		if (!\count($gnupg->keyInfo(static::KEY_FINGERPRINT))) {
 			// Try local key
 			$file = __DIR__ . '/repository/releases.asc';
 			if (\is_readable($file)) {
@@ -50,16 +50,16 @@ abstract class Signature
 				}
 				$gnupg->importFile($file);
 			}
-			if (!\count($gnupg->keyinfo(static::KEY_FINGERPRINT))) {
+			if (!\count($gnupg->keyInfo(static::KEY_FINGERPRINT))) {
 				// Try to fetch from WKD server
 				// https://snappymail.eu/.well-known/openpgpkey/hu/i4cdqgcarfjdjnba6y4jnf498asg8c6p
 				$sKey = Keyservers::wkd('releases@snappymail.eu');
 				$sKey && $gnupg->import($sKey);
 				// Try to fetch from HKPS server
-				if (!\count($gnupg->keyinfo(static::KEY_FINGERPRINT))) {
+				if (!\count($gnupg->keyInfo(static::KEY_FINGERPRINT))) {
 					$sKey = Keyservers::get(static::KEY_FINGERPRINT);
 					$sKey && $gnupg->import($sKey);
-					if (!\count($gnupg->keyinfo(static::KEY_FINGERPRINT))) {
+					if (!\count($gnupg->keyInfo(static::KEY_FINGERPRINT))) {
 						throw new \Exception('Repository PGP public key is missing');
 /*
 						$aKeys = Keyservers::index('releases@snappymail.eu');

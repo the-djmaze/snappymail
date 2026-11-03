@@ -445,7 +445,13 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 			$arguments[] = \escapeshellarg($pattern);
 		}
 
-		$result = $this->exec($arguments);
+		try {
+			$result = $this->exec($arguments);
+		} catch (\RuntimeException $e) {
+			if (!\str_contains($e->getMessage(), 'No public key')) {
+				throw $e;
+			}
+		}
 
 		$keys   = [];
 		if ($result) {
@@ -565,13 +571,13 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 			'private' => []
 		];
 		// Public
-		foreach (($this->keyinfo($pattern) ?: []) as $key) {
+		foreach (($this->keyInfo($pattern) ?: []) as $key) {
 			$key['can_verify'] = $key['can_sign'];
 			unset($key['can_sign']);
 			$keys['public'][] = $key;
 		}
 		// Private, read https://github.com/php-gnupg/php-gnupg/issues/5
-		foreach (($this->keyinfo($pattern, 1) ?: []) as $key) {
+		foreach (($this->keyInfo($pattern, 1) ?: []) as $key) {
 			$key['can_decrypt'] = $key['can_encrypt'];
 			unset($key['can_encrypt']);
 			$keys['private'][] = $key;
