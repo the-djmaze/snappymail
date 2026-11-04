@@ -52,7 +52,8 @@ class ChangePasswordDriverLDAP
 				->SetDefaultValue('userPassword'),
 			\RainLoop\Plugins\Property::NewInstance('ldap_password_enc_type')->SetLabel('Encryption type')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECTION)
-				->SetDefaultValue(array('SHA', 'SSHA', 'MD5', 'Crypt', 'Clear'))
+				->SetOptions(array('SHA', 'SSHA', 'MD5', 'Crypt', 'Clear'))
+				->SetDefaultValue('SHA')
 				->SetDescription('In what way do you want the passwords to be encrypted?')
 		);
 	}

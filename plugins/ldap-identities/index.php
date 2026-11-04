@@ -56,7 +56,8 @@ class LdapIdentitiesPlugin extends AbstractPlugin
 			Property::NewInstance(LdapConfig::CONFIG_PROTOCOL_VERSION)
 				->SetLabel("LDAP Protocol Version")
 				->SetType(PluginPropertyType::SELECTION)
-				->SetDefaultValue([2, 3]),
+				->SetOptions([2, 3])
+				->SetDefaultValue(3),
 
 			Property::NewInstance(LdapConfig::CONFIG_STARTTLS)
 				->SetLabel("Use StartTLS")

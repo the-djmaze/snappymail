@@ -268,7 +268,8 @@ class LoginO365Plugin extends \RainLoop\Plugins\AbstractPlugin
             \RainLoop\Plugins\Property::NewInstance('tenant')
                 ->SetLabel('Tenant')
                 ->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECTION)
-                ->SetDefaultValue(['common','consumers','organizations'])
+                ->SetDefaultValue('common')
+                ->SetOptions(['common','consumers','organizations'])
                 ->SetAllowedInJs(),
             \RainLoop\Plugins\Property::NewInstance('personal')
                 // When true: redirect URI uses query parameter form "/?LoginO365" (Azure supports it).

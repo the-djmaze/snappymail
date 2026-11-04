@@ -99,31 +99,31 @@ abstract class AbstractPlugin
 		return $this->sPath;
 	}
 
-	final public function ConfigMap(bool $flatten = false): array
+	final public function ConfigMap(): array
 	{
 		if (null === $this->aConfigMap) {
 			$this->aConfigMap = $this->configMapping();
 		}
 
-		if ($flatten) {
-			$result = [];
-			foreach ($this->aConfigMap as $oItem) {
-				if ($oItem) {
-					if ($oItem instanceof \RainLoop\Plugins\Property) {
-						$result[] = $oItem;
-					} else if ($oItem instanceof \RainLoop\Plugins\PropertyCollection) {
-						foreach ($oItem as $oSubItem) {
-							if ($oSubItem && $oSubItem instanceof \RainLoop\Plugins\Property) {
-								$result[] = $oSubItem;
-							}
-						}
+		return $this->aConfigMap;
+	}
+
+	/**
+	 * Returns all \RainLoop\Plugins\Property
+	 */
+	final public function ConfigProperties(): iterable
+	{
+		foreach ($this->ConfigMap() as $oItem) {
+			if ($oItem instanceof \RainLoop\Plugins\Property) {
+				yield $oItem;
+			} else if ($oItem instanceof \RainLoop\Plugins\PropertyCollection) {
+				foreach ($oItem as $oSubItem) {
+					if ($oSubItem && $oSubItem instanceof \RainLoop\Plugins\Property) {
+						yield $oSubItem;
 					}
 				}
 			}
-			return $result;
 		}
-
-		return $this->aConfigMap;
 	}
 
 	final public function SetPath(string $sPath): self

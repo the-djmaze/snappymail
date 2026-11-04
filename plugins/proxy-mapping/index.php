@@ -8,7 +8,8 @@ class ProxyMappingPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME = 'Proxy mapping',
 		VERSION = '3.0',
 		RELEASE  = '2026-11-03',
-		DESCRIPTION = 'Sets some $_SERVER values from HTTP_* headers';
+		DESCRIPTION = 'Sets some $_SERVER values from HTTP_* headers',
+		REQUIRED = '2.24.3';
 
 	public function Init(): void
 	{
@@ -32,15 +33,24 @@ class ProxyMappingPlugin extends \RainLoop\Plugins\AbstractPlugin
 		return array(
 			\RainLoop\Plugins\Property::NewInstance('remote_addr')
 				->SetLabel('REMOTE_ADDR')
-				->SetType(PluginPropertyType::STRING)
-				->SetDescription("Like: HTTP_CLIENT_IP, HTTP_X_FORWARDED_FOR.\nSo \$_SERVER[REMOTE_ADDR] = \$_SERVER[HTTP_CLIENT_IP]")
-				->SetDefaultValue(''),
+				->SetType(PluginPropertyType::SELECT)
+				->SetOptions([
+					['id' => '', 'name' => '(no mapping)'],
+					['id' => 'HTTP_CLIENT_IP', 'name' => '$_SERVER[HTTP_CLIENT_IP]'],
+					['id' => 'HTTP_X_FORWARDED_FOR', 'name' => '$_SERVER[HTTP_X_FORWARDED_FOR]']
+				])
+				->SetDefaultValue('')
+				->SetDescription("Set \$_SERVER[REMOTE_ADDR], only when the selected option is found and matches"),
 			\RainLoop\Plugins\Property::NewInstance('https')
-				->SetLabel('$_SERVER[HTTPS]')
-				->SetType(PluginPropertyType::SELECTION)
+				->SetLabel('HTTPS')
+				->SetType(PluginPropertyType::SELECT)
+				->SetOptions([
+					['id' => '', 'name' => '(no mapping)'],
+					['id' => 'HTTP_X_FORWARDED_PROTO', 'name' => '$_SERVER[HTTP_X_FORWARDED_PROTO]'],
+					['id' => 'HTTP_X_FORWARDED_SSL', 'name' => '$_SERVER[HTTP_X_FORWARDED_SSL]']
+				])
+				->SetDefaultValue('')
 				->SetDescription("Set \$_SERVER[HTTPS] = 'on', only when the selected option is found and matches")
-				->SetDefaultValue(array('', 'HTTP_X_FORWARDED_PROTO', 'HTTP_X_FORWARDED_SSL'))
-
 		);
 	}
 }

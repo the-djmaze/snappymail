@@ -75,10 +75,8 @@ class Property implements \JsonSerializable
 		}
 	}
 
-	/**
-	 * @param mixed $mDefaultValue
-	 */
-	public function SetDefaultValue($mDefaultValue): self
+//	public function SetDefaultValue(int|float|string|bool|null $mDefaultValue): self
+	public function SetDefaultValue(mixed $mDefaultValue): self
 	{
 		if (\is_array($mDefaultValue)) {
 			$this->aOptions = $mDefaultValue;

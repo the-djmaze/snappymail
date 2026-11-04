@@ -159,20 +159,15 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 				->SetDescription('https://wikipedia.org/wiki/Gravatar'),
 		]);
 		$aResult = array(
-			defined('RainLoop\\Enumerations\\PluginPropertyType::SELECT')
-				? \RainLoop\Plugins\Property::NewInstance('identicon')->SetLabel('Identicon')
-					->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECT)
-					->SetDefaultValue([
-						['id' => '', 'name' => 'Name characters else silhouette'],
-						['id' => 'identicon', 'name' => 'Name characters else squares'],
-						['id' => 'jdenticon', 'name' => 'Triangles shape']
-					])
-					->SetDescription('https://wikipedia.org/wiki/Identicon')
-				: \RainLoop\Plugins\Property::NewInstance('identicon')->SetLabel('Identicon')
-					->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECTION)
-					->SetDefaultValue(['','identicon','jdenticon'])
-					->SetDescription('empty = default, identicon = squares, jdenticon = Triangles shape')
-				,
+			\RainLoop\Plugins\Property::NewInstance('identicon')->SetLabel('Identicon')
+				->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECT)
+				->SetOptions([
+					['id' => '', 'name' => 'Name characters else silhouette'],
+					['id' => 'identicon', 'name' => 'Name characters else squares'],
+					['id' => 'jdenticon', 'name' => 'Triangles shape']
+				])
+				->SetDefaultValue('')
+				->SetDescription('https://wikipedia.org/wiki/Identicon'),
 			\RainLoop\Plugins\Property::NewInstance('service')->SetLabel('Preload valid domain icons')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 				->SetAllowedInJs(true)

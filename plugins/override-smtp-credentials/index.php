@@ -85,7 +85,8 @@ class OverrideSmtpCredentialsPlugin extends \RainLoop\Plugins\AbstractPlugin
 				->SetDefaultValue(25),
 			\RainLoop\Plugins\Property::NewInstance('smtp_secure')->SetLabel('SMTP Secure')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECTION)
-				->SetDefaultValue(array('None', 'Detect', 'SSL', 'STARTTLS')),
+				->SetOptions(array('None', 'Detect', 'SSL', 'STARTTLS'))
+				->SetDefaultValue('None'),
 			\RainLoop\Plugins\Property::NewInstance('smtp_auth')->SetLabel('Use auth')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 				->SetDefaultValue(true),

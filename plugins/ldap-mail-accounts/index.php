@@ -114,7 +114,8 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 			\RainLoop\Plugins\Property::NewInstance(LdapMailAccountsConfig::CONFIG_PROTOCOL_VERSION)
 				->SetLabel("LDAP Protocol Version")
 				->SetType(RainLoop\Enumerations\PluginPropertyType::SELECTION)
-				->SetDefaultValue([2, 3]),
+				->SetOptions([2, 3])
+				->SetDefaultValue(3),
 
 			\RainLoop\Plugins\Property::NewInstance(LdapMailAccountsConfig::CONFIG_BIND_USER)
 				->SetLabel("LDAP Username")

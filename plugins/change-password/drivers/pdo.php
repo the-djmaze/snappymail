@@ -43,7 +43,8 @@ class ChangePasswordDriverPDO
 				->SetDefaultValue('UPDATE table SET password = :newpass WHERE (domain = :domain AND username = :username) OR loginname = :login_name'),
 			\RainLoop\Plugins\Property::NewInstance('pdo_encrypt')->SetLabel('Encryption')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECTION)
-				->SetDefaultValue(array('none', 'bcrypt', 'Argon2i', 'Argon2id', 'SHA256-CRYPT', 'SHA512-CRYPT'))
+				->SetOptions(array('none', 'bcrypt', 'Argon2i', 'Argon2id', 'SHA256-CRYPT', 'SHA512-CRYPT'))
+				->SetDefaultValue('bcrypt')
 				->SetDescription('In what way do you want the passwords to be encrypted?'),
 			\RainLoop\Plugins\Property::NewInstance('pdo_encryptprefix')->SetLabel('Encrypt prefix')
 				->SetDescription('Optional encrypted password prefix, like {ARGON2I} or {BLF-CRYPT} or {SHA512-CRYPT}'),

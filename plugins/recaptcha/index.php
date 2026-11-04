@@ -38,10 +38,12 @@ class RecaptchaPlugin extends \RainLoop\Plugins\AbstractPlugin
 			\RainLoop\Plugins\Property::NewInstance('theme')->SetLabel('Theme')
 				->SetAllowedInJs(true)
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECTION)
-				->SetDefaultValue(array('light', 'dark')),
+				->SetOptions(array('light', 'dark'))
+				->SetDefaultValue('light'),
 			\RainLoop\Plugins\Property::NewInstance('error_limit')->SetLabel('Limit')
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::SELECTION)
-				->SetDefaultValue(array('0', 1, 2, 3, 4, 5))
+				->SetOptions(array('0', 1, 2, 3, 4, 5))
+				->SetDefaultValue('0')
 				->SetDescription('')
 		);
 	}
