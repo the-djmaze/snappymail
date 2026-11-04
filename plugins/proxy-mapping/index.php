@@ -6,7 +6,7 @@ class ProxyMappingPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Proxy mapping',
-		VERSION = '3.0',
+		VERSION = '1.0',
 		RELEASE  = '2026-11-03',
 		DESCRIPTION = 'Sets some $_SERVER values from HTTP_* headers',
 		REQUIRED = '2.24.3';
