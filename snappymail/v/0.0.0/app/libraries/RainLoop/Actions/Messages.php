@@ -797,7 +797,7 @@ trait Messages
 			$oAccount->SmtpConnectAndLogin($this->Plugins(), $oSmtpClient);
 
 			if ($oSmtpClient->Settings->usePhpMail) {
-				if (!$sFrom || !\MailSo\Base\Utils::FunctionCallable('mail')) {
+				if (!$sFrom || !\function_exists('mail')) {
 					throw new ClientException(Notifications::CantSendMessage);
 				}
 				$oToCollection = $oMessage->GetTo();

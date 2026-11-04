@@ -471,7 +471,7 @@ abstract class Utils
 		if (null === $bValidateAction) {
 			$iResetTimer = 0;
 
-			$bValidateAction = static::FunctionCallable('set_time_limit');
+			$bValidateAction = \function_exists('set_time_limit');
 		}
 
 		if ($bValidateAction && $iTimeToReset < $iTime - $iResetTimer) {
@@ -661,22 +661,11 @@ abstract class Utils
 	public static function FunctionsCallable(array $aFunctionNames) : bool
 	{
 		foreach ($aFunctionNames as $sFunctionName) {
-			if (!static::FunctionCallable($sFunctionName)) {
+			if (!\function_exists($sFunctionName)) {
 				return false;
 			}
 		}
 		return true;
-	}
-
-	private static $disabled_functions = null;
-	public static function FunctionCallable(string $sFunctionName) : bool
-	{
-		if (null === static::$disabled_functions) {
-			static::$disabled_functions = \array_map('trim', \explode(',', \ini_get('disable_functions')));
-		}
-		return \function_exists($sFunctionName)
-			&& !\in_array($sFunctionName, static::$disabled_functions);
-//			&& \is_callable($sFunctionName);
 	}
 
 	public static function Sha1Rand(string $sAdditionalSalt = '') : string

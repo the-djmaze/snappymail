@@ -142,7 +142,7 @@ trait AdminDomains
 			}
 
 			if ($oDomain->SmtpSettings()->usePhpMail) {
-				$mSmtpResult = \MailSo\Base\Utils::FunctionCallable('mail');
+				$mSmtpResult = \function_exists('mail');
 				if (!$mSmtpResult) {
 					$sSmtpErrorDesc = 'PHP: mail() function is undefined';
 				}

@@ -138,7 +138,7 @@ class Actions
 			$this->logWrite(
 				'[SM:' . APP_VERSION . '][IP:'
 				. $oHttp->GetClientIp($this->oConfig->Get('labs', 'http_client_ip_check_proxy', false))
-				. '][PID:' . (\MailSo\Base\Utils::FunctionCallable('getmypid') ? \getmypid() : 'unknown')
+				. '][PID:' . (\function_exists('getmypid') ? \getmypid() : 'unknown')
 				. '][' . \MailSo\Base\Http::GetServer('SERVER_SOFTWARE', '~')
 				. '][' . \PHP_SAPI
 				. '][Streams:' . \implode(',', \stream_get_transports())

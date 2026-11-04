@@ -80,7 +80,7 @@ class Http
 	{
 		$sServerKey = 'HTTP_'.\strtoupper(\str_replace('-', '_', $sHeader));
 		$sResultHeader = static::GetServer($sServerKey, '');
-		if (!\strlen($sResultHeader) && Utils::FunctionCallable('apache_request_headers')) {
+		if (!\strlen($sResultHeader) && \function_exists('apache_request_headers')) {
 			$sHeaders = \apache_request_headers();
 			if (isset($sHeaders[$sHeader])) {
 				$sResultHeader = $sHeaders[$sHeader];

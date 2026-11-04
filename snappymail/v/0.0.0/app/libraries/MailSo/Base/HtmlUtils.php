@@ -82,7 +82,7 @@ abstract class HtmlUtils
 
 		$oDoc->normalizeDocument();
 
-		if (\MailSo\Base\Utils::FunctionCallable('libxml_clear_errors')) {
+		if (\function_exists('libxml_clear_errors')) {
 			\libxml_clear_errors();
 		}
 
