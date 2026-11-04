@@ -9,7 +9,7 @@
  * https://learn.microsoft.com/en-us/entra/identity-platform/reply-url#query-parameter-support-in-redirect-uris
  * Query: redirect_uri=https://{DOMAIN}/?LoginO365
  * Path:  redirect_uri=https://{DOMAIN}/LoginO365
- * 
+ *
  * If running behind nginx reverse proxy you might
  * need to add the following to your nginx config:
  * location = /LoginO365 {
@@ -24,8 +24,8 @@ class LoginO365Plugin extends \RainLoop\Plugins\AbstractPlugin
 {
     const
         NAME     = 'Office365/Outlook OAuth2',
-        VERSION  = '0.4',
-        RELEASE  = '2025-12-22',
+        VERSION  = '0.5',
+        RELEASE  = '2026-04-11',
         REQUIRED = '2.36.1',
         CATEGORY = 'Login',
         DESCRIPTION = 'Office365/Outlook IMAP, Sieve & SMTP login using RFC 7628 OAuth2';
@@ -558,9 +558,8 @@ class LoginO365Plugin extends \RainLoop\Plugins\AbstractPlugin
      */
     private function baseUrl() : string
     {
-        $scheme = (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']))
-            ? $_SERVER['HTTP_X_FORWARDED_PROTO']
-            : ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http');
+        $scheme = \RainLoop\Api::Actions()->Http()->GetScheme();
+//        $scheme = \MailSo\Base\Http::SingletonInstance()->GetScheme();
 
         $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '';
         if (!$host) {

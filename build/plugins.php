@@ -92,6 +92,7 @@ $released = [
 	'nextcloud',
 	'override-smtp-credentials',
 	'proxy-auth',
+	'proxy-mapping',
 	'search-filters',
 	'security-mxss',
 	'send-save-in',

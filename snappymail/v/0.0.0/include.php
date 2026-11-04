@@ -32,6 +32,18 @@ define('APP_VERSION_ROOT_PATH', __DIR__ . DIRECTORY_SEPARATOR);
 
 date_default_timezone_set('UTC');
 
+if (empty($_SERVER['SERVER_NAME'])) {
+	$_SERVER['SERVER_NAME'] = $_SERVER['HOSTNAME'] ?? $_SERVER['HOST'] ?? '';
+//	if (empty($_SERVER['SERVER_NAME']) {
+//		$_SERVER['SERVER_NAME'] = \gethostname();
+//		$_SERVER['SERVER_NAME'] = \php_uname('n');
+//		$_SERVER['SERVER_NAME'] = 'localhost';
+//	}
+}
+if (empty($_SERVER['HTTP_HOST'])) {
+	$_SERVER['HTTP_HOST'] = $_SERVER['SERVER_NAME'];
+}
+
 $sCustomDataPath = '';
 $sCustomConfiguration = '';
 
@@ -41,7 +53,7 @@ if (is_file(APP_INDEX_ROOT_PATH.'include.php')) {
 
 $sPrivateDataFolderInternalName = '';
 if (defined('MULTIDOMAIN')) {
-	$sPrivateDataFolderInternalName = strtolower(trim(empty($_SERVER['HTTP_HOST']) ? (empty($_SERVER['SERVER_NAME']) ? '' : $_SERVER['SERVER_NAME']) : $_SERVER['HTTP_HOST']));
+	$sPrivateDataFolderInternalName = strtolower(trim($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME']));
 	$sPrivateDataFolderInternalName = 'www.' === substr($sPrivateDataFolderInternalName, 0, 4) ? substr($sPrivateDataFolderInternalName, 4) : $sPrivateDataFolderInternalName;
 	$sPrivateDataFolderInternalName = preg_replace('/^.+@/', '', preg_replace('/(.+\\..+):[\d]+$/', '$1', $sPrivateDataFolderInternalName));
 	$sPrivateDataFolderInternalName = in_array($sPrivateDataFolderInternalName, array('', '127.0.0.1', '::1')) ? 'localhost' : $sPrivateDataFolderInternalName;
@@ -116,7 +128,9 @@ if (!isset($_SERVER['HTTP_USER_AGENT'])) {
 if (empty($_SERVER['HTTPS']) || 'off' === $_SERVER['HTTPS']) {
 	unset($_SERVER['HTTPS']);
 }
-if (isset($_SERVER['REQUEST_SCHEME']) && 'https' === $_SERVER['REQUEST_SCHEME']) {
+if ((isset($_SERVER['REQUEST_SCHEME']) && 'https' === $_SERVER['REQUEST_SCHEME'])
+ || (isset($_SERVER['SERVER_PORT']) && '443' === $_SERVER['SERVER_PORT'])
+) {
 	$_SERVER['HTTPS'] = 'on';
 }
 if (isset($_SERVER['HTTPS']) && !headers_sent()) {

@@ -16,10 +16,17 @@ if (!defined('AF_INET6')) {
 
 abstract class Host
 {
+	public static function isLocal(string $host): bool
+	{
+		return \in_array(\strtolower(\trim($host)), array(
+			'localhost', '127.0.0.1', '::1'
+		));
+	}
+
 	// RFC 6890 Private-Use and Unique-Local addresses
 	// 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
 	// fc00::/7 (starting with FC or FD)
-	public static function isPrivateIP(string $ip) : bool
+	public static function isPrivateIP(string $ip): bool
 	{
 		return \filter_var($ip, \FILTER_VALIDATE_IP)
 		   && !\filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_PRIV_RANGE);
@@ -34,7 +41,7 @@ abstract class Host
 	// ::/128             Unspecified Address
 	// ::ffff:0:0/96      IPv4-mapped Address
 	// fe80::/10          Linked-Scoped Unicast
-	public static function isReservedIP(string $ip) : bool
+	public static function isReservedIP(string $ip): bool
 	{
 		return \filter_var($ip, \FILTER_VALIDATE_IP)
 		   && !\filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_RES_RANGE);
@@ -48,7 +55,7 @@ abstract class Host
 	 * 64:ff9b::/96 = IPv4-IPv6 Translat.
 	 */
 	/* not working correctly in PHP 8.5.12
-	public static function isGlobalIP(string $ip) : bool
+	public static function isGlobalIP(string $ip): bool
 	{
 		return \filter_var($ip, \FILTER_VALIDATE_IP)
 		   && \filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_GLOBAL_RANGE);
@@ -93,7 +100,7 @@ abstract class Host
 	 * services that listen on every address but are firewalled from outside,
 	 * since the connection never leaves the host.
 	 */
-	public static function IsPublicIP(string $ip) : bool
+	public static function IsPublicIP(string $ip): bool
 	{
 		if (!\filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
 			return false;
@@ -136,7 +143,7 @@ abstract class Host
 		return !\in_array($bin, self::$aLocalAddresses, true);
 	}
 
-	public static function getIPs($uri) : ?array
+	public static function getIPs($uri): ?array
 	{
 		$host = \parse_url($uri, \PHP_URL_HOST);
 		if (!\is_string($host) || '' === $host) {
@@ -164,7 +171,7 @@ abstract class Host
 	 * check; a hostile DNS that rebinds between check and connect (TOCTOU)
 	 * is not covered.
 	 */
-	public static function URIHasPublicHost(string $uri) : bool
+	public static function URIHasPublicHost(string $uri): bool
 	{
 		$ips = static::getIPs($uri);
 		if (!$ips) {
@@ -196,7 +203,7 @@ abstract class Host
 
 	private static ?array $aLocalAddresses = null;
 
-	private static function PrefixMatches(string $bin, string $net, int $bits) : bool
+	private static function PrefixMatches(string $bin, string $net, int $bits): bool
 	{
 		$bytes = \intdiv($bits, 8);
 		if (\substr($bin, 0, $bytes) !== \substr($net, 0, $bytes)) {
@@ -218,7 +225,7 @@ abstract class Host
 	 * host is not such a literal. A part like "08" is not parsed as
 	 * numeric by the resolver, so it is left for the hostname path below.
 	 */
-	private static function NormalizeNumericIPv4(string $host) : ?string
+	private static function NormalizeNumericIPv4(string $host): ?string
 	{
 		$aParts = \explode('.', $host);
 		$iCount = \count($aParts);
@@ -285,7 +292,7 @@ abstract class Host
 	 * ranges as reserved even though they reach IPv4 addresses in
 	 * practice.
 	 */
-	private static function UnwrapEmbeddedIPv4(string $ip) : ?string
+	private static function UnwrapEmbeddedIPv4(string $ip): ?string
 	{
 		$sBin = \inet_pton($ip);
 		if (false === $sBin || 16 !== \strlen($sBin)) {

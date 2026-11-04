@@ -58,61 +58,61 @@ class Message extends Part
 			: null;
 	}
 
-	public function DoesNotAddDefaultXMailer() : void
+	public function DoesNotAddDefaultXMailer(): void
 	{
 		$this->bAddDefaultXMailer = false;
 	}
 
-	public function MessageId() : string
+	public function MessageId(): string
 	{
 		return $this->getHeaderValue(Enumerations\Header::MESSAGE_ID) ?: '';
 	}
 
-	public function SetMessageId(string $sMessageId) : void
+	public function SetMessageId(string $sMessageId): void
 	{
 		$this->aHeadersValue[Enumerations\Header::MESSAGE_ID] = $sMessageId;
 	}
 
-	public function RegenerateMessageId(string $sHostName = '') : void
+	public function RegenerateMessageId(string $sHostName = ''): void
 	{
 		$this->SetMessageId($this->generateNewMessageId($sHostName));
 	}
 
-	public function Attachments() : AttachmentCollection
+	public function Attachments(): AttachmentCollection
 	{
 		return $this->oAttachmentCollection;
 	}
 
-	public function GetSubject() : string
+	public function GetSubject(): string
 	{
 		return $this->getHeaderValue(Enumerations\Header::SUBJECT) ?: '';
 	}
 
-	public function GetFrom() : ?Email
+	public function GetFrom(): ?Email
 	{
 		$value = $this->getHeaderValue(Enumerations\Header::FROM_);
 		return ($value instanceof Email) ? $value : null;
 	}
 
-	public function GetTo() : ?EmailCollection
+	public function GetTo(): ?EmailCollection
 	{
 		$value = $this->getHeaderValue(Enumerations\Header::TO_);
 		return ($value instanceof EmailCollection) ? $value->Unique() : null;
 	}
 
-	public function GetCc() : ?EmailCollection
+	public function GetCc(): ?EmailCollection
 	{
 		$value = $this->getHeaderValue(Enumerations\Header::CC);
 		return ($value instanceof EmailCollection) ? $value->Unique() : null;
 	}
 
-	public function GetBcc() : ?EmailCollection
+	public function GetBcc(): ?EmailCollection
 	{
 		$value = $this->getHeaderValue(Enumerations\Header::BCC);
 		return ($value instanceof EmailCollection) ? $value->Unique() : null;
 	}
 
-	public function GetRcpt() : EmailCollection
+	public function GetRcpt(): EmailCollection
 	{
 		$oResult = new EmailCollection;
 
@@ -157,20 +157,20 @@ class Message extends Part
 		return $this;
 	}
 
-	public function SetAutocrypt(array $aValue) : self
+	public function SetAutocrypt(array $aValue): self
 	{
 		$this->aHeadersValue['Autocrypt'] = $aValue;
 		return $this;
 	}
 
-	public function SetSubject(string $sSubject) : self
+	public function SetSubject(string $sSubject): self
 	{
 		$this->aHeadersValue[Enumerations\Header::SUBJECT] = $sSubject;
 
 		return $this;
 	}
 
-	public function SetInReplyTo(string $sInReplyTo) : self
+	public function SetInReplyTo(string $sInReplyTo): self
 	{
 		$sInReplyTo = \trim($sInReplyTo);
 		if (\strlen($sInReplyTo)) {
@@ -179,7 +179,7 @@ class Message extends Part
 		return $this;
 	}
 
-	public function SetReferences(string $sReferences) : self
+	public function SetReferences(string $sReferences): self
 	{
 		$sReferences = \MailSo\Base\Utils::StripSpaces($sReferences);
 		if (\strlen($sReferences)) {
@@ -188,7 +188,7 @@ class Message extends Part
 		return $this;
 	}
 
-	public function SetReadReceipt(string $sEmail) : self
+	public function SetReadReceipt(string $sEmail): self
 	{
 		$this->aHeadersValue[Enumerations\Header::DISPOSITION_NOTIFICATION_TO] = $sEmail;
 		$this->aHeadersValue[Enumerations\Header::X_CONFIRM_READING_TO] = $sEmail;
@@ -196,27 +196,27 @@ class Message extends Part
 		return $this;
 	}
 
-	public function SetPriority(Enumerations\MessagePriority $eValue) : self
+	public function SetPriority(Enumerations\MessagePriority $eValue): self
 	{
 		$this->aHeadersValue[Enumerations\Header::X_PRIORITY] = $eValue->toMIME();
 		return $this;
 	}
 
-	public function SetXMailer(string $sXMailer) : self
+	public function SetXMailer(string $sXMailer): self
 	{
 		$this->aHeadersValue[Enumerations\Header::X_MAILER] = $sXMailer;
 
 		return $this;
 	}
 
-	public function SetFrom(Email $oEmail) : self
+	public function SetFrom(Email $oEmail): self
 	{
 		$this->aHeadersValue[Enumerations\Header::FROM_] = $oEmail;
 
 		return $this;
 	}
 
-	public function SetTo(EmailCollection $oEmails) : self
+	public function SetTo(EmailCollection $oEmails): self
 	{
 		if ($oEmails->count()) {
 			$this->aHeadersValue[Enumerations\Header::TO_] = $oEmails;
@@ -224,14 +224,14 @@ class Message extends Part
 		return $this;
 	}
 
-	public function SetDate(int $iDateTime) : self
+	public function SetDate(int $iDateTime): self
 	{
 		$this->aHeadersValue[Enumerations\Header::DATE] = \gmdate('r', $iDateTime);
 
 		return $this;
 	}
 
-	public function SetReplyTo(EmailCollection $oEmails) : self
+	public function SetReplyTo(EmailCollection $oEmails): self
 	{
 		if ($oEmails->count()) {
 			$this->aHeadersValue[Enumerations\Header::REPLY_TO] = $oEmails;
@@ -239,7 +239,7 @@ class Message extends Part
 		return $this;
 	}
 
-	public function SetCc(EmailCollection $oEmails) : self
+	public function SetCc(EmailCollection $oEmails): self
 	{
 		if ($oEmails->count()) {
 			$this->aHeadersValue[Enumerations\Header::CC] = $oEmails;
@@ -247,7 +247,7 @@ class Message extends Part
 		return $this;
 	}
 
-	public function SetBcc(EmailCollection $oEmails) : self
+	public function SetBcc(EmailCollection $oEmails): self
 	{
 		if ($oEmails->count()) {
 			$this->aHeadersValue[Enumerations\Header::BCC] = $oEmails;
@@ -255,14 +255,14 @@ class Message extends Part
 		return $this;
 	}
 
-	public function SetSender(Email $oEmail) : self
+	public function SetSender(Email $oEmail): self
 	{
 		$this->aHeadersValue[Enumerations\Header::SENDER] = $oEmail;
 
 		return $this;
 	}
 
-	public function SetDraftInfo(string $sType, int $iUid, string $sFolder) : self
+	public function SetDraftInfo(string $sType, int $iUid, string $sFolder): self
 	{
 		$this->aHeadersValue[Enumerations\Header::X_DRAFT_INFO] = (new ParameterCollection)
 			->Add(new Parameter('type', $sType))
@@ -273,10 +273,10 @@ class Message extends Part
 		return $this;
 	}
 
-	private function generateNewMessageId(string $sHostName = '') : string
+	private function generateNewMessageId(string $sHostName = ''): string
 	{
 		if (!\strlen($sHostName)) {
-			$sHostName = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
+			$sHostName = $_SERVER['SERVER_NAME'];
 		}
 
 		if (empty($sHostName) && \function_exists('php_uname')) {
@@ -292,7 +292,7 @@ class Message extends Part
 				(\function_exists('getmypid') ? \getmypid() : '')).'@'.$sHostName.'>';
 	}
 
-	public function GetRootPart() : Part
+	public function GetRootPart(): Part
 	{
 		if (!\count($this->SubParts)) {
 			if ($this->bAddEmptyTextPart) {
@@ -418,7 +418,7 @@ class Message extends Part
 		return $resource;
 	}
 /*
-	public function ToString(bool $bWithoutBcc = false) : string
+	public function ToString(bool $bWithoutBcc = false): string
 	{
 		return \stream_get_contents($this->ToStream($bWithoutBcc));
 	}
