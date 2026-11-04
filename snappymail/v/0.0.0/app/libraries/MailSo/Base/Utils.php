@@ -674,13 +674,9 @@ abstract class Utils
 		if (null === static::$disabled_functions) {
 			static::$disabled_functions = \array_map('trim', \explode(',', \ini_get('disable_functions')));
 		}
-/*
-		$disabled_classes = \explode(',', \ini_get('disable_classes'));
-		\in_array($function, $disabled_classes);
-*/
 		return \function_exists($sFunctionName)
 			&& !\in_array($sFunctionName, static::$disabled_functions);
-//			&& \is_callable($mFunctionNameOrNames);
+//			&& \is_callable($sFunctionName);
 	}
 
 	public static function Sha1Rand(string $sAdditionalSalt = '') : string
