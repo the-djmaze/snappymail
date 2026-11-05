@@ -1,4 +1,147 @@
+## 3.0.0 – 2026-11-05
+
+### Security
+- HTML Injection via SVG attachement - by @wlp3s0
+  [GHSA-cjq6-6gwv-qxjj](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-cjq6-6gwv-qxjj)
+- Unauthenticated SSRF in ServiceProxyExternal - by @metadust
+  [GHSA-wq6r-r5m6-485g](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-wq6r-r5m6-485g)
+- Unauthenticated SSRF on /?/Test diagnostic endpoint via Host-header injection leaks internal HTTP headers - by @chndlrx
+  [GHSA-9p4x-xp46-hxrh](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-9p4x-xp46-hxrh)
+- Authenticated Server-Side Request Forgery (SSRF) and Intranet Service Discovery in ServiceProxyExternal - by @anhdung1329
+  [GHSA-xpr6-5vj6-wq26](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-xpr6-5vj6-wq26)
+- HTTP client disables TLS certificate verification by default — MITM can deliver malicious core/plugin package → remote code execution - by @xusheng6
+  [GHSA-j9c4-gf64-rph2](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-j9c4-gf64-rph2)
+- GnuPG home directory is relocated into the fixed path /tmp/snappymail, letting an unprivileged local user place a webmail account's OpenPGP storage in a directory they control and substitute the keyring -  by @4n86rakam1
+  [GHSA-wxf6-3mh5-rcj6](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-wxf6-3mh5-rcj6)
+- Eight issues in SnappyMail v2.38.2 - by @ZaphodB
+  [GHSA-crj4-pmx2-cxqm](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-crj4-pmx2-cxqm)
+- SnappyMail: update/extension channel accepts forged TLS certificates → MITM attacker achieves RCE (zero-interaction on Nextcloud app updates) + admin→server-RCE via log-path webshell + SSRF batch - by @jaykijay
+  [GHSA-9cmw-3ghj-9q55](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-9cmw-3ghj-9q55)
+- Stored XSS via javascript: URLs in Email Links - by @wyx98765
+  [GHSA-7463-5wp4-wx54](https://github.com/the-djmaze/snappymail/security/advisories/GHSA-7463-5wp4-wx54)
+- Protect dkim in MIME Authentication-Results header - by @kimusan
+- Require CSRF token for headerless GET JSON actions - by @crudobi
+
+### Added
+- Test contacts CardDAV settings
+- Setting for default messages sort mode
+- CSP block legacy HTML element types such as <object>, <embed>, and <applet> on Raw actions
+- Minimum font size handling as better solution for font issues
+  [#1082](https://github.com/the-djmaze/snappymail/issues/1082)
+- Sort messages on arrival date/time
+  [#1798](https://github.com/the-djmaze/snappymail/issues/1798)
+- On reply, set `from` field to the received email `to` field
+  [#1805](https://github.com/the-djmaze/snappymail/issues/1805)
+- Dmarc and spf indicators in mail view - by @edlerd
+  [#1843](https://github.com/the-djmaze/snappymail/pull/1843)
+- Ask to decrypt PGP and S/MIME messages before edit/reply/forward/etc.
+  [#1849](https://github.com/the-djmaze/snappymail/issues/1849)
+- PGP improvements - by @SergeyMosin
+  [#1863](https://github.com/the-djmaze/snappymail/pull/1863)
+- Also detect Identity using from address
+  [#1865](https://github.com/the-djmaze/snappymail/issues/1865)
+- Add intermediate certificates for S/MIME signing - by @tribut
+  [#1879](https://github.com/the-djmaze/snappymail/pull/1879)
+- Automatically add favicon host to CSP if present - by @HeySora
+  [#1891](https://github.com/the-djmaze/snappymail/pull/1891)
+- Catalan localization
+  [#2084](https://github.com/the-djmaze/snappymail/pull/2084)
+- GnuPG WKD key finder
+- Subresource Integrity checks - by @kimusan
+- Ask the browser properly whether it can preview a PDF - by @kimusan
+
+### Changed
+- PHP 8.2 is the minimum due to Sabre
+- PHP 8 Use union and `mixed` type declaration
+- Restrict proxy handling
+- KnockoutJS secure bindings using Proxy
+- Identity.formattedName to Identity.toString
+- The backtick (`) operator is deprecated, use shell_exec() instead
+- Proxy requires mainaccount
+- Some abstract enumeration classes to PHP 8.1+ (Backed)Enum
+- Use CSS instead of $index for Settings > Accounts -> Identities
+  [#1797](https://github.com/the-djmaze/snappymail/issues/1797)
+- Update sabre-io libraries
+  [#1806](https://github.com/the-djmaze/snappymail/issues/1806)
+- More compact view of folder list - by @makoehr
+  [#1948](https://github.com/the-djmaze/snappymail/pull/1948)
+- Don't reset the message list to page 1 and clear the search on message.show - by @SebastianAlvarezGajardo
+  [#2069](https://github.com/the-djmaze/snappymail/pull/2069)
+- "Clear folder" should not bot be considered "dangerous" for Trash
+  [#2095](https://github.com/the-djmaze/snappymail/issues/2095)
+- Sabre/Xml to v4.1.0
+- Sabre/VObject to v5.0.0
+- Squire updated to v2.4.9
+- Update Basque - by @alexgabi
+- Update Czech - by @lenny87
+- Update French - by @hguilbert
+- Update German - by @tribut
+- Update Polish - by @tinola
+- Update Portuguese - by @ner00
+- Update Russian - by @bober757 and @RChutchev
+- Update Ukrainian - by @romawkafor
+
+### Fixed
+- PHP 8.4 Implicitly marking parameter $... as nullable is deprecated, the explicit nullable type must be used instead
+- IMAP atom can have < or >
+- Reopening a popup during its fade out kept the previous contents - by @kimusan
+- Can not send email using SCRAM
+  [#1813](https://github.com/the-djmaze/snappymail/issues/1813)
+- Squire removes BR to often
+  [#1815](https://github.com/the-djmaze/snappymail/issues/1815)
+- TOTP - Call to protected method RainLoop\Actions::LoggerAuthHelper()
+  [#1825](https://github.com/the-djmaze/snappymail/issues/1825)
+- Admin domain match displays „undefined“ instead of matched domain name
+  [#1828](https://github.com/the-djmaze/snappymail/issues/1828)
+- Inline images break when editing emails
+  [#1846](https://github.com/the-djmaze/snappymail/issues/1846)
+- PHP 8.4.1 Deprecated warnings
+  [#1850](https://github.com/the-djmaze/snappymail/issues/1850)
+- Remove x-html tags before rendering - by @hungyao
+  [#1861](https://github.com/the-djmaze/snappymail/pull/1861)
+- Attaching a zip file file produces "Warning! Not all attachments have been uploaded" - by @alyandon
+  [#1883](https://github.com/the-djmaze/snappymail/pull/1883)
+- Cp1252 encoding problem - by @Psychi1
+  [#1961](https://github.com/the-djmaze/snappymail/pull/1961)
+- Fix JS runtime error when forwarding e-mails as attachments - by @HeySora
+  [#1981](https://github.com/the-djmaze/snappymail/pull/1981)
+- Fix Mime/Parser header detection: Don't render Plain text as Mime parts - by @gocowim
+  [#2037](https://github.com/the-djmaze/snappymail/pull/2037)
+- Non-compliant Autocrypt Header - by @gocowim
+  [#2039](https://github.com/the-djmaze/snappymail/pull/2039)
+- AddressBook: do not let an empty side wipe the other during sync - by @FathiBenNasr
+  [#2060](https://github.com/the-djmaze/snappymail/pull/2060)
+- PdoAddressBook: GetContactByEmail() passed the wrong columns - by @FathiBenNasr
+  [#2074](https://github.com/the-djmaze/snappymail/pull/2074)
+- HtmlUtils strip every data-* attribute, not just the first one - by @FathiBenNasr
+  [#2075](https://github.com/the-djmaze/snappymail/pull/2075)
+- Duplicate contacts on autosave for addresses with uppercase letters - by @MiDniGG
+  [#2079](https://github.com/the-djmaze/snappymail/pull/2079)
+- Keep the folding space before an encoded word that follows a plain word - by @FathiBenNasr
+  [#2087](https://github.com/the-djmaze/snappymail/pull/2087)
+- Reply quotes only the nested quoted email when the sender's HTML contains a <body> inside a blockquote
+  [#2089](https://github.com/the-djmaze/snappymail/issues/2089)
+- Plugin JS cache key ignores Admin/User scope - by @SaJeTek-Developer
+  [#2097](https://github.com/the-djmaze/snappymail/issues/2097)
+
+### Docker
+- Alpine 3.24.3
+- PHP 8.5
+- Ensure nginx does not listen on ipv6 in ipv4-only environments - by @leojonathanoh
+  [#1922](https://github.com/the-djmaze/snappymail/pull/1922)
+- Add pdo_sqlite installation by @HeySora
+  [#1973](https://github.com/the-djmaze/snappymail/pull/1973)
+- Fix command syntax in cli/release.php by @HeySora
+  [#1974](https://github.com/the-djmaze/snappymail/pull/1974)
+
+### Nextcloud
+- Nextcloud 34 - with changes from @defame-flagstick @eibex @kimusan @nextgen-networks @oe79
+- Correct OIDC login by using SensitiveString object - by @avinash-0007
+  [#2007](https://github.com/the-djmaze/snappymail/pull/2007)
+
+
 ## 2.38.2 – 2024-10-09
+
 ### Fixed
 - error '$index is not defined' in Settings > Accounts
   [#1797](https://github.com/the-djmaze/snappymail/issues/1797)

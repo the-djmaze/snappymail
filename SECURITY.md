@@ -6,8 +6,8 @@ Currently due to the fast development only the latest version receives security 
 
 | Version  | Supported |
 | -------- | --------- |
-| 2.34.x   | ✔         |
-| < 2.34.0 | ❌         |
+| 3.0.0    | ✔         |
+| < 3.0.0  | ❌         |
 
 ## Reporting a Vulnerability
 
