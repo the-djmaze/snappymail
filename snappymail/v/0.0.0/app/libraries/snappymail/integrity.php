@@ -33,8 +33,8 @@ abstract class Integrity
 		}
 
 /*
-		echo '<div>'.APP_VERSION_ROOT_PATH.'static directory permissions: ' . substr(sprintf('%o', fileperms(APP_VERSION_ROOT_PATH . 'static')), -4) . '</div>';
-		echo '<div>'.APP_VERSION_ROOT_PATH.'themes directory permissions: ' . substr(sprintf('%o', fileperms(APP_VERSION_ROOT_PATH . 'themes')), -4) . '</div>';
+		echo '<div>'.APP_VERSION_ROOT_PATH.'static directory permissions: ' . \substr(\sprintf('%o', \fileperms(APP_VERSION_ROOT_PATH . 'static')), -4) . '</div>';
+		echo '<div>'.APP_VERSION_ROOT_PATH.'themes directory permissions: ' . \substr(\sprintf('%o', \fileperms(APP_VERSION_ROOT_PATH . 'themes')), -4) . '</div>';
 */
 
 		$uri = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
@@ -90,21 +90,21 @@ abstract class Integrity
 	public static function phpExtensions(): array
 	{
 		$aRequirements = array(
-			'openssl'  => extension_loaded('openssl'),
-			'mbstring' => extension_loaded('mbstring'),
-			'Zlib'     => extension_loaded('zlib'),
+			'openssl'  => \extension_loaded('openssl'),
+			'mbstring' => \extension_loaded('mbstring'),
+			'Zlib'     => \extension_loaded('zlib'),
 			// enabled by default:
-			'json'     => function_exists('json_decode'),
-			'libxml'   => function_exists('libxml_use_internal_errors'),
-			'dom'      => class_exists('DOMDocument'),
+			'json'     => \function_exists('json_decode'),
+			'libxml'   => \function_exists('libxml_use_internal_errors'),
+			'dom'      => \class_exists('DOMDocument'),
 			// https://github.com/the-djmaze/snappymail/issues/1392
-			'fileinfo' => extension_loaded('fileinfo')
+			'fileinfo' => \extension_loaded('fileinfo')
 			// https://github.com/the-djmaze/snappymail/issues/392
-		//	'phar'     => class_exists('PharData')
+		//	'phar'     => \class_exists('PharData')
 		);
 
 		$aMissing = [];
-		if (in_array(false, $aRequirements)) {
+		if (\in_array(false, $aRequirements)) {
 			foreach ($aRequirements as $sKey => $bValue) {
 				if (!$bValue) {
 					$aMissing[] = $sKey;

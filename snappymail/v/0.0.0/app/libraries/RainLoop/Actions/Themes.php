@@ -52,7 +52,7 @@ trait Themes
 						}
 					}
 				}
-				closedir($rDirH);
+				\closedir($rDirH);
 			}
 		}
 

@@ -66,7 +66,7 @@ class TAR
 		if ($this->out) {
 			if ($this->started) {
 				// Write tar footer
-				$this->write(pack('a1024', ''));
+				$this->write(\pack('a1024', ''));
 				// Stop compression
 				if (!empty($this->gzip['w'])) {
 					\stream_filter_remove($this->gzip['w']);

@@ -3,11 +3,11 @@
 namespace SnappyMail;
 
 # PECL
-if (!defined('UUID_TYPE_DEFAULT')) { define('UUID_TYPE_DEFAULT', 0); }
-if (!defined('UUID_TYPE_TIME'))    { define('UUID_TYPE_TIME',    1); } # v1
-if (!defined('UUID_TYPE_DCE'))     { define('UUID_TYPE_DCE',     2); }
-if (!defined('UUID_TYPE_NAME'))    { define('UUID_TYPE_NAME',    3); }
-if (!defined('UUID_TYPE_RANDOM'))  { define('UUID_TYPE_RANDOM',  4); } # v4
+if (!\defined('UUID_TYPE_DEFAULT')) { \define('UUID_TYPE_DEFAULT', 0); }
+if (!\defined('UUID_TYPE_TIME'))    { \define('UUID_TYPE_TIME',    1); } # v1
+if (!\defined('UUID_TYPE_DCE'))     { \define('UUID_TYPE_DCE',     2); }
+if (!\defined('UUID_TYPE_NAME'))    { \define('UUID_TYPE_NAME',    3); }
+if (!\defined('UUID_TYPE_RANDOM'))  { \define('UUID_TYPE_RANDOM',  4); } # v4
 
 abstract class UUID
 {
@@ -19,7 +19,7 @@ abstract class UUID
 		TYPE_RANDOM    = UUID_TYPE_RANDOM; // v4, Random
 //		TYPE_NAME_SHA1 = UUID_TYPE_RANDOM; // v5, Name-based (SHA-1 hash)
 
-	public static function generate($mode = self::TYPE_DEFAULT)
+	public static function generate($mode = self::TYPE_DEFAULT): string
 	{
 		# OSSP
 		if (\function_exists('uuid_make')) {
@@ -35,13 +35,13 @@ abstract class UUID
 /*
 		# COM/Windows
 		if (function_exists('com_create_guid')) {
-			return trim(com_create_guid(), '{}');
+			return \trim(\com_create_guid(), '{}');
 		}
 
 		switch ($mode)
 		{
 		case self::TYPE_TIME:
-			$hash = bin2hex($this->timeGenerator->generate($node, $clockSeq));
+			$hash = \bin2hex($this->timeGenerator->generate($node, $clockSeq));
 			break;
 
 		case self::TYPE_DCE:
@@ -51,18 +51,18 @@ abstract class UUID
 			if (!($ns instanceof UuidInterface)) {
 				$ns = $this->codec->decode($ns);
 			}
-			$hash = md5($ns->getBytes() . $name);
+			$hash = \md5($ns->getBytes() . $name);
 			break;
 
 		case self::TYPE_RANDOM:
-			$hash = bin2hex(random_bytes(16));
+			$hash = \bin2hex(\random_bytes(16));
 			break;
 
 		case self::TYPE_NAME_SHA1:
 			if (!($ns instanceof UuidInterface)) {
 				$ns = $this->codec->decode($ns);
 			}
-			$hash = sha1($ns->getBytes() . $name);
+			$hash = \sha1($ns->getBytes() . $name);
 			break;
 		}
 		return $this->uuidFromHashedName($hash, $mode);
@@ -86,11 +86,11 @@ abstract class UUID
 			.  \substr($uuid, 20);
 	}
 
-	public static function time()   { return self::generate(self::TYPE_TIME); }
+	public static function time(): string   { return self::generate(self::TYPE_TIME); }
 
-	public static function random() { return self::generate(self::TYPE_RANDOM); }
+	public static function random(): string { return self::generate(self::TYPE_RANDOM); }
 
-	public static function isValid($uuid)
+	public static function isValid($uuid): bool
 	{
 		return \function_exists('uuid_is_valid')
 			? \uuid_is_valid($uuid)

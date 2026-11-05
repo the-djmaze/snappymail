@@ -43,7 +43,7 @@ class ActionsAdmin extends Actions
 
 	public function DoAdminSettingsUpdate() : array
 	{
-//		sleep(3);
+//		\sleep(3);
 //		return $this->DefaultResponse(false);
 
 		$this->IsAdminLoggined();
@@ -112,7 +112,7 @@ class ActionsAdmin extends Actions
 	 */
 	public function DoAdminLogin() : array
 	{
-		$sLogin = trim($this->GetActionParam('Login', ''));
+		$sLogin = \trim($this->GetActionParam('Login', ''));
 		$oPassword = new \SnappyMail\SensitiveString($this->GetActionParam('Password', ''));
 
 		$totp = $this->Config()->Get('security', 'admin_totp', '');
@@ -389,7 +389,7 @@ class ActionsAdmin extends Actions
 				default:
 				case 'string':
 					$sValue = (string)$sValue;
-					if ($mStringCallback && is_callable($mStringCallback)) {
+					if ($mStringCallback && \is_callable($mStringCallback)) {
 						$sValue = $mStringCallback($sValue);
 					}
 

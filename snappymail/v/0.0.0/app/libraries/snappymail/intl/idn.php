@@ -14,11 +14,12 @@ namespace SnappyMail\Intl;
 
 class Info
 {
-	public
+	public bool
 		$bidiDomain = false,
-		$errors = 0,
 		$validBidiDomain = true,
 		$transitionalDifferent = false;
+	public int
+		$errors = 0;
 }
 
 /**
@@ -84,10 +85,8 @@ final class Idn
 	/**
 	 * Contains the numeric value of a basic code point (for use in representing integers) in the
 	 * range 0 to BASE-1, or -1 if b is does not represent a value.
-	 *
-	 * @var array<int, int>
 	 */
-	private static $basicToDigit = [
+	private static array $basicToDigit = [
 		48 => 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
 		65 =>  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
 		97 =>  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25
@@ -96,51 +95,44 @@ final class Idn
 	/**
 	 * @var array<int, int>
 	 */
-	private static $virama;
+	private static ?array $virama = null;
 
 	/**
 	 * @var array<int, string>
 	 */
-	private static $mapped;
+	private static ?array $mapped = null;
 
 	/**
 	 * @var array<int, bool>
 	 */
-	private static $ignored;
+	private static ?array $ignored = null;
 
 	/**
 	 * @var array<int, string>
 	 */
-	private static $deviation;
+	private static ?array $deviation = null;
 
 	/**
 	 * @var array<int, bool>
 	 */
-	private static $disallowed;
+	private static ?array $disallowed = null;
 
 	/**
 	 * @var array<int, string>
 	 */
-	private static $disallowed_STD3_mapped;
+	private static ?array $disallowed_STD3_mapped = null;
 
 	/**
 	 * @var array<int, bool>
 	 */
-	private static $disallowed_STD3_valid;
+	private static ?array $disallowed_STD3_valid = null;
 
-	/**
-	 * @var bool
-	 */
-	private static $mappingTableLoaded = false;
+	private static bool $mappingTableLoaded = false;
 
 	/**
 	 * @see https://www.unicode.org/reports/tr46/#ToASCII
-	 *
-	 * @param string $domainName
-	 *
-	 * @return string|false
 	 */
-	public static function toAscii($domainName)
+	public static function toAscii(string $domainName): string|false
 	{
 		$info = new Info();
 		$labels = self::process((string) $domainName, $info);
@@ -165,24 +157,15 @@ final class Idn
 
 	/**
 	 * @see https://www.unicode.org/reports/tr46/#ToUnicode
-	 *
-	 * @param string $domainName
-	 *
-	 * @return string|false
 	 */
-	public static function toUtf8($domainName)
+	public static function toUtf8(string $domainName): string|false
 	{
 		$info = new Info();
 		$labels = self::process((string) $domainName, $info);
 		return 0 === $info->errors ? \implode('.', $labels) : false;
 	}
 
-	/**
-	 * @param string $label
-	 *
-	 * @return bool
-	 */
-	private static function isValidContextJ(array $codePoints, $label)
+	private static function isValidContextJ(array $codePoints, string $label): bool
 	{
 		if (!isset(self::$virama)) {
 			self::$virama = static::getData('virama');
@@ -221,13 +204,8 @@ final class Idn
 
 	/**
 	 * @see https://www.unicode.org/reports/tr46/#ProcessingStepMap
-	 *
-	 * @param string              $input
-	 * @param array<string, bool> $options
-	 *
-	 * @return string
 	 */
-	private static function mapCodePoints($input, array $options, Info $info)
+	private static function mapCodePoints(string $input, array $options, Info $info): string
 	{
 		$str = '';
 		$transitional = $options['Transitional_Processing'];
@@ -257,7 +235,7 @@ final class Idn
 
 				case 'deviation':
 					$info->transitionalDifferent = true;
-					$str .= ($transitional ? $data['mapping'] : mb_chr($codePoint, 'utf-8'));
+					$str .= ($transitional ? $data['mapping'] : \mb_chr($codePoint, 'utf-8'));
 
 					break;
 			}
@@ -268,12 +246,8 @@ final class Idn
 
 	/**
 	 * @see https://www.unicode.org/reports/tr46/#Processing
-	 *
-	 * @param string              $domain
-	 *
-	 * @return array<int, string>
 	 */
-	private static function process($domain, Info $info)
+	private static function process(string $domain, Info $info): array
 	{
 		if ('' === $domain) {
 			$info->errors |= self::ERROR_EMPTY_LABEL;
@@ -293,7 +267,7 @@ final class Idn
 		$domain = static::normalize($domain);
 
 		// Step 3. Break the string into labels at U+002E (.) FULL STOP.
-		$labels = explode('.', $domain);
+		$labels = \explode('.', $domain);
 		$lastLabelIndex = \count($labels) - 1;
 
 		// Step 4. Convert and validate each label in the domain name string.
@@ -302,7 +276,7 @@ final class Idn
 
 			if ('xn--' === \substr($label, 0, 4)) {
 				try {
-					$label = self::punycodeDecode(substr($label, 4));
+					$label = self::punycodeDecode(\substr($label, 4));
 				} catch (\Exception $e) {
 					$info->errors |= self::ERROR_PUNYCODE;
 
@@ -329,10 +303,8 @@ final class Idn
 
 	/**
 	 * @see https://tools.ietf.org/html/rfc5893#section-2
-	 *
-	 * @param string $label
 	 */
-	private static function validateBidiLabel($label, Info $info)
+	private static function validateBidiLabel(string $label, Info $info): void
 	{
 		if (1 === \preg_match(static::REGEX_RTL_LABEL, $label)) {
 			$info->bidiDomain = true;
@@ -374,7 +346,7 @@ final class Idn
 		// We are a LTR label
 		// Step 1. The first character must be a character with Bidi property L, R, or AL.
 		// If it has the L property, it is an LTR label.
-		if (1 !== preg_match(static::REGEX_BIDI_STEP_1_LTR, $label)) {
+		if (1 !== \preg_match(static::REGEX_BIDI_STEP_1_LTR, $label)) {
 			$info->validBidiDomain = false;
 
 			return;
@@ -382,7 +354,7 @@ final class Idn
 
 		// Step 5. In an LTR label, only characters with the Bidi properties L, EN,
 		// ES, CS, ET, ON, BN, or NSM are allowed.
-		if (1 === preg_match(static::REGEX_BIDI_STEP_5, $label)) {
+		if (1 === \preg_match(static::REGEX_BIDI_STEP_5, $label)) {
 			$info->validBidiDomain = false;
 
 			return;
@@ -390,17 +362,14 @@ final class Idn
 
 		// Step 6.In an LTR label, the end of the label must be a character with Bidi property L or
 		// EN, followed by zero or more characters with Bidi property NSM.
-		if (1 !== preg_match(static::REGEX_BIDI_STEP_6, $label)) {
+		if (1 !== \preg_match(static::REGEX_BIDI_STEP_6, $label)) {
 			$info->validBidiDomain = false;
 
 			return;
 		}
 	}
 
-	/**
-	 * @param array<int, string> $labels
-	 */
-	private static function validateDomainAndLabelLength(array $labels, Info $info)
+	private static function validateDomainAndLabelLength(array $labels, Info $info): void
 	{
 		$maxDomainSize = self::MAX_DOMAIN_SIZE;
 		$length = \count($labels);
@@ -433,12 +402,8 @@ final class Idn
 
 	/**
 	 * @see https://www.unicode.org/reports/tr46/#Validity_Criteria
-	 *
-	 * @param string              $label
-	 * @param array<string, bool> $options
-	 * @param bool                $canBeEmpty
 	 */
-	private static function validateLabel($label, Info $info, array $options, $canBeEmpty)
+	private static function validateLabel(string $label, Info $info, array $options, bool $canBeEmpty): void
 	{
 		if ('' === $label) {
 			if (!$canBeEmpty) {
@@ -463,21 +428,21 @@ final class Idn
 
 		// Step 3. If CheckHyphens, the label must neither begin nor end with a U+002D
 		// HYPHEN-MINUS character.
-		if ('-' === substr($label, 0, 1)) {
+		if ('-' === \substr($label, 0, 1)) {
 			$info->errors |= self::ERROR_LEADING_HYPHEN;
 		}
 
-		if ('-' === substr($label, -1, 1)) {
+		if ('-' === \substr($label, -1, 1)) {
 			$info->errors |= self::ERROR_TRAILING_HYPHEN;
 		}
 
 		// Step 4. The label must not contain a U+002E (.) FULL STOP.
-		if (false !== strpos($label, '.')) {
+		if (false !== \strpos($label, '.')) {
 			$info->errors |= self::ERROR_LABEL_HAS_DOT;
 		}
 
 		// Step 5. The label must not begin with a combining mark, that is: General_Category=Mark.
-		if (1 === preg_match(static::REGEX_COMBINING_MARK, $label)) {
+		if (1 === \preg_match(static::REGEX_COMBINING_MARK, $label)) {
 			$info->errors |= self::ERROR_LEADING_COMBINING_MARK;
 		}
 
@@ -514,22 +479,18 @@ final class Idn
 
 	/**
 	 * @see https://tools.ietf.org/html/rfc3492#section-6.2
-	 *
-	 * @param string $input
-	 *
-	 * @return string
 	 */
-	private static function punycodeDecode($input)
+	private static function punycodeDecode(string $input): string
 	{
 		$n = self::INITIAL_N;
 		$out = 0;
 		$i = 0;
 		$bias = self::INITIAL_BIAS;
-		$lastDelimIndex = strrpos($input, self::DELIMITER);
+		$lastDelimIndex = \strrpos($input, self::DELIMITER);
 		$b = false === $lastDelimIndex ? 0 : $lastDelimIndex;
 		$inputLength = \strlen($input);
 		$output = [];
-		$bytes = array_map('ord', str_split($input));
+		$bytes = \array_map('ord', \str_split($input));
 
 		for ($j = 0; $j < $b; ++$j) {
 			if ($bytes[$j] > 0x7F) {
@@ -558,7 +519,7 @@ final class Idn
 					throw new \Exception('Invalid input');
 				}
 
-				if ($digit > intdiv(self::MAX_INT - $i, $w)) {
+				if ($digit > \intdiv(self::MAX_INT - $i, $w)) {
 					throw new \Exception('Integer overflow');
 				}
 
@@ -578,7 +539,7 @@ final class Idn
 
 				$baseMinusT = self::BASE - $t;
 
-				if ($w > intdiv(self::MAX_INT, $baseMinusT)) {
+				if ($w > \intdiv(self::MAX_INT, $baseMinusT)) {
 					throw new \Exception('Integer overflow');
 				}
 
@@ -588,26 +549,22 @@ final class Idn
 			$outPlusOne = $out + 1;
 			$bias = self::adaptBias($i - $oldi, $outPlusOne, 0 === $oldi);
 
-			if (intdiv($i, $outPlusOne) > self::MAX_INT - $n) {
+			if (\intdiv($i, $outPlusOne) > self::MAX_INT - $n) {
 				throw new \Exception('Integer overflow');
 			}
 
-			$n += intdiv($i, $outPlusOne);
+			$n += \intdiv($i, $outPlusOne);
 			$i %= $outPlusOne;
-			array_splice($output, $i++, 0, [mb_chr($n, 'utf-8')]);
+			\array_splice($output, $i++, 0, [\mb_chr($n, 'utf-8')]);
 		}
 
-		return implode('', $output);
+		return \implode('', $output);
 	}
 
 	/**
 	 * @see https://tools.ietf.org/html/rfc3492#section-6.3
-	 *
-	 * @param string $input
-	 *
-	 * @return string
 	 */
-	private static function punycodeEncode($input)
+	private static function punycodeEncode(string $input): string
 	{
 		$n = self::INITIAL_N;
 		$delta = 0;
@@ -643,7 +600,7 @@ final class Idn
 				}
 			}
 
-			if ($m - $n > intdiv(self::MAX_INT - $delta, $h + 1)) {
+			if ($m - $n > \intdiv(self::MAX_INT - $delta, $h + 1)) {
 				throw new \Exception('Integer overflow');
 			}
 
@@ -675,7 +632,7 @@ final class Idn
 						$baseMinusT = self::BASE - $t;
 						$output .= self::encodeDigit($t + ($qMinusT) % ($baseMinusT), false);
 						++$out;
-						$q = intdiv($qMinusT, $baseMinusT);
+						$q = \intdiv($qMinusT, $baseMinusT);
 					}
 
 					$output .= self::encodeDigit($q, false);
@@ -695,35 +652,23 @@ final class Idn
 
 	/**
 	 * @see https://tools.ietf.org/html/rfc3492#section-6.1
-	 *
-	 * @param int  $delta
-	 * @param int  $numPoints
-	 * @param bool $firstTime
-	 *
-	 * @return int
 	 */
-	private static function adaptBias($delta, $numPoints, $firstTime)
+	private static function adaptBias(int $delta, int $numPoints, bool $firstTime): int
 	{
 		// xxx >> 1 is a faster way of doing intdiv(xxx, 2)
-		$delta = $firstTime ? intdiv($delta, self::DAMP) : $delta >> 1;
-		$delta += intdiv($delta, $numPoints);
+		$delta = $firstTime ? \intdiv($delta, self::DAMP) : $delta >> 1;
+		$delta += \intdiv($delta, $numPoints);
 		$k = 0;
 
 		while ($delta > ((self::BASE - self::TMIN) * self::TMAX) >> 1) {
-			$delta = intdiv($delta, self::BASE - self::TMIN);
+			$delta = \intdiv($delta, self::BASE - self::TMIN);
 			$k += self::BASE;
 		}
 
-		return $k + intdiv((self::BASE - self::TMIN + 1) * $delta, $delta + self::SKEW);
+		return $k + \intdiv((self::BASE - self::TMIN + 1) * $delta, $delta + self::SKEW);
 	}
 
-	/**
-	 * @param int  $d
-	 * @param bool $flag
-	 *
-	 * @return string
-	 */
-	private static function encodeDigit($d, $flag)
+	private static function encodeDigit(int $d, bool $flag): string
 	{
 		return \chr($d + 22 + 75 * ($d < 26 ? 1 : 0) - (($flag ? 1 : 0) << 5));
 	}
@@ -733,12 +678,8 @@ final class Idn
 	 * invalid byte sequences will be replaced by a U+FFFD replacement code point.
 	 *
 	 * @see https://encoding.spec.whatwg.org/#utf-8-decoder
-	 *
-	 * @param string $input
-	 *
-	 * @return array<int, int>
 	 */
-	private static function utf8Decode($input)
+	private static function utf8Decode(string $input): array
 	{
 		$bytesSeen = 0;
 		$bytesNeeded = 0;
@@ -820,12 +761,7 @@ final class Idn
 		return $codePoints;
 	}
 
-	/**
-	 * @param int  $codePoint
-	 *
-	 * @return array{status: string, mapping?: string}
-	 */
-	private static function lookupCodePointStatus($codePoint)
+	private static function lookupCodePointStatus(int $codePoint): array
 	{
 		if (!self::$mappingTableLoaded) {
 			self::$mappingTableLoaded = true;
@@ -870,7 +806,7 @@ final class Idn
 		return ['status' => 'valid'];
 	}
 
-	private static function inDisallowedRange($codePoint)
+	private static function inDisallowedRange(int $codePoint): string
 	{
 		return
 			($codePoint >= 128 && $codePoint <= 159)
@@ -972,7 +908,7 @@ final class Idn
 	 *
 	 * @author Nicolas Grekas <p@tchwork.com>
 	 */
-	private static
+	private static array
 		$C,
 		$D,
 		$cC;
@@ -981,12 +917,12 @@ final class Idn
 		ulenMask = ["\xC0" => 2, "\xD0" => 2, "\xE0" => 3, "\xF0" => 4],
 		ASCII = "\x20\x65\x69\x61\x73\x6E\x74\x72\x6F\x6C\x75\x64\x5D\x5B\x63\x6D\x70\x27\x0A\x67\x7C\x68\x76\x2E\x66\x62\x2C\x3A\x3D\x2D\x71\x31\x30\x43\x32\x2A\x79\x78\x29\x28\x4C\x39\x41\x53\x2F\x50\x22\x45\x6A\x4D\x49\x6B\x33\x3E\x35\x54\x3C\x44\x34\x7D\x42\x7B\x38\x46\x77\x52\x36\x37\x55\x47\x4E\x3B\x4A\x7A\x56\x23\x48\x4F\x57\x5F\x26\x21\x4B\x3F\x58\x51\x25\x59\x5C\x09\x5A\x2B\x7E\x5E\x24\x40\x60\x7F\x00\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F";
 
-	public static function isNormalized(string $s) : bool
+	public static function isNormalized(string $s): bool
 	{
 		return self::normalize($s) === $s;
 	}
 
-	public static function normalize(string $s)
+	public static function normalize(string $s): string
 	{
 		if (!isset($s[\strspn($s, self::ASCII)])) {
 			return $s;
@@ -1005,8 +941,8 @@ final class Idn
 		}
 
 		if (null === self::$D) {
-			self::$D = self::getData('canonicalDecomposition');
-			self::$cC = self::getData('combiningClass');
+			static::$D = static::getData('canonicalDecomposition');
+			static::$cC = static::getData('combiningClass');
 		}
 
 		if (null !== $mbEncoding = (2 /* MB_OVERLOAD_STRING */ & (int) \ini_get('mbstring.func_overload')) ? \mb_internal_encoding() : null) {
@@ -1015,8 +951,8 @@ final class Idn
 
 		$r = self::decompose($s);
 
-		if (null === self::$C) {
-			self::$C = self::getData('canonicalComposition');
+		if (null === static::$C) {
+			static::$C = static::getData('canonicalComposition');
 		}
 
 		$r = self::recompose($r);
@@ -1028,7 +964,7 @@ final class Idn
 		return $r;
 	}
 
-	private static function recompose($s)
+	private static function recompose(string $s): string
 	{
 		$result = $tail = '';
 
@@ -1107,7 +1043,7 @@ final class Idn
 		return $result.$lastUchr.$tail;
 	}
 
-	private static function decompose($s)
+	private static function decompose(string $s): string
 	{
 		$result = '';
 
@@ -1204,12 +1140,12 @@ final class Idn
 		return $result;
 	}
 
-	private static function getData($file)
+	private static function getData(string $file): array
 	{
 		if (\file_exists($file = __DIR__ . '/unidata/'.$file.'.php')) {
 			return require $file;
 		}
 
-		return false;
+		return [];
 	}
 }

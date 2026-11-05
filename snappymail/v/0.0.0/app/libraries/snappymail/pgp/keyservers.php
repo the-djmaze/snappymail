@@ -124,7 +124,7 @@ abstract class Keyservers
 						continue;
 					}
 					// Ignore flagged or expired key
-					if (!empty($line[6]) || (!empty($line[5]) && $line[5] <= time())) {
+					if (!empty($line[6]) || (!empty($line[5]) && $line[5] <= \time())) {
 						continue;
 					}
 					$keyids[$line[4]] = $line[1];
@@ -149,7 +149,7 @@ abstract class Keyservers
 						continue;
 					}
 					// Ignore flagged or expired key
-					if (!empty($line[4]) || (!empty($line[3]) && $line[3] <= time())) {
+					if (!empty($line[4]) || (!empty($line[3]) && $line[3] <= \time())) {
 						continue;
 					}
 					$curKey['uids'][] = [
@@ -243,7 +243,7 @@ abstract class Keyservers
 /*
 		// Resource Record (RR) TYPE = 61
 		\dns_get_record("{$keyid}._openpgpkey.{$host}", DNS_CNAME);
-		$tlsa_record = shell_exec('timeout 5 dig +short +dnssec +time=5 TLSA ' . \escapeshellarg("{$keyid}._openpgpkey.{$host}")
+		$tlsa_record = \shell_exec('timeout 5 dig +short +dnssec +time=5 TLSA ' . \escapeshellarg("{$keyid}._openpgpkey.{$host}")
 			. " 2>&1 | head -n 1");
 */
 	}

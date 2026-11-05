@@ -31,7 +31,7 @@ class CacheClient
 
 	public function SetTimer(string $sKey) : bool
 	{
-		return $this->Set($sKey.'/TIMER', time());
+		return $this->Set($sKey.'/TIMER', \time());
 	}
 
 	public function SetLock(string $sKey) : bool

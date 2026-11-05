@@ -10,8 +10,8 @@
 namespace SnappyMail;
 
 // Sockets extension not loaded?
-if (!defined('AF_INET6')) {
-	define('AF_INET6', true);
+if (!\defined('AF_INET6')) {
+	\define('AF_INET6', true);
 }
 
 abstract class Host

@@ -1143,7 +1143,7 @@ trait Messages
 
 					$oMessage->Attachments()->append(
 						new \MailSo\Mime\Attachment($rResource, $sFileName, $iFileSize, $bIsInline,
-							\in_array(trim(trim($sCID), '<>'), $aFoundCids),
+							\in_array(\trim(\trim($sCID), '<>'), $aFoundCids),
 							$sCID, array(), $sContentLocation, $sMimeType
 						)
 					);

@@ -43,8 +43,8 @@ abstract class Api
 		$CSP->report_only = $oConfig->Get('debug', 'enable', false); // || SNAPPYMAIL_DEV
 
 		// Allow favicon host, if present
-		$parsedFaviconUrl = parse_url($oConfig->Get('webmail', 'favicon_url', ''));
-		if (is_array($parsedFaviconUrl) && array_key_exists('host', $parsedFaviconUrl)) {
+		$parsedFaviconUrl = \parse_url($oConfig->Get('webmail', 'favicon_url', ''));
+		if (\is_array($parsedFaviconUrl) && !empty($parsedFaviconUrl['host'])) {
 			$CSP->add('img-src', $parsedFaviconUrl['host']);
 		}
 
@@ -53,6 +53,7 @@ abstract class Api
 			$CSP->add('img-src', 'https:');
 			$CSP->add('img-src', 'http:');
 		}
+
 		if ($sScriptNonce) {
 			$CSP->add('script-src', "'nonce-{$sScriptNonce}'");
 		}

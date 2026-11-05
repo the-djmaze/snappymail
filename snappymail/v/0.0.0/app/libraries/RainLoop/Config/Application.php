@@ -69,7 +69,7 @@ class Application extends \RainLoop\Config\AbstractConfig
 		$mResult = parent::Get($sSection, $sName, $mDefault);
 		if ($this->aReplaceEnv && \is_string($mResult)) {
 			$sKey = \strtolower($sSection.'.'.$sName);
-			if (\in_array($sKey, $this->aReplaceEnv) && false !== strpos($mResult, '$')) {
+			if (\in_array($sKey, $this->aReplaceEnv) && \str_contains($mResult, '$')) {
 				$mResult = \preg_replace_callback('/\$([^\s]+)/', function($aMatch) {
 					if (!empty($aMatch[0]) && !empty($aMatch[1])) {
 						if (!empty($_ENV[$aMatch[1]])) {

@@ -82,7 +82,7 @@ abstract class Autoconfig
 				);
 			}
 			// Don't lookup for 24 hours
-			$oCache->Set('public_suffix_list', \json_encode([$list, time() + 86400]));
+			$oCache->Set('public_suffix_list', \json_encode([$list, \time() + 86400]));
 		}
 		return $list ?: [];
 	}

@@ -6,13 +6,13 @@ use SnappyMail\HTTP\Response;
 
 class Socket extends \SnappyMail\HTTP\Request
 {
-	public function supportsSSL() : bool
+	public function supportsSSL(): bool
 	{
 		return \function_exists('openssl_open');
 	}
 
 	private static $Authorization = [];
-	protected function __doRequest(string &$method, string &$request_url, &$body, array $extra_headers) : Response
+	protected function __doRequest(string &$method, string &$request_url, &$body, array $extra_headers): Response
 	{
 		$parts = \parse_url($request_url);
 

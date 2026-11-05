@@ -29,7 +29,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		$this->sFileHeader = $sFileHeader;
 		$this->aData = $this->defaultValues();
 
-		$this->bUseApcCache = defined('APP_USE_APCU_CACHE') && APP_USE_APCU_CACHE &&
+		$this->bUseApcCache = \defined('APP_USE_APCU_CACHE') && APP_USE_APCU_CACHE &&
 			\MailSo\Base\Utils::FunctionsCallable(array('apcu_fetch', 'apcu_store'));
 	}
 

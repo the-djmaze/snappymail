@@ -3,8 +3,8 @@
 namespace SnappyMail;
 
 // Sockets extension not loaded?
-if (!defined('AF_INET6')) {
-	define('AF_INET6', true);
+if (!\defined('AF_INET6')) {
+	\define('AF_INET6', true);
 }
 
 abstract class DNS
@@ -37,7 +37,7 @@ abstract class DNS
 						$BIMI = \preg_replace('/^.+l=([^;]+)(;.*)?$/D', '$1', $value['txt']);
 						$oCache->Set($sCacheKey, \json_encode([
 							$BIMI,
-							time() + $value['ttl']
+							\time() + $value['ttl']
 						]));
 						break;
 					}
@@ -47,7 +47,7 @@ abstract class DNS
 				// Don't lookup for 24 hours
 				$oCache->Set($sCacheKey, \json_encode([
 					$BIMI,
-					time() + 86400
+					\time() + 86400
 				]));
 			}
 		}

@@ -23,7 +23,7 @@ class Backup
 			if (\str_contains($key, 'PGP PRIVATE KEY')) {
 				$fileName = "{$dir}{$keyId}.key";
 				if ($doDelete) {
-					return !file_exists($fileName) || unlink($fileName);
+					return !\file_exists($fileName) || \unlink($fileName);
 				}
 				$hash = $oAccount->CryptKey();
 				$key = \SnappyMail\Crypt::Encrypt($key, $hash);
@@ -35,7 +35,7 @@ class Backup
 			if (\str_contains($key, 'PGP PUBLIC KEY')) {
 				$fileName = "{$dir}{$keyId}_public.asc";
 				if ($doDelete) {
-					return !file_exists($fileName) || unlink($fileName);
+					return !\file_exists($fileName) || \unlink($fileName);
 				}
 				return !!\file_put_contents($fileName, $key);
 			}

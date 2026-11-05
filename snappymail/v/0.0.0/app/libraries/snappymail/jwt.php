@@ -187,10 +187,11 @@ abstract class JWT
 				if ($free_key) {
 					$key = \openssl_pkey_get_public($key);
 					if (!$key) {
-						throw new \ValueError('Invalid key, reason: ' . openssl_error_string());
+						throw new \ValueError('Invalid key, reason: ' . \openssl_error_string());
 					}
 				}
 				$details = \openssl_pkey_get_details($key);
+				if (!isset($details['key']) || OPENSSL_KEYTYPE_RSA !== $details['type']) {
 				if (!isset($details['key']) || OPENSSL_KEYTYPE_RSA !== $details['type']) {
 					throw new \ValueError('Key is not compatible with RSA signatures');
 				}

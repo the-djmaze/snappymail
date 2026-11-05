@@ -65,7 +65,7 @@ class HeaderCollection extends \MailSo\Base\Collection
 	public function RemoveByName(string $sHeaderName): self
 	{
 		$sHeaderName = \strtolower($sHeaderName);
-		$this->exchangeArray(array_filter($this->getArrayCopy(), function ($oHeader) use ($sHeaderName) {
+		$this->exchangeArray(\array_filter($this->getArrayCopy(), function ($oHeader) use ($sHeaderName) {
 			return $oHeader && \strtolower($oHeader->Name()) !== $sHeaderName;
 		}));
 		return $this;

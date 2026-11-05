@@ -37,7 +37,7 @@ abstract class Request
 		'https' => 443
 	);
 
-	public static function factory(string $type = 'curl')
+	public static function factory(string $type = 'curl'): self
 	{
 		if ('curl' === $type && \function_exists('curl_init')) {
 			return new Request\CURL();
@@ -53,7 +53,7 @@ abstract class Request
 	public function setAuth(int $type, string $user,
 		#[\SensitiveParameter]
 		string $pass
-	) : void
+	): void
 	{
 		$this->auth = [
 			'type' => $type,
@@ -62,13 +62,13 @@ abstract class Request
 		];
 	}
 
-	public function addHeader($header)
+	public function addHeader($header): self
 	{
 		$this->headers[] = $header;
 		return $this;
 	}
 
-	public function streamBodyTo($stream)
+	public function streamBodyTo($stream): void
 	{
 		if (!\is_resource($stream)) {
 			throw new \Exception('Invalid body target');
@@ -76,7 +76,7 @@ abstract class Request
 		$this->stream = $stream;
 	}
 
-	public function setCABundleFile(?string $file)
+	public function setCABundleFile(?string $file): void
 	{
 		$this->ca_bundle = $file;
 	}
@@ -84,10 +84,8 @@ abstract class Request
 	/**
 	 * Return whether a URI can be fetched.  Returns false if the URI scheme is not allowed
 	 * or is not supported by this fetcher implementation; returns true otherwise.
-	 *
-	 * @return bool
 	 */
-	public function canFetchURI(string $uri)
+	public function canFetchURI(string $uri): bool
 	{
 		if ('https:' === \substr($uri, 0, 6) && !$this->supportsSSL()) {
 			\trigger_error('HTTPS URI unsupported fetching '.$uri, E_USER_WARNING);
@@ -107,11 +105,11 @@ abstract class Request
 	 * @return bool $support True if this fetcher supports HTTPS
 	 * fetching; false if not.
 	 */
-	abstract public function supportsSSL() : bool;
+	abstract public function supportsSSL(): bool;
 
-	abstract protected function __doRequest(string &$method, string &$request_url, &$body, array $extra_headers) : Response;
+	abstract protected function __doRequest(string &$method, string &$request_url, &$body, array $extra_headers): Response;
 
-	public function doRequest(string $method, string $request_url, string|array|null $body = null, array $extra_headers = array()) : ?Response
+	public function doRequest(string $method, string $request_url, string|array|null $body = null, array $extra_headers = array()): ?Response
 	{
 		$method = \strtoupper($method);
 		$url    = $request_url;
@@ -148,7 +146,7 @@ abstract class Request
 				return $result;
 			}
 
-		} while ($etime-time() > 0);
+		} while (($etime - \time()) > 0);
 
 		return null;
 	}
@@ -157,12 +155,12 @@ abstract class Request
 	 * Return whether a URI should be allowed. Override this method to conform to your local policy.
 	 * By default, will attempt to fetch any http or https URI.
 	 */
-	public static function URIHasAllowedScheme(string $uri) : bool
+	public static function URIHasAllowedScheme(string $uri): bool
 	{
 		return (bool) \preg_match('#^https?://#i', $uri);
 	}
 
-	public static function getSchemePort(string $scheme) : int
+	public static function getSchemePort(string $scheme): int
 	{
 		return self::$scheme_ports[$scheme] ?? 0;
 	}
