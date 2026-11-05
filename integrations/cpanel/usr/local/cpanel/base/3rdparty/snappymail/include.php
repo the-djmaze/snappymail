@@ -26,7 +26,7 @@
  * Custom 'data' folder path
  */
 if (!empty($_ENV['CPANEL']) && isset($_ENV['HOME'])) {
-	define('APP_DATA_FOLDER_PATH', $_ENV['HOME'] . '/var/snappymail/');
+	define('APP_DATA_FOLDER_PATH', $_ENV['HOME'] . '/.snappymail/');
 } else {
 	exit('Not in cPanel');
 }
