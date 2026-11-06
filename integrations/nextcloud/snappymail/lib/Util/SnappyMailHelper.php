@@ -61,6 +61,14 @@ class SnappyMailHelper
 		);
 	}
 
+	public static function getContactsManager(): object
+	{
+		return \method_exists(\OC::$server, 'getContactsManager')
+			? \OC::$server->getContactsManager()
+			// Nextcloud 34+
+			: \OCP\Server::get(\OCP\Contacts\IManager::class);
+	}
+
 	public static function getNavigationManager(): object
 	{
 		return \method_exists(\OC::$server, 'getNavigationManager')
