@@ -71,8 +71,13 @@ class ChangePasswordDriverPDO
 				\PDO::ATTR_ERRMODE           => \PDO::ERRMODE_EXCEPTION,
 			);
 			if ($this->oConfig->Get('plugin', 'pdo_mysql_ssl', false)) {
-				$pdo_attr[\PDO::MYSQL_ATTR_SSL_CA]                 = $this->oConfig->Get('plugin', 'pdo_mysql_ssl_ca', '');
-				$pdo_attr[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = $this->oConfig->Get('plugin', 'pdo_mysql_ssl_verify', true);
+				if (!\class_exists('PDO\\Mysql', false)) {
+					require \SNAPPYMAIL_LIBRARIES_PATH . '/polyfill/pdo.php';
+				}
+				$pdo_attr[\PDO\Mysql::ATTR_SSL_CA] = $this->oConfig->Get('plugin', 'pdo_mysql_ssl_ca', '');
+				if (\defined('PDO\\Mysql::ATTR_SSL_VERIFY_SERVER_CERT')) {
+					$pdo_attr[\PDO\Mysql::ATTR_SSL_VERIFY_SERVER_CERT] = $this->oConfig->Get('plugin', 'pdo_mysql_ssl_verify', true);
+				}
 			}
 
 			$conn = new \PDO(
