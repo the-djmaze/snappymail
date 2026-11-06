@@ -192,7 +192,6 @@ abstract class JWT
 				}
 				$details = \openssl_pkey_get_details($key);
 				if (!isset($details['key']) || OPENSSL_KEYTYPE_RSA !== $details['type']) {
-				if (!isset($details['key']) || OPENSSL_KEYTYPE_RSA !== $details['type']) {
 					throw new \ValueError('Key is not compatible with RSA signatures');
 				}
 				$success = \openssl_verify($msg, $signature, $key, 'SHA'.\substr($alg,2));
