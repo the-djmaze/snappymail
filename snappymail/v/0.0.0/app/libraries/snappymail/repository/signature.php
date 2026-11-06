@@ -94,8 +94,7 @@ abstract class Signature
 			\file_get_contents($data),
 			$signature, // binary data
 			\file_get_contents($pkey),
-			\OPENSSL_ALGO_SHA256,
-			0
+			\OPENSSL_ALGO_SHA256
 		);
 		if (1 === $result) {
 			return;
