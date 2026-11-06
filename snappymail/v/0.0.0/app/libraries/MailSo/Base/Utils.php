@@ -221,21 +221,21 @@ abstract class Utils
 		$sValue = \preg_replace('/[\r\n\t]+/m', ' ', $sValue);
 
 		$aEncodeArray = array('');
-		$aMatch = array();
-//		\preg_match_all('/=\?[^\?]+\?[q|b|Q|B]\?[^\?]*?\?=/', $sValue, $aMatch);
-		\preg_match_all('/=\?[^\?]+\?[q|b|Q|B]\?.*?\?=/', $sValue, $aMatch);
+//		\preg_match_all('/=\?[^\?]+\?[q|b|Q|B]\?[^\?]*?\?=/', $sValue, $aEncodeArray);
+		\preg_match_all('/=\?[^\?]+\?[q|b|Q|B]\?.*?\?=/', $sValue, $aEncodeArray);
 
-		if (isset($aMatch[0]) && \is_array($aMatch[0])) {
-			for ($iIndex = 0, $iLen = \count($aMatch[0]); $iIndex < $iLen; ++$iIndex) {
-				if (isset($aMatch[0][$iIndex])) {
-					$iPos = \strpos($aMatch[0][$iIndex], '*');
+		if (isset($aEncodeArray[0]) && \is_array($aEncodeArray[0])) {
+			$aEncodeArray = \array_unique($aEncodeArray[0]);
+			for ($iIndex = 0, $iLen = \count($aEncodeArray); $iIndex < $iLen; ++$iIndex) {
+				if (isset($aEncodeArray[$iIndex])) {
+					$iPos = \strpos($aEncodeArray[$iIndex], '*');
 					if (false !== $iPos) {
-						$aMatch[0][$iIndex][0] = \substr($aMatch[0][$iIndex][0], 0, $iPos);
+						$aEncodeArray[$iIndex][0] = \substr($aEncodeArray[$iIndex][0], 0, $iPos);
 					}
 				}
 			}
-
-			$aEncodeArray = $aMatch[0];
+		} else {
+			$aEncodeArray = [];
 		}
 
 		$aParts = array();
