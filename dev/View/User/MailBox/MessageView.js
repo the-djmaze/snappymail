@@ -132,6 +132,7 @@ export class MailMessageView extends AbstractViewRight {
 			dkimData: ['none', '', ''],
 			spfData: ['none', '', ''],
 			dmarcData: ['none', '', ''],
+			localDelivery: false,
 			nowTracking: false
 		});
 

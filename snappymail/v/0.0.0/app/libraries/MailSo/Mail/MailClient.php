@@ -50,7 +50,7 @@ class MailClient
 
 		$aHeaders = array(
 //			MimeHeader::RETURN_PATH,
-//			MimeHeader::RECEIVED,
+			MimeHeader::RECEIVED,
 //			MimeHeader::MIME_VERSION,
 			MimeHeader::MESSAGE_ID,
 			MimeHeader::CONTENT_TYPE,

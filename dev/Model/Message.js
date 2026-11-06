@@ -133,6 +133,7 @@ export class MessageModel extends AbstractModel {
 			dkim: [],
 			spf: [],
 			dmarc: [],
+			localDelivery: false,
 			messageId: '',
 			inReplyTo: '',
 			references: '',

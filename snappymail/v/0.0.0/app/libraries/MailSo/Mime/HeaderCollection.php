@@ -175,6 +175,40 @@ class HeaderCollection extends \MailSo\Base\Collection
 	}
 
 	/**
+	 * Detects a message that was submitted and delivered entirely on this mail server
+	 * (e.g. user@domain.tld -> otheruser@domain.tld via Postfix+Dovecot LMTP), so it
+	 * never passed through the public internet and SPF/DKIM/DMARC results are not
+	 * meaningful (they'll typically be missing or fail).
+	 *
+	 * Only the topmost Received header(s) are trusted: those are prepended by our own
+	 * MTA on final delivery, so a remote sender can't forge them by stuffing fake
+	 * "Received: ... with LMTP" lines into a message before we receive it -- those
+	 * would end up lower in the chain, behind the real hop our own server added.
+	 *
+	 * Recognizes the standard Postfix Received header wording:
+	 * - final hop:      "... by host (Postfix) with LMTP ..."
+	 * - submission hop: "... by host (Postfix) with ESMTPSA/ESMTPA ..." (SASL authenticated)
+	 */
+	public function IsLocalDelivery(): bool
+	{
+		$aReceived = $this->ValuesByName(Enumerations\Header::RECEIVED);
+		if (!$aReceived) {
+			return false;
+		}
+
+		$sLmtpHop = \preg_replace('/[\\r\\n\\t]+/', ' ', $aReceived[0]);
+		if (!\preg_match('/\\bwith\\s+LMTP\\b/i', $sLmtpHop)) {
+			return false;
+		}
+
+		if (!isset($aReceived[1])) {
+			return false;
+		}
+		$sSubmissionHop = \preg_replace('/[\\r\\n\\t]+/', ' ', $aReceived[1]);
+		return (bool) \preg_match('/\\bwith\\s+ESMTP(?:SA|A)\\b/i', $sSubmissionHop);
+	}
+
+	/**
 	 * https://www.rfc-editor.org/rfc/rfc8601
 	 * dkim=pass header.d=domain.tld header.s=s1 header.b=F2SfoZWw;
 	 * spf=pass (ORIGINATING: domain of "snappymail@domain.tld" designates 0.0.0.0 as permitted sender) smtp.mailfrom="snappymail@domain.tld";
