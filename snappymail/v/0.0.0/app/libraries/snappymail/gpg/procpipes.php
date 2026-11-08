@@ -28,7 +28,11 @@ class ProcPipes
 
 	public function closeAll(): void
 	{
-		$this->pipes && \array_all(\array_keys($this->pipes), [$this, 'close']);
+		if ($this->pipes) {
+			foreach ($this->pipes as $key => $value) {
+				$this->close($key);
+			}
+		}
 		$this->pipes = [];
 	}
 

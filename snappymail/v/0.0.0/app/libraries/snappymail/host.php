@@ -178,27 +178,28 @@ abstract class Host
 			return false;
 		}
 
-		// IPv6 literals with an embedded IPv4 address (::ffff:127.0.0.1,
-		// ::ffff:a00:5, 64:ff9b::7f00:1): FILTER_FLAG_NO_RES_RANGE
-		// does not treat these ranges as reserved, but they reach IPv4
-		// addresses in practice, so unwrap the low 32 bits and validate
-		// those as IPv4.
-		$ips = \array_map(fn($ip) => self::UnwrapEmbeddedIPv4($ip) ?: $ip, $ips);
-
-		// Numeric IPv4 literals in non-standard forms (http://2130706433/,
-		// http://017700000001/, http://0x7f000001/, http://127.1/,
-		// http://1.2.3.04/): the HTTP client parses these as IPs directly
-		// (verified: curl connects to 127.0.0.1 for the hex forms with no
-		// DNS involved) while dns_get_record() below would query them as
-		// hostnames, so normalize to dotted decimal before validation.
-		$ips = \array_map(fn($ip) => self::NormalizeNumericIPv4($ip) ?: $ip, $ips);
-
 		// Check them all
-		if (\array_all($ips, fn($ip) => self::IsPublicIP($ip))) {
-			return true;
-		}
+		foreach ($ips as $ip) {
+			// IPv6 literals with an embedded IPv4 address (::ffff:127.0.0.1,
+			// ::ffff:a00:5, 64:ff9b::7f00:1): FILTER_FLAG_NO_RES_RANGE
+			// does not treat these ranges as reserved, but they reach IPv4
+			// addresses in practice, so unwrap the low 32 bits and validate
+			// those as IPv4.
+			$ip = self::UnwrapEmbeddedIPv4($ip) ?: $ip;
 
-		return false;
+			// Numeric IPv4 literals in non-standard forms (http://2130706433/,
+			// http://017700000001/, http://0x7f000001/, http://127.1/,
+			// http://1.2.3.04/): the HTTP client parses these as IPs directly
+			// (verified: curl connects to 127.0.0.1 for the hex forms with no
+			// DNS involved) while dns_get_record() below would query them as
+			// hostnames, so normalize to dotted decimal before validation.
+			$ips = self::NormalizeNumericIPv4($ip) ?: $ip;
+
+			if (!self::IsPublicIP($ip)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static ?array $aLocalAddresses = null;
