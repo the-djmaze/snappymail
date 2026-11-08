@@ -1643,8 +1643,8 @@ ko.bindingProvider = new class
                     bindingContext,
                     {
                         has: () => true,
-//                        get: (target, key) => target['$data'][key] || target[key]
-                        get: (target, key) => Reflect.has(target['$data'], key) ? target['$data'][key] : target[key]
+                        get: (target, key) => target['$data'][key] || target[key]
+//                        get: (target, key) => Reflect.has(target['$data'], key) ? target['$data'][key] : target[key]
                     }
                 );
                 return bindingFunction(bindingContext);
@@ -2711,11 +2711,16 @@ ko.bindingHandlers['options'] = {
         if (allBindings['has']('optionsAfterRender') && typeof allBindings.get('optionsAfterRender') == "function") {
             callback = (arrayEntry, newOptions) => {
                 setSelectionCallback(arrayEntry, newOptions);
-                ko.dependencyDetection.ignore(allBindings.get('optionsAfterRender'), null, [newOptions[0], arrayEntry !== captionPlaceholder ? arrayEntry : undefined]);
+                ko.dependencyDetection.ignore(
+					allBindings.get('optionsAfterRender'), null,
+					[newOptions[0], arrayEntry !== captionPlaceholder ? arrayEntry : undefined]
+				);
             }
         }
 
-        ko.utils.setDomNodeChildrenFromArrayMapping(element, filteredArray, optionForArrayItem, arrayToDomNodeChildrenOptions, callback);
+        ko.utils.setDomNodeChildrenFromArrayMapping(
+			element, filteredArray, optionForArrayItem, arrayToDomNodeChildrenOptions, callback
+        );
 
         // Determine if the selection has changed as a result of updating the options list
         var selectionChanged, prevLength = previousSelectedValues.length;
