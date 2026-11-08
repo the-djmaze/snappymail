@@ -71,22 +71,26 @@ class SmtpClient extends \MailSo\Net\NetClient
 
 	public static function EhloHelper() : string
 	{
-		$sEhloHost = empty($_SERVER['SERVER_NAME']) ? '' : \trim($_SERVER['SERVER_NAME']);
-		if (empty($sEhloHost)) {
-			$sEhloHost = empty($_SERVER['HTTP_HOST']) ? '' : \trim($_SERVER['HTTP_HOST']);
+		// RFC 5321 4.1.1.1: EHLO argument must be a domain name or an address literal.
+		// Skip invalid values like nginx catch-all `server_name _;`
+		$aCandidates = [
+			$_SERVER['SERVER_NAME'] ?? '',
+			$_SERVER['HTTP_HOST'] ?? '',
+			\function_exists('gethostname') ? (\gethostname() ?: '') : ''
+		];
+		foreach ($aCandidates as $sEhloHost) {
+			$sEhloHost = \trim(\preg_replace('/:\d+$/', '', \trim((string) $sEhloHost)));
+			if (\preg_match('/^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$/', $sEhloHost)) {
+				return '['.$sEhloHost.']';
+			}
+			if (\preg_match('/^\[([0-9a-f]*:[0-9a-f:.]+)\]$/i', $sEhloHost, $aMatch)) {
+				return '[IPv6:'.$aMatch[1].']';
+			}
+			if (\preg_match('/^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i', $sEhloHost)) {
+				return $sEhloHost;
+			}
 		}
-
-		if (empty($sEhloHost)) {
-			$sEhloHost = \function_exists('gethostname') ? \gethostname() : 'localhost';
-		}
-
-		$sEhloHost = \trim(\preg_replace('/:\d+$/', '', \trim($sEhloHost)));
-
-		if (\preg_match('/^\d+\.\d+\.\d+\.\d+$/', $sEhloHost)) {
-			$sEhloHost = '['.$sEhloHost.']';
-		}
-
-		return empty($sEhloHost) ? 'localhost' : $sEhloHost;
+		return 'localhost';
 	}
 
 	/**
