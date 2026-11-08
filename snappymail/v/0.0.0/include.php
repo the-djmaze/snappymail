@@ -3,6 +3,13 @@ if (defined('APP_VERSION_ROOT_PATH')) {
 	return;
 }
 
+// PHP 8.4
+/*
+if (PHP_VERSION_ID < 80400) {
+	require __DIR__ . '/app/libraries/polyfill/php84.php';
+}
+*/
+
 if (!extension_loaded('ctype')) {
 	require __DIR__ . '/app/libraries/polyfill/ctype.php';
 }
