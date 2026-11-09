@@ -54,22 +54,22 @@ class SmtpClient extends \MailSo\Net\NetClient
 
 	private array $aResults = array();
 
-	public function Capability() : array
+	public function Capability(): array
 	{
 		return $this->aCapa;
 	}
 
-	public function hasCapability(string $sCapa) : bool
+	public function hasCapability(string $sCapa): bool
 	{
 		return \in_array(\strtoupper($sCapa), $this->aCapa);
 	}
 
-	public function maxSize() : int
+	public function maxSize(): int
 	{
 		return $this->iSizeCapaValue;
 	}
 
-	public static function EhloHelper() : string
+	public static function EhloHelper(): string
 	{
 		// RFC 5321 4.1.1.1: EHLO argument must be a domain name or an address literal.
 		// Skip invalid values like nginx catch-all `server_name _;`
@@ -104,7 +104,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function Connect(\MailSo\Net\ConnectSettings $oSettings) : void
+	public function Connect(\MailSo\Net\ConnectSettings $oSettings): void
 	{
 		parent::Connect($oSettings);
 
@@ -119,7 +119,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 		}
 	}
 
-	private function StartTLS() : void
+	private function StartTLS(): void
 	{
 		if ($this->hasCapability('STARTTLS')) {
 			$this->sendRequestWithCheck('STARTTLS', 220);
@@ -132,7 +132,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 		}
 	}
 
-	public function supportsAuthType(string $sasl_type) : bool
+	public function supportsAuthType(string $sasl_type): bool
 	{
 		return \in_array(\strtoupper($sasl_type), $this->aAuthTypes);
 	}
@@ -143,7 +143,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function Login(Settings $oSettings) : self
+	public function Login(Settings $oSettings): self
 	{
 		if ($this->bIsLoggined) {
 			return $this;
@@ -213,7 +213,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 					// Now end the authentication
 					$sRequest = '';
 					$this->sendRaw($sRequest, true, '');
-					$this->validateResponse(235, '');
+					$this->validateResponse(235);
 				} else switch ($type) {
 				// RFC 4616
 				case 'PLAIN':
@@ -326,7 +326,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function Rcpt(string $sTo, bool $bDsn = false) : self
+	public function Rcpt(string $sTo, bool $bDsn = false): self
 	{
 		if (!$this->bMail) {
 			$this->writeLogException(new \MailSo\RuntimeException('No sender reverse path has been supplied'), \LOG_ERR);
@@ -352,7 +352,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function MailTo(string $sTo) : self
+	public function MailTo(string $sTo): self
 	{
 		return $this->Rcpt($sTo);
 	}
@@ -362,7 +362,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function Data(string $sData) : self
+	public function Data(string $sData): self
 	{
 		if (!\strlen(\trim($sData))) {
 			throw new \InvalidArgumentException;
@@ -384,7 +384,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function DataWithStream($rDataStream) : self
+	public function DataWithStream($rDataStream): self
 	{
 		if (!\is_resource($rDataStream)) {
 			throw new \InvalidArgumentException;
@@ -446,7 +446,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function Rset() : self
+	public function Rset(): self
 	{
 		$this->sendRequestWithCheck('RSET', [250, 220]);
 
@@ -462,7 +462,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function Vrfy(string $sUser) : self
+	public function Vrfy(string $sUser): self
 	{
 		$sUser = \MailSo\Base\Utils::Trim($sUser);
 /*
@@ -485,7 +485,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
 /*
-	public function Expn(string $sUser) : self
+	public function Expn(string $sUser): self
 	{
 		$sUser = \MailSo\Base\Utils::Trim($sUser);
 		// RFC 6531
@@ -503,7 +503,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function Noop() : self
+	public function Noop(): self
 	{
 		$this->sendRequestWithCheck('NOOP', 250);
 		return $this;
@@ -514,7 +514,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function Logout() : void
+	public function Logout(): void
 	{
 		if ($this->IsConnected()) {
 			$this->sendRequestWithCheck('QUIT', 221);
@@ -529,7 +529,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	private function sendRequestWithCheck(string $sCommand, $mExpectCode, string $sErrorPrefix = '') : string
+	private function sendRequestWithCheck(string $sCommand, int|array $mExpectCode, string $sErrorPrefix = ''): string
 	{
 		if (!\strlen(\trim($sCommand))) {
 			$this->writeLogException(new \InvalidArgumentException, \LOG_ERR);
@@ -540,7 +540,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 		return empty($this->aResults[0]) ? '' : \trim(\substr($this->aResults[0], 4));
 	}
 
-	private function ehloOrHelo(string $sHost) : void
+	private function ehloOrHelo(string $sHost): void
 	{
 		try
 		{
@@ -564,7 +564,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	private function ehlo(string $sHost) : void
+	private function ehlo(string $sHost): void
 	{
 		$this->sendRequestWithCheck("EHLO {$sHost}", 250);
 		/*
@@ -601,7 +601,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	private function helo(string $sHost) : void
+	private function helo(string $sHost): void
 	{
 		$this->sendRequestWithCheck("HELO {$sHost}", 250);
 		$this->aAuthTypes = array();
@@ -612,7 +612,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 	/**
 	 * @throws \MailSo\Smtp\Exceptions\ResponseException
 	 */
-	private function validateResponse($mExpectCode, string $sErrorPrefix = '') : void
+	private function validateResponse(int|array $mExpectCode, string $sErrorPrefix = ''): void
 	{
 		$mExpectCode = \is_array($mExpectCode)
 			? \array_map('intval', $mExpectCode)
@@ -646,7 +646,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 		while ('-' === \substr($aParts[1], 0, 1));
 	}
 
-	public function getLogName() : string
+	public function getLogName(): string
 	{
 		return 'SMTP';
 	}
