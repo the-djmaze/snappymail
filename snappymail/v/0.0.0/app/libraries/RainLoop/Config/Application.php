@@ -395,6 +395,10 @@ Examples:
 				'auth_logging_format' => array('[{date:Y-m-d H:i:s}] Auth failed: ip={request:ip} user={imap:login} host={imap:host} port={imap:port}'),
 				'auth_syslog' => array(false, 'Enable auth logging to syslog for fail2ban'),
 
+				'syslog_ident' => array('snappymail', 'Name this instance reports to syslog and authpriv.
+Set it per instance when more than one runs on a host, otherwise their entries are
+indistinguishable. Also the name a fail2ban filter matches on.'),
+
 				'json_response_write_limit' => array(300),
 			),
 
