@@ -578,7 +578,8 @@ export class MessageModel extends AbstractModel {
 
 			body.querySelectorAll('[data-x-style-url]').forEach(node => {
 				JSON.parse(node.dataset.xStyleUrl).forEach(data => {
-					if (isValid(data[1])) {
+					// cid: is kept in data-x-src for Compose, it is not an external image
+					if (!src.startsWith('cid:') && isValid(src)) {
 						node.style[data[0]] = "url('" + (useProxy ? proxy(data[1]) : data[1]) + "')"
 					}
 				});
