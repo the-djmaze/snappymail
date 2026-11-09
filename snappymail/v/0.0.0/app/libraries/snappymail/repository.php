@@ -340,9 +340,7 @@ abstract class Repository
 					try {
 						\SnappyMail\Repository\Signature::verifyPGP($sTmp, $signature);
 					} catch (\Throwable $e) {
-						if ($e instanceof \RuntimeException) {
-							throw $e;
-						}
+						\SnappyMail\Log::error('INSTALLER', "Verify PGP failed for {$sRealFile}: {$e->getMessage()}");
 						// Verify x509 signature
 						$sTmpSignature = static::download($sUrl . '.sig');
 						$signature = $sTmpSignature ? \file_get_contents($sTmpSignature) : null;
