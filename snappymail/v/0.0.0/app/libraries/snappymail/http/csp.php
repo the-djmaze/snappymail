@@ -7,10 +7,11 @@ namespace SnappyMail\HTTP;
 
 class CSP implements \Stringable
 {
-	public
+	public bool
 		$report = false,
-		$report_to = [],
 		$report_only = false;
+	public array
+		$report_to = [];
 
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#directives
@@ -44,24 +45,28 @@ class CSP implements \Stringable
 		}
 	}
 
-	function __toString() : string
+	function __toString(): string
 	{
+		$directives = $this->directives;
 		// report-uri deprecated
-		unset($this->directives['report-uri']);
+		unset($directives['report-uri']);
 		if ($this->report || $this->report_only) {
-			$this->directives['report-uri'] = [\RainLoop\Utils::WebPath() . '?/CspReport'];
+			// report-to takes a group name defined via Reporting-Endpoints header
+			$directives['report-to'][] = 'csp-endpoint';
+			// report-uri kept as fallback for browsers that don't support report-to
+			$directives['report-uri'] = [\RainLoop\Utils::WebPath() . '?/CspReport'];
 		}
 		$params = [];
-		foreach ($this->directives as $directive => $sources) {
+		foreach ($directives as $directive => $sources) {
 			$params[] = $directive . ' ' . \implode(' ', \array_unique($sources));
 		}
-//		if (empty($this->directives['frame-ancestors'])) {
+//		if (empty($directives['frame-ancestors'])) {
 //			$params[] = "frame-ancestors 'none';";
 //		}
 		return \implode('; ', $params);
 	}
 
-	public function add(string $directive, string $source) : void
+	public function add(string $directive, string $source): void
 	{
 		if (!isset($this->directives[$directive])) {
 			$this->directives[$directive] = [];
@@ -69,15 +74,20 @@ class CSP implements \Stringable
 		$this->directives[$directive][] = $source;
 	}
 
-	public function get(string $directive) : array
+	public function get(string $directive): array
 	{
 		return isset($this->directives[$directive])
 			? $this->directives[$directive]
 			: [];
 	}
 
-	public function setHeaders() : void
+	public function setHeaders(): void
 	{
+		if ($this->report || $this->report_only) {
+			// Register the CSP reporting endpoint (modern Reporting API)
+			$sReportUri = \RainLoop\Utils::WebPath() . '?/CspReport';
+			\header('Reporting-Endpoints: csp-endpoint="' . $sReportUri . '"');
+		}
 		if ($this->report_only) {
 			\header('Content-Security-Policy-Report-Only: ' . $this);
 		} else {
@@ -90,7 +100,7 @@ class CSP implements \Stringable
 		}
 	}
 
-	public static function logReport() : void
+	public static function logReport(): void
 	{
 		\http_response_code(204);
 		$json = \file_get_contents('php://input');
