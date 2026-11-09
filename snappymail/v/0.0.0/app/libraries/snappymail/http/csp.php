@@ -10,8 +10,6 @@ class CSP implements \Stringable
 	public bool
 		$report = false,
 		$report_only = false;
-	public array
-		$report_to = [];
 
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#directives
