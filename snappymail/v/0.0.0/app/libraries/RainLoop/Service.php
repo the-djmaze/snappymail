@@ -29,8 +29,8 @@ abstract class Service
 		\header('Referrer-Policy: no-referrer');
 		\header('X-Content-Type-Options: nosniff');
 
-		// Google FLoC, obsolete
-//		\header('Permissions-Policy: interest-cohort=()');
+		// Restrict access to browser features not used by RainLoop
+		\header('Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()');
 
 		static::setCSP();
 

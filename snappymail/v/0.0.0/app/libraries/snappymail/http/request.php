@@ -20,7 +20,11 @@ abstract class Request
 		$max_redirects = 0,
 		$verify_peer = false,
 		$proxy = null,
-		$proxy_auth = null;
+		$proxy_auth = null,
+		// When true, refuse to fetch URLs whose host resolves to a
+		// private, reserved, loopback or link-local IP. Enable for
+		// request paths where the URL is attacker-influenced.
+		$block_private_ips = false;
 
 	protected
 		$auth = [
@@ -93,6 +97,10 @@ abstract class Request
 		}
 		if (!self::URIHasAllowedScheme($uri)) {
 			\trigger_error('URI fetching not allowed for '.$uri, E_USER_WARNING);
+			return false;
+		}
+		if ($this->block_private_ips && !\SnappyMail\Host::URIHasPublicHost($uri)) {
+			\trigger_error('URI host is not a public IP for '.$uri, E_USER_WARNING);
 			return false;
 		}
 		return true;

@@ -4,35 +4,35 @@ namespace SnappyMail;
 
 abstract class Repository
 {
-	// snappyMailRepo
 	const BASE_URL = 'https://snappymail.eu/repository/v2/';
+	const CORE_API_URL = 'https://api.github.com/repos/the-djmaze/snappymail/releases/latest';
 
-	private static function get(string $path) : string
+	private static function httpGet(string $url, array $headers = []): string
 	{
 		$oHTTP = HTTP\Request::factory(/*'socket' or 'curl'*/);
 		$oHTTP->proxy = \RainLoop\Api::Config()->Get('labs', 'curl_proxy', '');
 		$oHTTP->proxy_auth = \RainLoop\Api::Config()->Get('labs', 'curl_proxy_auth', '');
 		$oHTTP->verify_peer = \RainLoop\Api::Config()->Get('labs', 'curl_verify_peer', true);
 		$oHTTP->max_response_kb = 0;
-		$oHTTP->timeout = 15; // timeout in seconds.
-		$oResponse = $oHTTP->doRequest('GET', static::BASE_URL . $path);
+		$oHTTP->timeout = 15;
+		$oResponse = $oHTTP->doRequest('GET', $url, null, $headers);
 		if (!$oResponse) {
-			throw new \Exception('No HTTP response from repository');
+			throw new \Exception('No HTTP response from ' . $url);
 		}
 		if (200 !== $oResponse->status) {
-			throw new \Exception(static::body2plain($oResponse->body), $oResponse->status);
+			throw new \Exception('HTTP ' . $oResponse->status . ':  from ' . $url, $oResponse->status);
 		}
 		return $oResponse->body;
 	}
 
 //	$aRep = \json_decode($sRep);
 
-	private static function download(string $path) : string
+	private static function download(string $url): string
 	{
-		$sTmp = APP_PRIVATE_DATA . \md5(\microtime(true).$path) . \preg_replace('/^.*?(\\.[a-z\\.]+)$/Di', '$1', $path);
+		$sTmp = APP_PRIVATE_DATA . \md5(\microtime(true) . $url) . \preg_replace('/^.*?(\\.[a-z\\.]+)$/Di', '$1', $url);
 		$pDest = \fopen($sTmp, 'w+b');
 		if (!$pDest) {
-			throw new \Exception('Cannot create temp file: '.$sTmp);
+			throw new \Exception('Cannot create temp file: ' . $sTmp);
 		}
 
 		$oHTTP = HTTP\Request::factory(/*'socket' or 'curl'*/);
@@ -40,14 +40,14 @@ abstract class Repository
 		$oHTTP->proxy_auth = \RainLoop\Api::Config()->Get('labs', 'curl_proxy_auth', '');
 		$oHTTP->verify_peer = \RainLoop\Api::Config()->Get('labs', 'curl_verify_peer', true);
 		$oHTTP->max_response_kb = 0;
-		$oHTTP->timeout = 15; // timeout in seconds.
+		$oHTTP->timeout = 15;
 		$oHTTP->streamBodyTo($pDest);
 		\set_time_limit(120);
-		$oResponse = $oHTTP->doRequest('GET', static::BASE_URL . $path);
+		$oResponse = $oHTTP->doRequest('GET', $url);
 		\fclose($pDest);
 		if (!$oResponse) {
 			\unlink($sTmp);
-			throw new \Exception('No HTTP response from repository');
+			throw new \Exception('No HTTP response from ' . $url);
 		}
 		if (200 !== $oResponse->status) {
 			$body = \file_get_contents($sTmp);
@@ -57,14 +57,14 @@ abstract class Repository
 		return $sTmp;
 	}
 
-	private static function body2plain(string $body) : string
+	private static function body2plain(string $body): string
 	{
 		return \trim(\strip_tags(
 			\preg_match('@<body[^>]*>(.*)</body@si', $body, $match) ? $match[1] : $body
 		));
 	}
 
-	private static function getRepositoryDataByUrl(bool &$bReal = false) : array
+	private static function getRepositoryDataByUrl(bool &$bReal = false): array
 	{
 		$bReal = false;
 		$aRep = null;
@@ -78,7 +78,7 @@ abstract class Repository
 		$iRepTime = $sRep ? $oCache->GetTimer($sCacheKey) : 0;
 
 		if (!$sRep || !$iRepTime || \time() - 3600 > $iRepTime) {
-			$sRep = static::get($sRepoFile);
+			$sRep = static::httpGet(static::BASE_URL . $sRepoFile);
 			if ($sRep) {
 				$aRep = \json_decode($sRep);
 				$bReal = \is_array($aRep) && \count($aRep);
@@ -97,7 +97,7 @@ abstract class Repository
 		return \is_array($aRep) ? $aRep : [];
 	}
 
-	private static function getRepositoryData(bool &$bReal, string &$sError) : array
+	private static function getRepositoryData(bool &$bReal, string &$sError): array
 	{
 		$aResult = array();
 		try {
@@ -137,20 +137,66 @@ abstract class Repository
 	 * return object
 			$info->version
 			$info->file
+			$info->url
 			$info->warnings
 	 */
-	public static function getLatestCoreInfo()
+	public static function getLatestCoreInfo(): ?object
 	{
 		\RainLoop\Api::Actions()->IsAdminLoggined();
-		$sRep = static::get('core.json');
-		return $sRep ? \json_decode($sRep, false, 3, JSON_THROW_ON_ERROR) : null;
+		try {
+			$sBody = static::httpGet(static::CORE_API_URL, [
+				'Accept: application/vnd.github+json',
+				'User-Agent: SnappyMail/' . APP_VERSION,
+			]);
+		} catch (\Throwable $e) {
+			\SnappyMail\Log::error('UPDATER', $e->getMessage());
+			// GitHub failed, try main website
+			$sRep = static::httpGet(static::BASE_URL . 'core.json');
+			$sRep = $sRep ? \json_decode($sRep, false, 3, JSON_THROW_ON_ERROR) : null;
+			if ($sRep) {
+				$info->url = static::BASE_URL . $info->file;
+			}
+			return $sRep ? \json_decode($sRep, false, 3, JSON_THROW_ON_ERROR) : null;
+		}
+		if (!$sBody) {
+			return null;
+		}
+		$data = \json_decode($sBody, false, 5);
+		if (!$data || empty($data->tag_name)) {
+			return null;
+		}
+
+		$sVersion = \ltrim($data->tag_name, 'v');
+
+		// By exact name. A release carries several .tar.gz assets, and the
+		// cPanel, Nextcloud and ownCloud packages sort ahead of the core one, so
+		// taking the first match downloaded a cPanel bundle that unpacks under
+		// /usr/local/cpanel and has no snappymail/ entry to extract at all.
+		$sWanted = "snappymail-{$sVersion}.tar.gz";
+		$downloadUrl = null;
+		foreach ($data->assets ?? [] as $asset) {
+			if ($sWanted === ($asset->name ?? '')) {
+				$downloadUrl = $asset->browser_download_url;
+				break;
+			}
+		}
+		if (!$downloadUrl) {
+			\SnappyMail\Log::error('UPDATER', "Release {$data->tag_name} has no {$sWanted} asset");
+			return null;
+		}
+
+		$info = new \stdClass();
+		$info->version = $sVersion;
+		$info->file = $sWanted;
+		$info->url = $downloadUrl;
+		return $info;
 	}
 
 	public static function downloadCore() : ?string
 	{
 		$info = static::getLatestCoreInfo();
 		return ($info && \version_compare(APP_VERSION, $info->version, '<'))
-			? static::download($info->file) // '../latest.tar.gz'
+			? static::download($info->url)
 			: null;
 	}
 
@@ -250,7 +296,7 @@ abstract class Repository
 
 	private static function deletePackageDir(string $sId) : bool
 	{
-		$sPath = APP_PLUGINS_PATH.$sId;
+		$sPath = APP_PLUGINS_PATH . $sId;
 		return (!\is_dir($sPath) || \MailSo\Base\Utils::RecRmDir($sPath))
 			&& (!\is_file("{$sPath}.phar") || \unlink("{$sPath}.phar"));
 	}
@@ -259,7 +305,7 @@ abstract class Repository
 	{
 		empty($_ENV['SNAPPYMAIL_INCLUDE_AS_API']) && \RainLoop\Api::Actions()->IsAdminLoggined();
 
-		\SnappyMail\Log::info('INSTALLER', 'Start package install: '.$sId.' ('.$sType.')');
+		\SnappyMail\Log::info('INSTALLER', 'Start package install: ' . $sId . ' (' . $sType . ')');
 
 		$sRealFile = '';
 
@@ -275,11 +321,12 @@ abstract class Repository
 				}
 				if (isset($aList[$sId]) && (!$sFile || $sFile === $aList[$sId]['file'])) {
 					$sRealFile = $aList[$sId]['file'];
-					$sTmp = static::download($aList[$sId]['file']);
+					$sUrl = static::BASE_URL . $aList[$sId]['file'];
+					$sTmp = static::download($sUrl);
 
 					// https://github.com/the-djmaze/snappymail/security/advisories/GHSA-j9c4-gf64-rph2
 					// Verify PGP signature
-					$sTmpSignature = static::download($aList[$sId]['file'] . '.asc');
+					$sTmpSignature = static::download($sUrl . '.asc');
 					$signature = $sTmpSignature ? \file_get_contents($sTmpSignature) : null;
 					$sTmpSignature && \unlink($sTmpSignature);
 					if (!$signature) {
@@ -297,7 +344,7 @@ abstract class Repository
 							throw $e;
 						}
 						// Verify x509 signature
-						$sTmpSignature = static::download($aList[$sId]['file'] . '.sig');
+						$sTmpSignature = static::download($sUrl . '.sig');
 						$signature = $sTmpSignature ? \file_get_contents($sTmpSignature) : null;
 						$sTmpSignature && \unlink($sTmpSignature);
 						if (!$signature) {
@@ -310,7 +357,7 @@ abstract class Repository
 
 			if ($sTmp) {
 				if (!static::deletePackageDir($sId)) {
-					throw new \Exception('Cannot remove previous plugin folder: '.$sId);
+					throw new \Exception('Cannot remove previous plugin folder: ' . $sId);
 				}
 				if ('.phar' === \substr($sRealFile, -5)) {
 					$bResult = \copy($sTmp, APP_PLUGINS_PATH . \basename($sRealFile));
@@ -318,7 +365,6 @@ abstract class Repository
 					if (\class_exists('PharData')) {
 						$oArchive = new \PharData($sTmp, 0, $sRealFile);
 					} else {
-//						throw new \Exception('PHP Phar is disabled, you must enable it');
 						$oArchive = new \SnappyMail\TAR($sTmp);
 					}
 					$bResult = $oArchive->extractTo(\rtrim(APP_PLUGINS_PATH, '\\/'));

@@ -82,9 +82,16 @@ if (defined('APP_VERSION')) {
 		mkdir(APP_PRIVATE_DATA, 0700, true);
 		file_put_contents(APP_PRIVATE_DATA.'.htaccess', 'Require all denied');
 	} else if (is_dir(APP_PRIVATE_DATA.'cache')) {
+		// Requests that arrive together after an upgrade all reach this before any
+		// of them rewrites INSTALLED above, so they race on the same tree: one
+		// removes a directory another has already listed, getChildren() throws
+		// UnexpectedValueException, and that request dies with a fatal. Whatever
+		// is already gone is what this wanted anyway, so skip it. CATCH_GET_CHILD
+		// covers the descend, the silenced calls cover the removal itself.
 		foreach (new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator(APP_PRIVATE_DATA.'cache', FilesystemIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::CHILD_FIRST) as $sName) {
+			RecursiveIteratorIterator::CHILD_FIRST,
+			RecursiveIteratorIterator::CATCH_GET_CHILD) as $sName) {
 				$sName->isDir() ? rmdir($sName) : unlink($sName);
 		}
 		clearstatcache();
