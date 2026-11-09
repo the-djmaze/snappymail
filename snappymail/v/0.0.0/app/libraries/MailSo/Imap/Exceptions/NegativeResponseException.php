@@ -22,7 +22,7 @@ class NegativeResponseException extends ResponseException
 	public function getAlertFromStatus(): string
 	{
 		$oResponse = $this->GetLastResponse();
-		if ($oResponse && $oResponse->IsStatusResponse && !empty($oResponse->HumanReadable) &&
+		if ($oResponse && $oResponse->ResponseStatus && !empty($oResponse->HumanReadable) &&
 			'ALERT' === ($oResponse->OptionalResponse[0] ?? ''))
 		{
 			return $oResponse->HumanReadable;

@@ -507,8 +507,7 @@ class ImapClient extends \MailSo\Net\NetClient
 					$oResponse = $this->partialParseResponse();
 					$oResult->append($oResponse);
 
-					if ($oResponse->IsStatusResponse
-					 && ResponseType::UNTAGGED === $oResponse->ResponseType
+					if (ResponseType::UNTAGGED === $oResponse->ResponseType
 					 && Enumerations\ResponseStatus::PREAUTH === $oResponse->ResponseStatus
 //					 && (Enumerations\ResponseStatus::PREAUTH === $oResponse->ResponseStatus || Enumerations\ResponseStatus::BYE === $oResponse->ResponseStatus)
 					) {
