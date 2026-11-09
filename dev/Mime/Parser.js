@@ -163,7 +163,7 @@ export function ParseMime(text)
 		part.parts = [];
 
 		// get headers
-		if (isHead(head)) {
+		if (head && isHead(head)) {
 			head.replace(/\r?\n\s+/g, ' ').split(/\r?\n/).forEach(header => {
 				let match = header.match(/^([^:]+):\s*([^;]+)/),
 					params = {};

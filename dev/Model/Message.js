@@ -641,6 +641,7 @@ export class MessageModel extends AbstractModel {
 			}
 		})
 		.catch(e => {
+			console.error(e);
 			data.error = e.message;
 		})
 		.finally(() => {
