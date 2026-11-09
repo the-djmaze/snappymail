@@ -75,7 +75,7 @@ class Http
 
 	public function GetScheme(): string
 	{
-		return $this->IsSecure(true) ? 'https' : 'http';
+		return $this->IsSecure() ? 'https' : 'http';
 	}
 
 	public function IsSecure(): bool
