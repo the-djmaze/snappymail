@@ -242,7 +242,7 @@ class OpenSSL
 			$encrypted .= $line;
 		} while (true);
 
-		return $data;
+		return $encrypted;
 	}
 
 	public function sign(string|Temporary $input, bool $detached = true): ?string
