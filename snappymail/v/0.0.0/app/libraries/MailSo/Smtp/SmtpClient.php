@@ -263,8 +263,12 @@ class SmtpClient extends \MailSo\Net\NetClient
 		}
 
 		// RFC 3461
-		if ($bDsn && $this->hasCapability('DSN')) {
-			$sCmd .= ' RET=HDRS';
+		if ($bDsn) {
+			if ($this->hasCapability('DSN')) {
+				$sCmd .= ' RET=HDRS';
+			} else {
+				$this->writeLog('DSN was requested but the server does not advertise DSN, sending without it', \LOG_WARNING);
+			}
 		}
 
 		// RFC 6152
@@ -305,7 +309,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 		$sCmd = 'TO:<'.$sTo.'>';
 
 		if ($bDsn && $this->hasCapability('DSN')) {
-			$sCmd .= ' NOTIFY=SUCCESS,FAILURE';
+			$sCmd .= ' NOTIFY=SUCCESS,FAILURE,DELAY';
 		}
 
 		$this->sendRequestWithCheck("RCPT {$sCmd}", [250, 251], "Failed to add recipient '{$sTo}'");
