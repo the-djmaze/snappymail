@@ -67,11 +67,11 @@ class ChangePasswordDriverLDAP
 			'{email}' => $oAccount->Email(),
 			'{email:user}' => \MailSo\Base\Utils::getEmailAddressLocalPart($oAccount->Email()),
 			'{email:domain}' => $sDomain,
-			'{login}' => $oAccount->IncLogin(),
-			'{imap:login}' => $oAccount->IncLogin(),
+			'{login}' => $oAccount->ImapUser(),
+			'{imap:login}' => $oAccount->ImapUser(),
 			'{imap:host}' => $oAccount->Domain()->ImapSettings()->host,
 			'{imap:port}' => $oAccount->Domain()->ImapSettings()->port,
-			'{gecos}' => \function_exists('posix_getpwnam') ? \posix_getpwnam($oAccount->IncLogin()) : ''
+			'{gecos}' => \function_exists('posix_getpwnam') ? \posix_getpwnam($oAccount->ImapUser()) : ''
 		));
 
 		$oCon = \ldap_connect($this->sLdapUri);

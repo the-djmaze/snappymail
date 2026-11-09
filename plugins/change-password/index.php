@@ -153,7 +153,7 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 		}
 
 		$sPrevPassword = $this->jsonParam('PrevPassword');
-		if ($sPrevPassword !== $oAccount->IncPassword()) {
+		if ($sPrevPassword !== $oAccount->ImapPass()) {
 			throw new ClientException(static::CurrentPasswordIncorrect, null, $oActions->StaticI18N('NOTIFICATIONS/CURRENT_PASSWORD_INCORRECT'));
 		}
 		$oPrevPassword = new \SnappyMail\SensitiveString($sPrevPassword);
@@ -207,7 +207,7 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 			throw new ClientException(static::CouldNotSaveNewPassword);
 		}
 
-		$oAccount->SetPassword($oNewPassword);
+		$oAccount->setImapPass($oNewPassword);
 		if ($oAccount instanceof \RainLoop\Model\MainAccount) {
 			$oActions->SetAuthToken($oAccount);
 			$oAccount->resealCryptKey($oPrevPassword);

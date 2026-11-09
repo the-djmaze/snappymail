@@ -69,7 +69,7 @@ class ChangePasswordFroxlorDriver
 
 			$oStmt = $oPdo->prepare('SELECT password_enc, id FROM mail_users WHERE username = ? LIMIT 1');
 
-			if ($oStmt->execute(array($oAccount->IncLogin()))) {
+			if ($oStmt->execute(array($oAccount->ImapUser()))) {
 				$aFetchResult = $oStmt->fetch(\PDO::FETCH_ASSOC);
 				if (!empty($aFetchResult['id'])) {
 					$sDbPassword = $aFetchResult['password_enc'];

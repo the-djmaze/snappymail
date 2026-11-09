@@ -44,60 +44,6 @@ class Domain implements \JsonSerializable
 		return $this->Name;
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public function IncHost(): string
-	{
-		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
-		return $this->IMAP->host;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function IncPort(): int
-	{
-		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
-		return $this->IMAP->port;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function IncShortLogin(): bool
-	{
-		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
-		return $this->IMAP->shortLogin;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function UseSieve(): bool
-	{
-		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
-		return $this->Sieve->enabled;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function OutHost(): string
-	{
-		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
-		return $this->SMTP->host;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function OutPort(): int
-	{
-		\trigger_error('Deprecated function called.', \E_USER_DEPRECATED);
-		return $this->SMTP->port;
-	}
-
 	public function SetAliasName(string $sAliasName): void
 	{
 //		$this->aliasName = \SnappyMail\IDN::toAscii($sAliasName);

@@ -68,7 +68,7 @@ class ChangePasswordISPConfigDriver
 			);
 
 			$oStmt = $oPdo->prepare('SELECT password, mailuser_id FROM mail_user WHERE login = ? LIMIT 1');
-			if ($oStmt->execute(array($oAccount->IncLogin()))) {
+			if ($oStmt->execute(array($oAccount->ImapUser()))) {
 				$aFetchResult = $oStmt->fetch(\PDO::FETCH_ASSOC);
 				if (!empty($aFetchResult['mailuser_id'])) {
 					$sDbPassword = $aFetchResult['password'];

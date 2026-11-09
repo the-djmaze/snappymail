@@ -66,7 +66,7 @@ class LdapMailAccounts
 			return false; // exceptions are only thrown from the handle error function that does logging already
 		}
 
-		// Try to get account information. IncLogin() returns the username of the user
+		// Try to get account information. ImapUser() returns the username of the user
 		// and removes the domainname if this was configured inside the domain config.
 		$username = $sEmail;
 		$oActions = \RainLoop\Api::Actions();
@@ -144,7 +144,7 @@ class LdapMailAccounts
 		// Try to get account information. ImapUser() returns the username of the user
 		// and removes the domainname if this was configured inside the domain config.
 		$username = @ldap_escape($oAccount->ImapUser(), "", LDAP_ESCAPE_FILTER);
-		
+
 		$searchString = $this->config->search_string;
 
 		// Replace placeholders inside the ldap search string with actual values
@@ -191,7 +191,7 @@ class LdapMailAccounts
 		//SnappyMail saves the passwords of the additional accounts by encrypting them using a cryptkey that is saved in the file .cryptkey
 		//When the password of the main account changes, SnappyMail asks the user for the old password to reencrypt the keys with the new userpassword.
 		//On a password change using ldap (or when the password has been forgotten by the user) this makes us some problems. Therefore overwrite
-		//the .cryptkey file in order to always accept the actual ldap password of the user. This has side effects on pgp keys! 
+		//the .cryptkey file in order to always accept the actual ldap password of the user. This has side effects on pgp keys!
 		//See https://github.com/the-djmaze/snappymail/issues/1570#issuecomment-2085528061
 		if ($this->config->bool_overwrite_cryptkey) {
 			if (!$oActions->StorageProvider()->Put($oAccount, StorageType::ROOT, '.cryptkey', "")) {
@@ -226,13 +226,13 @@ class LdapMailAccounts
 				{
 					//Try to login the user with the same password as the primary account has
 					//if this fails the user will see the new mail addresses but will be asked for the correct password
-					$sPass = new \SnappyMail\SensitiveString($oAccount->IncPassword());
+					$sPass = new \SnappyMail\SensitiveString($oAccount->ImapPass());
 					//After creating the accounts here $sUsername is used as username to login to the IMAP server (see Account.php)
 					//$oNewAccount = RainLoop\Model\AdditionalAccount::NewInstanceFromCredentials($oActions, $sEmail, $sUsername, $sPass);
 
 					$oDomain = $oActions->DomainProvider()->Load($sDomain, false);
 
-					$oNewAccount = new AdditionalAccount;			
+					$oNewAccount = new AdditionalAccount;
 					$oNewAccount->setCredentials(
 						$oDomain,
 						$sEmail,

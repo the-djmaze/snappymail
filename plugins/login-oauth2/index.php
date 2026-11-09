@@ -153,7 +153,7 @@ class LoginOAuth2Plugin extends \RainLoop\Plugins\AbstractPlugin
 						$sCachedAccessToken = $aRefreshTokenResponse['result']['access_token'];
 						$this->gmailStoreTokens($oCache, $sCachedAccessToken, $sRefreshToken);
 /*
-						$oAccount->SetPassword(static::gmailTokensPassword($sCachedAccessToken, $sRefreshToken));
+						$oAccount->setImapPass(static::gmailTokensPassword($sCachedAccessToken, $sRefreshToken));
 						$oActions->AuthToken($oAccount);
 //						$oActions->SetUpdateAuthToken($oActions->GetSpecAuthToken());
 							$oActions->sUpdateAuthToken = $oActions->GetSpecAuthToken();

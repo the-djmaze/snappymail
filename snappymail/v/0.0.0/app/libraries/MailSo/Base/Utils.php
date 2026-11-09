@@ -413,26 +413,12 @@ abstract class Utils
 		return \trim($sValue);
 	}
 
-	/**
-	 * @deprecated use getEmailAddressLocalPart
-	 */
-	public static function GetAccountNameFromEmail(string $sEmail) : string
-	{
-		return static::getEmailAddressLocalPart($sEmail);
-	}
 	public static function getEmailAddressLocalPart(string $sEmail) : string
 	{
 		$iPos = \strrpos($sEmail, '@');
 		return (false === $iPos) ? $sEmail : \substr($sEmail, 0, $iPos);
 	}
 
-	/**
-	 * @deprecated use getEmailAddressDomain
-	 */
-	public static function GetDomainFromEmail(string $sEmail) : string
-	{
-		return static::getEmailAddressDomain($sEmail);
-	}
 	public static function getEmailAddressDomain(string $sEmail) : string
 	{
 		$iPos = \strrpos($sEmail, '@');
@@ -676,40 +662,6 @@ abstract class Utils
 	public static function ValidateIP(string $sIp) : bool
 	{
 		return !empty($sIp) && $sIp === \filter_var($sIp, FILTER_VALIDATE_IP);
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public static function IdnToUtf8(string $sStr) : string
-	{
-		$trace = \debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
-		\SnappyMail\Log::warning('MailSo', "Deprecated function IdnToUtf8 called at {$trace['file']}#{$trace['line']}");
-		if (\preg_match('/(^|\.|@)xn--/i', $sStr)) {
-			$sStr = \str_contains($sStr, '@')
-			? \SnappyMail\IDN::emailToUtf8($string)
-			: \idn_to_utf8($string);
-		}
-		return $sStr;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public static function IdnToAscii(string $sStr, bool $bLowerCase = false) : string
-	{
-		$trace = \debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
-		\SnappyMail\Log::warning('MailSo', "Deprecated function IdnToAscii called at {$trace['file']}#{$trace['line']}");
-		$aParts = \explode('@', $sStr);
-		$sDomain = \array_pop($aParts);
-		if (\preg_match('/[^\x20-\x7E]/', $sDomain)) {
-			$sDomain = \idn_to_ascii($string);
-		}
-		if ($bLowerCase) {
-			$sDomain = \strtolower($sDomain);
-		}
-		$aParts[] = $sDomain;
-		return \implode('@', $aParts);
 	}
 
 	public static function mkdir(string $directory) : void
