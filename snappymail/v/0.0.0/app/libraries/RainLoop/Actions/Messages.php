@@ -842,7 +842,7 @@ trait Messages
 				}
 
 				if (!empty($sFrom)) {
-					$oSmtpClient->MailFrom($sFrom, 0, $bDsn, $bRequireTLS);
+					$oSmtpClient->MailFrom($sFrom, 0, $bDsn, $bRequireTLS, ($bDsn ? $oMessage->MessageId() : ''));
 				}
 
 				foreach ($oRcpt as /* @var $oEmail \MailSo\Mime\Email */ $oEmail) {

@@ -244,11 +244,22 @@ class SmtpClient extends \MailSo\Net\NetClient
 	}
 
 	/**
+	 * RFC 3461 section 4: xchar is any ASCII 33-126 except "+" and "=",
+	 * anything else becomes "+" followed by two hex digits.
+	 */
+	private static function xtext(string $sValue): string
+	{
+		return \preg_replace_callback('/[^\x21-\x2A\x2C-\x3C\x3E-\x7E]/',
+			fn($aMatch) => \sprintf('+%02X', \ord($aMatch[0])),
+			$sValue);
+	}
+
+	/**
 	 * @throws \MailSo\RuntimeException
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
-	public function MailFrom(string $sFrom, int $iSizeIfSupported = 0, bool $bDsn = false, bool $bRequireTLS = false) : self
+	public function MailFrom(string $sFrom, int $iSizeIfSupported = 0, bool $bDsn = false, bool $bRequireTLS = false, string $sEnvId = ''): self
 	{
 //		$sFrom = IDN::emailToAscii($sFrom);
 		$sCmd = "FROM:<{$sFrom}>";
@@ -266,6 +277,14 @@ class SmtpClient extends \MailSo\Net\NetClient
 		if ($bDsn) {
 			if ($this->hasCapability('DSN')) {
 				$sCmd .= ' RET=HDRS';
+				// The envelope id is echoed back in the notification, which is the
+				// only way to tie one to the message that caused it.
+				if (\strlen($sEnvId)) {
+					$sEnvId = static::xtext($sEnvId);
+					if (100 >= \strlen($sEnvId)) {
+						$sCmd .= ' ENVID=' . $sEnvId;
+					}
+				}
 			} else {
 				$this->writeLog('DSN was requested but the server does not advertise DSN, sending without it', \LOG_WARNING);
 			}
