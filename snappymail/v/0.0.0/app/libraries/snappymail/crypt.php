@@ -53,7 +53,30 @@ abstract class Crypt
 			return true;
 		}
 		Log::error('Crypt', "OpenSSL no support for cipher '{$cipher}'");
+		// Without a cipher that works, Encrypt() falls through to xxtea, which
+		// Decrypt() then refuses because openssl_decrypt() exists: the server
+		// stops accepting the tokens it just minted and nobody can log in.
+		// Keep openssl usable instead, on whatever cipher this build will run.
+		foreach (['aes-256-cbc', 'aes-192-cbc', 'aes-128-cbc'] as $sFallback) {
+			if ($sFallback !== $cipher && static::cipherSupported($sFallback)) {
+				Log::warning('Crypt', "OpenSSL falling back to cipher '{$sFallback}'");
+				static::$cipher = $sFallback;
+//				\RainLoop\Api::Config()->Set('security', 'encrypt_cipher', $sFallback);
+//				\RainLoop\Api::Config()->Save();
+				return true;
+			}
+		}
 		return false;
+	}
+
+	/**
+	 * Whether Encrypt() can really reach openssl, which is not the same question
+	 * as whether openssl_decrypt() exists: a build can have the functions and no
+	 * cipher this code will run.
+	 */
+	public static function openSSLUsable(): bool
+	{
+		return \is_callable('openssl_encrypt') && '' !== static::$cipher;
 	}
 
 	/**
@@ -88,7 +111,7 @@ abstract class Crypt
 			// could mint one.
 			$algo = \strtolower($data[0]);
 			if ('xxtea' === $algo
-			 && (\is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt') || \is_callable('openssl_decrypt'))
+			 && (\is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt') || static::openSSLUsable())
 			) {
 				Log::warning('Crypt', 'xxtea token refused, a stronger algorithm is available');
 				return null;
