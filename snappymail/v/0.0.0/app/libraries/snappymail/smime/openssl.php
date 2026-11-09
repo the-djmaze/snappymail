@@ -258,20 +258,16 @@ class OpenSSL
 		$micalg = '';
 		while (!\feof($fp)) {
 			$line = \fgets($fp);
-			$fp = $output->fopen();
-			while (!\feof($fp)) {
-				$line = \fgets($fp);
 /*
-				if (!$micalg && \str_contains($line, 'Content-Type: multipart/signed')) {
-					\preg_match('/micalg="([^"+])"/', $line, $match);
-					$micalg = $match[1];
-				}
+			if (!$micalg && \str_contains($line, 'Content-Type: multipart/signed')) {
+				\preg_match('/micalg="([^"+])"/', $line, $match);
+				$micalg = $match[1];
+			}
 */
-				if (($detached && \str_contains($line, 'Content-Type: application/x-pkcs7-signature'))
-				 || (!$detached && \str_contains($line, 'Content-Type: application/x-pkcs7-mime'))
-				) {
-					return static::fetchBody($fp);
-				}
+			if (($detached && \str_contains($line, 'Content-Type: application/x-pkcs7-signature'))
+			 || (!$detached && \str_contains($line, 'Content-Type: application/x-pkcs7-mime'))
+			) {
+				return static::fetchBody($fp);
 			}
 		}
 
