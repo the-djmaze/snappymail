@@ -111,16 +111,12 @@ abstract class Crypt
 			// derivation fix below its 16 byte salt was the entire key, so anyone
 			// could mint one.
 			$algo = \strtolower($data[0]);
+			$fn = "{$algo}Decrypt";
 			if ($refuseXXTEA && 'xxtea' === $algo
 			 && (\is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt') || static::openSSLUsable())
 			) {
 				Log::warning('Crypt', 'xxtea token refused, a stronger algorithm is available');
-				return null;
-			}
-			$fn = "{$algo}Decrypt";
-			if (!\in_array($algo, ['sodium', 'openssl', 'xxtea'], true) || !\method_exists(__CLASS__, $fn)) {
-				Log::warning('Crypt', "{$fn} does not exists");
-			} else {
+			} else if (\in_array($algo, ['sodium', 'openssl', 'xxtea'], true) && \method_exists(__CLASS__, $fn)) {
 				try {
 					$result = static::{$fn}($data[2], $data[1], $key);
 					if (\is_string($result)) {
@@ -130,10 +126,13 @@ abstract class Crypt
 				} catch (\Throwable $e) {
 					Log::error('Crypt', "{$fn}(): {$e->getMessage()}\n{$e->getTraceAsString()}");
 				}
+			} else {
+				Log::warning('Crypt', "{$fn} does not exists");
 			}
 		} else {
 			Log::warning('Crypt', 'Decrypt() invalid $data');
 		}
+		return null;
 	}
 
 	public static function DecryptFromJSON(string $data,
