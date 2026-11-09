@@ -481,6 +481,8 @@ trait UserAuth
 			} else {
 				throw new ClientException(Notifications::AuthError, $oException);
 			}
+		} catch (\MailSo\Imap\Exceptions\NegativeResponseException $oException) {
+			throw new ClientException(Notifications::MailServerError, $oException);
 		} catch (\Throwable $oException) {
 			throw new ClientException(Notifications::AuthError, $oException);
 		}

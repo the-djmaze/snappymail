@@ -19,17 +19,25 @@ namespace MailSo\Imap\Exceptions;
 class NegativeResponseException extends ResponseException
 {
 
-	public function getAlertFromStatus() : string
+	public function getAlertFromStatus(): string
 	{
-		$sResult = '';
-
 		$oResponse = $this->GetLastResponse();
 		if ($oResponse && $oResponse->IsStatusResponse && !empty($oResponse->HumanReadable) &&
 			'ALERT' === ($oResponse->OptionalResponse[0] ?? ''))
 		{
-			$sResult = $oResponse->HumanReadable;
+			return $oResponse->HumanReadable;
 		}
 
-		return $sResult;
+		return '';
+	}
+
+	public function isTemporaryLoginFailure(): bool
+	{
+		$oResponse = $this->GetLastResponse();
+		$sCode = $oResponse && \is_array($oResponse->OptionalResponse) && isset($oResponse->OptionalResponse[0])
+			? \strtoupper((string) $oResponse->OptionalResponse[0])
+			: '';
+
+		return \in_array($sCode, array('UNAVAILABLE', 'INUSE', 'SERVERBUG'), true);
 	}
 }

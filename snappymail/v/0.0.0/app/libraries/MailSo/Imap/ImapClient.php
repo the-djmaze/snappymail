@@ -230,6 +230,12 @@ class ImapClient extends \MailSo\Net\NetClient
 		}
 		catch (Exceptions\NegativeResponseException $oException)
 		{
+			if ($oException->isTemporaryLoginFailure()) {
+				// Server-side problem (RFC 5530 response codes), not a credentials error:
+				// keep it distinct so that the client does not log the user out.
+				$this->writeLogException($oException, \LOG_ERR);
+			}
+
 			$this->writeLogException(new Exceptions\LoginBadCredentialsException($oException->GetResponses(), '', 0, $oException));
 		}
 
