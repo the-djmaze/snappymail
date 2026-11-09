@@ -79,13 +79,18 @@ class SmtpClient extends \MailSo\Net\NetClient
 			\function_exists('gethostname') ? (\gethostname() ?: '') : ''
 		];
 		foreach ($aCandidates as $sEhloHost) {
-			$sEhloHost = \trim(\preg_replace('/:\d+$/', '', \trim((string) $sEhloHost)));
-			if (\preg_match('/^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$/', $sEhloHost)) {
+			$sEhloHost = \trim((string) $sEhloHost);
+			if (\filter_var($sEhloHost, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
+				return '[IPv6:'.$sEhloHost.']';
+			}
+			$sEhloHost = \trim(\preg_replace('/:\d+$/', '', $sEhloHost));
+			if (\filter_var($sEhloHost, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4)) {
 				return '['.$sEhloHost.']';
 			}
-			if (\preg_match('/^\[([0-9a-f]*:[0-9a-f:.]+)\]$/i', $sEhloHost, $aMatch)) {
-				return '[IPv6:'.$aMatch[1].']';
+			if (\filter_var($sEhloHost, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
+				return '[IPv6:'.$sEhloHost.']';
 			}
+			$sEhloHost = \idn_to_ascii($sEhloHost);
 			if (\preg_match('/^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i', $sEhloHost)) {
 				return $sEhloHost;
 			}
