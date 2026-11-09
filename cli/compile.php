@@ -71,7 +71,7 @@ if (isset($options['source'])) {
 
 	#rollup -c
 
-	$cmddir = escapeshellcmd(ROOT_DIR) . '/snappymail/v/0.0.0/static';
+	$cmddir = ROOT_DIR . '/snappymail/v/0.0.0/static';
 
 	if ($gzip = trim(`which gzip`)) {
 		echo "\x1b[33;1m === Gzip *.js and *.css === \x1b[0m\n";
@@ -96,7 +96,7 @@ if (isset($options['source'])) {
 
 if (isset($options['readme'])) {
 
-	$basedir = escapeshellcmd(ROOT_DIR) . '/snappymail/v/0.0.0';
+	$basedir = ROOT_DIR . '/snappymail/v/0.0.0';
 
 	$readme = file_get_contents(ROOT_DIR . '/README.md');
 

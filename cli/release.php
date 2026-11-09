@@ -60,7 +60,7 @@ if (!isset($options['skip-gulp'])) {
 		exit("gulp failed with error code {$return_var}\n");
 	}
 
-	$cmddir = escapeshellcmd(ROOT_DIR) . '/snappymail/v/0.0.0/static';
+	$cmddir = ROOT_DIR . '/snappymail/v/0.0.0/static';
 
 	if ($gzip = trim(shell_exec('which gzip'))) {
 		echo "\x1b[33;1m === Gzip *.js and *.css === \x1b[0m\n";

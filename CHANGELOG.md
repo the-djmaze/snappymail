@@ -1,3 +1,48 @@
+## 3.0.1 – 2026-11-10
+
+### Added
+- Allow disabling <select>
+- Some Tachyon changes - by @kimusan
+- Send ENVID so a DSN (delivery notification) can be tied to its message - by @kimusan
+- Log when DSN is unavailable - by @kimusan
+- Check if mail is send locally on server - by @jmrapin
+
+### Fixed
+- ESEARCH failed
+- Prevent PHP Warning: symlink(): File exists
+- Don't proxy cid: images when showing external images - by @jmrapin
+- OpenSSL::sign could fail due to double while loop
+- S/MIME OpenSSL::encrypt() undefined $data
+- Fix CSP reporting endpoints - by @kimusan
+- Login failed due to OpenSSL error - by @kimusan
+- DNS::SRV() undefined $host
+- Prevent malicious SequenceSet
+- Clear cookie on decode failure
+- Deprecated PDO::MYSQL_* in PHP 8.5
+- Speedup DecodeHeaderValue
+- Invalid EHLO hostname when SERVER_NAME is not a valid domain
+- Do not treat temporary IMAP server errors on LOGIN as bad credentials
+  [MailSo commit](https://github.com/afterlogic/MailSo/commit/373c9dfe7149e139c449cd5cb20243098de2cc7e)
+- PGP decode failed due to previous
+  [#2037](https://github.com/the-djmaze/snappymail/pull/2037)
+- openssl_verify 5th parameter is PHP 8.5+
+  [#2101](https://github.com/the-djmaze/snappymail/issues/2101)
+- Can't read email
+  [#2102](https://github.com/the-djmaze/snappymail/issues/2102)
+- Uncaught exception: TypeError: SnappyMail\Crypt::Decrypt()
+  [#2103](https://github.com/the-djmaze/snappymail/issues/2103)
+- Invalid EHLO hostname when SERVER_NAME is not a valid domain
+  [#2104](https://github.com/the-djmaze/snappymail/pull/2104)
+
+### Changed
+- Reseal cryptkey automatic when xxtea was used
+- Just return all email addresses in an EmailCollection
+- Removed the deprecated functions
+
+### Nextcloud
+- Undefined OC::$server->getContactsManager()
+
+
 ## 3.0.0 – 2026-11-05
 
 ### Security
@@ -82,7 +127,7 @@
 - Update Ukrainian - by @romawkafor
 
 ### Fixed
-- PHP 8.4 Implicitly marking parameter $... as nullable is deprecated, the explicit nullable type must be used instead
+- PHP 8.4 Implicitly marking parameter $... as nullable is deprecated
 - IMAP atom can have < or >
 - Reopening a popup during its fade out kept the previous contents - by @kimusan
 - Can not send email using SCRAM
@@ -99,7 +144,7 @@
   [#1850](https://github.com/the-djmaze/snappymail/issues/1850)
 - Remove x-html tags before rendering - by @hungyao
   [#1861](https://github.com/the-djmaze/snappymail/pull/1861)
-- Attaching a zip file file produces "Warning! Not all attachments have been uploaded" - by @alyandon
+- Attaching a zip file produces "Warning! Not all attachments have been uploaded" - by @alyandon
   [#1883](https://github.com/the-djmaze/snappymail/pull/1883)
 - Cp1252 encoding problem - by @Psychi1
   [#1961](https://github.com/the-djmaze/snappymail/pull/1961)

@@ -224,3 +224,20 @@ Still TODO:
 |ckeditor	|       ?	| 520.035	|      ?	|  155.916	|
 
 CKEditor including the 7 asset requests (css,language,plugins,icons) is 633.46 KB / 180.47 KB (gzip).
+
+### Developer
+To create a distribution, you must built a release.
+You can do that with: `cli/release.php`
+After that the package is at `build/dist/releases/webmail/*`
+
+Other options:
+`cli/compile.php --knockout`
+`cli/compile.php --squire`
+`cli/compile.php --openpgp`
+`cli/compile.php --readme`
+`cli/compile.php --source`
+`cli/release.php --plugins`
+`cli/release.php --debian`
+`cli/release.php --nextcloud`
+`cli/release.php --cpanel`
+`cli/release.php --debian --nextcloud --cpanel`
