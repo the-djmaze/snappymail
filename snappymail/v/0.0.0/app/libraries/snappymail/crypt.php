@@ -27,7 +27,23 @@ abstract class Crypt
 
 	public static function cipherSupported(string $cipher): bool
 	{
-		return \in_array($cipher, static::listCiphers());
+		if (!\in_array($cipher, static::listCiphers())) {
+			return false;
+		}
+		// openssl_get_cipher_methods() lists ciphers the provider will not
+		// actually use. On OpenSSL 3 the aes-*-cbc-hmac-* and *-xts families are
+		// listed and then fail at the first call, and aes-256-cbc-hmac-sha1 is
+		// the default below, so asking the list is not enough: encrypt a byte.
+		$err_level = \error_reporting(0);
+		try {
+			$iLength = (int) \openssl_cipher_iv_length($cipher);
+			return 0 < $iLength
+				&& false !== \openssl_encrypt('.', $cipher, 'key', OPENSSL_RAW_DATA, \random_bytes($iLength));
+		} catch (\Throwable $e) {
+			return false;
+		} finally {
+			\error_reporting($err_level);
+		}
 	}
 
 	public static function setCipher(string $cipher): bool
