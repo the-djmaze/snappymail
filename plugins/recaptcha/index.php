@@ -80,7 +80,7 @@ class RecaptchaPlugin extends \RainLoop\Plugins\AbstractPlugin
 	public function FilterAppDataPluginSection(bool $bAdmin, bool $bAuth, array &$aConfig) : void
 	{
 		if (!$bAdmin && !$bAuth) {
-			$aConfig['show_captcha_on_login'] = 1 > $this->getLimit();;
+			$aConfig['show_captcha_on_login'] = 1 > $this->getLimit();
 		}
 	}
 

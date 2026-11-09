@@ -21,7 +21,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		$sAdditionalFileName = \trim($sAdditionalFileName);
 		if ($sAdditionalFileName) {
 			$sAdditionalFileName = \APP_PRIVATE_DATA.'configs/'.$sAdditionalFileName;
-			if (\file_exists($this->sAdditionalFile)) {
+			if (\file_exists($sAdditionalFileName)) {
 				$this->sAdditionalFile = $sAdditionalFileName;
 			}
 		}
@@ -63,7 +63,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 //	public function jsonSerialize(): array
 	public function jsonSerialize(): mixed
 	{
-		return $this->aData;;
+		return $this->aData;
 	}
 
 	public function Get(string $sSection, string $sName, mixed $mDefault = null): mixed

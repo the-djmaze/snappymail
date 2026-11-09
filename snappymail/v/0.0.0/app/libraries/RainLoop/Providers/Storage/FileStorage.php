@@ -60,7 +60,7 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return true;
 	}
 
-	public function IsLocal() : bool
+	public function IsLocal(): bool
 	{
 		return $this->bLocal;
 	}

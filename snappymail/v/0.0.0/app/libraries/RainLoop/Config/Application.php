@@ -87,7 +87,7 @@ class Application extends \RainLoop\Config\AbstractConfig
 		return $mResult;
 	}
 
-	public function Set(string $sSectionKey, string $sParamKey, $mParamValue): void
+	public function Set(string $sSectionKey, string $sParamKey, mixed $mParamValue): void
 	{
 		// Workarounds for the changed application structure
 		if ('webmail' === $sSectionKey) {
