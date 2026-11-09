@@ -99,7 +99,8 @@ abstract class Crypt
 
 	public static function Decrypt(array $data,
 		#[\SensitiveParameter]
-		?string $key = null
+		?string $key = null,
+		bool $refuseXXTEA = true
 	): mixed
 	{
 		if (3 === \count($data) && isset($data[0], $data[1], $data[2]) && \strlen($data[0])) {
@@ -110,7 +111,7 @@ abstract class Crypt
 			// derivation fix below its 16 byte salt was the entire key, so anyone
 			// could mint one.
 			$algo = \strtolower($data[0]);
-			if ('xxtea' === $algo
+			if ($refuseXXTEA && 'xxtea' === $algo
 			 && (\is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt') || static::openSSLUsable())
 			) {
 				Log::warning('Crypt', 'xxtea token refused, a stronger algorithm is available');
@@ -137,7 +138,8 @@ abstract class Crypt
 
 	public static function DecryptFromJSON(string $data,
 		#[\SensitiveParameter]
-		?string $key = null
+		?string $key = null,
+		bool $refuseXXTEA = true
 	): mixed
 	{
 		$data = static::jsonDecode($data);
