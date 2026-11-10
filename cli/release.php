@@ -100,8 +100,9 @@ if (!$zip->open($zip_destination, ZIPARCHIVE::CREATE)) {
 	exit("Failed to create {$zip_destination}");
 }
 
-$tar = new \SnappyMail\TAR($tgz_destination);
-//$tar = new PharData($tar_destination);
+// Error: tar: corrupted octal value in tar header
+//$tar = new \SnappyMail\TAR($tgz_destination);
+$tar = new PharData($tar_destination);
 
 $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('snappymail/v'), RecursiveIteratorIterator::SELF_FIRST);
 foreach ($files as $file) {
