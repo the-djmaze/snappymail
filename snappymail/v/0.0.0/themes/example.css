@@ -57,7 +57,7 @@
 	--folders-focused-color: #eee;
 	--folders-focused-bg-color: #333;
 	--folders-hover-color: #eee;
-	--folders-hover-bg-color: false;
+	--folders-hover-bg-color: #333;
 	--folders-drop-color: #eee;
 	--folders-drop-bg-color: #333;
 	--unread-count-color: #fff;
@@ -104,4 +104,110 @@
 
 	--smDialogShrink: 20px;
 	--smMainShadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+:root {
+	color-scheme: light dark;
+
+	/* MAIN */
+	--main-color: light-dark(#333, #fff);
+	--main-bg-color: light-dark(#e3e3e3, #000);
+	--link-color: light-dark(#369, #19F);
+	--border-color: light-dark(#ddd, #222);
+	--hr-color: light-dark(#eee, #111);
+
+	--panel-bg-clr: light-dark(#fff, #000);
+
+	--warning-clr: light-dark(#c09853, #fcf8e3);
+	--warning-bg-clr: light-dark(#fcf8e3, #c09853);
+	--warning-border-clr: light-dark(#fbeed5, #c09853);
+
+	--error-clr: light-dark(#b94a48, #f2dede);
+	--error-bg-clr: light-dark(#f2dede, #b94a48);
+	--error-border-clr: light-dark(#eed3d7, #C45553);
+
+	--info-clr: light-dark(#3a87ad, #d9edf7);
+	--info-bg-clr: light-dark(#d9edf7, #3a87ad);
+	--info-border-clr: light-dark(#bce8f1, #DFE8ED);
+
+	/* LOADING */
+	--loading-color: light-dark(#000, #fff);
+/*	--loading-text-shadow: light-dark(none, none);*/
+
+	/* LOGIN */
+	--login-color: light-dark(#555, #eee);
+	--login-bg-color: light-dark(#eee, #555);
+/*	--login-box-shadow: light-dark(none, none);*/
+	--login-border: light-dark(1px solid #ccc, 1px solid #333);
+
+	--spinner-color: light-dark(#fff, #000);
+
+	/* MENU */
+	--dropdown-menu-color: light-dark(#333, #fff);
+	--dropdown-menu-bg-color: light-dark(#fff, #333);
+	--dropdown-menu-hover-bg-color: light-dark(#444, #eee);
+	--dropdown-menu-hover-color: light-dark(#eee, #444);
+	--dropdown-menu-disabled-color: light-dark(#999, );
+	--dropdown-menu-border-clr: light-dark(rgba(0,0,0,.2), rgba(255,255,255,.2));
+
+	/* FOLDERS *//*
+	--folders-color: light-dark(#333, );
+	--folders-disabled-color: light-dark(#666, );
+	--folders-selected-color: light-dark(#eee, );
+	--folders-selected-bg-color: light-dark(#333, );
+	--folders-focused-color: light-dark(#eee, );
+	--folders-focused-bg-color: light-dark(#333, );
+	--folders-hover-color: light-dark(#eee, );
+	--folders-hover-bg-color: light-dark(#333, );
+	--folders-drop-color: light-dark(#eee, );
+	--folders-drop-bg-color: light-dark(#333, );
+	--unread-count-color: light-dark(#fff, );
+	--unread-count-bg-color: light-dark(#333, );
+
+	/* SETTINGS */
+	--settings-menu-color: light-dark(#333, #ccc);
+	--settings-menu-selected-color: light-dark(#eee, #111);
+	--settings-menu-selected-bg-color: light-dark(#333, #ccc);
+	--settings-menu-hover-color: light-dark(#eee, #111);
+	--settings-menu-hover-bg-color: light-dark(#333, #ccc);
+
+	/* MESSAGES */
+	--message-list-toolbar-bg-color: light-dark(#eee, #111);
+	--message-header-bg-clr: light-dark(#f8f8f8, #080808);
+
+	/* DIALOGS */
+	--dialog-clr: light-dark(#333, #fff);
+	--dialog-bg-clr: light-dark(#fff, #333);
+	--dialog-border-clr: light-dark(rgba(0,0,0,.3), rgba(255,255,255,.3));
+
+	/* FORMS */
+	--btn-clr: light-dark(#333, #fff);
+	--btn-bg-clr: light-dark(#fff, #333);
+	--btn-border-clr: light-dark(#fff, #000);
+	--btn-success-bg-clr: light-dark(#84AB04, #ac1);
+	--btn-danger-bg-clr: light-dark(#ee5f5b, #f76);
+
+	--input-clr: light-dark(#555, #fff);
+	--input-bg-clr: light-dark(#fff, #555);
+	--input-border-clr: light-dark(#ccc, #333);
+	--input-focus-border-clr: light-dark(#999, #666);
+
+	/* TABLES */
+	--tr-hover-bg-clr: light-dark(#f5f5f5, #f9f9f9);
+	--tr-odd-bg-clr: light-dark(#f9f9f9, #f5f5f5);
+
+	/* TABS */
+	--tab-active-bg-clr: light-dark(#fff, #000);
+	--tab-hover-border-clr: light-dark(#eee, #111);
+
+	--smMainShadow: light-dark(0 2px 8px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(255, 255, 255, 0.2));
+}
+
+@media (prefers-color-scheme: dark) {
+	#rl-app:not([data-color-scheme="light"]) {
+		color-scheme: dark;
+	}
+}
+#rl-app[data-color-scheme="dark"] {
+	color-scheme: dark;
 }

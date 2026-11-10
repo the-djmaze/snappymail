@@ -107,3 +107,39 @@
 		animation-delay: -0.66s;
 	}
 }
+
+/* The three colour scheme buttons. They had no styling at all: the glyphs were
+   raw text, and the active class the binding sets was never drawn, so there was
+   no way to see which mode was in effect. Every var carries a fallback, because
+   only some of the 22 themes define them. */
+.color-scheme-toggle {
+	padding: 4px 12px;
+
+	div {
+		display: flex;
+		gap: 4px;
+	}
+
+	button {
+		background: none;
+		border: 1px solid transparent;
+		border-radius: 3px;
+		color: inherit;
+		cursor: pointer;
+		flex: 1;
+		font-size: 115%;
+		line-height: 1;
+		padding: 5px 0;
+
+		&:hover {
+			background-color: var(--dropdown-menu-hover-bg-color, rgba(0, 0, 0, 0.08));
+			color: var(--dropdown-menu-hover-color, inherit);
+		}
+
+		&.active {
+			background-color: var(--dropdown-menu-hover-bg-color, rgba(0, 0, 0, 0.12));
+			border-color: var(--btn-border-clr, rgba(0, 0, 0, 0.25));
+			color: var(--dropdown-menu-hover-color, inherit);
+		}
+	}
+}
