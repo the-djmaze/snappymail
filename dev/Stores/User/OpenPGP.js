@@ -316,7 +316,7 @@ export const OpenPGPUserStore = new class {
 			} else {
 				response = { Result: { text: message.plain(), signature: null } };
 			}
-			if (response) {
+			if (response?.Result) {
 				const signature = response.Result.signature
 					? await openpgp.readSignature({ armoredSignature: response.Result.signature })
 					: null;
