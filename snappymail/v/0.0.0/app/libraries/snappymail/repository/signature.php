@@ -24,8 +24,24 @@ abstract class Signature
 			throw new \ValueError('Plugin PGP signature is missing');
 		}
 
+		// Keep the repository verification keyring in SnappyMail's data directory,
+		// rather than relying on the webserver process's HOME.
+		$homedir = APP_PRIVATE_DATA . 'gnupg/repository';
+		if (!\is_dir($homedir) && !\mkdir($homedir, 0700, true) && !\is_dir($homedir)) {
+			throw new \RuntimeException("Could not create GnuPG home '{$homedir}'");
+		}
+		if ((\fileperms($homedir) & 0777) !== 0700 && !\chmod($homedir, 0700)) {
+			throw new \RuntimeException("Could not set permissions on GnuPG home '{$homedir}'");
+		}
+		if (!\is_writable($homedir)) {
+			throw new \RuntimeException("GnuPG home '{$homedir}' is not writable");
+		}
+
 		// Like: gpg --no-default-keyring --keyring /path/to/pubkey.gpg --verify /path/to/file.txt.gpg
-		$gnupg = GnuPG::getInstance('');
+		$gnupg = GnuPG::getInstance($homedir);
+		if (!$gnupg) {
+			throw new \RuntimeException('GnuPG is not supported');
+		}
 		static::importKey($gnupg);
 		$result = $gnupg->verifyFile($data, $signature);
 
