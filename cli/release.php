@@ -84,8 +84,8 @@ if (!isset($options['skip-gulp'])) {
 }
 
 // Temporary rename folder to speed up PharData
-//if (!rename('snappymail/v/0.0.0', "snappymail/v/{$package->version}")){
-if (!rename('snappymail/v/0.0.0', "snappymail/v/{$package->version}")) {
+if (!rename('snappymail/v/0.0.0', "snappymail/v/{$package->version}")
+ && false === system("mv snappymail/v/0.0.0 snappymail/v/{$package->version}")) {
 	exit('Failed to temporary rename snappymail/v/0.0.0');
 }
 register_shutdown_function(function(){
