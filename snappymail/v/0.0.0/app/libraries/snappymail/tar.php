@@ -351,15 +351,13 @@ class TAR
 		int $perm = 0, string $link = '', string $prefix  = ''
 	): void
 	{
-		$uid = 0; // $this->stream_info->getOwner(),
-		$gid = 0; // $this->stream_info->getGroup(),
 		$mtime = $this->stream_info->getMTime();
 		$data = \pack('a100a8a8a8a12A12',
 			$name,
 			// values in octal
 			\sprintf("%06u ", \substr(\decoct($perm),-3)),
-			\sprintf("%06u ", \decoct($uid)),
-			\sprintf("%06u ", \decoct($gid)),
+			'', // \sprintf("%06u ", \decoct(0 || $this->stream_info->getOwner())),
+			'', // \sprintf("%06u ", \decoct(0 || $this->stream_info->getGroup())),
 			\sprintf("%011u ", \decoct($size)),
 			\sprintf("%011u", \decoct($mtime)));
 		$this->write($data);
@@ -369,7 +367,8 @@ class TAR
 			$checksum += \ord($data[$i]);
 		}
 
-		$data = \pack('a1a100a6a2a32a32a8a8a155a12', "{$type}", $link, 'ustar', '00', '', '', '000000 ', '000000 ', $prefix, '');
+//		$data = \pack('a1a100a6a2a32a32a8a8a155a12', "{$type}", $link, 'ustar', '00', '', '', '000000 ', '000000 ', $prefix, '');
+		$data = \pack('a1a100a6a2a32a32a8a8a155a12', "{$type}", $link, 'ustar', '00', '', '', '', '', $prefix, '');
 		$checksum += 256;
 		$i = 356;
 		while ($i--) {
