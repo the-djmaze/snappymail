@@ -38,7 +38,7 @@ And don't forget to read the whole [Wiki](https://github.com/the-djmaze/snappyma
 **GNU AFFERO GENERAL PUBLIC LICENSE Version 3 (AGPL)**.
 http://www.gnu.org/licenses/agpl-3.0.html
 
-Copyright (c) 2020 - 2024 SnappyMail
+Copyright (c) 2020 - 2026 SnappyMail
 Copyright (c) 2013 - 2022 RainLoop
 
 ## Modifications
@@ -50,7 +50,7 @@ This fork of RainLoop has the following changes:
 * Auth failed attempts written to syslog
 * Added Fail2ban instructions
 * ES2020
-* PHP 7.4+ required
+* PHP 8.2+ required
 * PHP mbstring extension required
 * PHP replaced pclZip with PharData and ZipArchive
 * Dark mode
