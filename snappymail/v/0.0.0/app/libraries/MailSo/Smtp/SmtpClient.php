@@ -73,11 +73,11 @@ class SmtpClient extends \MailSo\Net\NetClient
 	{
 		// RFC 5321 4.1.1.1: EHLO argument must be a domain name or an address literal.
 		// Skip invalid values like nginx catch-all `server_name _;`
-		$aCandidates = [
+		$aCandidates = \array_filter([
 			$_SERVER['SERVER_NAME'] ?? '',
 			$_SERVER['HTTP_HOST'] ?? '',
-			\function_exists('gethostname') ? (\gethostname() ?: '') : ''
-		];
+			\function_exists('gethostname') ? \gethostname() : ''
+		]);
 		foreach ($aCandidates as $sEhloHost) {
 			$sEhloHost = \trim((string) $sEhloHost);
 			if (\filter_var($sEhloHost, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
