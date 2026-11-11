@@ -188,7 +188,7 @@ class HeaderCollection extends \MailSo\Base\Collection
 	 *     dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=accounts.google.com;
 	 *     dara=pass header.i=@gmail.com
 	 */
-	public function AuthStatuses(string $sTrustedIds = ''): array
+	public function AuthStatuses(array $aTrustedIds = []): array
 	{
 		$aResult = [
 			'dkim' => [],
@@ -199,12 +199,12 @@ class HeaderCollection extends \MailSo\Base\Collection
 
 		/**
 		 * A sender can add this header itself, so a result is only worth reading when the
-		 * server that wrote it handled the message. $sTrustedIds names those servers by
+		 * server that wrote it handled the message. $aTrustedIds names those servers by
 		 * authserv-id; with none given, the authserv-id of the topmost header is taken as
 		 * the local one, which keeps the separate headers an opendkim and an opendmarc
 		 * each add. See RFC 8601 section 7.1.
 		 */
-		$aTrusted = \array_filter(\preg_split('/[\\s,;]+/', \strtolower(\trim($sTrustedIds))));
+		$aTrusted = \array_filter(\array_map(fn($id) => \strtolower(\trim($id)), $aTrustedIds));
 		$bConfigured = !!\count($aTrusted);
 		if (\count($aHeaders)) {
 			// The authserv-id is the first field, before the first ";". A version number

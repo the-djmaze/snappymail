@@ -17,12 +17,15 @@ namespace MailSo\Imap;
  */
 class FetchResponse
 {
+	public ImapClient $oImapClient;
+
 	public Response $oImapResponse;
 
 	private ?array $aEnvelopeCache = null;
 
-	function __construct(Response $oImapResponse)
+	function __construct(Response $oImapResponse, ImapClient $oImapClient)
 	{
+		$this->oImapClient = $oImapClient;
 		$this->oImapResponse = $oImapResponse;
 	}
 
