@@ -11,10 +11,6 @@ class CSP implements \Stringable
 		$report = false,
 		$report_only = false;
 
-	/** Used by Nextcloud */
-	public array
-		$report_to = [];
-
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#directives
 	 */
@@ -55,7 +51,6 @@ class CSP implements \Stringable
 		if ($this->report || $this->report_only) {
 			// report-to takes a group name defined via Reporting-Endpoints header
 			$directives['report-to'][] = 'csp-endpoint';
-			$this->report_to = $directives['report-to'];
 			// report-uri kept as fallback for browsers that don't support report-to
 			$directives['report-uri'] = [\RainLoop\Utils::WebPath() . '?/CspReport'];
 		}

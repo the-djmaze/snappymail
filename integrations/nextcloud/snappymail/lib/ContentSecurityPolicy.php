@@ -37,13 +37,13 @@ class ContentSecurityPolicy extends \OCP\AppFramework\Http\ContentSecurityPolicy
 		foreach ($CSP->get('frame-src') as $domain) {
 			$this->addAllowedFrameDomain($domain);
 		}
-
+/*
 		if (\method_exists($this, 'addReportTo')) {
 			foreach ($CSP->report_to as $reportTo) {
 				$this->addReportTo($reportTo);
 			}
 		}
-
+*/
 		$this->nonce = \SnappyMail\UUID::generate();
 		$this->addAllowedScriptDomain("'nonce-{$this->nonce}'");
 	}
