@@ -35,6 +35,7 @@
 			<li role="presentation">
 				<a href="#" tabindex="-1" data-bind="click: settingsHelp" data-icon="🛈" data-i18n="GLOBAL/HELP"></a>
 			</li>
+			<!-- ko if: hasColorSchemeMode -->
 			<li class="dividerbar color-scheme-toggle" role="presentation">
 				<div>
 					<button type="button" tabindex="-1" data-bind="click: lightModeClick, css: { active: 'light' === colorSchemeMode() }, attr: { title: 'Light mode', 'aria-pressed': 'light' === colorSchemeMode() }" aria-label="Light mode">☀</button>
@@ -42,6 +43,7 @@
 					<button type="button" tabindex="-1" data-bind="click: darkModeClick, css: { active: 'dark' === colorSchemeMode() }, attr: { title: 'Dark mode', 'aria-pressed': 'dark' === colorSchemeMode() }" aria-label="Dark mode">🌒</button>
 				</div>
 			</li>
+			<!-- /ko -->
 			<li class="dividerbar" role="presentation">
 				<a href="#" tabindex="-1" data-bind="click: logoutClick" data-icon="⏻" data-i18n="GLOBAL/LOGOUT"></a>
 			</li>

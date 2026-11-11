@@ -7,7 +7,13 @@ import { addSubscribablesTo } from 'External/ko';
 import * as Local from 'Storage/Client';
 
 const CLR_SCHEME_KEY = 'sm_color_scheme',
-	CLR_SCHEME_ATTR = 'data-color-scheme';
+	CLR_SCHEME_ATTR = 'data-color-scheme',
+
+	setHasColorSchemeMode = () =>
+		ThemeStore.hasColorSchemeMode(
+			/color-scheme:\s*light dark/.test(elementById('app-theme-style').textContent)
+		);
+
 
 let __themeTimer = 0;
 
@@ -26,6 +32,7 @@ export const
 		fontSerif: ko.observable(''),
 		fontMono: ko.observable(''),
 		isMobile: ko.observable(false),
+		hasColorSchemeMode: ko.observable(false),
 		colorSchemeMode: ko.observable('')
 	},
 
@@ -45,6 +52,8 @@ export const
 		ThemeStore.fontMono(SettingsGet('fontMono'));
 
 		leftPanelDisabled(ThemeStore.isMobile());
+
+		setHasColorSchemeMode();
 	},
 
 	changeTheme = (value, themeTrigger = ()=>0) => {
@@ -64,6 +73,7 @@ export const
 					if (2 === arrayLength(data)) {
 						themeStyle.textContent = data[1];
 						themeStyle.dataset.name = value;
+						setHasColorSchemeMode();
 						themeTrigger(SaveSettingStatus.Success);
 					}
 					clearTimer();

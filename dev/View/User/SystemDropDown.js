@@ -44,6 +44,7 @@ export class SystemDropDownUserView extends AbstractViewRight {
 
 		this.allowContacts = AppUserStore.allowContacts();
 
+		this.hasColorSchemeMode = ThemeStore.hasColorSchemeMode;
 		this.colorSchemeMode = ThemeStore.colorSchemeMode;
 
 		addEventListener('audio.stop', () => this.currentAudio(''));
@@ -129,6 +130,7 @@ export class SystemDropDownUserView extends AbstractViewRight {
 
 	onBuild() {
 		initColorSchemeToggle();
+
 		registerShortcut('m', '', [ScopeMessageList, ScopeMessageView, ScopeSettings], () => {
 			if (!this.viewModelDom.hidden) {
 //				exitFullscreen();
