@@ -104,7 +104,9 @@ class CSP implements \Stringable
 		$json = \file_get_contents('php://input');
 		$report = \json_decode($json, true);
 		// Useless to log 'moz-extension' as there's no clue which extension violates
-		if ($json && $report && 'moz-extension' !== $report['csp-report']['source-file']) {
+		if ($json && $report
+		 && (empty($report['csp-report']['source-file']) || 'moz-extension' !== $report['csp-report']['source-file'])
+		) {
 			\SnappyMail\Log::error('CSP', $json);
 		}
 		exit;
