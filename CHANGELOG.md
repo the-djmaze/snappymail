@@ -1,7 +1,7 @@
 ## 3.0.1 – 2026-11-10
 
 ### Added
-- Allow disabling <select>
+- Allow disabling `<select>`
 - Some Tachyon changes - by @kimusan
 - Send ENVID so a DSN (delivery notification) can be tied to its message - by @kimusan
 - Log when DSN is unavailable - by @kimusan
@@ -70,7 +70,7 @@
 ### Added
 - Test contacts CardDAV settings
 - Setting for default messages sort mode
-- CSP block legacy HTML element types such as <object>, <embed>, and <applet> on Raw actions
+- CSP block legacy HTML element types such as `<object>`, `<embed>`, and `<applet>` on Raw actions
 - Minimum font size handling as better solution for font issues
   [#1082](https://github.com/the-djmaze/snappymail/issues/1082)
 - Sort messages on arrival date/time
@@ -164,7 +164,7 @@
   [#2079](https://github.com/the-djmaze/snappymail/pull/2079)
 - Keep the folding space before an encoded word that follows a plain word - by @FathiBenNasr
   [#2087](https://github.com/the-djmaze/snappymail/pull/2087)
-- Reply quotes only the nested quoted email when the sender's HTML contains a <body> inside a blockquote
+- Reply quotes only the nested quoted email when the sender's HTML contains a `<body>` inside a blockquote
   [#2089](https://github.com/the-djmaze/snappymail/issues/2089)
 - Plugin JS cache key ignores Admin/User scope - by @SaJeTek-Developer
   [#2097](https://github.com/the-djmaze/snappymail/issues/2097)
