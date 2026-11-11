@@ -152,7 +152,9 @@ class Utils
 				'Home Street', 'Home City', 'Home State', 'Home Postal Code', 'Home Country',
 				'Business Email', 'Business Phone',
 				'Business Street', 'Business City', 'Business State', 'Business Postal Code', 'Business Country'
-			));
+			),
+			// the $escape parameter must be provided as its default value will change
+			',','"','\\');
 		}
 
 		$aName = isset($oVCard->N) ? $oVCard->N->getParts() : ['','','','',''];
@@ -195,7 +197,9 @@ class Utils
 			$adrWork[4],                // State
 			$adrWork[5],                // Postal Code
 			$adrWork[6]                 // Country
-		));
+		),
+		// the $escape parameter must be provided as its default value will change
+		',','"','\\');
 	}
 
 	public static function VcfStreamToContacts(/*resource*/ $rFile): iterable
