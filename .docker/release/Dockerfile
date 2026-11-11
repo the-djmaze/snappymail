@@ -8,7 +8,7 @@ WORKDIR /source
 COPY package.json yarn.lock ./
 RUN yarn install
 COPY . .
-RUN php cli/release.php
+RUN php cli/release.php --phar
 RUN set -eux; \
     VERSION=$( ls build/dist/releases/webmail ); \
     ls -al build/dist/releases/webmail/$VERSION/snappymail-$VERSION.tar.gz; \

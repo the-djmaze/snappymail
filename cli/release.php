@@ -4,7 +4,7 @@ define('ROOT_DIR', dirname(__DIR__));
 chdir(ROOT_DIR);
 require ROOT_DIR . '/snappymail/v/0.0.0/app/libraries/snappymail/tar.php';
 
-$options = getopt('', ['aur','docker','plugins','plugins-all','skip-gulp','debian','nextcloud','owncloud','cpanel','sign']);
+$options = getopt('', ['aur','docker','plugins','plugins-all','skip-gulp','debian','nextcloud','owncloud','cpanel','sign','phar']);
 
 if (isset($options['plugins']) || isset($options['plugins-all'])) {
 	require(ROOT_DIR . '/build/plugins.php');
@@ -100,9 +100,12 @@ if (!$zip->open($zip_destination, ZIPARCHIVE::CREATE)) {
 	exit("Failed to create {$zip_destination}");
 }
 
-// Error: tar: corrupted octal value in tar header
-$tar = new \SnappyMail\TAR($tgz_destination);
-//$tar = new PharData($tar_destination);
+if (isset($options['phar'])) {
+	// Error: tar: corrupted octal value in tar header
+	$tar = new PharData($tar_destination);
+} else {
+	$tar = new \SnappyMail\TAR($tgz_destination);
+}
 
 $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('snappymail/v'), RecursiveIteratorIterator::SELF_FIRST);
 foreach ($files as $file) {
