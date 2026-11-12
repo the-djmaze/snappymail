@@ -38,7 +38,7 @@ class ResponseCollection extends \MailSo\Base\Collection
 		}
 
 		if ($oItem->ResponseType !== Enumerations\ResponseType::CONTINUATION) {
-			if (!$oItem->IsStatusResponse) {
+			if (!$oItem->ResponseStatus) {
 				throw new Exceptions\InvalidResponseException($this);
 			}
 

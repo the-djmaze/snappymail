@@ -12,7 +12,7 @@ class LdapMailAccountsPlugin extends AbstractPlugin
 {
 	const
 		NAME     = 'LDAP Mail Accounts',
-		VERSION  = '2.3',
+		VERSION  = '2.4',
 		AUTHOR   = 'cm-schl',
 		URL      = 'https://github.com/cm-sch',
 		RELEASE  = '2026-11-12',

@@ -3,15 +3,13 @@
 namespace RainLoop\Providers;
 
 use RainLoop\Model\Account;
+use RainLoop\Providers\Storage\IStorage;
 
 class Storage extends \RainLoop\Providers\AbstractProvider
 {
-	/**
-	 * @var \RainLoop\Providers\Storage\IStorage
-	 */
-	private $oDriver;
+	private IStorage $oDriver;
 
-	public function __construct(\RainLoop\Providers\Storage\IStorage $oDriver)
+	public function __construct(IStorage $oDriver)
 	{
 		$this->oDriver = $oDriver;
 	}

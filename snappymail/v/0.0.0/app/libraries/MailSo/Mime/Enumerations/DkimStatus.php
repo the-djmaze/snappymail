@@ -16,34 +16,13 @@ namespace MailSo\Mime\Enumerations;
  * @package Mime
  * @subpackage Enumerations
  */
-//enum DkimStatus:string
-//final class DkimStatus extends \BackedEnumString
-abstract class DkimStatus
+enum DkimStatus: string
 {
-	const NONE = 'none';
-	const PASS = 'pass';
-	const FAIL = 'fail';
-	const POLICY = 'policy';
-	const NEUTRAL = 'neutral';
-	const TEMP_ERROR = 'temperror';
-	const PREM_ERROR = 'permerror';
-
-	public static function verifyValue(string $sStatus) : bool
-	{
-		return \in_array($sStatus, array(
-			self::NONE,
-			self::PASS,
-			self::FAIL,
-			self::POLICY,
-			self::NEUTRAL,
-			self::TEMP_ERROR,
-			self::PREM_ERROR,
-		));
-	}
-
-	public static function normalizeValue(string $sStatus) : string
-	{
-		$sStatus = \strtolower(\trim($sStatus));
-		return self::verifyValue($sStatus) ? $sStatus : self::NONE;
-	}
+	case NONE = 'none';
+	case PASS = 'pass';
+	case FAIL = 'fail';
+	case POLICY = 'policy';
+	case NEUTRAL = 'neutral';
+	case TEMP_ERROR = 'temperror';
+	case PREM_ERROR = 'permerror';
 }

@@ -1,5 +1,7 @@
 
 :root {
+	color-scheme: light;
+
 	/* MAIN */
 	--main-color: #333;
 	--main-bg-color: #eee;
@@ -43,9 +45,154 @@
 
 	/* MESSAGE LIST */
 	--message-list-toolbar-bg-color: #eee;
+
+	--thm-toolbar-bg-image: linear-gradient(to bottom, #f4f4f4, #dfdfdf);
+}
+
+/* https://caniuse.com/?search=light-dark */
+:root {
+	color-scheme: light dark;
+
+	/* MAIN */
+	--main-color: light-dark(#333, #fff);
+	--main-bg-color: light-dark(#eee, #3C454D);
+	--main-bg-image: light-dark(url("images/background.jpg"), url("images/background-dark.jpg"));
+	--link-color: light-dark(#369, #6AE);
+	--border-color: light-dark(#ddd, #555);
+	--hr-color: light-dark(#eee, #666);
+
+	--panel-bg-clr: light-dark(#fff, #000);
+
+	/* LOADING */
+	--loading-color: light-dark(#000, #ddd);
+	--loading-text-shadow: light-dark(none, 0px 1px 0px rgba(0, 0, 0, 0.5));
+
+	/* LOGIN */
+	--login-color: light-dark(#eee, #eee);
+	--login-bg-color: light-dark(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+	--login-box-shadow: light-dark(none, 0px 2px 10px rgba(0,0,0,0.5));
+	--login-border: light-dark(none, none);
+	--login-border-radius: light-dark(7px, 7px);
+
+	/* MENU */
+	--dropdown-menu-color: light-dark(#333, #333);
+	--dropdown-menu-bg-color: light-dark(#fff, #fff);
+	--dropdown-menu-hover-bg-color: light-dark(#757575, #48525C);
+	--dropdown-menu-hover-color: light-dark(#eee, #eee);
+	--dropdown-menu-disable-color: light-dark(#999, #999);
+
+	/* FOLDERS */
+	--folders-color: light-dark(#333, #fff);
+	--folders-disabled-color: light-dark(#999, #aaa);
+	--folders-selected-color: light-dark(#eee, #fff);
+	--folders-selected-bg-color: light-dark(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+	--folders-focused-color: light-dark(#eee, #fff);
+	--folders-focused-bg-color: light-dark(rgba(0,0,0,0.7), rgba(0,0,0,0.7));
+	--folders-hover-color: light-dark(#eee, #fff);
+	--folders-hover-bg-color: light-dark(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+	--folders-drop-color: light-dark(#eee, #fff);
+	--folders-drop-bg-color: light-dark(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+
+	/* SETTINGS */
+	--settings-menu-color: light-dark(#333, #fff);
+	--settings-menu-selected-color: light-dark(#eee, #fff);
+	--settings-menu-selected-bg-color: light-dark(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+	--settings-menu-hover-color: light-dark(#eee, #fff);
+	--settings-menu-hover-bg-color: light-dark(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+
+	/* MESSAGES */
+	--message-list-toolbar-bg-color: light-dark(#eee, #222);
+	--message-header-bg-clr: light-dark(#f8f8f8, #222);
+
+	/* DIALOGS */
+	--dialog-clr: light-dark(#333, #fff);
+	--dialog-bg-clr: light-dark(#fff, #000);
+	--dialog-border-clr: light-dark(rgba(0,0,0,.3), #555);
+
+	/* FORMS */
+	--btn-clr: light-dark(#333, #fff);
+	--btn-bg-clr: light-dark(#fff, #000);
+	--btn-border-clr: light-dark(#fff, rgba(255,255,255,.20));
+
+	--input-clr: light-dark(#555, #fff);
+	--input-bg-clr: light-dark(#fff, #000);
+	--input-border-clr: light-dark(#ccc, #aaa);
+
+	--thm-toolbar-bg-image: light-dark(linear-gradient(to bottom, #f4f4f4, #dfdfdf), linear-gradient(to bottom,#444,#111));
+}
+
+#rl-app[data-color-scheme="light"] {
+	color-scheme: light;
+}
+#rl-app[data-color-scheme="dark"] {
+	color-scheme: dark;
+}
+
+::-webkit-scrollbar {
+	width: 0.8em;
 }
 
 .thm-message-list-top-toolbar, .thm-message-list-bottom-toolbar {
-    background-image: linear-gradient(to bottom, #f4f4f4, #dfdfdf) !important;
+    background-image: var(--thm-toolbar-bg-image) !important;
     background-repeat: repeat-x !important;
 }
+
+@media (prefers-color-scheme: dark) {
+	#rl-app:not([data-color-scheme="light"]) #V-Settings-About .rl-logo {
+		filter: invert(1);
+	}
+}
+#rl-app[data-color-scheme="dark"] #V-Settings-About .rl-logo {
+	filter: invert(1);
+}
+
+/*
+::-webkit-scrollbar-track {
+	background-color: #000;
+}
+::-webkit-scrollbar-thumb {
+	background: #666;
+	border-radius: 5px;
+	box-shadow: inset 0 0 3px #000;
+}
+
+.btn:not(.btn-success):not(.btn-warning):not(.btn-danger) {
+	box-shadow: inset 0 1px 0 rgba(0,0,0,.2), 0 1px 2px rgba(255,255,255,.05);
+	text-shadow: 0 -1px 0 rgba(255,255,255,.25);
+}
+.btn:not(.btn-success):not(.btn-warning):not(.btn-danger).active,
+.btn:not(.btn-success):not(.btn-warning):not(.btn-danger):active {
+	box-shadow: inset 0 2px 4px rgba(255,255,255,.5), 0 1px 2px rgba(255,255,255,.25);
+}
+.btn .icon-spinner {
+	border-color: #333;
+	border-top-color: #ccc;
+}
+
+.messageListItem {
+	border-left-color: #111;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+	background-color: #333;
+}
+
+.table-striped tbody tr:nth-child(2n+1) td,
+.table-striped tbody tr:nth-child(2n+1) th {
+	background-color: #111;
+}
+
+.tabs [id^="tab"]:checked + label {
+	background: linear-gradient(#555 0%, #000 100%);
+}
+
+.select, select {
+	background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIGhlaWdodD0nMTBweCcgd2lkdGg9JzE1cHgnPjx0ZXh0IHg9JzAnIHk9JzEwJyBmaWxsPSdyZ2IoMjU1LDI1NSwyNTUpJz7ilr48L3RleHQ+PC9zdmc+);
+}
+
+#messageItem .b-text-part blockquote,
+.b-settings-general .editMainIdentity {
+	border-color: #999;
+}
+*/

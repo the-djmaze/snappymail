@@ -91,8 +91,8 @@ class ESEARCH extends Request
 				$this->oImapClient->writeLogException(new \MailSo\RuntimeException('MULTISEARCH is not supported'), \LOG_ERR);
 			}
 			$sCmd = 'ESEARCH';
-			$aReques[] = 'IN';
-			$aReques[] = $aFolders;
+			$aRequest[] = 'IN';
+			$aRequest[] = $aFolders;
 		}
 
 		if (\strlen($this->sCharset)) {

@@ -70,7 +70,7 @@ abstract class DNS
 	public static function SRV(string $domain) : array
 	{
 		$result = array();
-		foreach (\dns_get_record($host, \DNS_SRV) ?: array() as $record) {
+		foreach (\dns_get_record($domain, \DNS_SRV) ?: array() as $record) {
 			$result[$record['pri']] = $record;
 		}
 		\ksort($result);

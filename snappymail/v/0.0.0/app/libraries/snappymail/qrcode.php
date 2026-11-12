@@ -28,7 +28,7 @@ class QRCode implements \Stringable
 		ERROR_CORRECT_LEVEL_Q = 3, // 25%
 		ERROR_CORRECT_LEVEL_H = 2; // 30%
 
-	protected int $typeNumber = 1;
+	protected int $typeNumber = 0;
 
 	protected array $modules;
 
@@ -415,6 +415,9 @@ class QRCode implements \Stringable
 
 	public function make() : void
 	{
+		if (!$this->typeNumber) {
+			throw new \LogicException('typeNumber must be set first');
+		}
 		$this->makeImpl(false, $this->getBestMaskPattern());
 	}
 
@@ -428,11 +431,24 @@ class QRCode implements \Stringable
 		$length = $qrData->getLength();
 		$mode   = $qrData->getMode();
 
+		/**
+		 * Ten is the largest version this table describes. Falling out of the
+		 * loop without a match used to leave the default type in place, so
+		 * make() then failed deep inside with "code length overflow (1756>128)",
+		 * which says nothing about the data being too long for any QR code we
+		 * can produce.
+		 */
+		$bFits = false;
 		for ($typeNumber = 1; $typeNumber <= 10; ++$typeNumber) {
 			if ($length <= QRUtil::getMaxLength($typeNumber, $mode, $errorCorrectLevel)) {
 				$qr->setTypeNumber($typeNumber);
+				$bFits = true;
 				break;
 			}
+		}
+		if (!$bFits) {
+			throw new \OutOfBoundsException('Data too long for a QR code: ' . $length
+				. ' > ' . QRUtil::getMaxLength(10, $mode, $errorCorrectLevel));
 		}
 
 		$qr->make();

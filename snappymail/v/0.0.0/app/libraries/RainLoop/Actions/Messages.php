@@ -800,6 +800,9 @@ trait Messages
 				if (!$sFrom || !\function_exists('mail')) {
 					throw new ClientException(Notifications::CantSendMessage);
 				}
+				if ($bDsn) {
+					$this->Logger()->Write('DSN was requested but PHP mail() cannot request one', \LOG_WARNING);
+				}
 				$oToCollection = $oMessage->GetTo();
 				if (!$oToCollection) {
 					throw new ClientException(Notifications::CantSendMessage);
@@ -839,7 +842,7 @@ trait Messages
 				}
 
 				if (!empty($sFrom)) {
-					$oSmtpClient->MailFrom($sFrom, 0, $bDsn, $bRequireTLS);
+					$oSmtpClient->MailFrom($sFrom, 0, $bDsn, $bRequireTLS, ($bDsn ? $oMessage->MessageId() : ''));
 				}
 
 				foreach ($oRcpt as /* @var $oEmail \MailSo\Mime\Email */ $oEmail) {

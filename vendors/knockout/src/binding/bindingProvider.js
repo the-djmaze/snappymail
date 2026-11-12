@@ -58,8 +58,8 @@ ko.bindingProvider = new class
                     bindingContext,
                     {
                         has: () => true,
-//                        get: (target, key) => target['$data'][key] || target[key]
-                        get: (target, key) => Reflect.has(target['$data'], key) ? target['$data'][key] : target[key]
+                        get: (target, key) => target['$data'][key] || target[key]
+//                        get: (target, key) => Reflect.has(target['$data'], key) ? target['$data'][key] : target[key]
                     }
                 );
                 return bindingFunction(bindingContext);

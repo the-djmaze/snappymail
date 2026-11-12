@@ -32,7 +32,7 @@ class Syslog extends \MailSo\Log\Driver
 	protected function writeImplementation($mDesc) : bool
 	{
 		$result = false;
-		if ($this->iLogLevel && \openlog('snappymail', LOG_ODELAY, LOG_USER)) {
+		if ($this->iLogLevel && \openlog(\SnappyMail\Log::ident(), LOG_ODELAY, LOG_USER)) {
 			$result = \syslog($this->iLogLevel, \is_array($mDesc) ? \implode(PHP_EOL, $mDesc) : $mDesc);
 			\closelog();
 		}

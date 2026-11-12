@@ -110,17 +110,31 @@ export const
 		async verify(message) {
 			const signed = message.pgpSigned(),
 				sender = message.from[0].email;
+			let result;
 			if (signed) {
-				// OpenPGP only when inline, else we must download the whole message
-				if (!signed.sigPartId && OpenPGPUserStore.hasPublicKeyForEmails([sender])) {
-					return OpenPGPUserStore.verify(message);
+				try {
+					// OpenPGP only when inline, else we must download the whole message
+					if (!signed.sigPartId && OpenPGPUserStore.hasPublicKeyForEmails([sender])) {
+						result = await OpenPGPUserStore.verify(message);
+					} else if (GnuPGUserStore.hasPublicKeyForEmails([sender])) {
+						result = await GnuPGUserStore.verify(message);
+					}
+					// Mailvelope can't
+					// https://github.com/mailvelope/mailvelope/issues/434
+				} catch (e) {
+					console.error(e);
+					result = {
+						fingerprint: null,
+						success: 0,
+						error: e.message
+					};
 				}
-				if (GnuPGUserStore.hasPublicKeyForEmails([sender])) {
-					return GnuPGUserStore.verify(message);
-				}
-				// Mailvelope can't
-				// https://github.com/mailvelope/mailvelope/issues/434
 			}
+			return result || {
+				fingerprint: null,
+				success: 0,
+				error: 'Signature verification failed'
+			};
 		}
 
 		getPublicKeyOfEmails(recipients) {

@@ -28,12 +28,12 @@ class Settings implements \JsonSerializable
 		$this->oProvider = $oProvider;
 	}
 
-	public function save() : bool
+	public function save(): bool
 	{
 		return $this->oProvider->Save($this->oAccount, $this);
 	}
 
-	public function toArray() : array
+	public function toArray(): array
 	{
 		return $this->aData;
 	}
@@ -41,7 +41,7 @@ class Settings implements \JsonSerializable
 //	public function jsonSerialize(): array
 	public function jsonSerialize(): mixed
 	{
-		return $this->aData;;
+		return $this->aData;
 	}
 
 	public function GetConf(string $sName, mixed $mDefValue = null): mixed

@@ -17,12 +17,15 @@ namespace MailSo\Imap;
  */
 class FetchResponse
 {
+	public ImapClient $oImapClient;
+
 	public Response $oImapResponse;
 
 	private ?array $aEnvelopeCache = null;
 
-	function __construct(Response $oImapResponse)
+	function __construct(Response $oImapResponse, ImapClient $oImapClient)
 	{
+		$this->oImapClient = $oImapClient;
 		$this->oImapResponse = $oImapResponse;
 	}
 
@@ -127,7 +130,7 @@ class FetchResponse
 	public static function isValidImapResponse(Response $oImapResponse): bool
 	{
 		return
-			!$oImapResponse->IsStatusResponse
+			!$oImapResponse->ResponseStatus
 			&& Enumerations\ResponseType::UNTAGGED === $oImapResponse->ResponseType
 			&& 3 < \count($oImapResponse->ResponseList) && 'FETCH' === $oImapResponse->ResponseList[2]
 			&& \is_array($oImapResponse->ResponseList[3]);

@@ -7,7 +7,7 @@ class SmtpUseFromAdrAccountPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME = 'Use From-Address-Account for smtp',
 		AUTHOR   = 'attike',
 		URL      = 'https://github.com/attike',
-		VERSION  = '1.2',
+		VERSION  = '1.3',
 		RELEASE  = '2026-11-12',
 		REQUIRED = '2.36.1',
 		CATEGORY = 'Filters',

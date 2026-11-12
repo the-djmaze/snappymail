@@ -32,7 +32,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function FetchIterate(array $aInputFetchItems, string $sIndexRange, bool $bIndexIsUid) : iterable
+	public function FetchIterate(array $aInputFetchItems, string $sIndexRange, bool $bIndexIsUid): iterable
 	{
 		if (!\strlen(\trim($sIndexRange))) {
 			$this->writeLogException(new \ValueError('$sIndexRange is empty'), \LOG_ERR);
@@ -112,7 +112,7 @@ trait Messages
 			foreach ($this->yieldUntaggedResponses() as $oResponse) {
 				if (FetchResponse::isValidImapResponse($oResponse)) {
 					if (FetchResponse::hasUidAndSize($oResponse)) {
-						yield new FetchResponse($oResponse);
+						yield new FetchResponse($oResponse, $this);
 					} else {
 						$this->logWrite('Skipped Imap Response! ['.$oResponse.']', \LOG_NOTICE);
 					}
@@ -123,7 +123,7 @@ trait Messages
 		}
 	}
 
-	public function Fetch(array $aInputFetchItems, string $sIndexRange, bool $bIndexIsUid) : array
+	public function Fetch(array $aInputFetchItems, string $sIndexRange, bool $bIndexIsUid): array
 	{
 		$aReturn = array();
 		foreach ($this->FetchIterate($aInputFetchItems, $sIndexRange, $bIndexIsUid) as $oFetchResponse) {
@@ -132,7 +132,7 @@ trait Messages
 		return $aReturn;
 	}
 
-	public function FetchMessagePart(int $iUid, string $sPartId) : string
+	public function FetchMessagePart(int $iUid, string $sPartId): string
 	{
 		if ('TEXT' === $sPartId) {
 			$oFetchResponse = $this->Fetch([
@@ -163,7 +163,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageAppendStream(string $sFolderName, $rMessageStream, int $iStreamSize, ?array $aFlagsList = null, int $iDateTime = 0) : ?int
+	public function MessageAppendStream(string $sFolderName, $rMessageStream, int $iStreamSize, ?array $aFlagsList = null, int $iDateTime = 0): ?int
 	{
 		if (!\is_resource($rMessageStream)) {
 			throw new \InvalidArgumentException('$rMessageStream must be a resource');
@@ -196,7 +196,7 @@ trait Messages
 		return $this->writeMessageStream($rMessageStream);
 	}
 
-	private function writeMessageStream($rMessageStream) : ?int
+	private function writeMessageStream($rMessageStream): ?int
 	{
 		$this->writeLog('Write to connection stream', \LOG_INFO);
 
@@ -225,7 +225,7 @@ trait Messages
 
 	/**
 	 * RFC 3502 MULTIAPPEND
-	public function MessageAppendStreams(string $sFolderName, $rMessageAppendStream, int $iStreamSize, ?array $aFlagsList = null, ?int &$iUid = null, int $iDateTime = 0) : ?int
+	public function MessageAppendStreams(string $sFolderName, $rMessageAppendStream, int $iStreamSize, ?array $aFlagsList = null, ?int &$iUid = null, int $iDateTime = 0): ?int
 	*/
 
 	/**
@@ -254,7 +254,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageMove(string $sFromFolder, string $sToFolder, SequenceSet $oRange) : void
+	public function MessageMove(string $sFromFolder, string $sToFolder, SequenceSet $oRange): void
 	{
 		if (!$sFromFolder || !$sToFolder || !\count($oRange)) {
 			$this->writeLogException(new \ValueError, \LOG_ERR);
@@ -278,7 +278,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageDelete(string $sFolder, SequenceSet $oRange, bool $bExpungeAll = false) : void
+	public function MessageDelete(string $sFolder, SequenceSet $oRange, bool $bExpungeAll = false): void
 	{
 		if (!$sFolder || !\count($oRange)) {
 			$this->writeLogException(new \ValueError, \LOG_ERR);
@@ -311,7 +311,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageReplaceStream(string $sFolderName, int $iUid, $rMessageStream, int $iStreamSize, ?array $aFlagsList = null, int $iDateTime = 0) : ?int
+	public function MessageReplaceStream(string $sFolderName, int $iUid, $rMessageStream, int $iStreamSize, ?array $aFlagsList = null, int $iDateTime = 0): ?int
 	{
 		if (1 > $iUid || !$this->hasCapability('REPLACE')) {
 			$this->FolderSelect($sFolderName);
@@ -355,7 +355,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageStoreFlag(SequenceSet $oRange, array $aInputStoreItems, StoreAction $eStoreAction) : ?ResponseCollection
+	public function MessageStoreFlag(SequenceSet $oRange, array $aInputStoreItems, StoreAction $eStoreAction): ?ResponseCollection
 	{
 		if (!\count($oRange) || !\count($aInputStoreItems)) {
 			return null;
@@ -382,7 +382,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageSort(array $aSortTypes, string $sSearchCriterias, bool $bReturnUid = true) : array
+	public function MessageSort(array $aSortTypes, string $sSearchCriterias, bool $bReturnUid = true): array
 	{
 		$oSort = new \MailSo\Imap\Requests\SORT($this);
 		$oSort->sCriterias = $sSearchCriterias ?: 'ALL';
@@ -411,7 +411,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageESearch(string $sSearchCriterias, ?array $aSearchReturn = null, bool $bReturnUid = true, string $sLimit = '') : array
+	public function MessageESearch(string $sSearchCriterias, ?array $aSearchReturn = null, bool $bReturnUid = true, string $sLimit = ''): array
 	{
 		$oESearch = new \MailSo\Imap\Requests\ESEARCH($this);
 		$oESearch->sCriterias = $sSearchCriterias ?: 'ALL';
@@ -432,7 +432,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageESort(array $aSortTypes, string $sSearchCriterias, array $aSearchReturn = ['ALL'], bool $bReturnUid = true, string $sLimit = '') : array
+	public function MessageESort(array $aSortTypes, string $sSearchCriterias, array $aSearchReturn = ['ALL'], bool $bReturnUid = true, string $sLimit = ''): array
 	{
 		$oSort = new \MailSo\Imap\Requests\SORT($this);
 		$oSort->sCriterias = $sSearchCriterias ?: 'ALL';
@@ -450,7 +450,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageSearch(string $sSearchCriterias, bool $bReturnUid = true) : array
+	public function MessageSearch(string $sSearchCriterias, bool $bReturnUid = true): array
 	{
 		$aRequest = array();
 //		if (!$this->UTF8 && !\mb_check_encoding($sSearchCriterias, 'UTF-8')) {
@@ -501,7 +501,7 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageThread(string $sSearchCriterias, string $sAlgorithm = '', $bReturnUid = true) : iterable
+	public function MessageThread(string $sSearchCriterias, string $sAlgorithm = '', $bReturnUid = true): iterable
 	{
 		$oThread = new \MailSo\Imap\Requests\THREAD($this);
 		$oThread->sCriterias = $sSearchCriterias ?: 'ALL';
@@ -514,7 +514,7 @@ trait Messages
 		yield from $oThread->SendRequestIterateResponse();
 	}
 
-	private function getSimpleESearchOrESortResult(bool $bReturnUid) : array
+	private function getSimpleESearchOrESortResult(bool $bReturnUid): array
 	{
 		$sRequestTag = $this->getCurrentTag();
 		$aResult = array();

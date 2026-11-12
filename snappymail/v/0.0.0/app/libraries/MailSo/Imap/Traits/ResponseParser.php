@@ -57,7 +57,7 @@ trait ResponseParser
 	 */
 	private static function skipSquareBracketParse(Response $oImapResponse) : bool
 	{
-		return !$oImapResponse->IsStatusResponse || 2 < \count($oImapResponse->ResponseList);
+		return !$oImapResponse->ResponseStatus || 2 < \count($oImapResponse->ResponseList);
 	}
 
 	private $sResponseBuffer = '';
@@ -144,7 +144,7 @@ trait ResponseParser
 						$sAtomBuilder .= $sChar . $mResult . ('[' === $sChar ? ']' : ')');
 					} else {
 						$aResponseList[] = $mResult;
-						if ($bRoot && $oImapResponse->IsStatusResponse) {
+						if ($bRoot && $oImapResponse->ResponseStatus) {
 							$oImapResponse->OptionalResponse = $mResult;
 							$bIsGotoDefault = true;
 						}
@@ -239,7 +239,7 @@ trait ResponseParser
 				default:
 					$iCharBlockStartPos = $iPos;
 
-					if ($bRoot && $oImapResponse->IsStatusResponse) {
+					if ($bRoot && $oImapResponse->ResponseStatus) {
 						$iPos = $iBufferEndIndex;
 						if ($iPos > $iCharBlockStartPos) {
 							$iCharBlockStartPos += \strspn($this->sResponseBuffer, ' ', $iCharBlockStartPos, $iPos - $iCharBlockStartPos);
@@ -310,7 +310,7 @@ trait ResponseParser
 								$oImapResponse->setStatus($aResponseList[1]);
 							}
 							else if (ResponseType::CONTINUATION === $oImapResponse->ResponseType
-								|| $oImapResponse->IsStatusResponse)
+								|| $oImapResponse->ResponseStatus)
 							{
 								$oImapResponse->HumanReadable = $sLastCharBlock;
 							}

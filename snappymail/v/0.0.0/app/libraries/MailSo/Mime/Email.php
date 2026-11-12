@@ -12,6 +12,7 @@
 namespace MailSo\Mime;
 
 use MailSo\Base\Utils;
+use MailSo\Mime\Enumerations\DkimStatus;
 
 /**
  * @category MailSo
@@ -29,7 +30,7 @@ class Email implements \JsonSerializable
 	 */
 	private string $sEmail;
 
-	private string $sDkimStatus = Enumerations\DkimStatus::NONE;
+	private DkimStatus $eDkimStatus = DkimStatus::NONE;
 
 	/**
 	 * @throws \ValueError
@@ -185,7 +186,7 @@ class Email implements \JsonSerializable
 
 	public function SetDkimStatus(string $sDkimStatus): void
 	{
-		$this->sDkimStatus = Enumerations\DkimStatus::normalizeValue($sDkimStatus);
+		$this->eDkimStatus = DkimStatus::tryFrom(\strtolower(\trim($sDkimStatus))) ?? DkimStatus::NONE;
 	}
 
 	public function ToString(bool $bConvertSpecialsName = false, bool $bUtf8 = false): string
@@ -217,7 +218,7 @@ class Email implements \JsonSerializable
 			'@Object' => 'Object/Email',
 			'name' => Utils::Utf8Clear($this->sDisplayName),
 			'email' => Utils::Utf8Clear($this->GetEmailUtf8()),
-			'dkimStatus' => $this->sDkimStatus
+			'dkimStatus' => $this->eDkimStatus->value
 		);
 	}
 }

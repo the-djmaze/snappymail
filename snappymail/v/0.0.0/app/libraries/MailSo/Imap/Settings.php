@@ -38,6 +38,18 @@ class Settings extends \MailSo\Net\ConnectSettings
 		$virus_headers = 'rspamd,clamav';
 
 	public array
+		/**
+		 * Which servers' DKIM, SPF and DMARC results to believe,
+		 * by authserv-id (the first field of an Authentication-Results header).
+		 * A sender can add that header itself, so a result not tied to a
+		 * server that handled the message says nothing.
+		 * Empty: the authserv-id of the topmost header is taken as the local one.
+		 * That covers the usual case, but a server which adds no results of its
+		 * own leaves the sender's header as the topmost, so name your own id
+		 * here if these results are shown.
+		 */
+		$authserv_ids = [],
+		/** IMAP capabilities to disable */
 		$disabled_capabilities = [];
 
 	public static function fromArray(array $aSettings): self
@@ -81,6 +93,10 @@ class Settings extends \MailSo\Net\ConnectSettings
 			if (isset($aSettings[$option])) {
 				$object->$option = (string) $aSettings[$option];
 			}
+		}
+
+		if (!empty($aSettings['authserv_ids']) && \is_array($aSettings['authserv_ids'])) {
+			$object->authserv_ids = $aSettings['authserv_ids'];
 		}
 
 		if (!empty($aSettings['disabled_capabilities']) && \is_array($aSettings['disabled_capabilities'])) {
@@ -139,7 +155,8 @@ class Settings extends \MailSo\Net\ConnectSettings
 				'search_filter' => $this->search_filter,
 				'spam_headers' => $this->spam_headers,
 				'virus_headers' => $this->virus_headers,
-//				'thread_limit' => $this->thread_limit
+//				'thread_limit' => $this->thread_limit,
+				'authserv_ids' => \array_values(\array_unique($this->authserv_ids)),
 				'disabled_capabilities' => \array_values(\array_unique($this->disabled_capabilities))
 			]
 		);

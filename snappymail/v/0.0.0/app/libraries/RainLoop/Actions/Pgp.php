@@ -78,13 +78,15 @@ trait Pgp
 			if (\is_dir($tmpdir) && \is_writable($tmpdir) && \substr(\sprintf('%o', \fileperms($tmpdir)), -4) === "0700") {
 				$link = $tmpdir . '/' . \md5($homedir . APP_SALT);
 				// Make sure the symbolic link points to $homedir
-				if (\is_link($link) && \readlink($link) !== $homedir) {
-					if (!\unlink($link)) {
+				$target = \is_link($link) ? \readlink($link) : '';
+				if ($target && $target !== $homedir) {
+					if (\unlink($link)) {
+						$target = false;
+					} else {
 						$this->logWrite("unlink('{$link}') failed", \LOG_WARNING, 'GnuPG');
 					}
 				}
-				if ((\is_link($link) && \readlink($link) === $homedir)
-				 || \symlink($homedir, $link)) {
+				if ($target ? ($target === $homedir) : \symlink($homedir, $link)) {
 					$homedir = $link;
 				} else {
 					$this->logWrite("symlink('{$homedir}', '{$link}') failed", \LOG_WARNING, 'GnuPG');

@@ -28,8 +28,6 @@ class Response
 
 	public string $HumanReadable = '';
 
-	public bool $IsStatusResponse = false;
-
 	public ?ResponseStatus $ResponseStatus = null;
 
 	public ResponseType $ResponseType = ResponseType::UNKNOWN;
@@ -50,7 +48,6 @@ class Response
 		$value = \strtoupper($value);
 		$this->StatusOrIndex = $value;
 		$this->ResponseStatus = ResponseStatus::tryFrom($value);
-		$this->IsStatusResponse = !!$this->ResponseStatus;
 	}
 
 	public function setTag(string $value) : void

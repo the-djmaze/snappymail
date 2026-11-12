@@ -4,6 +4,16 @@ import { isArray, arrayLength } from 'Common/Utils';
 import { cssLink, serverRequestRaw } from 'Common/Links';
 import { SaveSettingStatus } from 'Common/Enums';
 import { addSubscribablesTo } from 'External/ko';
+import * as Local from 'Storage/Client';
+
+const CLR_SCHEME_KEY = 'sm_color_scheme',
+	CLR_SCHEME_ATTR = 'data-color-scheme',
+
+	setHasColorSchemeMode = () =>
+		ThemeStore.hasColorSchemeMode(
+			/color-scheme:\s*light dark/.test(elementById('app-theme-style').textContent)
+		);
+
 
 let __themeTimer = 0;
 
@@ -21,7 +31,9 @@ export const
 		fontSansSerif: ko.observable(''),
 		fontSerif: ko.observable(''),
 		fontMono: ko.observable(''),
-		isMobile: ko.observable(false)
+		isMobile: ko.observable(false),
+		hasColorSchemeMode: ko.observable(false),
+		colorSchemeMode: ko.observable('')
 	},
 
 	initThemes = () => {
@@ -40,6 +52,8 @@ export const
 		ThemeStore.fontMono(SettingsGet('fontMono'));
 
 		leftPanelDisabled(ThemeStore.isMobile());
+
+		setHasColorSchemeMode();
 	},
 
 	changeTheme = (value, themeTrigger = ()=>0) => {
@@ -59,6 +73,7 @@ export const
 					if (2 === arrayLength(data)) {
 						themeStyle.textContent = data[1];
 						themeStyle.dataset.name = value;
+						setHasColorSchemeMode();
 						themeTrigger(SaveSettingStatus.Success);
 					}
 					clearTimer();
@@ -66,7 +81,33 @@ export const
 		}
 	},
 
-	convertThemeName = theme => theme.replace(/@[a-z]+$/, '').replace(/([A-Z])/g, ' $1').trim();
+	convertThemeName = theme => theme.replace(/@[a-z]+$/, '').replace(/([A-Z])/g, ' $1').trim(),
+
+	initColorSchemeToggle = () => {
+		const stored = Local.get(CLR_SCHEME_KEY);
+		if (stored) {
+			ThemeStore.colorSchemeMode(stored);
+		}
+		// When the theme CSS changes dynamically (user switches theme in Settings),
+		// re-set the attribute to force the browser to re-evaluate [data-color-scheme]
+		// selectors in the newly loaded theme stylesheet.
+		const themeStyle = document.getElementById('app-theme-style');
+		if (themeStyle) {
+			new MutationObserver(() => {
+				const mode = ThemeStore.colorSchemeMode();
+				if (mode) {
+					appEl.removeAttribute(CLR_SCHEME_ATTR);
+					requestAnimationFrame(() =>
+						appEl.setAttribute(CLR_SCHEME_ATTR, mode)
+					);
+				}
+			}).observe(themeStyle, { childList: true, characterData: true, subtree: true });
+		}
+	},
+	setLightMode  = () => ThemeStore.colorSchemeMode('light'),
+	setDarkMode   = () => ThemeStore.colorSchemeMode('dark'),
+	setSystemMode = () => ThemeStore.colorSchemeMode('')
+;
 
 addSubscribablesTo(ThemeStore, {
 	fontSansSerif: value => {
@@ -100,6 +141,15 @@ addSubscribablesTo(ThemeStore, {
 	userBackgroundHash: value => {
 		appEl.classList.toggle('UserBackground', !!value);
 		appEl.style.backgroundImage = value ? "url("+serverRequestRaw('UserBackground', value)+")" : null;
+	},
+
+	colorSchemeMode: value => {
+		if (value) {
+			appEl.setAttribute(CLR_SCHEME_ATTR, value);
+		} else {
+			appEl.removeAttribute(CLR_SCHEME_ATTR);
+		}
+		Local.set(CLR_SCHEME_KEY, value);
 	}
 });
 

@@ -3,6 +3,13 @@ if (defined('APP_VERSION_ROOT_PATH')) {
 	return;
 }
 
+// PHP 8.4
+/*
+if (PHP_VERSION_ID < 80400) {
+	require __DIR__ . '/app/libraries/polyfill/php84.php';
+}
+*/
+
 if (!extension_loaded('ctype')) {
 	require __DIR__ . '/app/libraries/polyfill/ctype.php';
 }
@@ -25,7 +32,6 @@ if (!defined('APP_INDEX_ROOT_PATH')) {
 // revoke permissions
 umask(0077);
 
-ini_set('register_globals', '0');
 ini_set('xdebug.max_nesting_level', '500');
 
 define('APP_VERSION_ROOT_PATH', __DIR__ . DIRECTORY_SEPARATOR);

@@ -8,9 +8,7 @@ WORKDIR /source
 COPY package.json yarn.lock ./
 RUN yarn install
 COPY . .
-# Patch release.php with hotfix from: https://github.com/xgbstar1/snappymail-docker/blob/main/Dockerfile, so that release.php doesn't fail with error
-RUN sed -i 's_^if.*rename.*snappymail.v.0.0.0.*$_if (!!system("mv snappymail/v/0.0.0 snappymail/v/{$package->version}")) {_' cli/release.php  || true
-RUN php release.php
+RUN php cli/release.php --phar
 RUN set -eux; \
     VERSION=$( ls build/dist/releases/webmail ); \
     ls -al build/dist/releases/webmail/$VERSION/snappymail-$VERSION.tar.gz; \

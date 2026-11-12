@@ -136,6 +136,10 @@
 					<label data-i18n="POPUPS_DOMAIN/VALID_VIRUS_HEADERS"></label>
 					<input name="IMAP[virus_headers]" type="text" class="span3" data-bind="textInput: imapVirus_headers" title="rspamd,clamav">
 				</div>
+				<div class="control-group">
+					<label>authserv-id</label>
+					<textarea name="IMAP[authserv_ids]" class="input-xxlarge" rows="4" data-bind="value: authserv_ids" tabindex="-1" placeholder=""></textarea>
+				</div>
 			</div>
 
 			<input type="radio" name="tabs" id="tab-smtp">

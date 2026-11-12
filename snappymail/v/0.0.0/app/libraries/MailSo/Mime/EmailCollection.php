@@ -159,7 +159,8 @@ class EmailCollection extends \MailSo\Base\Collection
 //	public function jsonSerialize(): array
 	public function jsonSerialize(): mixed
 	{
-		return \array_slice($this->getArrayCopy(), 0, 100);
+		return $this->getArrayCopy();
+//		return \array_slice($this->getArrayCopy(), 0, 100);
 	}
 
 }

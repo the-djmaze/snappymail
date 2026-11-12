@@ -175,46 +175,20 @@ class HeaderCollection extends \MailSo\Base\Collection
 	}
 
 	/**
-	 * Detects a message that was submitted and delivered entirely on this mail server
-	 * (e.g. user@domain.tld -> otheruser@domain.tld via Postfix+Dovecot LMTP), so it
-	 * never passed through the public internet and SPF/DKIM/DMARC results are not
-	 * meaningful (they'll typically be missing or fail).
-	 *
-	 * Only the topmost Received header(s) are trusted: those are prepended by our own
-	 * MTA on final delivery, so a remote sender can't forge them by stuffing fake
-	 * "Received: ... with LMTP" lines into a message before we receive it -- those
-	 * would end up lower in the chain, behind the real hop our own server added.
-	 *
-	 * Recognizes the standard Postfix Received header wording:
-	 * - final hop:      "... by host (Postfix) with LMTP ..."
-	 * - submission hop: "... by host (Postfix) with ESMTPSA/ESMTPA ..." (SASL authenticated)
-	 */
-	public function IsLocalDelivery(): bool
-	{
-		$aReceived = $this->ValuesByName(Enumerations\Header::RECEIVED);
-		if (!$aReceived) {
-			return false;
-		}
-
-		$sLmtpHop = \preg_replace('/[\\r\\n\\t]+/', ' ', $aReceived[0]);
-		if (!\preg_match('/\\bwith\\s+LMTP\\b/i', $sLmtpHop)) {
-			return false;
-		}
-
-		if (!isset($aReceived[1])) {
-			return false;
-		}
-		$sSubmissionHop = \preg_replace('/[\\r\\n\\t]+/', ' ', $aReceived[1]);
-		return (bool) \preg_match('/\\bwith\\s+ESMTP(?:SA|A)\\b/i', $sSubmissionHop);
-	}
-
-	/**
 	 * https://www.rfc-editor.org/rfc/rfc8601
-	 * dkim=pass header.d=domain.tld header.s=s1 header.b=F2SfoZWw;
-	 * spf=pass (ORIGINATING: domain of "snappymail@domain.tld" designates 0.0.0.0 as permitted sender) smtp.mailfrom="snappymail@domain.tld";
-	 * dmarc=fail reason="SPF not aligned (relaxed), DKIM not aligned (relaxed)" header.from=domain.tld (policy=none)
+	 *
+	 * Authentication-Results: ORIGINATING;
+	 *     dkim=pass header.d=domain.tld header.s=s1 header.b=F2SfoZWw;
+	 *     spf=pass (ORIGINATING: domain of "snappymail@domain.tld" designates 0.0.0.0 as permitted sender) smtp.mailfrom="snappymail@domain.tld";
+	 *     dmarc=fail reason="SPF not aligned (relaxed), DKIM not aligned (relaxed)" header.from=domain.tld (policy=none)
+	 *
+	 * Authentication-Results: mx.google.com;
+	 *     dkim=pass header.i=@accounts.google.com header.s=20260707 header.b="eKSe+nU/";
+	 *     spf=pass (google.com: domain of 1db@gaia.bounces.google.com designates 1.2.3.4 as permitted sender) smtp.mailfrom=1DB@gaia.bounces.google.com;
+	 *     dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=accounts.google.com;
+	 *     dara=pass header.i=@gmail.com
 	 */
-	public function AuthStatuses(string $sTrustedIds = ''): array
+	public function AuthStatuses(array $aTrustedIds = []): array
 	{
 		$aResult = [
 			'dkim' => [],
@@ -225,12 +199,12 @@ class HeaderCollection extends \MailSo\Base\Collection
 
 		/**
 		 * A sender can add this header itself, so a result is only worth reading when the
-		 * server that wrote it handled the message. $sTrustedIds names those servers by
+		 * server that wrote it handled the message. $aTrustedIds names those servers by
 		 * authserv-id; with none given, the authserv-id of the topmost header is taken as
 		 * the local one, which keeps the separate headers an opendkim and an opendmarc
 		 * each add. See RFC 8601 section 7.1.
 		 */
-		$aTrusted = \array_filter(\preg_split('/[\\s,;]+/', \strtolower(\trim($sTrustedIds))));
+		$aTrusted = \array_filter(\array_map(fn($id) => \strtolower(\trim($id)), $aTrustedIds));
 		$bConfigured = !!\count($aTrusted);
 		if (\count($aHeaders)) {
 			// The authserv-id is the first field, before the first ";". A version number
@@ -274,6 +248,16 @@ class HeaderCollection extends \MailSo\Base\Collection
 					$aResult['dkim'][] = array($aStatus[1], \trim($aHeader[1]), $sHeaderValue);
 				}
 				break;
+			}
+		}
+
+		// Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=1.2.3.4; helo=smtp.example.com; envelope-from=c1iwe954kj8mec@bounces.example.com; receiver=<UNKNOWN>
+		if (empty($aResult['spf'])) {
+			$aHeaders = $this->ValuesByName(Enumerations\Header::RECEIVED_SPF);
+			if (!empty($aHeaders[0])
+			 && \preg_match('/^Pass.+identity=([^\s]+)/i', $aHeaders[0], $aStatus) && !empty($aStatus[1])
+			) {
+				$aResult['spf'][] = array('pass', \trim($aStatus[1]), $aHeaders[0]);
 			}
 		}
 

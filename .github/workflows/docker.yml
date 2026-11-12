@@ -1,9 +1,10 @@
 name: docker
 
 on:
+  workflow_dispatch:
   push:
     tags:
-    - 'v2.*'
+    - 'v3.*'
 
 # This is needed to push to GitHub Container Registry. See https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
 permissions:

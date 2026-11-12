@@ -35,7 +35,7 @@ class SequenceSet /*extends \SplFixedArray*/ implements \Countable
 	{
 		if (\is_array($mItems)) {
 			$this->data = \array_values($uid ? \array_filter(\array_map(function($id){
-				return \preg_match('/^([0-9]+|\\*):([0-9]+|\\*)/', $id, $dummy) ? $id : \intval($id);
+				return \preg_match('/^([0-9]+|\\*):([0-9]+|\\*)$/D', (string) $id, $dummy) ? $id : \intval($id);
 			}, $mItems)) : $mItems);
 		} else if (\is_scalar($mItems)) {
 			$this->data[] = $mItems;

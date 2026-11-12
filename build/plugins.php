@@ -145,8 +145,11 @@ foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 			$tgz_destination = PLUGINS_DEST_DIR . "/{$name}-{$version}.tgz";
 			@unlink($tgz_destination);
 			@unlink("{$tar_destination}.gz");
-			$tar = new \SnappyMail\TAR($tgz_destination);
-//			$tar = new PharData($tar_destination);
+			if (isset($options['phar'])) {
+				$tar = new PharData($tar_destination);
+			} else {
+				$tar = new \SnappyMail\TAR($tgz_destination);
+			}
 			$tar->buildFromDirectory('./plugins/', '/' . \preg_quote("./plugins/{$name}/", '/') . '((?!\.bak).)*$/');
 			if ($tar instanceof PharData) {
 /*

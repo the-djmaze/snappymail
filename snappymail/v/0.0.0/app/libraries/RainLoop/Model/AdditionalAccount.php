@@ -7,17 +7,17 @@ use RainLoop\Exceptions\ClientException;
 
 class AdditionalAccount extends Account
 {
-	public function ParentEmail() : string
+	public function ParentEmail(): string
 	{
 		return \SnappyMail\IDN::emailToAscii(\RainLoop\Api::Actions()->getMainAccountFromToken()->Email());
 	}
 
-	public function Hash() : string
+	public function Hash(): string
 	{
 		return \sha1(parent::Hash() . $this->ParentEmail());
 	}
 
-	public static function convertArray(array $aAccount) : array
+	public static function convertArray(array $aAccount): array
 	{
 		$aResult = parent::convertArray($aAccount);
 		$iCount = \count($aAccount);
@@ -27,7 +27,7 @@ class AdditionalAccount extends Account
 		return $aResult;
 	}
 
-	public function asTokenArray(MainAccount $oMainAccount) : array
+	public function asTokenArray(MainAccount $oMainAccount): array
 	{
 		$sHash = $oMainAccount->CryptKey();
 		$aData = $this->jsonSerialize();
@@ -42,7 +42,7 @@ class AdditionalAccount extends Account
 	public static function NewInstanceFromTokenArray(
 		\RainLoop\Actions $oActions,
 		array $aAccountHash,
-		bool $bThrowExceptionOnFalse = false) : ?Account /* PHP7.4: ?self*/
+		bool $bThrowExceptionOnFalse = false): ?self
 	{
 		$aAccountHash = static::convertArray($aAccountHash);
 		if (!empty($aAccountHash['email'])) {

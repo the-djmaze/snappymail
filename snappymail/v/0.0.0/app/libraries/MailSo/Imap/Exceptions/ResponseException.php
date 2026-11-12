@@ -32,7 +32,7 @@ class ResponseException extends \MailSo\RuntimeException
 	public function GetResponseStatus() : ?string
 	{
 		$oItem = $this->GetLastResponse();
-		return $oItem && $oItem->IsStatusResponse ? $oItem->StatusOrIndex : null;
+		return $oItem && $oItem->ResponseStatus ? $oItem->StatusOrIndex : null;
 	}
 
 	public function GetResponses() : ?\MailSo\Imap\ResponseCollection

@@ -232,7 +232,15 @@ trait UserAuth
 		$this->getMainAccountFromToken($bThrowExceptionOnFalse);
 
 		if (false === $this->oAdditionalAuthAccount && isset($_COOKIE[self::AUTH_ADDITIONAL_TOKEN_KEY])) {
-			$aData = Cookies::getSecure(self::AUTH_ADDITIONAL_TOKEN_KEY);
+			$reset = !empty($_COOKIE['smctoken']);
+			try {
+				$aData = Cookies::getSecure(self::AUTH_ADDITIONAL_TOKEN_KEY);
+			} catch (\Throwable $e) {
+				if ($reset) {
+					\SnappyMail\Cookies::clear(self::AUTH_ADDITIONAL_TOKEN_KEY);
+				}
+				throw $e;
+			}
 			if ($aData) {
 				$this->oAdditionalAuthAccount = AdditionalAccount::NewInstanceFromTokenArray(
 					$this,
@@ -257,7 +265,15 @@ trait UserAuth
 		if (false === $this->oMainAuthAccount) try {
 			$this->oMainAuthAccount = null;
 
-			$aData = Cookies::getSecure(self::AUTH_SPEC_TOKEN_KEY);
+			$reset = !empty($_COOKIE['smctoken']);
+			try {
+				$aData = Cookies::getSecure(self::AUTH_SPEC_TOKEN_KEY);
+			} catch (\Throwable $e) {
+				if ($reset) {
+					\SnappyMail\Cookies::clear(self::AUTH_SPEC_TOKEN_KEY);
+				}
+				throw $e;
+			}
 			if ($aData) {
 				/**
 				 * Server side control/kickout of logged in sessions
@@ -465,6 +481,8 @@ trait UserAuth
 			} else {
 				throw new ClientException(Notifications::AuthError, $oException);
 			}
+		} catch (\MailSo\Imap\Exceptions\NegativeResponseException $oException) {
+			throw new ClientException(Notifications::MailServerError, $oException);
 		} catch (\Throwable $oException) {
 			throw new ClientException(Notifications::AuthError, $oException);
 		}

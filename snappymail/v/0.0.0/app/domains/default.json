@@ -22,6 +22,7 @@
             "disable_compression": true,
             "security_level": 1
         },
+        "authserv_ids": [],
         "disabled_capabilities": [
             "METADATA",
             "OBJECTID",

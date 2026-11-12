@@ -10,8 +10,8 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME     = 'Avatars',
 		AUTHOR   = 'SnappyMail',
 		URL      = 'https://snappymail.eu/',
-		VERSION  = '1.22',
-		RELEASE  = '2025-03-10',
+		VERSION  = '1.23',
+		RELEASE  = '2026-11-11',
 		REQUIRED = '2.33.0',
 		CATEGORY = 'Contacts',
 		LICENSE  = 'MIT',
@@ -390,31 +390,37 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		if (\str_contains($sEmail, '@')) {
 			$sEmailId = \sha1($sEmailId);
 		}
-		\file_put_contents(
-			\APP_PRIVATE_DATA . 'avatars/' . $sEmailId . \SnappyMail\File\MimeType::toExtension($aResult[0]),
-			$aResult[1]
-		);
+
+		if (\str_contains($aResult[0], 'image/')) {
+			\file_put_contents(
+				\APP_PRIVATE_DATA . 'avatars/' . $sEmailId . \SnappyMail\File\MimeType::toExtension($aResult[0]),
+				$aResult[1]
+			);
+		}
 		\MailSo\Base\Http::setLastModified(\time());
 	}
 
 	private static function getCachedImage(string $sEmail) : ?array
 	{
 		$sEmail = \mb_strtolower(\SnappyMail\IDN::emailToAscii($sEmail));
-		$aFiles = \glob(\APP_PRIVATE_DATA . "avatars/{$sEmail}.*");
+		$aFiles = \glob(\APP_PRIVATE_DATA . 'avatars/' . \addcslashes($sEmail, '*?{}[]\\') . '.*');
 		if (!$aFiles && \str_contains($sEmail, '@')) {
 			$sEmailId = \sha1($sEmail);
 			$aFiles = \glob(\APP_PRIVATE_DATA . "avatars/{$sEmailId}.*");
 			if (!$aFiles) {
 				$sDomain = \explode('@', $sEmail);
-				$sDomain = \array_pop($sDomain);
+				$sDomain = \addcslashes(\array_pop($sDomain), '*?{}[]\\');
 				$aFiles = \glob(\APP_PRIVATE_DATA . "avatars/{$sDomain}.*");
 			}
 		}
-		if ($aFiles) {
-			return [
-				\SnappyMail\File\MimeType::fromFile($aFiles[0]),
-				\file_get_contents($aFiles[0])
-			];
+		foreach ($aFiles as $sFile) {
+			$type = \SnappyMail\File\MimeType::fromFile($sFile);
+			if (\str_contains($type, 'image/')) {
+				return [
+					$type,
+					\file_get_contents($sFile)
+				];
+			}
 		}
 		return null;
 	}

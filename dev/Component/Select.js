@@ -14,6 +14,7 @@ export class SelectComponent {
 		this.options = params.options;
 		this.optionsText = params.optionsText;
 		this.optionsValue = params.optionsValue;
+		this.disabled = params.disabled;
 
 		let size = 0 < params.size ? 'span' + params.size : '';
 		if (this.trigger) {

@@ -4,7 +4,7 @@ define('ROOT_DIR', dirname(__DIR__));
 chdir(ROOT_DIR);
 require ROOT_DIR . '/snappymail/v/0.0.0/app/libraries/snappymail/tar.php';
 
-$options = getopt('', ['aur','docker','plugins','plugins-all','skip-gulp','debian','nextcloud','owncloud','cpanel','sign']);
+$options = getopt('', ['aur','docker','plugins','plugins-all','skip-gulp','debian','nextcloud','owncloud','cpanel','sign','phar']);
 
 if (isset($options['plugins']) || isset($options['plugins-all'])) {
 	require(ROOT_DIR . '/build/plugins.php');
@@ -60,7 +60,7 @@ if (!isset($options['skip-gulp'])) {
 		exit("gulp failed with error code {$return_var}\n");
 	}
 
-	$cmddir = escapeshellcmd(ROOT_DIR) . '/snappymail/v/0.0.0/static';
+	$cmddir = ROOT_DIR . '/snappymail/v/0.0.0/static';
 
 	if ($gzip = trim(shell_exec('which gzip'))) {
 		echo "\x1b[33;1m === Gzip *.js and *.css === \x1b[0m\n";
@@ -84,8 +84,8 @@ if (!isset($options['skip-gulp'])) {
 }
 
 // Temporary rename folder to speed up PharData
-//if (!rename('snappymail/v/0.0.0', "snappymail/v/{$package->version}")){
-if (!rename('snappymail/v/0.0.0', "snappymail/v/{$package->version}")) {
+if (!rename('snappymail/v/0.0.0', "snappymail/v/{$package->version}")
+ && false === system("mv snappymail/v/0.0.0 snappymail/v/{$package->version}")) {
 	exit('Failed to temporary rename snappymail/v/0.0.0');
 }
 register_shutdown_function(function(){
@@ -100,8 +100,12 @@ if (!$zip->open($zip_destination, ZIPARCHIVE::CREATE)) {
 	exit("Failed to create {$zip_destination}");
 }
 
-$tar = new \SnappyMail\TAR($tgz_destination);
-//$tar = new PharData($tar_destination);
+if (isset($options['phar'])) {
+	// Error: tar: corrupted octal value in tar header
+	$tar = new PharData($tar_destination);
+} else {
+	$tar = new \SnappyMail\TAR($tgz_destination);
+}
 
 $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('snappymail/v'), RecursiveIteratorIterator::SELF_FIRST);
 foreach ($files as $file) {

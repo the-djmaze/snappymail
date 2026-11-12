@@ -39,7 +39,7 @@ class TAR
 				\trigger_error("{$this->alias} invalid header at offset " . \gztell($fp));
 				return false;
 			}
-			$header = \unpack("a100filename/a8mode/a8uid/a8gid/a12size/a12mtime/a8crc/a1type/a100linkname/a6magic/a2version/a32uname/a32gname/a8devmajor/a8devminor/a155path", $data);
+			$header = \unpack('a100filename/a8mode/a8uid/a8gid/a12size/a12mtime/a8crc/a1type/a100linkname/a6magic/a2version/a32uname/a32gname/a8devmajor/a8devminor/a155path', $data);
 			if (!\strlen(\trim($header['filename']))) {
 				\trigger_error("{$this->alias} invalid entry filename at offset " . \gztell($fp));
 				return false;
@@ -294,6 +294,10 @@ class TAR
 			$paxdata = "{$length} linkpath={$link}\n";
 			$link = '././@LongSymLink';
 		}
+		/* Add?
+		$paxdata .= "30 mtime=" . $this->stream_info->getMTime() . ".000000000\n"
+		$paxdata .= "30 ctime=" . $this->stream_info->getCTime() . ".000000000\n"
+		*/
 		$l = \strlen($name);
 		if (($paxdata?90:100) < $l) {
 			// split into name and prefix
@@ -327,10 +331,6 @@ class TAR
 			$paxname = \substr($paxname, 0, 98);
 		}
 		if ($paxdata) {
-			/* Add?
-			$data .= "30 mtime=1461056595.149922432\n"
-			$data .= "30 ctime=1461056595.149922432\n"
-			*/
 			$this->writeUStarEntryHeader(
 				$paxname ?: \preg_replace('#(^|/)([^/]+)$#', '$1PaxHeader/$2', $name),
 				'x',
@@ -351,31 +351,26 @@ class TAR
 		int $perm = 0, string $link = '', string $prefix  = ''
 	): void
 	{
-		$uid = 0; // $this->stream_info->getOwner(),
-		$gid = 0; // $this->stream_info->getGroup(),
-		$mtime = $this->stream_info->getMTime();
-		$data = \pack('a100a8a8a8a12A12',
+		$data = \pack('a100a8a8a8a12a12',
 			$name,
-			// values in octal
-			\sprintf("%06u ", \substr(\decoct($perm),-3)),
-			\sprintf("%06u ", \decoct($uid)),
-			\sprintf("%06u ", \decoct($gid)),
-			\sprintf("%011u ", \decoct($size)),
-			\sprintf("%011u", \decoct($mtime)));
-		$this->write($data);
+			\sprintf('%07u', \substr(\decoct($perm),-3)),
+			'',
+			'',
+			\sprintf('%011u', \decoct($size)),
+			\sprintf('%011u', \decoct($this->stream_info->getMTime()))
+		)
+		// When calculating the checksum, the chksum field is treated as if it were filled with spaces (ASCII 32).
+		// That's why add 8x32 = 256
+		. '        '
+		. \pack('a1a100a6a2a32a32a8a8a155a12', $type, $link, 'ustar', '00', '', '', '', '', $prefix, '');
+
+		$i = 512; // \strlen($data);
 		$checksum = 0;
-		$i = 148;
 		while ($i--) {
 			$checksum += \ord($data[$i]);
 		}
 
-		$data = \pack('a1a100a6a2a32a32a8a8a155a12', "{$type}", $link, 'ustar', '00', '', '', '000000 ', '000000 ', $prefix, '');
-		$checksum += 256;
-		$i = 356;
-		while ($i--) {
-			$checksum += \ord($data[$i]);
-		}
-
-		$this->write(\pack('a8', \sprintf('%06u ', \decoct($checksum))) . $data);
+		$data = \substr_replace($data, \sprintf('%07u', \decoct($checksum)), 148, 7);
+		$this->write($data);
 	}
 }

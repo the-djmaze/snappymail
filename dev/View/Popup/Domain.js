@@ -80,6 +80,7 @@ const
 				verify_peer_name: !!oDomain.imapSslVerify_peer(),
 				allow_self_signed: !!oDomain.imapSslAllow_self_signed()
 			},
+			authserv_ids: oDomain.imapAuthserv_ids(),
 			disabled_capabilities:  oDomain.imapDisabled_capabilities(),
 			folder_list_limit: pInt(oDomain.imapFolder_list_limit()),
 			message_list_limit: pInt(oDomain.imapMessage_list_limit()),
@@ -149,8 +150,11 @@ export class DomainPopupView extends AbstractViewPopup {
 			sieveHostFocus: false,
 			smtpHostFocus: false,
 
-			detectingConfig: false
+			detectingConfig: false,
+
+			authserv_ids: ''
 		});
+		this.imapAuthserv_ids = ko.observableArray();
 		this.imapDisabled_capabilities = ko.observableArray();
 		this.imapCapabilities = ko.observableArray();
 
@@ -188,6 +192,9 @@ export class DomainPopupView extends AbstractViewPopup {
 		});
 
 		addSubscribablesTo(this, {
+			authserv_ids: value => this.imapAuthserv_ids(value.split(/[\s,;]+/gs).validUnique()),
+			imapAuthserv_ids: value => this.authserv_ids(value.join('\n')),
+
 			// smart form improvements
 			imapHostFocus: value =>
 				value && this.name() && !this.imapHost() && this.imapHost(this.name().replace(/[.]?[*][.]?/g, '')),
@@ -384,6 +391,7 @@ export class DomainPopupView extends AbstractViewPopup {
 			this.aliasName(IDN.toUnicode(this.aliasName()));
 			this.imapCapabilities(this.imapCapabilities.concat(this.imapDisabled_capabilities()).unique());
 			this.enableSmartPorts(true);
+//			this.authserv_ids(this.imapAuthserv_ids().join('\n'));
 		}
 	}
 }

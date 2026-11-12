@@ -198,7 +198,7 @@ export class MailMessageView extends AbstractViewRight {
 			dkimIcon: () => {
 				switch (this.dkimData()[0]) {
 					case 'none':
-						return '🚫︎';
+						return '︎'; // 🚫
 					case 'pass':
 						return '✔';
 					default:
@@ -206,7 +206,7 @@ export class MailMessageView extends AbstractViewRight {
 				}
 			},
 			dkimIconClass: () => 'pass' === this.dkimData()[0] ? 'iconcolor-green' : 'iconcolor-red',
-			dkimTitle:() => {
+			dkimTitle: () => {
 				const dkim = this.dkimData();
 				return dkim[0] ? dkim[2] || 'DKIM: ' + dkim[0] : '';
 			},
@@ -214,7 +214,7 @@ export class MailMessageView extends AbstractViewRight {
 			spfIcon: () => {
 				switch (this.spfData()[0]) {
 					case 'none':
-						return '🚫︎';
+						return '︎'; // 🚫
 					case 'pass':
 						return '✔';
 					default:
@@ -230,7 +230,7 @@ export class MailMessageView extends AbstractViewRight {
 			dmarcIcon: () => {
 				switch (this.dmarcData()[0]) {
 					case 'none':
-						return '🚫︎';
+						return '︎'; // 🚫
 					case 'pass':
 						return '✔';
 					default:
@@ -267,6 +267,7 @@ export class MailMessageView extends AbstractViewRight {
 					this.dkimData(message.dkim[0] || ['none', '', '']);
 					this.spfData(message.spf[0] || ['none', '', '']);
 					this.dmarcData(message.dmarc[0] || ['none', '', '']);
+					this.localDelivery(message.headers().isLocalDelivery());
 					this.nowTracking(false);
 				} else {
 					MessagelistUserStore.selectedMessage(null);

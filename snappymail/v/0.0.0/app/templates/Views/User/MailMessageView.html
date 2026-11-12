@@ -143,7 +143,7 @@
 			<div class="informationShort">
 				<span class="from" data-bind="html: viewFromShort, attr:{ title: message().from }"></span>
 				<!-- ko if: localDelivery -->
-				<i class="fontastic iconcolor-green" data-bind="text: '✔', attr:{ title: localDeliveryTitle }"></i>
+				<i class="fontastic">✅</i>
 				<!-- /ko -->
 				<!-- ko ifnot: localDelivery -->
 				<i class="fontastic" data-bind="text: dkimIcon, css: dkimIconClass, attr:{ title: dkimTitle }"></i>

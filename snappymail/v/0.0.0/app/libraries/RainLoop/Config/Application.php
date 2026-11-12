@@ -87,7 +87,7 @@ class Application extends \RainLoop\Config\AbstractConfig
 		return $mResult;
 	}
 
-	public function Set(string $sSectionKey, string $sParamKey, $mParamValue): void
+	public function Set(string $sSectionKey, string $sParamKey, mixed $mParamValue): void
 	{
 		// Workarounds for the changed application structure
 		if ('webmail' === $sSectionKey) {
@@ -225,14 +225,6 @@ Warning: only enable when server does not do this, else double compression error
 				'gnupg'                   => array(true),
 				'openpgp'                 => array(true),
 				'auto_verify_signatures'  => array(false),
-
-				'trusted_authserv_ids'    => array('', 'Which servers\' DKIM, SPF and DMARC results to believe,
-by authserv-id (the first field of an Authentication-Results header), separated by
-spaces or commas. A sender can add that header itself, so a result not tied to a
-server that handled the message says nothing.
-Empty: the authserv-id of the topmost header is taken as the local one. That covers
-the usual case, but a server which adds no results of its own leaves the sender\'s
-header as the topmost, so name your own id here if these results are shown.'),
 
 				'allow_admin_panel'       => array(true, 'Access settings'),
 				'admin_login'             => array('admin', 'Login and password for web admin panel'),
@@ -394,6 +386,10 @@ Examples:
 				'auth_logging_filename' => array('fail2ban/auth-{date:Y-m-d}.txt'),
 				'auth_logging_format' => array('[{date:Y-m-d H:i:s}] Auth failed: ip={request:ip} user={imap:login} host={imap:host} port={imap:port}'),
 				'auth_syslog' => array(false, 'Enable auth logging to syslog for fail2ban'),
+
+				'syslog_ident' => array('snappymail', 'Name this instance reports to syslog and authpriv.
+Set it per instance when more than one runs on a host, otherwise their entries are
+indistinguishable. Also the name a fail2ban filter matches on.'),
 
 				'json_response_write_limit' => array(300),
 			),

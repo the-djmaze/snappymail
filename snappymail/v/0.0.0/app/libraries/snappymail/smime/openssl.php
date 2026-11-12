@@ -14,7 +14,6 @@ class OpenSSL
 	private array $headers = [];
 	private int $flags = 0;
 	private int $cipher_algo = \OPENSSL_CIPHER_AES_128_CBC; // \OPENSSL_CIPHER_AES_256_CBC
-	private ?string $untrusted_certificates_filename = null;
 
 	// Used for sign and decrypt
 	private $certificate; // OpenSSLCertificate|array|string
@@ -134,11 +133,7 @@ class OpenSSL
 
 	public function setCertificateChain(?string $certificateChain): void
 	{
-		if ($certificateChain === "") {
-			$this->certificateChain = null;
-		} else {
-			$this->certificateChain = $certificateChain;
-		}
+		$this->certificateChain = $certificateChain ?: null;
 	}
 
 	public function setPrivateKey(OpenSSLAsymmetricKey|string $privateKey,
@@ -226,23 +221,7 @@ class OpenSSL
 			throw new \RuntimeException('OpenSSL encrypt: ' . \openssl_error_string());
 		}
 
-		/**
-		 * Only fetch the body part
-		 */
-		$fp = $output->fopen();
-		// Skip headers
-		while (\trim(\fgets($fp)));
-		// Fetch the body
-		$encrypted = '';
-		do {
-			$line = \fgets($fp);
-			if (!\trim($line)) {
-				return $encrypted;
-			}
-			$encrypted .= $line;
-		} while (true);
-
-		return $data;
+		return static::fetchBody($output->fopen());
 	}
 
 	public function sign(string|Temporary $input, bool $detached = true): ?string
@@ -254,6 +233,7 @@ class OpenSSL
 			}
 			$input = $tmp;
 		}
+		$certificateChain = null;
 		if (\is_string($this->certificateChain)) {
 			$tmp = new Temporary('smimechain-');
 			if (!$tmp->putContents($this->certificateChain)) {
@@ -269,42 +249,25 @@ class OpenSSL
 			$this->privateKey,
 			$this->headers,
 			$detached ? \PKCS7_DETACHED | \PKCS7_BINARY : 0, // | PKCS7_NOCERTS | PKCS7_NOATTR
-			$certificateChain ?? null
+			$certificateChain
 		)) {
 			throw new \RuntimeException('OpenSSL sign: ' . \openssl_error_string());
 		}
 
-		/**
-		 * Only fetch the signed body part
-		 */
 		$fp = $output->fopen();
 		$micalg = '';
 		while (!\feof($fp)) {
 			$line = \fgets($fp);
-			$fp = $output->fopen();
-			while (!\feof($fp)) {
-				$line = \fgets($fp);
 /*
-				if (!$micalg && \str_contains($line, 'Content-Type: multipart/signed')) {
-					\preg_match('/micalg="([^"+])"/', $line, $match);
-					$micalg = $match[1];
-				}
+			if (!$micalg && \str_contains($line, 'Content-Type: multipart/signed')) {
+				\preg_match('/micalg="([^"+])"/', $line, $match);
+				$micalg = $match[1];
+			}
 */
-				if (($detached && \str_contains($line, 'Content-Type: application/x-pkcs7-signature'))
-				 || (!$detached && \str_contains($line, 'Content-Type: application/x-pkcs7-mime'))
-				) {
-					// Skip headers
-					while (\trim(\fgets($fp)));
-					// Fetch the body
-					$signature = '';
-					do {
-						$line = \fgets($fp);
-						if (!\trim($line)) {
-							return $signature;
-						}
-						$signature .= $line;
-					} while (true);
-				}
+			if (($detached && \str_contains($line, 'Content-Type: application/x-pkcs7-signature'))
+			 || (!$detached && \str_contains($line, 'Content-Type: application/x-pkcs7-mime'))
+			) {
+				return static::fetchBody($fp);
 			}
 		}
 
@@ -324,6 +287,14 @@ class OpenSSL
 			$opaque |= \str_contains($input, 'application/pkcs7-mime') || \str_contains($input, 'application/x-pkcs7-mime');
 			$input = $tmp;
 		}
+		$certificateChain = null;
+		if (\is_string($this->certificateChain)) {
+			$tmp = new Temporary('smimechain-');
+			if (!$tmp->putContents($this->certificateChain)) {
+				return null;
+			}
+			$certificateChain = $tmp;
+		}
 		// First pass extracts the content and nothing else: PKCS7_NOSIGS skips the
 		// signature check, so a message with a broken signature can still be read.
 		$output = $opaque ? new Temporary('smimeout-') : null;
@@ -332,7 +303,7 @@ class OpenSSL
 			\PKCS7_NOVERIFY | \PKCS7_NOCHAIN | \PKCS7_NOSIGS,
 			$signers_certificates_filename ?: null,
 			$ca_info = [],
-			$this->untrusted_certificates_filename,
+			$certificateChain,
 			$output ? $output->filename() : null,
 			$output_filename = null
 		)) {
@@ -350,11 +321,29 @@ class OpenSSL
 			\PKCS7_NOVERIFY,
 			null,
 			[],
-			$this->untrusted_certificates_filename
+			$certificateChain
 		);
 		return [
 			'body' => $output ? $output->getContents() : null,
 			'success' => true === $verified
 		];
+	}
+
+	private static function fetchBody($fp): ?string
+	{
+		// Skip headers
+		while (\trim(\fgets($fp)));
+		// Fetch the body
+		$result = '';
+		do {
+			$line = \fgets($fp);
+//			if (!\trim($line)) {
+			if (false === $line) {
+				return $result;
+			}
+			$result .= $line;
+//		} while (true);
+		} while (!feof($fp));
+		return null;
 	}
 }

@@ -147,7 +147,7 @@ class Message extends Part
 		return $oResult->Unique();
 	}
 
-	public function SetCustomHeader(string $sHeaderName, string $sValue) : self
+	public function SetCustomHeader(string $sHeaderName, string $sValue): self
 	{
 		$sHeaderName = \trim($sHeaderName);
 		if (\strlen($sHeaderName)) {

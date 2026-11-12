@@ -53,8 +53,7 @@ class Message implements \JsonSerializable
 		$iHeaderTimeStampInUTC = 0;
 
 	private bool
-		$bIsSpam = false,
-		$bLocalDelivery = false;
+		$bIsSpam = false;
 
 	private array
 		$SPF = [],
@@ -291,10 +290,7 @@ class Message implements \JsonSerializable
 				}
 			}
 
-			$oMessage->bLocalDelivery = $oHeaders->IsLocalDelivery();
-
-			$aAuth = $oHeaders->AuthStatuses();
-			$aAuth = $oHeaders->AuthStatuses(\RainLoop\Api::Config()->Get('security', 'trusted_authserv_ids', ''));
+			$aAuth = $oHeaders->AuthStatuses($oFetchResponse->oImapClient->Settings->authserv_ids);
 			$oMessage->SPF = $aAuth['spf'];
 			$oMessage->DKIM = $aAuth['dkim'];
 			$oMessage->DMARC = $aAuth['dmarc'];
@@ -532,7 +528,6 @@ class Message implements \JsonSerializable
 			'spf' => $this->SPF,
 			'dkim' => $this->DKIM,
 			'dmarc' => $this->DMARC,
-			'localDelivery' => $this->bLocalDelivery,
 
 			'flags' => $this->getFlags(),
 

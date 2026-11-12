@@ -4,7 +4,7 @@ class ChangePasswordPoppassdPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME     = 'Change Password Poppassd',
-		VERSION  = '2.37',
+		VERSION  = '2.38',
 		RELEASE  = '2026-11-12',
 		REQUIRED = '2.36.1',
 		CATEGORY = 'Security',

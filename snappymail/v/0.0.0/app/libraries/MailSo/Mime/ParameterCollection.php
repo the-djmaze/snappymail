@@ -111,7 +111,7 @@ class ParameterCollection extends \MailSo\Base\Collection
 			$aMatch = array();
 			$sParamName = $oParam->Name();
 
-			if (\preg_match('/([^\*]+)\*([\d]{1,2})\*/', $sParamName, $aMatch) && isset($aMatch[1], $aMatch[2])
+			if (\preg_match('/^([^*]+)\\*(\\d+)\\*?$/', $sParamName, $aMatch) && isset($aMatch[1], $aMatch[2])
 				&& \strlen($aMatch[1]) && \is_numeric($aMatch[2]))
 			{
 				if (!isset($aPreParams[$aMatch[1]])) {
@@ -130,7 +130,7 @@ class ParameterCollection extends \MailSo\Base\Collection
 
 				$aPreParams[$aMatch[1]][(int) $aMatch[2]] = $sValue;
 			}
-			else if (\preg_match('/([^\*]+)\*/', $sParamName, $aMatch) && isset($aMatch[1]))
+			else if (\preg_match('/^([^*]+)\\*$/', $sParamName, $aMatch) && isset($aMatch[1]))
 			{
 				if (!isset($aPreParams[$aMatch[1]])) {
 					$aPreParams[$aMatch[1]] = array();
