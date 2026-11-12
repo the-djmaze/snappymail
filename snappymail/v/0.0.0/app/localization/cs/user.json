@@ -20,7 +20,7 @@
 		"MORE": "Více",
 		"MOVE_TO": "Přesunout do",
 		"COPY_TO": "Kopírovat do",
-		"NAME": "Přijaté",
+		"NAME": "Jméno",
 		"NONE": "Žádný",
 		"TO_SPAM": "Přesunout zprávu(y) do spamu",
 		"NOT_SPAM": "Není to spam",
@@ -30,7 +30,7 @@
 		"REPLY_TO": "Adresa odpovědi",
 		"SAVE": "Uložit",
 		"SAVE_CHANGES": "Uložit změny?",
-		"SEARCH": "Nebyly nalezeny žádné kontakty",
+		"SEARCH": "Hledat",
 		"SPAM": "Spam",
 		"SUBJECT": "Předmět",
 		"TEST": "Test",
@@ -276,8 +276,8 @@
 		"TITLE_UPDATE_ACCOUNT": "Upravit účet"
 	},
 	"POPUPS_IDENTITY": {
-		"TITLE_ADD_IDENTITY": "Opravdu přidat",
-		"TITLE_UPDATE_IDENTITY": "Uložit změny",
+		"TITLE_ADD_IDENTITY": "Přidat identitu",
+		"TITLE_UPDATE_IDENTITY": "Upravit identitu",
 		"LABEL": "Štítek",
 		"BUTTON_ADD_IDENTITY": "Přidat",
 		"SIGNATURE": "Podpis",
