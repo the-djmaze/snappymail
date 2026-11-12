@@ -5,6 +5,9 @@
 			<span class="buttonComposeText" data-i18n="FOLDER_LIST/BUTTON_NEW_MESSAGE"></span>
 		</a>
 		<a class="btn buttonContacts fontastic" data-bind="visible: allowContacts, click: contactsClick" data-i18n="[title]GLOBAL/CONTACTS">📇</a>
+		<!-- ko foreach: pluginNavEntries -->
+		<a class="btn buttonPluginNav fontastic" data-bind="text: icon, attr: { title: title }, click: click"></a>
+		<!-- /ko -->
 	</div>
 	<div class="b-content">
 		<ul class="b-folders-system" data-bind="foreach: systemFolders">
