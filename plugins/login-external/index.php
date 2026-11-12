@@ -23,6 +23,8 @@ class LoginExternalPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$oActions = \RainLoop\Api::Actions();
 		$oActions->Http()->ServerNoCache();
 
+		$redirect = $this->Config()->Get('plugin', 'redirect', '');
+
 		$oAccount = null;
 		$oException = null;
 
@@ -61,9 +63,16 @@ class LoginExternalPlugin extends \RainLoop\Plugins\AbstractPlugin
 			}
 			echo \json_encode($aResult);
 		} else {
-			\MailSo\Base\Http::Location('./');
+			\MailSo\Base\Http::Location($redirect);
 		}
 		return true;
 	}
 
+	public function configMapping() : array
+	{
+		return array(
+			\RainLoop\Plugins\Property::NewInstance('redirect')->SetLabel('Redirect to location')
+				->SetDefaultValue('./'),
+ 		)     
+	}
 }
