@@ -67,11 +67,11 @@ class ChangePasswordDriverLDAP
 			'{email}' => $oAccount->Email(),
 			'{email:user}' => \MailSo\Base\Utils::getEmailAddressLocalPart($oAccount->Email()),
 			'{email:domain}' => $sDomain,
-			'{login}' => $oAccount->IncLogin(),
-			'{imap:login}' => $oAccount->IncLogin(),
+			'{login}' => $oAccount->ImapUser(),
+			'{imap:login}' => $oAccount->ImapUser(),
 			'{imap:host}' => $oAccount->Domain()->ImapSettings()->host,
 			'{imap:port}' => $oAccount->Domain()->ImapSettings()->port,
-			'{gecos}' => \function_exists('posix_getpwnam') ? \posix_getpwnam($oAccount->IncLogin()) : ''
+			'{gecos}' => \function_exists('posix_getpwnam') ? \posix_getpwnam($oAccount->ImapUser()) : ''
 		));
 
 		$oCon = \ldap_connect($this->sLdapUri);
@@ -92,25 +92,25 @@ class ChangePasswordDriverLDAP
 			throw new \Exception('ldap_start_tls error '.\ldap_errno($oCon).': '.\ldap_error($oCon));
 		}
 
-		if (!\ldap_bind($oCon, $sUserDn, $oPrevPassword)) {
+		if (!\ldap_bind($oCon, $sUserDn, $oPrevPassword->getValue())) {
 			throw new \Exception('ldap_bind error '.\ldap_errno($oCon).': '.\ldap_error($oCon));
 		}
 
 		$sSshaSalt = '';
 		$sPrefix = '{'.\strtoupper($this->sPasswordEncType).'}';
-		$sEncodedNewPassword = $oNewPassword;
+		$sEncodedNewPassword = $oNewPassword->getValue();
 		switch ($sPrefix)
 		{
 			case '{SSHA}':
 				$sSshaSalt = $this->getSalt(4);
 			case '{SHA}':
-				$sEncodedNewPassword = $sPrefix.\base64_encode(\hash('sha1', $oNewPassword.$sSshaSalt, true).$sSshaSalt);
+				$sEncodedNewPassword = $sPrefix.\base64_encode(\hash('sha1', $sEncodedNewPassword.$sSshaSalt, true).$sSshaSalt);
 				break;
 			case '{MD5}':
-				$sEncodedNewPassword = $sPrefix.\base64_encode(\md5($oNewPassword, true));
+				$sEncodedNewPassword = $sPrefix.\base64_encode(\md5($sEncodedNewPassword, true));
 				break;
 			case '{CRYPT}':
-				$sEncodedNewPassword = $sPrefix.\crypt($oNewPassword, $this->getSalt(2));
+				$sEncodedNewPassword = $sPrefix.\crypt($sEncodedNewPassword, $this->getSalt(2));
 				break;
 		}
 

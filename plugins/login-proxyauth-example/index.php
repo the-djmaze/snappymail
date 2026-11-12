@@ -4,9 +4,9 @@ class LoginProxyauthExamplePlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME     = 'Login PROXYAUTH',
-		VERSION  = '1.0',
-		RELEASE  = '2024-03-12',
-		REQUIRED = '2.35.3',
+		VERSION  = '1.1',
+		RELEASE  = '2026-11-12',
+		REQUIRED = '2.36.1',
 		CATEGORY = 'Login',
 		DESCRIPTION = 'IMAP login using PROXYAUTH';
 
@@ -27,7 +27,7 @@ class LoginProxyauthExamplePlugin extends \RainLoop\Plugins\AbstractPlugin
 	public function afterLogin(\RainLoop\Model\Account $oAccount, \MailSo\Imap\ImapClient $oImapClient, bool $bSuccess)
 	{
 		if ($bSuccess && 'example.com' === $oAccount->Domain()->Name()) {
-			$oImapClient->SendRequestGetResponse('PROXYAUTH', array($oImapClient->EscapeString($oAccount->IncLogin())));
+			$oImapClient->SendRequestGetResponse('PROXYAUTH', array($oImapClient->EscapeString($oAccount->ImapUser())));
 		}
 	}
 }

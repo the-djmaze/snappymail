@@ -63,7 +63,7 @@ class ChangePasswordHMailServerDriver
 				if ($oHmailDomain) {
 					$oHmailAccount = $oHmailDomain->Accounts->ItemByAddress($sEmail);
 					if ($oHmailAccount) {
-						$oHmailAccount->Password = (string) $oNewPassword;
+						$oHmailAccount->Password = $oNewPassword->getValue();
 						$oHmailAccount->Save();
 						$bResult = true;
 					} else {

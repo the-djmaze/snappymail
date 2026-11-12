@@ -79,7 +79,7 @@ class ChangePasswordCPanelDriver
 		$sHost = \str_replace('{user:domain}', $sEmailDomain, $sHost);
 		$sUser = \str_replace('{user:email}', $sEmail, $sUser);
 		$sUser = \str_replace('{user:login}', $sEmailUser, $sUser);
-		$sPassword = \str_replace('{user:password}', (string) $oPrevPassword, $sPassword);
+		$sPassword = \str_replace('{user:password}', $oPrevPassword->getValue(), $sPassword);
 
 		$bResult = false;
 		try
@@ -95,7 +95,7 @@ class ChangePasswordCPanelDriver
 			$aArgs = array(
 				'email' => $sEmailUser,
 				'domain' => $sEmailDomain,
-				'password' => $sNewPassword
+				'password' => $oNewPassword->getValue()
 			);
 
 			$sResult = $oJSONApi->api2_query($sUser, 'Email', 'passwdpop', $aArgs);

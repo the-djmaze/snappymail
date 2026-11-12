@@ -7,8 +7,8 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME     = 'Change Password',
-		VERSION  = '3.0',
-		RELEASE  = '2026-11-06',
+		VERSION  = '3.1',
+		RELEASE  = '2026-11-12',
 		REQUIRED = '3.0.1',
 		CATEGORY = 'Security',
 		DESCRIPTION = 'Extension to allow users to change their passwords';
@@ -31,7 +31,7 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$this->addTemplate('templates/SettingsChangePassword.html');
 	}
 
-	protected function getSupportedDrivers(bool $all = false) : iterable
+	protected function getSupportedDrivers(bool $all = false): iterable
 	{
 		if ($phar_file = \Phar::running()) {
 			$phar = new \Phar($phar_file, \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::KEY_AS_FILENAME);
@@ -93,7 +93,7 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 		}
 	}
 
-	public function Supported() : string
+	public function Supported(): string
 	{
 		foreach ($this->getSupportedDrivers() as $class) {
 			return '';
@@ -153,7 +153,7 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 		}
 
 		$sPrevPassword = $this->jsonParam('PrevPassword');
-		if ($sPrevPassword !== $oAccount->IncPassword()) {
+		if ($sPrevPassword !== $oAccount->ImapPass()) {
 			throw new ClientException(static::CurrentPasswordIncorrect, null, $oActions->StaticI18N('NOTIFICATIONS/CURRENT_PASSWORD_INCORRECT'));
 		}
 		$oPrevPassword = new \SnappyMail\SensitiveString($sPrevPassword);
@@ -207,7 +207,7 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 			throw new ClientException(static::CouldNotSaveNewPassword);
 		}
 
-		$oAccount->SetPassword($oNewPassword);
+		$oAccount->setImapPass($oNewPassword);
 		if ($oAccount instanceof \RainLoop\Model\MainAccount) {
 			$oActions->SetAuthToken($oAccount);
 			$oAccount->resealCryptKey($oPrevPassword);
@@ -216,8 +216,9 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 		return $this->jsonResponse(__FUNCTION__, $oActions->AppData(false));
 	}
 
-	public static function encrypt(string $algo, SensitiveString $password)
+	public static function encrypt(string $algo, SensitiveString $password): string
 	{
+		$password = $password->getValue();
 		switch (\strtolower($algo))
 		{
 			case 'argon2i':
@@ -231,9 +232,11 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 			case 'sha256-crypt':
 				return \crypt($password,'$5$'.\substr(\base64_encode(\random_bytes(32)), 0, 16));
+//				return \crypt($password,'$5$rounds=5000$'.\substr(\base64_encode(\random_bytes(32)), 0, 16));
 
 			case 'sha512-crypt':
 				return \crypt($password,'$6$'.\substr(\base64_encode(\random_bytes(32)), 0, 16));
+//				return \crypt($password,'$6$rounds=5000$'.\substr(\base64_encode(\random_bytes(32)), 0, 16));
 
 			default:
 				break;
@@ -242,7 +245,19 @@ class ChangePasswordPlugin extends \RainLoop\Plugins\AbstractPlugin
 		return $password;
 	}
 
-	private static function PasswordStrength(string $sPassword) : int
+	public static function crypt(SensitiveString $password) : string
+	{
+		if (\defined('CRYPT_SHA512') && CRYPT_SHA512) {
+			return static::encrypt('sha512-crypt', $password);
+		}
+		if (\defined('CRYPT_SHA256') && CRYPT_SHA256) {
+			return static::encrypt('sha256-crypt', $password);
+		}
+		// MD5 :'(
+		return \crypt($password->getValue(), '$1$' . \substr(\base64_encode(\random_bytes(32)), 0, 12) . '$');
+	}
+
+	private static function PasswordStrength(#[\SensitiveParameter] string $sPassword): int
 	{
 		$i = \strlen($sPassword);
 		$max = \min(100, $i * 8);

@@ -295,24 +295,4 @@ abstract class Account implements \JsonSerializable
 		return \RainLoop\Api::Actions()->SettingsProvider(true)->Load($this);
 	}
 */
-
-	/**
-	 * @deprecated since v2.36.1
-	 */
-	public function IncLogin(): string
-	{
-		return $this->ImapUser();
-	}
-	public function IncPassword(): string
-	{
-		return $this->ImapPass();
-	}
-	public function OutLogin(): string
-	{
-		return $this->SmtpUser();
-	}
-	public function SetPassword(SensitiveString $oPassword): void
-	{
-		$this->oImapPass = $oPassword;
-	}
 }

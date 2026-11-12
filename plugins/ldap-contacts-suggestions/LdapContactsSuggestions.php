@@ -97,8 +97,8 @@ class LdapContactsSuggestions implements \RainLoop\Providers\Suggestions\ISugges
 				'{email}' => $oAccount->Email(),
 				'{email:user}' => \MailSo\Base\Utils::getEmailAddressLocalPart($oAccount->Email()),
 				'{email:domain}' => $sDomain,
-				'{login}' => $oAccount->IncLogin(),
-				'{imap:login}' => $oAccount->IncLogin(),
+				'{login}' => $oAccount->ImapUser(),
+				'{imap:login}' => $oAccount->ImapUser(),
 				'{imap:host}' => $oAccount->Domain()->ImapSettings()->host,
 				'{imap:port}' => $oAccount->Domain()->ImapSettings()->port
 			));

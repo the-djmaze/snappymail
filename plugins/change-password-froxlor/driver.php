@@ -69,17 +69,17 @@ class ChangePasswordFroxlorDriver
 
 			$oStmt = $oPdo->prepare('SELECT password_enc, id FROM mail_users WHERE username = ? LIMIT 1');
 
-			if ($oStmt->execute(array($oAccount->IncLogin()))) {
+			if ($oStmt->execute(array($oAccount->ImapUser()))) {
 				$aFetchResult = $oStmt->fetch(\PDO::FETCH_ASSOC);
 				if (!empty($aFetchResult['id'])) {
 					$sDbPassword = $aFetchResult['password_enc'];
 					$sDbSalt = \substr($sDbPassword, 0, \strrpos($sDbPassword, '$'));
-					if (\crypt($oPrevPassword, $sDbSalt) === $sDbPassword) {
+					if (\crypt($oPrevPassword->getValue(), $sDbSalt) === $sDbPassword) {
 
 						$oStmt = $oPdo->prepare('UPDATE mail_users SET password_enc = ? WHERE id = ?');
 
 						return !!$oStmt->execute(array(
-							$this->cryptPassword($oNewPassword),
+							ChangePasswordPlugin::crypt($oNewPassword),
 							$aFetchResult['id']
 						));
 					}
@@ -93,17 +93,5 @@ class ChangePasswordFroxlorDriver
 			}
 		}
 		return false;
-	}
-
-	private function cryptPassword(SensitiveString $oPassword) : string
-	{
-		if (\defined('CRYPT_SHA512') && CRYPT_SHA512) {
-			$sSalt = '$6$rounds=5000$' . \bin2hex(\random_bytes(8)) . '$';
-		} elseif (\defined('CRYPT_SHA256') && CRYPT_SHA256) {
-			$sSalt = '$5$rounds=5000$' . \bin2hex(\random_bytes(8)) . '$';
-		} else {
-			$sSalt = '$1$' . \bin2hex(\random_bytes(6)) . '$';
-		}
-		return \crypt($oPassword, $sSalt);
 	}
 }

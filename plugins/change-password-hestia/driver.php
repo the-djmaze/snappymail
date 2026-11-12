@@ -1,5 +1,7 @@
 <?php
 
+use MailSo\Log\Logger;
+use RainLoop\Config\Plugin;
 use SnappyMail\SensitiveString;
 
 class ChangePasswordHestiaDriver
@@ -8,17 +10,11 @@ class ChangePasswordHestiaDriver
 		NAME        = 'Hestia',
 		DESCRIPTION = 'Change passwords in Hestia.';
 
-	/**
-	 * @var \RainLoop\Config\Plugin
-	 */
-	private $oConfig = null;
+	private Plugin $oConfig;
 
-	/**
-	 * @var \MailSo\Log\Logger
-	 */
-	protected $oLogger = null;
+	protected Logger $oLogger;
 
-	function __construct(\RainLoop\Config\Plugin $oConfig, \MailSo\Log\Logger $oLogger)
+	function __construct(Plugin $oConfig, Logger $oLogger)
 	{
 		$this->oConfig = $oConfig;
 		$this->oLogger = $oLogger;
@@ -55,8 +51,8 @@ class ChangePasswordHestiaDriver
 		$HTTP = \SnappyMail\HTTP\Request::factory();
 		$postvars = array(
 			'email'    => $oAccount->Email(),
-			'password' => (string) $oPrevPassword,
-			'new'      => (string) $oNewPassword,
+			'password' => $oPrevPassword->getValue(),
+			'new'      => $oNewPassword->getValue(),
 		);
 		$response = $HTTP->doRequest('POST', 'https://'.$sHost.':'.$sPort.'/reset/mail/', \http_build_query($postvars));
 		if (!$response) {
