@@ -47,7 +47,7 @@ class CURL extends \SnappyMail\HTTP\Request
 			\curl_setopt($c, CURLOPT_CAINFO, $this->ca_bundle);
 		}
 		if ($extra_headers) {
-			\curl_setopt($c, CURLOPT_HTTPHEADER, $extra_headers);
+			\curl_setopt($c, CURLOPT_HTTPHEADER, static::headerLines($extra_headers));
 		}
 		if ($this->auth['user'] && $this->auth['type']) {
 			if ($this->auth['type'] & self::AUTH_BEARER ) {
