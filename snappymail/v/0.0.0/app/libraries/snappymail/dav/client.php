@@ -126,7 +126,7 @@ class Client
 			}
 		}
 		\SnappyMail\Log::debug('DAV', "{$method} {$url}" . ($body ? "\n\t" . \str_replace("\n", "\n\t", $body) : ''));
-		if (\strlen($this->sPreemptiveAuth) && !isset($headers['Authorization'])) {
+		if ($this->sPreemptiveAuth->length() && !isset($headers['Authorization'])) {
 			$headers['Authorization'] = $this->sPreemptiveAuth->getValue();
 		}
 		$response = $this->HTTP->doRequest($method, $url, $body, $headers);

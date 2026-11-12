@@ -137,7 +137,7 @@ class Certificate
 
 		$pkey = null; // openssl_pkey_new($options);
 		if ($privateKey) {
-			$pkey = \openssl_pkey_get_private($privateKey, $passphrase);
+			$pkey = \openssl_pkey_get_private($privateKey, $passphrase->getValue());
 			if (!$pkey) {
 				throw new \RuntimeException('OpenSSL pkey: ' . \openssl_error_string());
 			}
@@ -153,13 +153,13 @@ class Certificate
 			);
 			if ($this->x509/* && $this->canSign() && $this->canEncrypt()*/) {
 				$this->pkey = $pkey;
-				$privateKey || \openssl_pkey_export($pkey, $privateKey, $passphrase);
+				$privateKey || \openssl_pkey_export($pkey, $privateKey, $passphrase->getValue());
 				$certificate = '';
 				\openssl_x509_export($this->x509, $certificate);
 				return array(
 					'pkey' => $privateKey,
 					'x509' => $certificate,
-//					'pkcs12' => $this->asPKCS12($pkey, $passphrase/*, array $args = array()*/)
+//					'pkcs12' => $this->asPKCS12($pkey, $passphrase->getValue()/*, array $args = array()*/)
 //					'canSign' => $this->canSign(),
 //					'canEncrypt' => $this->canEncrypt()
 				);

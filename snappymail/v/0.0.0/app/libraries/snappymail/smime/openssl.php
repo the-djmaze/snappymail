@@ -140,7 +140,7 @@ class OpenSSL
 		?\SnappyMail\SensitiveString $passphrase = null
 	): void
 	{
-		$this->privateKey = \openssl_pkey_get_private($privateKey, $passphrase);
+		$this->privateKey = \openssl_pkey_get_private($privateKey, $passphrase->getValue());
 		if (!$this->privateKey) {
 			throw new \RuntimeException('OpenSSL setPrivateKey: ' . \openssl_error_string());
 		}
@@ -159,7 +159,7 @@ class OpenSSL
 			'encrypt_key_cipher' => \OPENSSL_CIPHER_AES_256_CBC
 		];
 		$output = '';
-		if (!\openssl_pkey_export($this->privateKey, $output, $passphrase/*, $options*/)) {
+		if (!\openssl_pkey_export($this->privateKey, $output, $passphrase->getValue()/*, $options*/)) {
 			throw new \RuntimeException('OpenSSL exportPrivateKey: ' . \openssl_error_string());
 		}
 		return $output;

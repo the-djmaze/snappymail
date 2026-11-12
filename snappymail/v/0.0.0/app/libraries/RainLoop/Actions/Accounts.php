@@ -85,7 +85,7 @@ trait Accounts
 		$oPassword = new \SnappyMail\SensitiveString($this->GetActionParam('password', ''));
 		$bNew = !empty($this->GetActionParam('new', 1));
 
-		if ($bNew || \strlen($oPassword)) {
+		if ($bNew || $oPassword->length()) {
 			$oNewAccount = $this->LoginProcess($sEmail, $oPassword, false);
 			$sEmail = $oNewAccount->Email();
 			$aAccount = $oNewAccount->asTokenArray($oMainAccount);

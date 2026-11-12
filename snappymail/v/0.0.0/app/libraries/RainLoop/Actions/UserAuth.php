@@ -132,8 +132,7 @@ trait UserAuth
 			'email' => $sNewEmail ?: $sEmail,
 			'domain' => $oDomain,
 			'imapUser' => $sNewImapUser ?: $sImapUser,
-			'smtpUser' => $sNewSmtpUser ?: $sSmtpUser,
-			'pass' => $oPassword
+			'smtpUser' => $sNewSmtpUser ?: $sSmtpUser
 		];
 	}
 

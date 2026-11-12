@@ -29,7 +29,9 @@ class PGPKeySettings
 
 		$name = '',
 		$email = '',
-		$comment = '',
+		$comment = '';
+
+	public SnappyMail\SensitiveString
 		$passphrase;
 
 	public function algo() : string
@@ -113,7 +115,7 @@ class PGPKeySettings
 		}
 
 		if (\strlen($this->passphrase)) {
-			$keyParams[] = "Passphrase: {$this->passphrase}";
+			$keyParams[] = "Passphrase: {$this->passphrase->getValue()}";
 		} else {
 			$keyParams[] = '%no-protection';
 		}

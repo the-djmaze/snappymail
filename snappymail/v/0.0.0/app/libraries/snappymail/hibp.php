@@ -10,7 +10,7 @@ class Hibp
 {
 	public static function password(SensitiveString $password): int
 	{
-		$pass = \strtoupper(\sha1($password));
+		$pass = \strtoupper(\sha1($password->getValue()));
 		$prefix = \substr($pass, 0, 5);
 		$suffix = \substr($pass, 5);
 		$response = HTTP\Request::factory()->doRequest('GET', "https://api.pwnedpasswords.com/range/{$prefix}");

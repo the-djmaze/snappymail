@@ -83,9 +83,7 @@ class SMIME extends Base
 
 		$fclose = $this->setOutput($output);
 
-		if ($this->pinentries) {
-			$_ENV['PINENTRY_USER_DATA'] = \json_encode($this->pinentries);
-		}
+		$this->setPinentries());
 
 		$result = $this->exec(['--decrypt','--skip-verify']);
 
@@ -248,9 +246,7 @@ class SMIME extends Base
 	{
 		$arguments = ['--import'];
 
-		if ($this->pinentries) {
-			$_ENV['PINENTRY_USER_DATA'] = \json_encode($this->pinentries);
-		} else {
+		if (!$this->setPinentries()) {
 			$arguments[] = '--batch';
 		}
 
@@ -475,11 +471,10 @@ class SMIME extends Base
 			$arguments[] = '--armor';
 		}
 
-		if ($this->pinentries) {
+		if ($this->setPinentries()) {
 			foreach ($this->pinentries as $fingerprint => $pass) {
 				$arguments[] = '--local-user ' . \escapeshellarg($fingerprint);
 			}
-			$_ENV['PINENTRY_USER_DATA'] = \json_encode($this->pinentries);
 		}
 
 		$result = $this->exec($arguments);

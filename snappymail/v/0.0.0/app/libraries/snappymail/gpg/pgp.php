@@ -90,9 +90,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 	protected function _decrypt(/*string|resource*/ $input, /*string|resource*/ $output = null)
 	{
 		$this->setInput($input);
-		if ($this->pinentries) {
-			$_ENV['PINENTRY_USER_DATA'] = \json_encode(\array_map('strval', $this->pinentries));
-		}
+		$this->setPinentries();
 		return $this->execOutput(['--decrypt','--skip-verify'], $output);
 	}
 
@@ -233,7 +231,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 			throw new \Exception(($private ? 'Private' : 'Public') . ' key not found: ' . $fingerprint);
 		}
 		if ($private) {
-			$_ENV['PINENTRY_USER_DATA'] = \json_encode([$fingerprint => \strval($passphrase)]);
+			$_ENV['PINENTRY_USER_DATA'] = \json_encode([$fingerprint => $passphrase?->getValue() ?? '']);
 		}
 		$result = $this->exec([
 			$private ? '--export-secret-keys' : '--export',
@@ -282,7 +280,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 		$arguments = [
 			'--batch',
 			'--yes',
-			'--passphrase', \escapeshellarg($settings->passphrase)
+			'--passphrase', \escapeshellarg($settings->passphrase->getValue())
 		];
 
 		/**
@@ -342,9 +340,7 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 	{
 		$arguments = ['--import'];
 
-		if ($this->pinentries) {
-			$_ENV['PINENTRY_USER_DATA'] = \json_encode(\array_map('strval', $this->pinentries));
-		} else {
+		if (!$this->setPinentries()) {
 			$arguments[] = '--batch';
 		}
 
@@ -637,11 +633,10 @@ class PGP extends Base implements \SnappyMail\PGP\PGPInterface
 			$arguments[] = '--textmode';
 		}
 
-		if ($this->pinentries) {
+		if ($this->setPinentries()) {
 			foreach ($this->pinentries as $fingerprint => $pass) {
 				$arguments[] = '--local-user ' . \escapeshellarg($fingerprint);
 			}
-			$_ENV['PINENTRY_USER_DATA'] = \json_encode(\array_map('strval', $this->pinentries));
 		}
 
 		return $this->execOutput($arguments, $output);

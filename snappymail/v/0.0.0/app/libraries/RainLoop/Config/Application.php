@@ -140,12 +140,12 @@ class Application extends \RainLoop\Config\AbstractConfig
 
 	public function SetPassword(\SnappyMail\SensitiveString $oPassword): void
 	{
-		$this->Set('security', 'admin_password', \password_hash($oPassword, PASSWORD_DEFAULT));
+		$this->Set('security', 'admin_password', \password_hash($oPassword->getValue(), PASSWORD_DEFAULT));
 	}
 
 	public function ValidatePassword(\SnappyMail\SensitiveString $oPassword): bool
 	{
-		return \strlen($oPassword) && \password_verify($oPassword, $this->Get('security', 'admin_password', ''));
+		return $oPassword->length() && \password_verify($oPassword->getValue(), $this->Get('security', 'admin_password', ''));
 	}
 
 	public function Save(): bool

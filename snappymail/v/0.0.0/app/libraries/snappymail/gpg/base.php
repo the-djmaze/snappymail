@@ -375,6 +375,15 @@ abstract class Base
 		return $this;
 	}
 
+	protected function setPinentries(): bool
+	{
+		if ($this->pinentries) {
+			$_ENV['PINENTRY_USER_DATA'] = \json_encode(\array_map(fn($pass)=>$pass->getValue(), $this->pinentries));
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Removes all keys which were set for decryption, signing and export
 	 */

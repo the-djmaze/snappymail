@@ -118,7 +118,7 @@ class ActionsAdmin extends Actions
 		$totp = $this->Config()->Get('security', 'admin_totp', '');
 
 		// \explode(':',`getent shadow root`)[1];
-		if (!\strlen($sLogin) || !\strlen($oPassword) ||
+		if (!\strlen($sLogin) || !$oPassword->length() ||
 			!$this->Config()->Get('security', 'allow_admin_panel', true) ||
 			$sLogin !== $this->Config()->Get('security', 'admin_login', '') ||
 			!$this->Config()->ValidatePassword($oPassword)
@@ -197,9 +197,9 @@ class ActionsAdmin extends Actions
 
 			$oConfig->Set('security', 'admin_totp', $this->GetActionParam('TOTP', ''));
 
-			if (\strlen($oNewPassword)) {
+			if ($oNewPassword->length()) {
 				$oConfig->SetPassword($oNewPassword);
-				if (\is_file($passfile) && \trim(\file_get_contents($passfile)) !== (string) $oNewPassword) {
+				if (\is_file($passfile) && \trim(\file_get_contents($passfile)) !== $oNewPassword->getValue()) {
 					\unlink($passfile);
 				}
 			}

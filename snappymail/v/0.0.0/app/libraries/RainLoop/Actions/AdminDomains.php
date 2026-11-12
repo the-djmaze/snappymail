@@ -63,17 +63,17 @@ trait AdminDomains
 
 	public function DoAdminDomainMatch() : array
 	{
-		$sCredentials = $this->resolveLoginCredentials(
+		$aCredentials = $this->resolveLoginCredentials(
 			new \MailSo\Mime\Email($this->GetActionParam('username')),
 			new \SnappyMail\SensitiveString('********')
 		);
-		$sEmail = $sCredentials['email'];
+		$sEmail = $aCredentials['email'];
 		return $this->DefaultResponse(array(
 			'email' => $sEmail,
-			'login' => $sCredentials['imapUser'],
-			'name' => $sCredentials['domain'] ? $sCredentials['domain']->Name() : null,
-//			'domain' => $sCredentials['domain'],
-			'whitelist' => $sCredentials['domain'] ? $sCredentials['domain']->ValidateWhiteList($sEmail) : null
+			'login' => $aCredentials['imapUser'],
+			'name' => $aCredentials['domain'] ? $aCredentials['domain']->Name() : null,
+//			'domain' => $aCredentials['domain'],
+			'whitelist' => $aCredentials['domain'] ? $aCredentials['domain']->ValidateWhiteList($sEmail) : null
 		));
 	}
 

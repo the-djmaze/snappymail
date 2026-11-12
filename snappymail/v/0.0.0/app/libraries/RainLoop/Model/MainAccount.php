@@ -12,7 +12,7 @@ class MainAccount extends Account
 {
 	private ?SensitiveString $sCryptKey = null;
 
-	public function resealCryptKey(SensitiveString $oOldPass) : bool
+	public function resealCryptKey(SensitiveString $oOldPass): bool
 	{
 		$oStorage = \RainLoop\Api::Actions()->StorageProvider();
 		$sKey = $oStorage->Get($this, StorageType::ROOT, '.cryptkey');
@@ -35,7 +35,7 @@ class MainAccount extends Account
 		return false;
 	}
 
-	public function CryptKey() : string
+	public function CryptKey(): string
 	{
 		if (!$this->sCryptKey) {
 			// Seal the cryptkey so that people who change their login password
@@ -66,12 +66,12 @@ class MainAccount extends Account
 			}
 			$this->sCryptKey = new SensitiveString(\hex2bin($sKey));
 		}
-		return $this->sCryptKey;
+		return $this->sCryptKey->getValue();
 	}
 
 /*
 	// Stores settings in MainAccount
-	public function settings() : \RainLoop\Settings
+	public function settings(): \RainLoop\Settings
 	{
 		return \RainLoop\Api::Actions()->SettingsProvider()->Load($this);
 	}

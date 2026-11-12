@@ -137,7 +137,7 @@ class Identity implements \JsonSerializable
 			'sentFolder' => $this->sSentFolder,
 			'pgpEncrypt' => $this->pgpEncrypt,
 			'pgpSign' => $this->pgpSign,
-			'smimeKey' => (string) $this->smimeKey,
+			'smimeKey' => $this->smimeKey?->getValue(),
 			'smimeCertificate' => $this->smimeCertificate,
 			'smimeCertificateChain' => $this->smimeCertificateChain
 		);
@@ -159,7 +159,7 @@ class Identity implements \JsonSerializable
 			'sentFolder' => $this->sSentFolder,
 			'pgpEncrypt' => $this->pgpEncrypt,
 			'pgpSign' => $this->pgpSign,
-			'smimeKey' => (string) $this->smimeKey,
+			'smimeKey' => $this->smimeKey?->getValue(),
 			'smimeCertificate' => $this->smimeCertificate,
 			'smimeCertificateChain' => $this->smimeCertificateChain,
 			'exists' => $this->exists
