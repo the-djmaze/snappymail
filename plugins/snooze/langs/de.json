@@ -1,0 +1,15 @@
+{
+	"SNOOZE": {
+		"TITLE": "Schlummern",
+		"BUTTON": "Nachricht schlummern",
+		"QUICK_TOMORROW": "Morgen",
+		"QUICK_NEXT_WEEK": "Nächste Woche",
+		"QUICK_LATER": "In 5 Stunden",
+		"UNTIL": "Schlummert bis",
+		"RETURNED": "Vom Schlummern zurück",
+		"FOLDER": "Schlummer-Ordner",
+		"FOLDER_AUTO": "Automatisch (Snoozed)",
+		"INVALID_DATE": "Bitte ein Datum und eine Uhrzeit in der Zukunft wählen.",
+		"ERROR": "Die Nachricht konnte nicht geschlummert werden."
+	}
+}
