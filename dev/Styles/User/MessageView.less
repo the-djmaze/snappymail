@@ -45,7 +45,7 @@
 
 	.priorityHigh .subject::before {
 		content: '! '; /*❗*/
-		color: red;
+		color: var(--clr-red, red);
 		font-weight: bolder;
 	}
 
@@ -349,7 +349,7 @@
 				color: #609;
 			}
 			&:active {
-				color: red;
+				color: var(--clr-red, red);
 			}
 		}
 
@@ -439,11 +439,11 @@
 			border: 1px dashed #FA0;
 
 			&.success {
-				border-color: green;
+				border-color: var(--clr-green, green);
 				background-color: rgba(0, 255, 0, 0.03);
 			}
 			&.error {
-				border-color: red;
+				border-color: var(--clr-red, red);
 				background-color: rgba(255, 0, 0, 0.03);
 			}
 		}

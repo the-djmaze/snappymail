@@ -28,6 +28,9 @@
 	--info-bg-clr: #d9edf7;
 	--info-border-clr: #bce8f1;
 
+	--clr-red: red;
+	--clr-green: green;
+
 	/* LOADING */
 	--loading-color: #000;
 	--loading-text-shadow: none; /* 0px 1px 0px rgba(0, 0, 0, 0.5); */
@@ -117,6 +120,9 @@
 	--link-color: light-dark(#369, #19F);
 	--border-color: light-dark(#ddd, #222);
 	--hr-color: light-dark(#eee, #111);
+
+	--clr-red: light-dark(red, #F33);
+	--clr-green: light-dark(green, #0B0);
 
 	--panel-bg-clr: light-dark(#fff, #000);
 

@@ -3,10 +3,10 @@
 	position: relative;
 }
 [data-rainloopErrorTip]::before {
-	background: #fff;
+	background: var(--error-bg-clr, #f2dede);
 	border-radius: var(--input-border-radius, 3px);
-	border: 1px solid #999;
-	color: red;
+	border: 1px solid var(--error-border-clr, #eed3d7);
+	color: var(--error-clr, #b94a48);
 	content: attr(data-rainloopErrorTip);
 	font-size: 90%;
 	left: 0;
