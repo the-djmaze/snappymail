@@ -85,7 +85,9 @@
 	--btn-bg-clr: #fff;
 	--btn-border-clr: #fff;
 	--btn-border-radius: 3px;
+	--btn-success-clr: #fff;
 	--btn-success-bg-clr: #84AB04;
+	--btn-danger-clr: #fff;
 	--btn-danger-bg-clr: #ee5f5b;
 
 	--input-clr: #555;
@@ -184,7 +186,9 @@
 	--btn-clr: light-dark(#333, #fff);
 	--btn-bg-clr: light-dark(#fff, #333);
 	--btn-border-clr: light-dark(#fff, #000);
+	--btn-success-clr: light-dark(#fff, #fff);
 	--btn-success-bg-clr: light-dark(#84AB04, #ac1);
+	--btn-danger-clr: light-dark(#fff, #fff);
 	--btn-danger-bg-clr: light-dark(#ee5f5b, #f76);
 
 	--input-clr: light-dark(#555, #fff);
@@ -198,14 +202,6 @@
 
 	/* TABS */
 	--tab-active-bg-clr: light-dark(#fff, #000);
-	--tab-hover-border-clr: light-dark(#eee, #111);
-
-	/* TABLES */
-	--tr-hover-bg-clr: light-dark(#f5f5f5, #333);
-	--tr-odd-bg-clr: light-dark(#f9f9f9, #111);
-
-	/* TABS */
-	--tab-active-bg-clr: light-dark(#fff, linear-gradient(#555 0%, #000 100%));
 	--tab-hover-border-clr: light-dark(#eee, #111);
 
 	--smMainShadow: light-dark(0 2px 8px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(255, 255, 255, 0.2));
