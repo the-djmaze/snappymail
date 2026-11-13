@@ -31,6 +31,6 @@
 	<!-- ko if: 8 === type -->
 		<select data-bind="options: options, optionsText: 'name', optionsValue: 'id', value: value"></select>
 	<!-- /ko -->
-	<!-- ko if: '' !== desc -->
+	<!-- ko if: '' != desc -->
 	<span tabindex="0" class="help-block"><span data-bind="text: desc"></span></span>
 	<!-- /ko -->
