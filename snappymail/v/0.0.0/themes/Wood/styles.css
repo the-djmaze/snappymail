@@ -116,6 +116,14 @@
 	--input-clr: light-dark(#555, #fff);
 	--input-bg-clr: light-dark(#fff, #222);
 	--input-border-clr: light-dark(#ccc, #aaa);
+
+	/* TABLES */
+	--tr-hover-bg-clr: light-dark(#f5f5f5, #333);
+	--tr-odd-bg-clr: light-dark(#f9f9f9, #111);
+
+	/* TABS */
+	--tab-active-bg-clr: light-dark(#fff, linear-gradient(#555 0%, #000 100%));
+	--tab-hover-border-clr: light-dark(#eee, #111);
 }
 
 #rl-app[data-color-scheme="light"] {
@@ -184,24 +192,6 @@
 
 :root[data-color-scheme="dark"] .messageListItem {
 	border-left-color: #111;
-}
-
-:root[data-color-scheme="dark"] .table-hover tbody tr:hover td,
-:root[data-color-scheme="dark"] .table-hover tbody tr:hover th {
-	background-color: #333;
-}
-
-:root[data-color-scheme="dark"] .table-striped tbody tr:nth-child(2n+1) td,
-:root[data-color-scheme="dark"] .table-striped tbody tr:nth-child(2n+1) th {
-	background-color: #111;
-}
-
-:root[data-color-scheme="dark"] #V-Settings-About .rl-logo {
-	filter: invert(1);
-}
-
-:root[data-color-scheme="dark"] .tabs [id^="tab"]:checked + label {
-	background: linear-gradient(#555 0%, #000 100%);
 }
 
 :root[data-color-scheme="dark"] .select,
