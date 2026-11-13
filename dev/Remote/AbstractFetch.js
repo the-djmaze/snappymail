@@ -130,7 +130,7 @@ export class AbstractFetchRemote
 		const start = Date.now();
 
 		fetchJSON(sAction, getURL(sGetAdd),
-			sGetAdd ? null : (params || {}),
+			sGetAdd ? null : params),
 			pInt(iTimeout ?? 30000),
 			async data => {
 				let iError = 0;

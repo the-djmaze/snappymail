@@ -6,8 +6,8 @@ class LoginHttpPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME     = 'Login HTTP',
 		AUTHOR   = 'Alterative Editions',
 		URL      = 'https://alterative.fr/',
-		VERSION  = '1.0',
-		RELEASE  = '2026-02-09',
+		VERSION  = '1.1',
+		RELEASE  = '2026-11-12',
 		REQUIRED = '2.21.0',
 		CATEGORY = 'Login',
 		LICENSE  = 'MIT',
@@ -22,10 +22,11 @@ class LoginHttpPlugin extends \RainLoop\Plugins\AbstractPlugin
 	{
 		$oActions = \RainLoop\Api::Actions();
 		$oActions->Http()->ServerNoCache();
-		$sUser = $_SERVER['PHP_AUTH_USER'] ?? '';
-		$sPassword = $_SERVER['PHP_AUTH_PW'] ?? '';
 		try {
-			$oAccount = $oActions->LoginProcess($sUser, new \SnappyMail\SensitiveString($sPassword));
+			$oAccount = $oActions->LoginProcess(
+				$_SERVER['PHP_AUTH_USER'] ?? '',
+				new \SnappyMail\SensitiveString($_SERVER['PHP_AUTH_PW'] ?? '')
+			);
 			if ($oAccount) {
 				\MailSo\Base\Http::Location('./');
 				return true;

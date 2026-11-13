@@ -6,8 +6,8 @@ class LoginExternalPlugin extends \RainLoop\Plugins\AbstractPlugin
 		NAME     = 'Login External',
 		AUTHOR   = 'SnappyMail',
 		URL      = 'https://snappymail.eu/',
-		VERSION  = '1.4',
-		RELEASE  = '2024-07-01',
+		VERSION  = '1.5',
+		RELEASE  = '2026-11-12',
 		REQUIRED = '2.36.1',
 		CATEGORY = 'Login',
 		LICENSE  = 'MIT',
@@ -27,12 +27,10 @@ class LoginExternalPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$oException = null;
 
 		$sEmail = isset($_POST['Email']) ? $_POST['Email'] : '';
-		$sPassword = isset($_POST['Password']) ? $_POST['Password'] : '';
+		$oPassword = new \SnappyMail\SensitiveString($_POST['Password'] ?? '');
 
 		try
 		{
-			// Convert password to SensitiveString type
-			$oPassword = new \SnappyMail\SensitiveString($sPassword);
 			$oAccount = $oActions->LoginProcess($sEmail, $oPassword);
 			if (!$oAccount instanceof \RainLoop\Model\MainAccount) {
 				$oAccount = null;
