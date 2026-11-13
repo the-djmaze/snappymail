@@ -244,15 +244,23 @@ trait Contacts
 		return $this->DefaultResponse($mResponse);
 	}
 
-	public function setContactsSyncData(\RainLoop\Model\Account $oAccount, array $aData) : bool
+	public function setContactsSyncData(
+		\RainLoop\Model\Account $oAccount,
+		#[\SensitiveParameter]
+		array $aData
+	): bool
 	{
 		if (!isset($aData['Mode'])) {
 			$aData['Mode'] = empty($aData['Enable']) ? 0 : 1;
 		}
 //		$oAccount = $this->getAccountFromToken();
 		$oMainAccount = $this->getMainAccountFromToken();
-		if ($aData['Password']) {
-			$aData['Password'] = \SnappyMail\Crypt::EncryptToJSON($aData['Password'], $oMainAccount->CryptKey());
+		if (!empty($aData['Password'])) {
+			$newPassword = \SnappyMail\Crypt::EncryptToJSON($aData['Password'], $oMainAccount->CryptKey());
+			if (!$newPassword || $aData['Password'] == $newPassword) {
+				throw new ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'Password failed');
+			}
+			$aData['Password'] = $newPassword;
 		}
 		$aData['PasswordHMAC'] = $aData['Password'] ? \hash_hmac('sha1', $aData['Password'], $oMainAccount->CryptKey()) : null;
 		return $this->StorageProvider()->Put(
@@ -273,7 +281,7 @@ trait Contacts
 		if (!empty($sData)) {
 			$aData = \json_decode($sData, true);
 			if ($aData) {
-				if ($aData['Password']) {
+				if (!empty($aData['Password'])) {
 					$oMainAccount = $this->getMainAccountFromToken();
 					// Verify oAccount password hasn't changed so that Password can be decrypted
 					if ($aData['PasswordHMAC'] !== \hash_hmac('sha1', $aData['Password'], $oMainAccount->CryptKey())) {

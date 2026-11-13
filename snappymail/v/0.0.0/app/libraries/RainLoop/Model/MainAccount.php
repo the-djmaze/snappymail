@@ -52,19 +52,19 @@ class MainAccount extends Account
 				);
 				$oStorage->Put($this, StorageType::ROOT, '.cryptkey', $sKey);
 			}
-			$sKey = \SnappyMail\Crypt::DecryptFromJSON($sKey, $sPass);
-			if (!$sKey) {
-				$sKey = \SnappyMail\Crypt::DecryptFromJSON($sKey, $sPass, false);
-				if (!$sKey) {
+			$sKeyDecrypted = \SnappyMail\Crypt::DecryptFromJSON($sKey, $sPass);
+			if (!$sKeyDecrypted) {
+				$sKeyDecrypted = \SnappyMail\Crypt::DecryptFromJSON($sKey, $sPass, false);
+				if (!$sKeyDecrypted) {
 					throw new ClientException(Notifications::CryptKeyError);
 				}
-				$sResealedKey = \SnappyMail\Crypt::EncryptToJSON($sKey, $sPass);
+				$sResealedKey = \SnappyMail\Crypt::EncryptToJSON($sKeyDecrypted, $sPass);
 				if (!$sResealedKey) {
 					throw new ClientException(Notifications::CryptKeyError);
 				}
 				$oStorage->Put($this, StorageType::ROOT, '.cryptkey', $sResealedKey);
 			}
-			$this->sCryptKey = new SensitiveString(\hex2bin($sKey));
+			$this->sCryptKey = new SensitiveString(\hex2bin($sKeyDecrypted));
 		}
 		return $this->sCryptKey->getValue();
 	}
