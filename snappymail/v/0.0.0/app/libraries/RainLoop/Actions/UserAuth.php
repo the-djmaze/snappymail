@@ -144,7 +144,7 @@ trait UserAuth
 	{
 		$aCredentials = $this->resolveLoginCredentials(new Email($sEmail), $oPassword);
 
-		if (!\str_contains($aCredentials['email'], '@') || !\strlen($oPassword)) {
+		if (!\str_contains($aCredentials['email'], '@') || !$oPassword->length()) {
 			throw new ClientException(Notifications::InvalidInputArgument);
 		}
 
