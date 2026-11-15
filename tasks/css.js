@@ -1,20 +1,20 @@
 /* RainLoop Webmail (c) RainLoop Team | Licensed under MIT */
-const gulp = require('gulp');
+import gulp from 'gulp';
 
-const concat = require('gulp-concat');
-const rename = require('gulp-rename');
-const replace = require('gulp-replace');
-const eol = require('gulp-eol');
-const filter = require('gulp-filter');
-const expect = require('gulp-expect-file');
-const gcmq = require('gulp-group-css-media-queries');
-const less = require('gulp-less');
+import concat from 'gulp-concat';
+import rename from 'gulp-rename';
+import replace from 'gulp-replace';
+import eol from 'gulp-eol';
+import filter from 'gulp-filter';
+import expect from 'gulp-expect-file';
+import gcmq from 'gulp-group-css-media-queries';
+import less from 'gulp-less';
 
-const { config } = require('./config');
-const { del } = require('./common');
+import { config } from './config.js';
+import { remove } from './common.js';
 
-const cleanCss = require('gulp-clean-css');
-const cssClean = () => del(config.paths.staticCSS + '/*.css');
+import cleanCss from 'gulp-clean-css';
+const cssClean = () => remove(config.paths.staticCSS + '/*.css');
 
 const cssBootBuild = () => {
 	const
@@ -99,15 +99,12 @@ const cssAdminMin = () => {
 		.pipe(gulp.dest(config.paths.staticCSS));
 };
 
-const cssBuild = gulp.parallel(cssBootBuild, cssMainBuild, cssAdminBuild);
+export const cssBuild = gulp.parallel(cssBootBuild, cssMainBuild, cssAdminBuild);
 const cssMin = gulp.parallel(cssBootMin, cssMainMin, cssAdminMin);
 
-const cssLint = (done) => done();
+export const cssLint = (done) => done();
 
 const cssState1 = gulp.series(cssLint);
 const cssState2 = gulp.series(cssClean, cssBuild, cssMin);
 
-exports.cssLint = cssLint;
-exports.cssBuild = cssBuild;
-
-exports.css = gulp.parallel(cssState1, cssState2);
+export const css = gulp.parallel(cssState1, cssState2);

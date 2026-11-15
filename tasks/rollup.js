@@ -1,8 +1,9 @@
 /* SnappyMail Webmail (c) SnappyMail Team | Licensed under AGPL v3 */
-const rollup2 = require('gulp-rollup-2');
-const includePaths = require('rollup-plugin-includepaths');
-const externalGlobals = require('rollup-plugin-external-globals');
-const { config } = require('./config');
+import rollup2 from 'gulp-rollup-2';
+import includePaths from 'rollup-plugin-includepaths';
+import externalGlobals from 'rollup-plugin-external-globals';
+
+import { config } from './config.js';
 
 let includePathOptions = {
 	include: {},
@@ -11,7 +12,7 @@ let includePathOptions = {
 	extensions: ['.js']
 };
 
-exports.rollupJS = (inputFile) =>
+export const rollupJS = (inputFile) =>
 	rollup2.src({
 		external: ['ko'],
 		input: 'dev/' + inputFile,

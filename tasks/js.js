@@ -1,23 +1,21 @@
 /* RainLoop Webmail (c) RainLoop Team | Licensed under MIT */
-const gulp = require('gulp');
+import gulp from 'gulp';
+import concat from 'gulp-concat';
+import gap from 'gulp-append-prepend';
+import rename from 'gulp-rename';
+import replace from 'gulp-replace';
+import terser from 'gulp-terser';
+import eol from 'gulp-eol';
+import eslint from 'gulp-eslint-new';
+import cache from 'gulp-cached';
+import expect from 'gulp-expect-file';
+import size from 'gulp-size';
 
-const concat = require('gulp-concat'),
-	gap = require('gulp-append-prepend'),
-	rename = require('gulp-rename'),
-	replace = require('gulp-replace'),
-	terser = require('gulp-terser'),
-	eol = require('gulp-eol'),
-	eslint = require('gulp-eslint'),
-	cache = require('gulp-cached'),
-	expect = require('gulp-expect-file'),
-	size = require('gulp-size');
+import { config } from './config.js';
+import { remove } from './common.js';
+import { rollupJS } from './rollup.js';
 
-const { config } = require('./config');
-const { del } = require('./common');
-
-const { rollupJS } = require('./rollup');
-
-const jsClean = () => del(config.paths.staticJS + '/**/*.{js,map}');
+const jsClean = () => remove(config.paths.staticJS + '/**/*.{js,map}');
 
 const prepend = () => gap.prependText(config.head.agpl + '\n');
 
@@ -118,7 +116,7 @@ const jsMin = () =>
 		)
 		.pipe(gulp.dest(config.paths.staticMinJS));
 
-const jsLint = () =>
+export const jsLint = () =>
 	gulp
 		.src(config.paths.globjs)
 		.pipe(cache('eslint'))
@@ -126,8 +124,7 @@ const jsLint = () =>
 		.pipe(eslint.format())
 		.pipe(eslint.failAfterError());
 
-exports.jsLint = jsLint;
-exports.js = gulp.series(
+export const js = gulp.series(
 	jsClean,
 	jsLint,
 	gulp.parallel(jsBoot, jsServiceWorker, jsOpenPGP, jsLibs, jsSieve, jsApp, jsAdmin),

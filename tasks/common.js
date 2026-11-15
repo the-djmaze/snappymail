@@ -1,8 +1,8 @@
 /* RainLoop Webmail (c) RainLoop Team | Licensed under MIT */
-const del = require('del');
+import { deleteAsync } from 'del';
 
-const { config } = require('./config');
+import { config } from './config.js';
 
-exports.del = (dir) => del(dir);
-
-exports.cleanStatic = () => del(config.paths.staticJS) && del(config.paths.staticCSS);
+export const
+	remove = (dir) => deleteAsync(dir),
+	cleanStatic = () => deleteAsync(config.paths.staticJS) && deleteAsync(config.paths.staticCSS);

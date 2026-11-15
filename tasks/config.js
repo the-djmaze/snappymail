@@ -1,7 +1,7 @@
 /* SnappyMail Webmail (c) SnappyMail Team | Licensed under MIT */
-const path = require('path');
+import path from 'path';
 
-const config = {
+export const config = {
 	head: {
 		agpl: '/* SnappyMail Webmail (c) SnappyMail | Licensed under AGPL v3 */'
 	},
@@ -22,7 +22,10 @@ config.paths.less = {
 	main: {
 		src: 'dev/Styles/@Main.less',
 		options: {
-			paths: [path.join(__dirname, 'dev', 'Styles'), path.join(__dirname, 'vendors', 'bootstrap', 'less')]
+			paths: [
+				path.join(import.meta.dirname, 'dev', 'Styles'),
+				path.join(import.meta.dirname, 'vendors', 'bootstrap', 'less')
+			]
 		}
 	}
 };
@@ -79,5 +82,3 @@ config.paths.js = {
 		name: 'admin.js'
 	}
 };
-
-exports.config = config;

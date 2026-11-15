@@ -1,23 +1,19 @@
 /* RainLoop Webmail (c) RainLoop Team | Licensed under MIT */
-const gulp = require('gulp');
+import gulp from 'gulp';
 
-const { cleanStatic } = require('./tasks/common');
-const { js, jsLint } = require('./tasks/js');
-const { css, cssLint } = require('./tasks/css');
-const { vendors } = require('./tasks/vendors');
-const { sri } = require('./tasks/sri');
+import { cleanStatic } from './tasks/common.js';
+import { js, jsLint } from './tasks/js.js';
+import { css, cssLint } from './tasks/css.js';
+import { vendors } from './tasks/vendors.js';
+import { sri } from './tasks/sri.js';
 
-const clean = gulp.series(cleanStatic);
+export const clean = gulp.series(cleanStatic);
 
-const lint = gulp.parallel(jsLint, cssLint);
+export const lint = gulp.parallel(jsLint, cssLint);
 
-const buildState1 = gulp.parallel(js, css, vendors);
-const buildState2 = gulp.series(clean, buildState1, sri);
+export const buildState1 = gulp.parallel(js, css, vendors);
+export const buildState2 = gulp.series(clean, buildState1, sri);
 
-const build = gulp.parallel(lint, buildState2);
+export const build = gulp.parallel(lint, buildState2);
 
-exports.css = css;
-exports.lint = lint;
-exports.sri = sri;
-exports.build = build;
-exports.default = build;
+export default build;

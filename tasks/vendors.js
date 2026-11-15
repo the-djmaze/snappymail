@@ -1,11 +1,11 @@
 /* RainLoop Webmail (c) RainLoop Team | Licensed under MIT */
-const gulp = require('gulp');
+import gulp from 'gulp';
 
-const { config } = require('./config');
-const { del } = require('./common');
+import { config } from './config.js';
+import { remove } from './common.js';
 
 // fontastic
-const fontasticFontsClear = () => del('snappymail/v/' + config.devVersion + '/static/css/fonts/snappymail.*');
+const fontasticFontsClear = () => remove('snappymail/v/' + config.devVersion + '/static/css/fonts/snappymail.*');
 
 const fontasticFontsCopy = () =>
 	gulp
@@ -14,4 +14,4 @@ const fontasticFontsCopy = () =>
 
 const fontastic = gulp.series(fontasticFontsClear, fontasticFontsCopy);
 
-exports.vendors = gulp.parallel(fontastic);
+export const vendors = gulp.parallel(fontastic);

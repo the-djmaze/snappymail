@@ -1,9 +1,9 @@
 /* Tachyon Webmail (c) Tachyon | Licensed under AGPL v3 */
-const fs = require('fs');
-const crypto = require('crypto');
-const path = require('path');
+import fs from 'fs';
+import crypto from 'crypto';
+import path from 'path';
 
-const { config } = require('./config');
+import { config } from './config.js';
 
 function sriHash(filePath) {
 	const data = fs.readFileSync(filePath);
@@ -11,7 +11,7 @@ function sriHash(filePath) {
 	return 'sha384-' + hash;
 }
 
-function sri(done) {
+export const sri = (done) => {
 	const jsMinDir = config.paths.staticMinJS;
 	const cssDir = config.paths.staticCSS;
 
@@ -34,6 +34,4 @@ function sri(done) {
 	fs.writeFileSync(outPath, JSON.stringify(hashes, null, '\t') + '\n');
 	console.log('[sri] wrote ' + outPath);
 	done();
-}
-
-exports.sri = sri;
+};

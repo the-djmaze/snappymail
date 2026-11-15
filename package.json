@@ -14,6 +14,7 @@
     "type": "git",
     "url": "git://github.com/the-djmaze/snappymail.git"
   },
+  "type": "module",
   "scripts": {
     "watch-css": "gulp watchCss"
   },
@@ -41,12 +42,12 @@
   ],
   "readmeFilename": "README.md",
   "dependencies": {
-    "@rollup/plugin-node-resolve": "^13.1.3",
-    "@rollup/plugin-replace": "^3.0.1",
+    "@eslint/js": "^10.0.1",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^1.0.2",
-    "babel-eslint": "^10.1.0",
-    "del": "^6.0.0",
-    "eslint": "^7.32.0",
+    "del": "^9.0.1",
+    "eslint": "^10.15.0",
     "gulp": "^5.0.1",
     "gulp-append-prepend": "^1.0.9",
     "gulp-cached": "^1.1.1",
@@ -62,10 +63,10 @@
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.1.3",
     "gulp-rollup-2": "^2.2.0",
-    "gulp-size": "^3.0.0",
+    "gulp-size": "5.0.0",
     "gulp-terser": "^2.1.0",
-    "rollup": "^2.56.3",
-    "rollup-plugin-external-globals": "^0.6.1",
+    "rollup": "^4.68.3",
+    "rollup-plugin-external-globals": "^0.13.0",
     "rollup-plugin-includepaths": "^0.2.4"
   }
 }
