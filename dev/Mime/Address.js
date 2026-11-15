@@ -102,7 +102,7 @@ export function addressparser(str) {
 function _handleAddress(tokens) {
 	let
 		isGroup = false,
-		address = {},
+		address,
 		addresses = [],
 		data = {
 			email: [],

@@ -903,7 +903,7 @@ export class ComposePopupView extends AbstractViewPopup {
 
 		if (options.mode && oLastMessage) {
 			let usePlain,
-				sCc = '',
+				sCc,
 				sDate = timestampToString(oLastMessage.dateTimestamp(), 'FULL'),
 				sSubject = oLastMessage.subject(),
 				sText = '',

@@ -128,8 +128,8 @@ computedPaginatorHelper = (koCurrentPage, koPageCount) => {
 				push ? result.push(data) : result.unshift(data);
 			};
 
-		let prev = 0,
-			next = 0,
+		let prev,
+			next,
 			limit = 2;
 
 		if (1 < pageCount) {

@@ -329,7 +329,7 @@ export const
 			// https://github.com/the-djmaze/snappymail/issues/1415
 			.replace(/<br>\s*<\/p>/gi,'</p>')
 			.trim();
-		html = '';
+		html = ''; // eslint-disable-line no-useless-assignment
 
 		// Strip all comments
 		const nodeIterator = document.createNodeIterator(tmpl.content, NodeFilter.SHOW_COMMENT);
@@ -809,7 +809,7 @@ export const
 			aNextText = [],
 			aText = plain.split('\n');
 
-		do {
+		while (bDo) {
 			bDo = false;
 			aNextText = [];
 			aText.forEach(sLine => {
@@ -840,7 +840,7 @@ export const
 			}
 
 			aText = aNextText;
-		} while (bDo);
+		}
 
 		tmpl.innerHTML = aText.join('\n')
 			// .replace(/~~~\/blockquote~~~\n~~~blockquote~~~/g, '\n')

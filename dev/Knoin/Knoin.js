@@ -181,7 +181,7 @@ const
 				vmScreen = screen(defaultScreenName);
 				if (vmScreen) {
 					subPart = screenName + '/' + subPart;
-					screenName = defaultScreenName;
+//					screenName = defaultScreenName;
 				}
 			}
 

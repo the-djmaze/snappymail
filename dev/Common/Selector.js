@@ -278,7 +278,7 @@ export class Selector {
 							: ((up ? shiftStart < i : shiftStart > i) && focused.checked(false));
 					}
 					if (up) {
-						i > 0 && (result = list[--i]);
+						i > 0 && (result = list[i - 1]);
 					} else if (++i < listLen) {
 						result = list[i];
 					}

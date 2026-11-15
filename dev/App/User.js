@@ -228,7 +228,7 @@ export class AppUser extends AbstractApp {
 						setTimeout(() => mailToHelper(SettingsGet('mailToEmail')), 500);
 					} else {
 						this.logout();
-						alert('Folders error: ' + getErrorMessage(0, error))
+						alert('Folders error: ' + getErrorMessage(0, error));
 					}
 				} catch (e) {
 					console.error(e);

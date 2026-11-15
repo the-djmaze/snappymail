@@ -99,7 +99,7 @@ export class HtmlEditor {
 				} else {
 					result = this.editor.getData();
 				}
-			} catch (e) {} // eslint-disable-line no-empty
+			} catch { /* empty */ }
 		}
 		return result;
 	}

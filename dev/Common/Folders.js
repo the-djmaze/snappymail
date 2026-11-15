@@ -76,7 +76,7 @@ folderListOptionsBuilder = (
 		};
 
 
-	fDisableCallback = fDisableCallback || (() => false);
+//	fDisableCallback = fDisableCallback || (() => false);
 	fRenameCallback = fRenameCallback || (oItem => oItem.name());
 	isArray(aDisabled) || (aDisabled = []);
 

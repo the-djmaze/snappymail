@@ -4,7 +4,7 @@
  * Inspired by https://github.com/mcpar-land/vcfer
  */
 
-import { VCardProperty } from './VCardProperty'
+import { VCardProperty } from './VCardProperty';
 
 export class JCard {
 

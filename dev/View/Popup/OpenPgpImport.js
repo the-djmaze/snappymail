@@ -79,7 +79,7 @@ export class OpenPgpImportPopupView extends AbstractViewPopup {
 		this.keyErrorMessage('');
 
 		if (keyTrimmed) {
-			let match = null,
+			let match,
 				count = 30,
 				done = false;
 			const GnuPG = this.saveGnuPG() && GnuPGUserStore.isSupported(),
@@ -87,18 +87,17 @@ export class OpenPgpImportPopupView extends AbstractViewPopup {
 				// eslint-disable-next-line max-len
 				reg = /[-]{3,6}BEGIN[\s]PGP[\s](PRIVATE|PUBLIC)[\s]KEY[\s]BLOCK[-]{3,6}[\s\S]+?[-]{3,6}END[\s]PGP[\s](PRIVATE|PUBLIC)[\s]KEY[\s]BLOCK[-]{3,6}/gi;
 
-			do {
+			while (!done) {
 				match = reg.exec(keyTrimmed);
 				if (match && 0 < count) {
 					if (match[0] && match[1] && match[2] && match[1] === match[2]) {
 						PgpUserStore.importKey(this.key(), GnuPG, backup);
 					}
 					--count;
-					done = false;
 				} else {
 					done = true;
 				}
-			} while (!done);
+			}
 
 			this.close();
 		}
