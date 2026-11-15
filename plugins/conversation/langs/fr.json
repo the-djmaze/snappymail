@@ -1,0 +1,19 @@
+{
+	"CONVERSATION": {
+		"TITLE": "Conversation",
+		"MESSAGES": "messages",
+		"PARTIAL": "(au moins)",
+		"SHOW": "Afficher la conversation",
+		"HIDE": "Masquer la conversation",
+		"SENT": "envoyé",
+		"NO_SUBJECT": "(sans objet)",
+		"UNKNOWN": "(expéditeur inconnu)",
+		"LOADING": "Chargement…",
+		"FAILED": "Ce message n'a pas pu être chargé. Cliquez de nouveau pour réessayer.",
+		"ENCRYPTED": "Message chiffré : ouvrez-le pour le lire.",
+		"EMPTY": "(message sans texte)",
+		"IMAGES": "Images distantes bloquées.",
+		"OPEN": "Ouvrir ce message",
+		"HERE": "Message affiché ci-dessous"
+	}
+}

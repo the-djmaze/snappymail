@@ -1,0 +1,150 @@
+/**
+ * Conversation view, around the message body.
+ *
+ * Theme colours only: a grey written in hard disappears on a dark theme.
+ * What has no variable borrows `currentColor`.
+ * `unicode-bidi: plaintext` on every content text (subject, name, body): an
+ * Arabic subject in a French interface would come out reversed without it.
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+.conversation {
+	margin: 0.5em 0 0.75em;
+	font-size: 0.95em;
+	line-height: 1.45;
+}
+
+.conversation-bar {
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
+	padding: 0.4em 0.75em;
+	border: 1px solid var(--cv-bordure, rgba(128, 128, 128, 0.35));
+	border-radius: 6px;
+}
+
+.conversation-title {
+	font-weight: 600;
+	opacity: 0.85;
+	flex: 1 1 auto;
+}
+
+.conversation-toggle,
+.conversation-head {
+	font: inherit;
+	color: inherit;
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+}
+
+.conversation-toggle {
+	text-decoration: underline;
+}
+
+.conversation-list,
+.conversation-later {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4em;
+	margin-top: 0.4em;
+}
+
+.conversation-message {
+	border: 1px solid var(--cv-bordure, rgba(128, 128, 128, 0.35));
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.conversation-head {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6em;
+	align-items: baseline;
+	width: 100%;
+	text-align: start;
+	padding: 0.45em 0.75em;
+}
+
+.conversation-head:hover,
+.conversation-head:focus-visible {
+	background: rgba(128, 128, 128, 0.12);
+}
+
+.conversation-from {
+	font-weight: 600;
+	unicode-bidi: plaintext;
+}
+
+.conversation-unseen .conversation-from::before {
+	content: '● ';
+	color: var(--cv-accent, currentColor);
+}
+
+.conversation-way {
+	font-size: 0.85em;
+	opacity: 0.7;
+}
+
+.conversation-subject {
+	flex: 1 1 12em;
+	opacity: 0.8;
+	unicode-bidi: plaintext;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.conversation-date {
+	font-size: 0.85em;
+	opacity: 0.7;
+	white-space: nowrap;
+	margin-inline-start: auto;
+}
+
+.conversation-zone {
+	padding: 0.25em 0.75em 0.6em;
+	border-top: 1px solid var(--cv-bordure, rgba(128, 128, 128, 0.25));
+}
+
+.conversation-body {
+	unicode-bidi: plaintext;
+	overflow-x: auto;
+	max-width: 100%;
+}
+
+.conversation-foot {
+	margin-top: 0.5em;
+	font-size: 0.88em;
+	opacity: 0.85;
+}
+
+.conversation-note {
+	opacity: 0.75;
+	font-style: italic;
+}
+
+.conversation-files {
+	unicode-bidi: plaintext;
+}
+
+.conversation-open {
+	color: inherit;
+}
+
+.conversation-here {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6em;
+	align-items: baseline;
+	padding: 0.35em 0.75em;
+	border-inline-start: 3px solid var(--cv-accent, currentColor);
+	background: rgba(128, 128, 128, 0.08);
+	border-radius: 0 6px 6px 0;
+}
+
+.conversation-here-label {
+	font-size: 0.85em;
+	opacity: 0.75;
+}
