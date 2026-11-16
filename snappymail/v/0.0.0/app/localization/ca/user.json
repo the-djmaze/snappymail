@@ -4,9 +4,9 @@
 		"TO_ARCHIVE": "Arxiva",
 		"ARE_YOU_SURE": "Voleu continuar?",
 		"BACK": "Enrere",
-		"BCC": "C/o",
+		"BCC": "C\/o",
 		"CANCEL": "Cancel·la",
-		"CC": "A/c",
+		"CC": "A\/c",
 		"CLEAR": "Neteja",
 		"CLOSE": "Tanca",
 		"CONTACTS": "Contactes",
@@ -26,7 +26,10 @@
 		"NOT_SPAM": "No és correu brossa",
 		"USERNAME": "Nom d’usuari",
 		"PASSWORD": "Contrasenya",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Recorda",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "Respon a",
 		"SAVE": "Desa",
 		"SAVE_CHANGES": "Voleu desar els canvis?",
@@ -127,7 +130,7 @@
 		"TODAY_AT": "avui a les %TIME%",
 		"YESTERDAY_AT": "ahir a les %TIME%",
 		"NEW_MESSAGE_NOTIFICATION": "Teniu %COUNT% missatges nous.",
-		"QUOTA_SIZE": "S’utilitzen <strong>%SIZE% (%PROC%%)</strong> de <strong>%LIMIT%</strong>",
+		"QUOTA_SIZE": "S’utilitzen <strong>%SIZE% (%PROC%%)<\/strong> de <strong>%LIMIT%<\/strong>",
 		"SORT": "Ordena",
 		"NO_SORT": "El servidor de correu no permet ordenar els missatges",
 		"SORT_ARRIVAL_ASC": "Data de recepció ascendent",
@@ -177,7 +180,8 @@
 		"TAGS": "Etiquetes",
 		"NEW_TAG": "Etiqueta nova",
 		"ENABLE_TRACKING_LINKS": "Activa els enllaços de seguiment",
-		"TRACKING_ENABLED": "Ara es farà el seguiment dels enllaços quan hi feu clic."
+		"TRACKING_ENABLED": "Ara es farà el seguiment dels enllaços quan hi feu clic.",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Important",
@@ -292,7 +296,7 @@
 	"POPUPS_CLEAR_FOLDER": {
 		"TITLE_CLEAR_FOLDER": "Voleu suprimir tots els missatges de la carpeta?",
 		"DANGER_DESC_WARNING": "Avís",
-		"DANGER_DESC_HTML_1": "Aquesta acció suprimirà definitivament tots els missatges de la carpeta <strong>%FOLDER%</strong>.",
+		"DANGER_DESC_HTML_1": "Aquesta acció suprimirà definitivament tots els missatges de la carpeta <strong>%FOLDER%<\/strong>.",
 		"DANGER_DESC_HTML_2": "Un cop iniciat, el procés no es pot aturar ni cancel·lar.",
 		"TITLE_CLEARING_PROCESS": "S’està buidant la carpeta…"
 	},
@@ -329,12 +333,13 @@
 		"BACKUP_PRIVATE_KEY_ON_SERVER": "Desa una còpia de la clau privada al servidor"
 	},
 	"SMIME": {
-		"POPUP_IMPORT_TITLE": "Importa un certificat S/MIME",
+		"POPUP_IMPORT_TITLE": "Importa un certificat S\/MIME",
 		"CERTIFICATE": "Certificat",
-		"CERTIFICATES": "Certificats S/MIME",
-		"SIGNED_MESSAGE": "Missatge signat amb S/MIME",
-		"ENCRYPTED_MESSAGE": "Missatge xifrat amb S/MIME",
-		"PRIVATE_KEY_OF": "Clau privada S/MIME de %EMAIL%"
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
+		"CERTIFICATES": "Certificats S\/MIME",
+		"SIGNED_MESSAGE": "Missatge signat amb S\/MIME",
+		"ENCRYPTED_MESSAGE": "Missatge xifrat amb S\/MIME",
+		"PRIVATE_KEY_OF": "Clau privada S\/MIME de %EMAIL%"
 	},
 	"POPUPS_FILTER": {
 		"TITLE_CREATE_FILTER": "Crea un filtre",
@@ -347,7 +352,7 @@
 		"SELECT_ACTION_REJECT": "Rebutja",
 		"SELECT_ACTION_VACATION_MESSAGE": "Missatge de vacances",
 		"SELECT_ACTION_DISCARD": "Descarta-ho",
-		"SELECT_FIELD_RECIPIENTS": "Destinataris (Per a o A/c)",
+		"SELECT_FIELD_RECIPIENTS": "Destinataris (Per a o A\/c)",
 		"SELECT_FIELD_HEADER": "Capçalera",
 		"SELECT_FIELD_BODY": "Cos",
 		"SELECT_FIELD_SIZE": "Mida",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "Seguretat",
 		"LABEL_AUTOLOGOUT": "Tancament automàtic de sessió",
 		"FORGET_KEY_PASS": "Oblida la contrasenya de la clau privada",
-		"NEVER": "Mai"
+		"NEVER": "Mai",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "Llengua",
@@ -495,6 +501,7 @@
 		"CHROME_NOTIFICATION_DESC_DENIED": "(El navegador les ha bloquejades)",
 		"COLLAPSE_BLOCKQUOTES": "Replega el text citat",
 		"MAX_QUOTE_LEVEL": "Nombre màxim de nivells visibles de text citat",
+		"MIN_FONT_SIZE": "Minimum Font Size",
 		"LIST_INLINE_ATTACHMENTS": "Mostra a la llista els fitxers adjunts inserits al missatge",
 		"LIST_SIMPLE_ATTACHMENTS": "Llista simple de fitxers adjunts",
 		"LIST_MESSAGES_GROUPED": "Agrupa els missatges de la llista en ordenar per data o remitent",

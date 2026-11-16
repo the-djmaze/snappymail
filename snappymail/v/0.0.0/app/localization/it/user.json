@@ -26,7 +26,10 @@
 		"NOT_SPAM": "Segnala come non spam",
 		"USERNAME": "Nome utente",
 		"PASSWORD": "Passphrase",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Ricordami",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "Rispondi a",
 		"SAVE": "Salva",
 		"SAVE_CHANGES": "Salvare le modifiche?",
@@ -177,7 +180,8 @@
 		"TAGS": "Tag",
 		"NEW_TAG": "Nuovo tag",
 		"ENABLE_TRACKING_LINKS": "Enable tracking links",
-		"TRACKING_ENABLED": "Links are now tracked when clicked!"
+		"TRACKING_ENABLED": "Links are now tracked when clicked!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Importante",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Import S\/MIME certificate",
 		"CERTIFICATE": "Certificate",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME Certificates",
 		"SIGNED_MESSAGE": "Messaggio firmato con S\/MIME",
 		"ENCRYPTED_MESSAGE": "Messaggio cifrato con S\/MIME",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "Sicurezza",
 		"LABEL_AUTOLOGOUT": "Disconnessione automatica",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
-		"NEVER": "Mai"
+		"NEVER": "Mai",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "Lingua",

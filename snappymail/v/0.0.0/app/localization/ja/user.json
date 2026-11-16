@@ -26,7 +26,10 @@
 		"NOT_SPAM": "迷惑メールを解除",
 		"USERNAME": "ユーザー名",
 		"PASSWORD": "パスワード",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Remember",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "Reply-To",
 		"SAVE": "保存",
 		"SAVE_CHANGES": "Save changes?",
@@ -177,7 +180,8 @@
 		"TAGS": "タグ",
 		"NEW_TAG": "New tag",
 		"ENABLE_TRACKING_LINKS": "Enable tracking links",
-		"TRACKING_ENABLED": "Links are now tracked when clicked!"
+		"TRACKING_ENABLED": "Links are now tracked when clicked!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "重要",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Import S\/MIME certificate",
 		"CERTIFICATE": "Certificate",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME Certificates",
 		"SIGNED_MESSAGE": "S\/MIME署名済みメッセージ",
 		"ENCRYPTED_MESSAGE": "S\/MIME暗号化メッセージ",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "セキュリティ",
 		"LABEL_AUTOLOGOUT": "自動ログアウト",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
-		"NEVER": "しない"
+		"NEVER": "しない",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "言語",

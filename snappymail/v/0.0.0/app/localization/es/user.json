@@ -26,7 +26,10 @@
 		"NOT_SPAM": "Es correo deseado",
 		"USERNAME": "Nombre de usuario",
 		"PASSWORD": "Contraseña",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Recordar",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "Responder",
 		"SAVE": "Guardar",
 		"SAVE_CHANGES": "¿Guardar cambios?",
@@ -177,7 +180,8 @@
 		"TAGS": "Tags",
 		"NEW_TAG": "New tag",
 		"ENABLE_TRACKING_LINKS": "Habilitar links de seguimiento",
-		"TRACKING_ENABLED": "Ahora se realiza un seguimiento al presionar en los enlaces"
+		"TRACKING_ENABLED": "Ahora se realiza un seguimiento al presionar en los enlaces",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Importante",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Importar certificado S\/MIME",
 		"CERTIFICATE": "Certificado",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME Certificados",
 		"SIGNED_MESSAGE": "Mensaje firmado mediante S\/MIME",
 		"ENCRYPTED_MESSAGE": "Mensaje cifrado mediante S\/MIME",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "Seguridad",
 		"LABEL_AUTOLOGOUT": "Salir Automáticamente",
 		"FORGET_KEY_PASS": "Olvidar la frase de contraseña de la clave privada",
-		"NEVER": "Nunca"
+		"NEVER": "Nunca",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "Idioma",

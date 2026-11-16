@@ -26,7 +26,10 @@
 		"NOT_SPAM": "Не спам",
 		"USERNAME": "Імя карыстальніка",
 		"PASSWORD": "Пароль",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Запомніць",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "Адказаць-на",
 		"SAVE": "Захаваць",
 		"SAVE_CHANGES": "Захаваць змены?",
@@ -177,7 +180,8 @@
 		"TAGS": "Меткі",
 		"NEW_TAG": "Новая метка",
 		"ENABLE_TRACKING_LINKS": "Уключыць спасылкі для адсочвання",
-		"TRACKING_ENABLED": "Спысылкі цяпер адсочваюцца пры націску!"
+		"TRACKING_ENABLED": "Спысылкі цяпер адсочваюцца пры націску!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Важлівае",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Імпартаваць S\/MIME сертыфікат",
 		"CERTIFICATE": "Сертыфікат",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME Сертыфікаты",
 		"SIGNED_MESSAGE": "паведамленне падпісанае S\/MIME",
 		"ENCRYPTED_MESSAGE": "паведамленне шыфраванае S\/MIME",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "Бяспека",
 		"LABEL_AUTOLOGOUT": "Азтаматычны ўваход",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
-		"NEVER": "Ніколі"
+		"NEVER": "Ніколі",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "Мова",

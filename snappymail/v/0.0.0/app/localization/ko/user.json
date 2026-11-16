@@ -26,7 +26,10 @@
 		"NOT_SPAM": "스팸 아님",
 		"USERNAME": "사용자 이름",
 		"PASSWORD": "비밀번호",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Remember",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "회신 주소",
 		"SAVE": "저장",
 		"SAVE_CHANGES": "Save changes?",
@@ -177,7 +180,8 @@
 		"TAGS": "Tags",
 		"NEW_TAG": "New tag",
 		"ENABLE_TRACKING_LINKS": "Enable tracking links",
-		"TRACKING_ENABLED": "Links are now tracked when clicked!"
+		"TRACKING_ENABLED": "Links are now tracked when clicked!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Important",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Import S\/MIME certificate",
 		"CERTIFICATE": "Certificate",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME Certificates",
 		"SIGNED_MESSAGE": "S\/MIME로 서명된 메세지입니다.",
 		"ENCRYPTED_MESSAGE": "S\/MIME로 암호화된 메세지입니다.",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "보안",
 		"LABEL_AUTOLOGOUT": "자동 로그아웃",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
-		"NEVER": "설정하지 않음"
+		"NEVER": "설정하지 않음",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "언어",

@@ -26,6 +26,7 @@
 		"NOT_SPAM": "Geen ongewenste e-mail",
 		"USERNAME": "Gebruikersnaam",
 		"PASSWORD": "Wachtwoord",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Onthouden",
 		"REMEMBER_FOR_SESSION": "Onthoud voor deze sessie",
 		"REMEMBER_PERMANENT": "Onthoud permanent",
@@ -179,7 +180,8 @@
 		"TAGS": "Labels",
 		"NEW_TAG": "Nieuw label",
 		"ENABLE_TRACKING_LINKS": "Schakel trackinglinks in",
-		"TRACKING_ENABLED": "Links worden nu bijgehouden wanneer erop wordt geklikt!"
+		"TRACKING_ENABLED": "Links worden nu bijgehouden wanneer erop wordt geklikt!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Belangrijk",
@@ -333,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Importeer S\/MIME certificaat",
 		"CERTIFICATE": "Certificaat",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME Certificaten",
 		"SIGNED_MESSAGE": "S\/MIME ondertekend bericht",
 		"ENCRYPTED_MESSAGE": "S\/MIME versleuteld bericht",

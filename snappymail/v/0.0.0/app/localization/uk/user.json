@@ -26,7 +26,10 @@
 		"NOT_SPAM": "Не спам",
 		"USERNAME": "Ім'я користувача",
 		"PASSWORD": "Пароль",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Запам'ятати",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "Відповідь сюди",
 		"SAVE": "Зберегти",
 		"SAVE_CHANGES": "Зберегти зміни?",
@@ -177,7 +180,8 @@
 		"TAGS": "Теги",
 		"NEW_TAG": "Новий тег",
 		"ENABLE_TRACKING_LINKS": "Увімкнути відстеження посилань",
-		"TRACKING_ENABLED": "Посилання тепер відстежуються при натисканні!"
+		"TRACKING_ENABLED": "Посилання тепер відстежуються при натисканні!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Важливе",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Імпорт S\/MIME сертифікат",
 		"CERTIFICATE": "Сертифікат",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME Сертифікати",
 		"SIGNED_MESSAGE": "S\/MIME підписане повідомлення",
 		"ENCRYPTED_MESSAGE": "S\/MIME шифроване повідомлення",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "Безпека",
 		"LABEL_AUTOLOGOUT": "Автовихід",
 		"FORGET_KEY_PASS": "Забувати пароль private key",
-		"NEVER": "Ніколи"
+		"NEVER": "Ніколи",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "Мова",

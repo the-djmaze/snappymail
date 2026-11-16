@@ -46,7 +46,7 @@
 		"LABEL_ALLOW_IDENTITIES": "Permet identitats múltiples",
 		"ALERT_DATA_ACCESS": "La carpeta de dades és accessible des de l’exterior. Configureu el servidor web per impedir-hi l’accés extern. Més informació:",
 		"ALERT_WARNING": "Avís!",
-		"HTML_ALERT_WEAK_PASSWORD": "Esteu utilitzant la contrasenya d’administració predeterminada.\n<br>\nPer motius de seguretat,\n<strong><a href=\"#/security\">canvieu-la</a></strong>\nara per una altra.\n"
+		"HTML_ALERT_WEAK_PASSWORD": "Esteu utilitzant la contrasenya d’administració predeterminada.\n<br>\nPer motius de seguretat,\n<strong><a href=\"#\/security\">canvieu-la<\/a><\/strong>\nara per una altra.\n"
 	},
 	"TAB_LOGIN": {
 		"LEGEND_LOGIN_SCREEN": "Pantalla d’inici de sessió",
@@ -74,7 +74,7 @@
 		"ALERT_NOTICE": "Atenció!",
 		"SUGGESTIONS_LIMIT": "Límit de suggeriments",
 		"HTML_ALERT_DO_NOT_USE_THIS_DATABASE": "No useu aquest tipus de base de dades amb un gran nombre d’usuaris actius.",
-		"HTML_ALERT_DOES_NOT_SUPPORTED": "El sistema no admet els contactes.\n<br>\nHeu d’instal·lar o activar l’extensió <strong>PDO (SQLite / MySQL / PostgreSQL)</strong> al servidor.\n"
+		"HTML_ALERT_DOES_NOT_SUPPORTED": "El sistema no admet els contactes.\n<br>\nHeu d’instal·lar o activar l’extensió <strong>PDO (SQLite \/ MySQL \/ PostgreSQL)<\/strong> al servidor.\n"
 	},
 	"TAB_DOMAINS": {
 		"LEGEND_DOMAINS": "Dominis",
@@ -92,7 +92,7 @@
 		"LABEL_CURRENT_PASSWORD": "Contrasenya actual",
 		"LABEL_NEW_PASSWORD": "Contrasenya nova",
 		"LABEL_REPEAT_PASSWORD": "Repetiu la contrasenya",
-		"LABEL_REQUIRE_VERIFICATION": "Exigeix la verificació del certificat SSL utilitzat (IMAP / SMTP)",
+		"LABEL_REQUIRE_VERIFICATION": "Exigeix la verificació del certificat SSL utilitzat (IMAP \/ SMTP)",
 		"CRYPTO": "Criptografia",
 		"LABEL_ALLOW_SELF_SIGNED": "Permet els certificats autosignats"
 	},
@@ -109,7 +109,7 @@
 		"LABEL_ALL_RIGHTS_RESERVED": "Tots els drets reservats.",
 		"HINT_READ_CHANGE_LOG": "Llegiu el registre de canvis abans d’actualitzar.",
 		"HINT_IS_UP_TO_DATE": "SnappyMail està actualitzat.",
-		"HTML_NEW_VERSION": "Hi ha disponible una versió nova: <b>%VERSION%</b>.",
+		"HTML_NEW_VERSION": "Hi ha disponible una versió nova: <b>%VERSION%<\/b>.",
 		"LABEL_UPDATING": "S’està actualitzant…",
 		"LABEL_CHECKING": "S’està comprovant si hi ha actualitzacions…",
 		"BUTTON_RELEASES": "Versions publicades"
@@ -142,7 +142,7 @@
 		"LABEL_AUTH_PLAIN_LINE": "Força l’autenticació amb una sola ordre AUTH PLAIN",
 		"LABEL_USE_PHP_MAIL": "Utilitza la funció mail() de PHP",
 		"BUTTON_WHITE_LIST": "Usuaris permesos",
-		"NEW_DOMAIN_DESC": "Aquesta configuració de domini us permetrà treballar amb les adreces de correu de <strong>%NAME%</strong>.\n",
+		"NEW_DOMAIN_DESC": "Aquesta configuració de domini us permetrà treballar amb les adreces de correu de <strong>%NAME%<\/strong>.\n",
 		"WHITE_LIST_ALERT": "Llista d’usuaris del domini que poden accedir al correu web.\nSepareu-los amb espais.\n",
 		"VALID_SPAM_HEADERS": "Capçaleres vàlides de correu brossa",
 		"VALID_VIRUS_HEADERS": "Capçaleres vàlides de virus"

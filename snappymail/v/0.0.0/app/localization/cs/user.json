@@ -26,7 +26,10 @@
 		"NOT_SPAM": "Není to spam",
 		"USERNAME": "Uživatelské jméno",
 		"PASSWORD": "Heslo",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Zapamatovat",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "Adresa odpovědi",
 		"SAVE": "Uložit",
 		"SAVE_CHANGES": "Uložit změny?",
@@ -177,7 +180,8 @@
 		"TAGS": "Tagy",
 		"NEW_TAG": "Nový tag",
 		"ENABLE_TRACKING_LINKS": "Povolit sledování odkazů",
-		"TRACKING_ENABLED": "Odkazy jsou nyní při kliknutí sledovány!"
+		"TRACKING_ENABLED": "Odkazy jsou nyní při kliknutí sledovány!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Důležité",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Import S\/MIME certifikátu",
 		"CERTIFICATE": "Certifikát",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME certifikáty",
 		"SIGNED_MESSAGE": "Zpráva podepsaná S\/MIME",
 		"ENCRYPTED_MESSAGE": "Zpráva šifrovaná S\/MIME",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "Zabezpečení",
 		"LABEL_AUTOLOGOUT": "Automatické odhlášení",
 		"FORGET_KEY_PASS": "Zapomenout heslo k soukromému klíči",
-		"NEVER": "Nikdy"
+		"NEVER": "Nikdy",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "Jazyk",

@@ -26,7 +26,10 @@
 		"NOT_SPAM": "非垃圾郵件",
 		"USERNAME": "使用者名稱",
 		"PASSWORD": "密碼",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "記住",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "回覆",
 		"SAVE": "儲存",
 		"SAVE_CHANGES": "是否要儲存變更？",
@@ -177,7 +180,8 @@
 		"TAGS": "標籤",
 		"NEW_TAG": "新增標籤",
 		"ENABLE_TRACKING_LINKS": "啓用跟蹤鏈接",
-		"TRACKING_ENABLED": "點擊鏈接時會被追蹤！"
+		"TRACKING_ENABLED": "點擊鏈接時會被追蹤！",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "重要",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "匯入 S\/MIME 證書",
 		"CERTIFICATE": "證書",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME 證書",
 		"SIGNED_MESSAGE": "已透過 S\/MIME 簽署郵件",
 		"ENCRYPTED_MESSAGE": "已透過 S\/MIME 加密郵件",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "安全性",
 		"LABEL_AUTOLOGOUT": "自動登出",
 		"FORGET_KEY_PASS": "忘記私鑰密碼",
-		"NEVER": "永不"
+		"NEVER": "永不",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "語言",

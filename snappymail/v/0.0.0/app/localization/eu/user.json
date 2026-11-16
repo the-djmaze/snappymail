@@ -26,7 +26,10 @@
 		"NOT_SPAM": "Ez da spama",
 		"USERNAME": "Erabiltzaile-izena",
 		"PASSWORD": "Pasahitza",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Gogoratu",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "Erantzun",
 		"SAVE": "Gorde",
 		"SAVE_CHANGES": "Aldaketak gorde?",
@@ -100,7 +103,7 @@
 		"ACL_S": "\\IKUSITAKO etiketa",
 		"ACL_T": "\\EZABATUTAKO etiketa",
 		"ACL_W": "Beste etiketak",
-		"ACL_X": "Ezabatu/Berrizendatu karpeta"
+		"ACL_X": "Ezabatu\/Berrizendatu karpeta"
 	},
 	"MESSAGE_LIST": {
 		"BUTTON_RELOAD": "Eguneratu mezuen zerrenda",
@@ -177,7 +180,8 @@
 		"TAGS": "Etiketak",
 		"NEW_TAG": "Etiketa berria",
 		"ENABLE_TRACKING_LINKS": "Gaitu jarraipen-estekak",
-		"TRACKING_ENABLED": "Estekak orain jarraipena dute klikatzean!"
+		"TRACKING_ENABLED": "Estekak orain jarraipena dute klikatzean!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Garrantzitsua",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Inportatu S\/MIME ziurtagiria",
 		"CERTIFICATE": "Ziurtagiria",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME ziurtagiria",
 		"SIGNED_MESSAGE": "S\/MIME sinatutako mezua",
 		"ENCRYPTED_MESSAGE": "S\/MIME zifratutako mezua",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "Segurtasuna",
 		"LABEL_AUTOLOGOUT": "Saioa automatikoki itxi",
 		"FORGET_KEY_PASS": "Ahaztu gako pribatuaren pasaesaldia",
-		"NEVER": "Inoiz ez"
+		"NEVER": "Inoiz ez",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "Hizkuntza",

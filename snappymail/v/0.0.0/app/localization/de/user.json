@@ -26,6 +26,7 @@
 		"NOT_SPAM": "Kein Spam",
 		"USERNAME": "Nutzername",
 		"PASSWORD": "Passwort",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Zugangsdaten merken",
 		"REMEMBER_FOR_SESSION": "Aktuelle Sitzung merken",
 		"REMEMBER_PERMANENT": "Dauerhaft merken",
@@ -179,7 +180,8 @@
 		"TAGS": "Schlagworte",
 		"NEW_TAG": "Neues Schlagwort",
 		"ENABLE_TRACKING_LINKS": "Aktiviere Tracking-Links",
-		"TRACKING_ENABLED": "Tracking-Links sind nun aktiv!"
+		"TRACKING_ENABLED": "Tracking-Links sind nun aktiv!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Wichtig",

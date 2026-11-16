@@ -26,7 +26,10 @@
 		"NOT_SPAM": "非垃圾邮件",
 		"USERNAME": "用户名",
 		"PASSWORD": "密码",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "记住",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "回复",
 		"SAVE": "保存",
 		"SAVE_CHANGES": "是否保存修改？",
@@ -177,7 +180,8 @@
 		"TAGS": "标签",
 		"NEW_TAG": "新标签",
 		"ENABLE_TRACKING_LINKS": "启用追踪链接",
-		"TRACKING_ENABLED": "链接点击后将会被追踪!"
+		"TRACKING_ENABLED": "链接点击后将会被追踪!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "重要",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "导入 S\/MIME 证书",
 		"CERTIFICATE": "证书",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME 证书",
 		"SIGNED_MESSAGE": "由 S\/MIME 签名",
 		"ENCRYPTED_MESSAGE": "由 S\/MIME 加密",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "安全",
 		"LABEL_AUTOLOGOUT": "自动登出",
 		"FORGET_KEY_PASS": "忘记私钥密码",
-		"NEVER": "从不"
+		"NEVER": "从不",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "语言",

@@ -26,7 +26,10 @@
 		"NOT_SPAM": "Ekki ruslpóstur",
 		"USERNAME": "Notendanafn",
 		"PASSWORD": "Lykilorð",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Remember",
+		"REMEMBER_FOR_SESSION": "Remember for this Session",
+		"REMEMBER_PERMANENT": "Remember Permanently",
 		"REPLY_TO": "Svara-til",
 		"SAVE": "Vista",
 		"SAVE_CHANGES": "Save changes?",
@@ -177,7 +180,8 @@
 		"TAGS": "Tags",
 		"NEW_TAG": "New tag",
 		"ENABLE_TRACKING_LINKS": "Enable tracking links",
-		"TRACKING_ENABLED": "Links are now tracked when clicked!"
+		"TRACKING_ENABLED": "Links are now tracked when clicked!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Important",
@@ -331,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Import S\/MIME certificate",
 		"CERTIFICATE": "Certificate",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "S\/MIME Certificates",
 		"SIGNED_MESSAGE": "Skeyti undirritað með S\/MIME",
 		"ENCRYPTED_MESSAGE": "Skeyti dulritað með S\/MIME",
@@ -458,7 +463,8 @@
 		"LEGEND_SECURITY": "Öryggi",
 		"LABEL_AUTOLOGOUT": "Sjálfvirk útskráning",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
-		"NEVER": "Aldrei"
+		"NEVER": "Aldrei",
+		"LABEL_STORED_PASS": "Remembered Passphrase"
 	},
 	"SETTINGS_GENERAL": {
 		"LANGUAGE": "Tungumál",

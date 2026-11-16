@@ -26,6 +26,7 @@
 		"NOT_SPAM": "Не спам",
 		"USERNAME": "Имя пользователя",
 		"PASSWORD": "Пароль",
+		"SHOW_PASSPHRASE": "Show passphrase",
 		"REMEMBER": "Запомнить",
 		"REMEMBER_FOR_SESSION": "Запомнить Временное",
 		"REMEMBER_PERMANENT": "Запомнить Навсегда",
@@ -179,7 +180,8 @@
 		"TAGS": "Метки",
 		"NEW_TAG": "Новая метка",
 		"ENABLE_TRACKING_LINKS": "Включить отслеживание ссылок",
-		"TRACKING_ENABLED": "Теперь клики по ссылкам отслеживаются!"
+		"TRACKING_ENABLED": "Теперь клики по ссылкам отслеживаются!",
+		"LOCAL_DELIVERY_TITLE": "Delivered locally on this mail server, SPF\/DKIM\/DMARC checks do not apply"
 	},
 	"MESSAGE_TAGS": {
 		"$important": "Важное",
@@ -333,6 +335,7 @@
 	"SMIME": {
 		"POPUP_IMPORT_TITLE": "Импорт сертификата S\/MIME",
 		"CERTIFICATE": "Сертификат",
+		"CERTIFICATECHAIN": "Intermediate Certificate(s)",
 		"CERTIFICATES": "Сертификаты S\/MIME",
 		"SIGNED_MESSAGE": "S\/MIME подписанное сообщение",
 		"ENCRYPTED_MESSAGE": "S\/MIME шифрованное сообщение",

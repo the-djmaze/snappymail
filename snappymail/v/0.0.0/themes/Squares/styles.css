@@ -47,6 +47,11 @@
 	--message-list-toolbar-bg-color: #eee;
 
 	--thm-toolbar-bg-image: linear-gradient(to bottom, #f4f4f4, #dfdfdf);
+	--thm-btn-text-shadow-clr: rgba(0, 0, 0, 0.25);
+	--thm-light-btn-box-shadow-inset-clr: rgba(255, 255, 255, 0.2);
+	--thm-light-btn-box-shadow-outset-clr: rgba(0, 0, 0, 0.05);
+	--thm-light-btn-box-shadow-inset-clr-active: rgba(0, 0, 0, 0.15);
+	--thm-light-btn-box-shadow-outset-clr-active: rgba(0, 0, 0, 0.05);
 }
 
 /* https://caniuse.com/?search=light-dark */
@@ -127,6 +132,19 @@
 	--tab-hover-border-clr: light-dark(#eee, #111);
 
 	--thm-toolbar-bg-image: light-dark(linear-gradient(to bottom, #f4f4f4, #dfdfdf), linear-gradient(to bottom,#444,#111));
+
+	--thm-btn-text-shadow-clr: light-dark(rgba(0, 0, 0, 0.25), rgba(255,255,255,.25));
+
+	--thm-dark-btn-box-shadow: inset 0 1px 0 , 0 1px 2px );
+	--thm-dark-btn-box-shadow-inset-clr: rgba(0,0,0,.2);
+	--thm-dark-btn-box-shadow-outset-clr: rgba(255,255,255,.05);
+	--thm-btn-box-shadow-inset-clr: light-dark(var(--thm-light-btn-box-shadow-inset-clr), var(--thm-dark-btn-box-shadow-inset-clr));
+	--thm-btn-box-shadow-outset-clr: light-dark(var(--thm-light-btn-box-shadow-outset-clr), var(--thm-dark-btn-box-shadow-outset-clr));
+
+	--thm-dark-btn-box-shadow-inset-clr-active: rgba(255,255,255,.5);
+	--thm-dark-btn-box-shadow-outset-clr-active: rgba(255,255,255,.25);
+	--thm-btn-box-shadow-inset-clr-active: light-dark(var(--thm-light-btn-box-shadow-inset-clr-active), var(--thm-dark-btn-box-shadow-inset-clr-active));
+	--thm-btn-box-shadow-outset-clr-active: light-dark(var(--thm-light-btn-box-shadow-outset-clr-active), var(--thm-dark-btn-box-shadow-outset-clr-active));
 }
 
 #rl-app[data-color-scheme="light"] {
@@ -154,6 +172,15 @@
 	filter: invert(1);
 }
 
+.btn:not(.btn-success):not(.btn-warning):not(.btn-danger) {
+	box-shadow: inset 0 1px 0 var(--thm-light-btn-box-shadow-inset-clr), 0 1px 2px var(--thm-btn-box-shadow-outset-clr);
+	text-shadow: 0 -1px 0 var(--thm-btn-text-shadow-clr);
+}
+.btn:not(.btn-success):not(.btn-warning):not(.btn-danger).active,
+.btn:not(.btn-success):not(.btn-warning):not(.btn-danger):active {
+	box-shadow: inset 0 2px 4px var(--thm-btn-box-shadow-inset-clr-active), 0 1px 2px var(--thm-btn-box-shadow-outset-clr-active);
+}
+
 /*
 ::-webkit-scrollbar-track {
 	background-color: #000;
@@ -164,14 +191,6 @@
 	box-shadow: inset 0 0 3px #000;
 }
 
-.btn:not(.btn-success):not(.btn-warning):not(.btn-danger) {
-	box-shadow: inset 0 1px 0 rgba(0,0,0,.2), 0 1px 2px rgba(255,255,255,.05);
-	text-shadow: 0 -1px 0 rgba(255,255,255,.25);
-}
-.btn:not(.btn-success):not(.btn-warning):not(.btn-danger).active,
-.btn:not(.btn-success):not(.btn-warning):not(.btn-danger):active {
-	box-shadow: inset 0 2px 4px rgba(255,255,255,.5), 0 1px 2px rgba(255,255,255,.25);
-}
 .btn .icon-spinner {
 	border-color: #333;
 	border-top-color: #ccc;
