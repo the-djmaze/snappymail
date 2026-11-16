@@ -97,6 +97,23 @@
 		left: 6px;
 	}
 
+	.showPassphrase {
+		position: absolute;
+		font-size: 121%;
+		line-height: 38px;
+		right: 6px;
+		// The leading icons are :first-child, so their static position is already
+		// level with the field. This one follows the input, so without a top it
+		// sits at its own static position, below the border.
+		top: 0;
+		cursor: pointer;
+		opacity: .8;
+
+		&:hover, &:focus {
+			opacity: 1;
+		}
+	}
+
 	.btn {
 
 		text-transform: uppercase;

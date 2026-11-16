@@ -20,8 +20,12 @@
 		<span class="fontastic">🔑</span>
 		<input name="Password" required="" type="password" class="input-block-level"
 			autocomplete="current-password" autocorrect="off" autocapitalize="off"
-			data-bind="textInput: password, disable: submitRequest"
+			data-bind="textInput: password, disable: submitRequest, attr: {type: showPassphrase() ? 'text' : 'password'}"
 			data-i18n="[placeholder]GLOBAL/PASSWORD">
+		<span class="showPassphrase fontastic" tabindex="0" role="switch"
+			data-bind="text: showPassphrase() ? '🕶' : '👁', toggle: showPassphrase,
+				attr: {'aria-checked': showPassphrase}"
+			data-i18n="[title]GLOBAL/SHOW_PASSPHRASE">👁</span>
 	</div>
 	<div id="plugin-Login-BottomControlGroup"></div>
 	<div class="controls" style="display: flex">
