@@ -54,6 +54,25 @@ export const
 		leftPanelDisabled(ThemeStore.isMobile());
 
 		setHasColorSchemeMode();
+		const stored = Local.get(CLR_SCHEME_KEY);
+		if (stored) {
+			ThemeStore.colorSchemeMode(stored);
+		}
+		// When the theme CSS changes dynamically (user switches theme in Settings),
+		// re-set the attribute to force the browser to re-evaluate [data-color-scheme]
+		// selectors in the newly loaded theme stylesheet.
+		const themeStyle = elementById('app-theme-style');
+		if (themeStyle) {
+			new MutationObserver(() => {
+				const mode = ThemeStore.colorSchemeMode();
+				if (mode) {
+					appEl.removeAttribute(CLR_SCHEME_ATTR);
+					requestAnimationFrame(() =>
+						appEl.setAttribute(CLR_SCHEME_ATTR, mode)
+					);
+				}
+			}).observe(themeStyle, { childList: true, characterData: true, subtree: true });
+		}
 	},
 
 	changeTheme = (value, themeTrigger = ()=>0) => {
@@ -83,27 +102,6 @@ export const
 
 	convertThemeName = theme => theme.replace(/@[a-z]+$/, '').replace(/([A-Z])/g, ' $1').trim(),
 
-	initColorSchemeToggle = () => {
-		const stored = Local.get(CLR_SCHEME_KEY);
-		if (stored) {
-			ThemeStore.colorSchemeMode(stored);
-		}
-		// When the theme CSS changes dynamically (user switches theme in Settings),
-		// re-set the attribute to force the browser to re-evaluate [data-color-scheme]
-		// selectors in the newly loaded theme stylesheet.
-		const themeStyle = document.getElementById('app-theme-style');
-		if (themeStyle) {
-			new MutationObserver(() => {
-				const mode = ThemeStore.colorSchemeMode();
-				if (mode) {
-					appEl.removeAttribute(CLR_SCHEME_ATTR);
-					requestAnimationFrame(() =>
-						appEl.setAttribute(CLR_SCHEME_ATTR, mode)
-					);
-				}
-			}).observe(themeStyle, { childList: true, characterData: true, subtree: true });
-		}
-	},
 	setLightMode  = () => ThemeStore.colorSchemeMode('light'),
 	setDarkMode   = () => ThemeStore.colorSchemeMode('dark'),
 	setSystemMode = () => ThemeStore.colorSchemeMode('')

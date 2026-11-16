@@ -1,5 +1,10 @@
 <div class="b-toolbar g-ui-user-select-none">
 	<a class="btn btn-thin fontastic toggleLeft" data-bind="click: toggleLeftPanel"></a>
 	<h4>SnappyMail - <span data-i18n="TOP_PANEL/LABEL_ADMIN_PANEL"></span></h4>
+	<!-- ko if: hasColorSchemeMode -->
+	<a class="btn" tabindex="-1" data-bind="click: lightModeClick, css: { active: 'light' === colorSchemeMode() }, attr: { title: 'Light mode', 'aria-pressed': 'light' === colorSchemeMode() }" aria-label="Light mode">☀</a>
+	<a class="btn" tabindex="-1" data-bind="click: systemModeClick, css: { active: '' === colorSchemeMode() }, attr: { title: 'System mode', 'aria-pressed': '' === colorSchemeMode() }" aria-label="System mode">🖥</a>
+	<a class="btn" tabindex="-1" data-bind="click: darkModeClick, css: { active: 'dark' === colorSchemeMode() }, attr: { title: 'Dark mode', 'aria-pressed': 'dark' === colorSchemeMode() }" aria-label="Dark mode">🌒</a>
+	<!-- /ko -->
 	<a class="btn btn-logout fontastic" data-bind="click: logoutClick">⏻</a>
 </div>

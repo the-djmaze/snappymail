@@ -19,7 +19,7 @@ import { getNotification } from 'Common/Translator';
 //import { koComputable } from 'External/ko';
 import { addObservablesTo } from 'External/ko';
 
-import { ThemeStore, initColorSchemeToggle, setLightMode, setDarkMode, setSystemMode } from 'Stores/Theme';
+import { ThemeStore, setLightMode, setDarkMode, setSystemMode } from 'Stores/Theme';
 
 export class SystemDropDownUserView extends AbstractViewRight {
 	constructor() {
@@ -129,8 +129,6 @@ export class SystemDropDownUserView extends AbstractViewRight {
 	}
 
 	onBuild() {
-		initColorSchemeToggle();
-
 		registerShortcut('m', '', [ScopeMessageList, ScopeMessageView, ScopeSettings], () => {
 			if (!this.viewModelDom.hidden) {
 //				exitFullscreen();
