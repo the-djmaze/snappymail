@@ -134,8 +134,12 @@ abstract class MimeType
 	protected static $types = [
 		'7z' => 'application/x-7z-compressed',
 		'ai' => 'application/postscript',
+//		'asc' => 'application/pgp-encrypted',
 //		'asc' => 'application/pgp-signature',
 //		'asc' => 'application/pgp-keys',
+//		'pgp' => 'application/pgp-encrypted',
+//		'pgp' => 'application/pgp-signature',
+//		'pgp' => 'application/pgp-keys',
 		'bat' => 'application/x-msdownload',
 		'bz' => 'application/x-bzip',
 		'bz2' => 'application/x-bzip2',

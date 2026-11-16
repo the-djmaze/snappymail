@@ -1,7 +1,7 @@
 # Maintainer: George Rawlinson <george@rawlinson.net.nz>
 
 pkgname=snappymail
-pkgver=2.7.2
+pkgver=0.0.0
 pkgrel=1
 pkgdesc="modern PHP webmail client"
 arch=('any')

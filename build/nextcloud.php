@@ -60,33 +60,37 @@ $data = file_get_contents('dev/serviceworker.js');
 $nc_tar->addFromString('snappymail/app/serviceworker.js', $data);
 $hashes['app/serviceworker.js'] = hash('sha512', $data);
 
-spl_autoload_register(function($name){
-	$file = __DIR__ . '/' . str_replace('\\', '/', $name) . '.php';
-	require $file;
-});
+if (is_file($cert_dir.'/snappymail.crt')) {
+	spl_autoload_register(function($name){
+		$file = __DIR__ . '/' . str_replace('\\', '/', $name) . '.php';
+		require $file;
+	});
 
-ksort($hashes);
-$cert = file_get_contents($cert_dir.'/snappymail.crt');
-$rsa = new \phpseclib\Crypt\RSA();
-$rsa->loadKey(file_get_contents($cert_dir.'/snappymail.key'));
-$x509 = new \phpseclib\File\X509();
-$x509->loadX509($cert);
-$x509->setPrivateKey($rsa);
-$rsa->setSignatureMode(\phpseclib\Crypt\RSA::SIGNATURE_PSS);
-$rsa->setMGFHash('sha512');
-$rsa->setSaltLength(0);
-$signature = $rsa->sign(json_encode($hashes));
-$nc_tar->addFromString('snappymail/appinfo/signature.json', json_encode([
-	'hashes' => $hashes,
-	'signature' => base64_encode($signature),
-	'certificate' => $cert
-], JSON_PRETTY_PRINT));
+	ksort($hashes);
+	$cert = file_get_contents($cert_dir.'/snappymail.crt');
+	$rsa = new \phpseclib\Crypt\RSA();
+	$rsa->loadKey(file_get_contents($cert_dir.'/snappymail.key'));
+	$x509 = new \phpseclib\File\X509();
+	$x509->loadX509($cert);
+	$x509->setPrivateKey($rsa);
+	$rsa->setSignatureMode(\phpseclib\Crypt\RSA::SIGNATURE_PSS);
+	$rsa->setMGFHash('sha512');
+	$rsa->setSaltLength(0);
+	$signature = $rsa->sign(json_encode($hashes));
+	$nc_tar->addFromString('snappymail/appinfo/signature.json', json_encode([
+		'hashes' => $hashes,
+		'signature' => base64_encode($signature),
+		'certificate' => $cert
+	], JSON_PRETTY_PRINT));
+}
 
 $nc_tar->compress(Phar::GZ);
 unlink($nc_destination);
 $nc_destination .= '.gz';
 
-$signature = shell_exec("openssl dgst -sha512 -sign {$cert_dir}/snappymail.key {$nc_destination} | openssl base64");
-file_put_contents($nc_destination.'.sig', $signature);
+if (is_file($cert_dir.'/snappymail.key')) {
+	$signature = shell_exec("openssl dgst -sha512 -sign {$cert_dir}/snappymail.key {$nc_destination} | openssl base64");
+	file_put_contents($nc_destination.'.sig', $signature);
+}
 
 echo "{$nc_destination} created\n";
