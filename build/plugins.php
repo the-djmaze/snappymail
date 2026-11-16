@@ -179,7 +179,7 @@ foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 */
 			if (isset($options['sign'])) {
 				$arg = escapeshellarg($tgz_destination);
-				passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '.$arg, $return_var);
+				passthru('gpg --local-user ' . SIGNING_KEY . ' --armor --detach-sign ' . $arg, $return_var);
 				$manifest_item['pgp_sig'] = trim(preg_replace('/-----(BEGIN|END) PGP SIGNATURE-----/', '', file_get_contents($tgz_destination.'.asc')));
 
 				$signature = '';
