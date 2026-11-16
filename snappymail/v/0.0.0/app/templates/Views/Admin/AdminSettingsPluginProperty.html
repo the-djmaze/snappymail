@@ -1,5 +1,5 @@
 	<label data-bind="text: label, visible: 5 !== type"></label>
-	<!-- ko if: 0 === type -->
+	<!-- ko if: !type -->
 		<input type="text" autocomplete="off" autocorrect="off" autocapitalize="off"
 			data-bind="value: value, attr: {placeholder: placeholder}">
 	<!-- /ko -->

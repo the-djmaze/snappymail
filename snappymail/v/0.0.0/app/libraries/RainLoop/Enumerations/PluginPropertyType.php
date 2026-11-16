@@ -2,16 +2,15 @@
 
 namespace RainLoop\Enumerations;
 
-abstract class PluginPropertyType
+enum PluginPropertyType: int
 {
-	const
-		GROUP = 7,
-		STRING = 0,
-		INT = 1,
-		STRING_TEXT = 2,
-		PASSWORD = 3,
-		SELECTION = 4,
-		BOOL = 5,
-		URL = 6,
-		SELECT = 8;
+	case STRING = 0;
+	case INT = 1;
+	case STRING_TEXT = 2;
+	case PASSWORD = 3;
+	case SELECTION = 4;
+	case BOOL = 5;
+	case URL = 6;
+	case GROUP = 7;
+	case SELECT = 8;
 }

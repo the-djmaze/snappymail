@@ -14,7 +14,7 @@ class Property implements \JsonSerializable
 
 	private string $sDesc = '';
 
-	private int $iType = PluginPropertyType::STRING;
+	private PluginPropertyType $eType = PluginPropertyType::STRING;
 
 	private bool $bAllowedInJs = false;
 
@@ -36,16 +36,16 @@ class Property implements \JsonSerializable
 		return new self($sName);
 	}
 
-	public function SetType(int $iType): self
+	public function SetType(PluginPropertyType $eType): self
 	{
-		$this->iType = (int) $iType;
+		$this->eType = $eType;
 		return $this;
 	}
 
 	public function SetValue(mixed $mValue): void
 	{
 		$this->mValue = null;
-		switch ($this->iType) {
+		switch ($this->eType) {
 			case PluginPropertyType::INT:
 				$this->mValue = (int) $mValue;
 				break;
@@ -142,9 +142,9 @@ class Property implements \JsonSerializable
 		return $this->sLabel;
 	}
 
-	public function Type(): int
+	public function Type(): PluginPropertyType
 	{
-		return $this->iType;
+		return $this->eType;
 	}
 
 	public function DefaultValue(): mixed
@@ -180,7 +180,7 @@ class Property implements \JsonSerializable
 			'value' => $mValue,
 			'placeholder' => $this->sPlaceholder,
 			'name' => $this->sName,
-			'type' => $this->iType,
+			'type' => $this->eType->value,
 			'label' => $this->sLabel,
 			'default' => $this->mDefaultValue,
 			'options' => $this->aOptions,
