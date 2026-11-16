@@ -1,0 +1,19 @@
+{
+	"CONVERSATION": {
+		"TITLE": "Conversation",
+		"MESSAGES": "messages",
+		"PARTIAL": "(at least)",
+		"SHOW": "Show conversation",
+		"HIDE": "Hide conversation",
+		"SENT": "sent",
+		"NO_SUBJECT": "(no subject)",
+		"UNKNOWN": "(unknown sender)",
+		"LOADING": "Loading…",
+		"FAILED": "This message could not be loaded. Click again to retry.",
+		"ENCRYPTED": "Encrypted message: open it to read it.",
+		"EMPTY": "(no text)",
+		"IMAGES": "Remote images blocked.",
+		"OPEN": "Open this message",
+		"HERE": "Message shown below"
+	}
+}
