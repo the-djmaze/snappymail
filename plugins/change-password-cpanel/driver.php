@@ -68,7 +68,7 @@ class ChangePasswordCPanelDriver
 		$sPassword = $this->oConfig->Get('plugin', 'cpanel_pass', '');
 
 		if (empty($sHost) || 1 > $iPort || !\strlen($sUser) || !\strlen($sPassword)) {
-			$this->oLogger->Write('CPANEL: Incorrent configuration data', \MailSo\Log\Enumerations\Type::ERROR);
+			$this->oLogger->Write('CPANEL: Incorrent configuration data', \LOG_ERR);
 			return false;
 		}
 
@@ -100,7 +100,7 @@ class ChangePasswordCPanelDriver
 
 			$sResult = $oJSONApi->api2_query($sUser, 'Email', 'passwdpop', $aArgs);
 			if ($sResult) {
-				$this->oLogger->Write('CPANEL: '.$sResult, \MailSo\Log\Enumerations\Type::INFO);
+				$this->oLogger->Write('CPANEL: '.$sResult, \LOG_INFO);
 
 				$aResult = \json_decode($sResult, true);
 				$bResult = isset($aResult['cpanelresult']['data'][0]['result']) &&
@@ -108,7 +108,7 @@ class ChangePasswordCPanelDriver
 			}
 
 			if (!$bResult) {
-				$this->oLogger->Write('CPANEL: '.$sResult, \MailSo\Log\Enumerations\Type::ERROR);
+				$this->oLogger->Write('CPANEL: '.$sResult, \LOG_ERR);
 			}
 		}
 		catch (\Exception $oException)
