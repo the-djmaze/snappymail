@@ -195,7 +195,7 @@ export class ComposePopupView extends AbstractViewPopup {
 
 		const fEmailOutInHelper = (context, identity, name, isIn) => {
 			const identityEmail = context && identity?.[name]();
-			if (identityEmail && (isIn ? true : context[name]())) {
+			if (identityEmail && (isIn || context[name]())) {
 				let list = context[name]().trim().split(',');
 
 				list = list.filter(email => {
