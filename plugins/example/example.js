@@ -136,24 +136,6 @@
 		});
 	});
 
-	/**
-	 * Use to show a specific message.
-	 */
-/*
-	dispatchEvent(
-		new CustomEvent(
-			'mailbox.message.show',
-			{
-				detail: {
-					folder: 'INBOX',
-					uid: 1
-				},
-				cancelable: false
-			}
-		)
-	);
-*/
-
 	class ExamplePopupView extends rl.pluginPopupView {
 		constructor() {
 			super('Example');

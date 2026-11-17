@@ -13,6 +13,7 @@ import {
 } from 'Common/EnumsUser';
 import { RFC822 } from 'Common/File';
 import {
+	mailRoute,
 	elementById,
 	keyScopeReal,
 	Settings,
@@ -24,6 +25,7 @@ import {
 	formFieldFocused
 } from 'Common/Globals';
 import { encodeHtml } from 'Common/Html';
+import { mailBox } from 'Common/Links';
 import { arrayLength } from 'Common/Utils';
 import { download, downloadZip, mailToHelper, showMessageComposer, moveAction } from 'Common/UtilsUser';
 import { isFullscreen, exitFullscreen, toggleFullscreen } from 'Common/Fullscreen';
@@ -278,8 +280,6 @@ export class MailMessageView extends AbstractViewRight {
 					this.localDelivery(message.headers().isLocalDelivery());
 					this.nowTracking(false);
 				} else {
-					MessagelistUserStore.selectedMessage(null);
-
 					this.viewHash = '';
 
 					this.scrollMessageToTop();
@@ -321,6 +321,17 @@ export class MailMessageView extends AbstractViewRight {
 
 	closeMessage() {
 		currentMessage(null);
+		// The address bar still named the message that just closed, so a reload
+		// or a shared link would have reopened it. Replace rather than push: the
+		// entry this is undoing was pushed when the message opened, so Back still
+		// goes back to wherever the reader came from.
+		const folder = FolderUserStore.currentFolder();
+		folder && hasher.replaceHash(mailBox(
+			folder.fullNameHash,
+			mailRoute.page(),
+			mailRoute.search(),
+			mailRoute.threadUid()
+		));
 	}
 
 	editCommand() {

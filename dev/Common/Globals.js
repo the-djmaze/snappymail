@@ -66,6 +66,17 @@ export const
 		}
 		keyScopeReal(value);
 		shortcuts.setScope(value);
+	},
+
+	mailRoute = {
+		folder: ko.observable(null),
+		uid: ko.observable(0),
+		page: ko.observable(1),
+		search: ko.observable(null),
+		threadUid: ko.observable(0)
+		// RFC 8474
+//		MAILBOXID: ko.observable(folder.id)
+//		EMAILID: ko.observable(message.id)
 	};
 
 dropdownVisibility.subscribe(value => {

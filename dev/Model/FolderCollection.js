@@ -501,8 +501,8 @@ export class FolderModel extends AbstractModel {
 	 * For url safe '/#/mailbox/...' path
 	 */
 	get fullNameHash() {
-		return this.fullName.replace(/[^a-z0-9._-]+/giu, b64EncodeJSONSafe);
-//		return this.fullName.replace(/\/+/g, b64EncodeJSONSafe);
+//		return this.fullName.replace(/[^a-z0-9._-]+/giu, b64EncodeJSONSafe);
+		return this.fullName.replace(/[#~\/]+/g, b64EncodeJSONSafe);
 //		return /^[a-z0-9._-]+$/iu.test(this.fullName) ? this.fullName : b64EncodeJSONSafe(this.fullName);
 	}
 

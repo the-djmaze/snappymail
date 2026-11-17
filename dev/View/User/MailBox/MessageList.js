@@ -22,7 +22,7 @@ import { i18n } from 'Common/Translator';
 
 import { dropFilesInFolder } from 'Common/Folders';
 
-import { getFolderFromCacheList } from 'Common/Cache';
+import { getFolderFromCacheList, getFolderHashFromCacheList } from 'Common/Cache';
 
 import { AppUserStore } from 'Stores/User/App';
 import { SettingsUserStore } from 'Stores/User/Settings';
@@ -68,23 +68,7 @@ const
 	},
 
 	pad2 = v => 10 > v ? '0' + v : '' + v,
-	Ymd = dt => dt.getFullYear() + pad2(1 + dt.getMonth()) + pad2(dt.getDate()),
-
-	setMessage = msg => {
-		populateMessageBody(msg);
-/* This will replace url hash, and then load message
- * It's working properly yet
-//		let hash = msg.href;
-		let hash = mailBox(
-			msg.folder,
-			MessagelistUserStore.page(),
-			MessagelistUserStore.listSearch(),
-			MessagelistUserStore.threadUid(),
-			msg.uid
-		);
-		MessageUserStore.message() ? hasher.replaceHash(hash) : hasher.setHash(hash);
-*/
-	};
+	Ymd = dt => dt.getFullYear() + pad2(1 + dt.getMonth()) + pad2(dt.getDate());
 
 
 let
@@ -241,8 +225,9 @@ export class MailMessageList extends AbstractViewRight {
 
 		this.selector.on('ItemSelect', message => {
 			if (message) {
-//				setMessage(message.clone());
-				setMessage(message);
+				console.log('ItemSelect setHash');
+//				message.selected(true);
+				hasher.setHash(message.urlHash);
 			} else {
 				MessageUserStore.message(null);
 			}
@@ -295,34 +280,6 @@ export class MailMessageList extends AbstractViewRight {
 		addEventListener('mailbox.message-list.selector.go-up',
 			e => this.selector.newSelectPosition('ArrowUp', false, e.detail)
 		);
-
-		addEventListener('mailbox.message.show', e => {
-			const sFolder = e.detail.folder, iUid = e.detail.uid;
-
-			const message = MessagelistUserStore.find(
-				item => sFolder === item?.folder && iUid == item?.uid
-			);
-
-			if ('INBOX' === sFolder && 'INBOX' !== FolderUserStore.currentFolderFullName()) {
-				hasher.setHash(mailBox(sFolder));
-			}
-
-			if (message) {
-				this.selector.selectMessageItem(message);
-			} else {
-				if ('INBOX' !== sFolder && sFolder !== FolderUserStore.currentFolderFullName()) {
-					hasher.setHash(mailBox(sFolder));
-				}
-				if (sFolder && iUid) {
-					let message = new MessageModel;
-					message.folder = sFolder;
-					message.uid = iUid;
-					setMessage(message);
-				} else {
-					MessageUserStore.message(null);
-				}
-			}
-		});
 
 		MessagelistUserStore.endHash.subscribe((() =>
 			this.selector.scrollToFocused()

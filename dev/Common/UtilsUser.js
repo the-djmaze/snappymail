@@ -1,6 +1,6 @@
 import { Notifications } from 'Common/Enums';
 import { MessageSetAction, ComposeType/*, FolderType*/ } from 'Common/EnumsUser';
-import { doc, createElement, elementById, dropdowns, dropdownVisibility, SettingsGet, leftPanelDisabled } from 'Common/Globals';
+import { doc, mailRoute, createElement, elementById, dropdowns, dropdownVisibility, SettingsGet, leftPanelDisabled } from 'Common/Globals';
 import { plainToHtml } from 'Common/Html';
 import { getNotification } from 'Common/Translator';
 import { EmailCollectionModel } from 'Model/EmailCollection';
@@ -14,7 +14,9 @@ import { attachmentDownload } from 'Common/Links';
 
 import { AccountModel } from 'Model/Account';
 import { IdentityModel } from 'Model/Identity';
+import { MessageModel } from 'Model/Message';
 import { AccountUserStore } from 'Stores/User/Account';
+import { FolderUserStore } from 'Stores/User/Folder';
 import { IdentityUserStore } from 'Stores/User/Identity';
 import { isArray } from 'Common/Utils';
 
@@ -327,6 +329,23 @@ viewMessage = (oMessage, popup) => {
 				SettingsUserStore.messageReadDelay() * 1000 // seconds
 			);
 		}
+	}
+},
+
+setRouteMessage = () => {
+	const messageUid = mailRoute.uid();
+	if (messageUid) {
+		let message = MessagelistUserStore.find(message => messageUid == message.uid);
+		if (!message) {
+			console.log('Message not found in list');
+//			const folder = FolderUserStore.currentFolder() || getFolderFromHashMap(mailRoute.folder());
+			message = new MessageModel;
+			message.folder = FolderUserStore.currentFolder().fullName;
+			message.uid = messageUid;
+		}
+		populateMessageBody(message);
+	} else {
+		MessageUserStore.message(null);
 	}
 },
 

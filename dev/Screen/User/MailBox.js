@@ -1,7 +1,7 @@
 import { ScopeMessageList } from 'Common/Enums';
-import { doc, createElement, Settings } from 'Common/Globals';
+import { doc, mailRoute, createElement, Settings } from 'Common/Globals';
 import { pString, pInt } from 'Common/Utils';
-import { moveAction } from 'Common/UtilsUser';
+import { moveAction, setRouteMessage } from 'Common/UtilsUser';
 import { getFolderFromHashMap, getFolderInboxName } from 'Common/Cache';
 import { i18n, initOnStartOrLangChange } from 'Common/Translator';
 
@@ -9,6 +9,7 @@ import { AppUserStore } from 'Stores/User/App';
 import { AccountUserStore } from 'Stores/User/Account';
 import { FolderUserStore } from 'Stores/User/Folder';
 import { MessagelistUserStore } from 'Stores/User/Messagelist';
+import { MessageUserStore } from 'Stores/User/Message';
 
 import { SystemDropDownUserView } from 'View/User/SystemDropDown';
 import { MailFolderList } from 'View/User/MailBox/FolderList';
@@ -16,9 +17,6 @@ import { MailMessageList } from 'View/User/MailBox/MessageList';
 import { MailMessageView } from 'View/User/MailBox/MessageView';
 
 import { AbstractScreen } from 'Knoin/AbstractScreen';
-
-import { MessageModel } from 'Model/Message';
-import { populateMessageBody } from 'Common/UtilsUser';
 
 export class MailBoxUserScreen extends AbstractScreen {
 	constructor() {
@@ -67,22 +65,40 @@ export class MailBoxUserScreen extends AbstractScreen {
 	 * @returns {void}
 	 */
 	onRoute(folderHash, page, search, messageUid) {
+		messageUid = pInt(messageUid);
+		page = Math.max(1, pInt(page));
+		mailRoute.folder(folderHash.replace(/~([\d]+)$/, ''));
+		// Thread UID is in the folder name after the tilde like "folder~1"
+		mailRoute.threadUid(pInt(folderHash.substr(mailRoute.folder().length + 1)));
+		mailRoute.page(page);
+		mailRoute.search(search);
+		mailRoute.uid(messageUid);
+
 		// Only works when FolderUserStore.folderList() is loaded
-		const folder = getFolderFromHashMap(folderHash.replace(/~([\d]+)$/, ''));
+		const folder = getFolderFromHashMap(mailRoute.folder());
 		if (folder) {
-			FolderUserStore.currentFolder(folder);
-			MessagelistUserStore.page(1 > page ? 1 : page);
-			MessagelistUserStore.listSearch(search);
-			if (messageUid) {
-				let message = new MessageModel;
-				message.folder = folderHash;
-				message.uid = messageUid;
-				populateMessageBody(message);
+			if (FolderUserStore.currentFolder() !== folder
+				|| MessagelistUserStore.page() !== page
+				|| MessagelistUserStore.listSearch() !== search
+				|| MessagelistUserStore.threadUid() !== mailRoute.threadUid()
+			) {
+				// A mailbox is selected, load everything
+				FolderUserStore.currentFolder(folder);
+				MessagelistUserStore.page(mailRoute.page());
+				MessagelistUserStore.listSearch(mailRoute.search());
+				MessagelistUserStore.threadUid(mailRoute.threadUid());
+				MessagelistUserStore.reload(false, false, setRouteMessage);
+			} else if (messageUid) {
+				// A message in the current mailbox is selected
+				const current = MessageUserStore.message();
+				if (!current || current.uid != messageUid || current.folder !== folder.fullName) {
+					setRouteMessage();
+				}
 			} else {
-				let threadUid = folderHash.replace(/^.+~(\d+)$/, '$1');
-				MessagelistUserStore.threadUid((folderHash === threadUid) ? 0 : pInt(threadUid));
+				MessageUserStore.message(null);
 			}
-			MessagelistUserStore.reload();
+		} else {
+			console.warn('FolderUserStore not yet loaded');
 		}
 	}
 
@@ -129,9 +145,9 @@ export class MailBoxUserScreen extends AbstractScreen {
 			[/^([a-zA-Z0-9.~_-]+)\/(.+)\/?$/, { normalize_: (request, vals) =>
 				[folder(request, vals), 1, decodeURI(pString(vals[1]))]
 			}],
-			// Message: {folder}/m{uid}(/{search})?
+			// Message: {folder}/m{uid}(/p{int})?(/{search})?
 			[/^([a-zA-Z0-9.~_-]+)\/m([1-9][0-9]*)(?:\/(.+))?$/, { normalize_: (request, vals) =>
-				[folder(request, vals), 1, pString(vals[2]), pString(vals[1])]
+				[folder(request, vals), pInt(vals[2]), pString(vals[3]), pInt(vals[1])]
 			}],
 			// Page: {folder}/p{int}(/{search})?
 			[/^([a-zA-Z0-9.~_-]+)\/p([1-9][0-9]*)(?:\/(.+))?$/, { normalize_: fNormS }]

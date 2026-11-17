@@ -52,5 +52,12 @@ export const
 
 	/**
 	 * @param {string} folderFullName
+	 * @returns {?string} fullNameHash
+	 */
+	getFolderHashFromCacheList = folderFullName =>
+		getFolderFromCacheList(folderFullName)?.fullNameHash,
+
+	/**
+	 * @param {string} folderFullName
 	 */
 	removeFolderFromCacheList = folderFullName => FOLDERS_CACHE.delete(folderFullName);

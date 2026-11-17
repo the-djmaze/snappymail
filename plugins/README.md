@@ -432,23 +432,6 @@ and called in JavaScript using rl.pluginRemoteRequest().
 ### mailbox.message-list.selector.go-up
 ### mailbox.message-list.selector.go-down
 
-### mailbox.message.show
-	Use to show a specific message.
-``` JavaScript
-	dispatchEvent(
-		new CustomEvent(
-			'mailbox.message.show',
-			{
-				detail: {
-					folder: 'INBOX',
-					uid: 1
-				},
-				cancelable: false
-			}
-		)
-	);
-```
-
 ## audio
 ### audio.start
 ### audio.stop

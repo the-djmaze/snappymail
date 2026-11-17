@@ -2,15 +2,16 @@ import ko from 'ko';
 
 import { i18n } from 'Common/Translator';
 
-import { doc, elementById, SettingsGet } from 'Common/Globals';
+import { doc, mailRoute, elementById, SettingsGet } from 'Common/Globals';
 import { encodeHtml, plainToHtml, htmlToPlain, cleanHtml } from 'Common/Html';
 import { forEachObjectEntry, b64EncodeJSONSafe } from 'Common/Utils';
-import { serverRequestRaw, proxy } from 'Common/Links';
+import { serverRequestRaw, proxy, mailBox } from 'Common/Links';
 import { addObservablesTo, addComputablesTo } from 'External/ko';
 
 import { FolderUserStore } from 'Stores/User/Folder';
 import { SettingsUserStore } from 'Stores/User/Settings';
 
+import { getFolderHashFromCacheList } from 'Common/Cache';
 import { FileInfo, RFC822 } from 'Common/File';
 import { AttachmentCollectionModel } from 'Model/AttachmentCollection';
 import { EmailCollectionModel } from 'Model/EmailCollection';
@@ -265,6 +266,15 @@ export class MessageModel extends AbstractModel {
 			fileName: (this.subject() || 'message') + '-' + this.hash + '.eml',
 			accountHash: SettingsGet('accountHash')
 		});
+	}
+
+	get urlHash() {
+		return mailBox(
+			getFolderHashFromCacheList(this.folder),
+			mailRoute.page(),
+			mailRoute.search(),
+			mailRoute.threadUid(),
+			this.uid);
 	}
 
 	toggleTag(keyword) {

@@ -127,17 +127,14 @@ export const
 			result.push(folder + (threadUid ? '~' + threadUid : ''));
 		}
 
-		if (messageUid) {
-			result.push('m' + messageUid);
-		} else {
-			page = pInt(page, 1);
-			if (1 < page) {
-				result.push('p' + page);
-			}
-			search && result.push(encodeURI(search));
+		messageUid && result.push('m' + messageUid);
+
+		page = pInt(page, 1);
+		if (1 < page) {
+			result.push('p' + page);
 		}
 
-		return result.join('/');
-	},
+		search && result.push(encodeURI(search));
 
-	mailBoxMessage = (folder, messageUid) => mailBox(folder, 1, '', 0, pInt(messageUid));
+		return result.join('/');
+	};

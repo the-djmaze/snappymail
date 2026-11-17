@@ -1,6 +1,5 @@
 import { staticLink } from 'Common/Links';
 import { addObservablesTo } from 'External/ko';
-import { fireEvent } from 'Common/Globals';
 
 /**
  * Might not work due to the new ServiceWorkerRegistration.showNotification
@@ -11,11 +10,7 @@ const HTML5Notification = window.Notification,
 	NotificationsGranted = () => 'granted' === HTML5NotificationStatus(),
 	dispatchMessage = data => {
 		focus();
-		if (data.folder && data.uid) {
-			fireEvent('mailbox.message.show', data);
-		} else if (data.Url) {
-			hasher.setHash(data.Url);
-		}
+		hasher.setHash(data.Url);
 	};
 
 let DesktopNotifications = false,

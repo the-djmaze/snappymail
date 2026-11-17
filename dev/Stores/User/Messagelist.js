@@ -3,13 +3,14 @@ import { koComputable, addObservablesTo, addComputablesTo } from 'External/ko';
 import { SMAudio } from 'Common/Audio';
 import { Notifications } from 'Common/Enums';
 import { MessageSetAction } from 'Common/EnumsUser';
-import { $htmlCL, fireEvent } from 'Common/Globals';
+import { $htmlCL } from 'Common/Globals';
 import { arrayLength, pString } from 'Common/Utils';
 import { UNUSED_OPTION_VALUE } from 'Common/Consts';
 
 import {
 	getFolderInboxName,
 	getFolderFromCacheList,
+	getFolderHashFromCacheList,
 	setFolderETag
 } from 'Common/Cache';
 
@@ -161,14 +162,17 @@ MessagelistUserStore.notifyNewMessages = (folder, newMessages) => {
 				i18n('MESSAGE_LIST/NEW_MESSAGE_NOTIFICATION', {
 					COUNT: len
 				}),
-				{ Url: mailBox(newMessages[0].folder) }
+				// The hash, not the full name: a full name may hold the delimiter
+				// and the route would read the tail as page and search (#153)
+				{ Url: mailBox(getFolderHashFromCacheList(newMessages[0].folder)) }
 			);
 		} else {
 			newMessages.forEach(item => {
 				NotificationUserStore.display(
 					EmailCollectionModel.reviveFromJson(item.from).toString(),
 					item.subject,
-					{ folder: item.folder, uid: item.uid }
+//					{ folder: getFolderHashFromCacheList(item.folder), uid: item.uid }
+					{ Url: mailBox(getFolderHashFromCacheList(item.folder), 1, '', 0, item.uid) }
 				);
 			});
 		}
@@ -186,7 +190,15 @@ let prevFolderName;
  * @param {boolean=} bDropPagePosition = false
  * @param {boolean=} bDropCurrentFolderCache = false
  */
-MessagelistUserStore.reload = (bDropPagePosition = false, bDropCurrentFolderCache = false) => {
+MessagelistUserStore.reload = (bDropPagePosition = false, bDropCurrentFolderCache = false, fSuccessCallback = null) => {
+/*
+	const folder = getFolderFromHashMap(mailRoute.folder());
+	FolderUserStore.currentFolder(folder);
+	MessagelistUserStore.page(mailRoute.page());
+	MessagelistUserStore.listSearch(mailRoute.search());
+	MessagelistUserStore.threadUid(mailRoute.threadUid());
+	MessagelistUserStore.reload();
+*/
 	let iOffset = (MessagelistUserStore.page() - 1) * SettingsUserStore.messagesPerPage(),
 		folderName = FolderUserStore.currentFolderFullName();
 //		folderName = FolderUserStore.currentFolder() ? self.currentFolder().fullName : '');
@@ -288,10 +300,6 @@ MessagelistUserStore.reload = (bDropPagePosition = false, bDropCurrentFolderCach
 						'|' + MessagelistUserStore.page()
 					);
 					MessagelistUserStore.endThreadUid(collection.threadUid);
-					const message = MessageUserStore.message();
-					if (message && folderInfo.name !== message.folder) {
-						MessageUserStore.message(null);
-					}
 
 					disableAutoSelect(true);
 
@@ -308,6 +316,8 @@ MessagelistUserStore.reload = (bDropPagePosition = false, bDropCurrentFolderCach
 
 					MessagelistUserStore(collection);
 					MessagelistUserStore.isIncomplete(false);
+
+					fSuccessCallback && fSuccessCallback();
 				} else {
 					MessagelistUserStore.count(0);
 					MessagelistUserStore([]);
@@ -513,10 +523,7 @@ MessagelistUserStore.moveMessages = (
 				let next = MessagelistUserStore.indexOf(currentMessage) + 1;
 				if (0 < next && (next = MessagelistUserStore()[next])) {
 					currentMessage = null;
-					fireEvent('mailbox.message.show', {
-						folder: next.folder,
-						uid: next.uid
-					});
+					hasher.setHash(next.urlHash());
 				}
 			}
 
@@ -558,3 +565,16 @@ MessagelistUserStore.moveMessages = (
 		);
 	}
 };
+
+// Back out of a message and the list has to forget which row was selected,
+// or clicking that same row again changes nothing in the selector and the
+// message never reopens. Nothing is checked at this point, so the
+// selector's own ItemSelect(null) does not fire and this cannot loop.
+MessageUserStore.message.subscribe(message => {
+//	MessagelistUserStore.selectedMessage()?.selected?.(false);
+	MessagelistUserStore.selectedMessage(
+		MessagelistUserStore.includes(message)
+		? message
+		: null
+	)
+});

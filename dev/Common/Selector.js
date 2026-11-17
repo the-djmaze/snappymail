@@ -53,7 +53,7 @@ export class Selector {
 			itemSelected = item => {
 				if (koList.hasChecked()) {
 					item || this.oCallbacks.ItemSelect?.(null);
-				} else if (item) {
+				} else {
 					this.oCallbacks.ItemSelect?.(item);
 				}
 			},
