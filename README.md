@@ -141,24 +141,24 @@ RainLoop 1.17 vs SnappyMail
 |js/*           	|RainLoop 	|Snappy   	|
 |---------------	|--------:	|--------:	|
 |admin.js        	|2.170.153	|   88.901	|
-|app.js          	|4.207.787	|  467.518	|
+|app.js          	|4.207.787	|  469.167	|
 |boot.js         	|  868.735	|    4.510	|
-|libs.js         	|  658.812	|  240.118	|
-|sieve.js         	|        0	|   91.424	|
-|polyfills.js    	|  334.608	|        0	|
-|TOTAL           	|8.240.095	|  892.756	|
+|libs.js         	|  658.812	|  240.436	|
+|sieve.js         	|         	|   91.424	|
+|polyfills.js    	|  334.608	|         	|
+|TOTAL           	|8.240.095	|  894.723	|
 
 |js/min/*       	|RainLoop 	|Tachyon	|Snappy   	|SM gzip	|SM brotli	|
 |---------------	|--------:	|--------:	|--------:	|------:	|--------:	|
 |admin.min.js    	|  256.831	|   47.567	|   43.296	| 14.569	| 13.084	|
 |app.min.js      	|  515.367	|  234.162	|  208.385	| 70.582	| 60.227	|
-|boot.min.js     	|   84.659	|    2.273	|    2.211	|      0	|      0	|
+|boot.min.js     	|   84.659	|    2.273	|    2.269	|       	|       	|
 |libs.min.js     	|  584.772	|  113.032	|  113.535	| 40.327	| 35.935	|
-|sieve.min.js     	|        0	|   45.377	|   45.380	| 11.095	|  9.909	|
-|polyfills.min.js	|   32.837	|        0	|        0	|      0	|      0	|
-|TOTAL user      	|1.217.635	|  349.467	|  321.920	|110.909	| 96.162	|
-|TOTAL user+sieve	|1.217.635	|  394.844	|  367.300	|122.004	|106.071	|
-|TOTAL admin     	|  959.099	|  182.872	|  156.831	| 54.896	| 49.019	|
+|sieve.min.js     	|         	|   45.377	|   45.380	| 11.095	|  9.909	|
+|polyfills.min.js	|   32.837	|         	|         	|       	|       	|
+|TOTAL user      	|1.217.635	|  349.467	|  322.083	|110.990	| 96.252	|
+|TOTAL user+sieve	|1.217.635	|  394.844	|  367.463	|122.085	|106.161	|
+|TOTAL admin     	|  959.099	|  182.872	|  156.856	| 54.905	| 49.031	|
 
 For a user it is around 66% smaller and faster than traditional RainLoop.
 
@@ -185,14 +185,14 @@ For a user it is around 66% smaller and faster than traditional RainLoop.
 * Removed gulp-autoprefixer
 
 
-|css/*       	|RainLoop	|Snappy   	|RL gzip	|SM gzip	|SM brotli	|
-|------------	|-------:	|------:	|------:	|------:	|--------:	|
-|app.css     	| 340.331	| 88.966	| 46.946	| 18.689	| 15.920	|
-|app.min.css 	| 274.947	| 69.412	| 39.647	| 15.805	| 13.773	|
-|boot.css    	|       	|  1.326	|       	|    664	|    545	|
-|boot.min.css	|       	|  1.071	|       	|    590	|    474	|
-|admin.css    	|       	| 33.555	|       	|  7.551	|  6.578	|
-|admin.min.css	|       	| 25.341	|       	|  6.393	|  5.640	|
+|css/*       	|RainLoop	|Snappy   	|SM gzip	|SM brotli	|
+|------------	|-------:	|------:	|------:	|--------:	|
+|app.css     	| 340.331	| 88.878	| 18.674	| 15.878	|
+|app.min.css 	| 274.947	| 69.338	| 15.787	| 13.747	|
+|boot.css    	|       	|  2.386	|       	|       	|
+|boot.min.css	|       	|  2.107	|       	|       	|
+|admin.css    	|       	| 33.554	|  7.548	|  6.537	|
+|admin.min.css	|       	| 25.340	|  6.390	|  5.644	|
 
 ### PGP
 RainLoop uses the old OpenPGP.js v2

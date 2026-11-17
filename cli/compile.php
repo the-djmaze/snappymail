@@ -100,11 +100,13 @@ if (isset($options['readme'])) {
 
 	$readme = file_get_contents(ROOT_DIR . '/README.md');
 
+	$tblrow = '\\|[\\s0-9\\.]+';
+
 	$total = filesize("{$basedir}/static/js/serviceworker.js");
 	foreach (['admin','app','boot','libs','sieve'] as $name) {
 		$size = filesize("{$basedir}/static/js/{$name}.js");
 		$total += $size;
-		$readme = preg_replace("/(\\|{$name}\\.js\\s+\\|[\\s0-9.]+\\|)[\\s0-9.]+\\|/Ds",
+		$readme = preg_replace("/(\\|{$name}\\.js\\s+{$tblrow}\\|)[\\s0-9.]+\\|/Ds",
 			'$1' . str_pad(number_format($size, 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	|',
 			$readme
 		);
@@ -119,33 +121,37 @@ if (isset($options['readme'])) {
 	$total_gz = [];
 	foreach (['admin','app','boot','libs','sieve'] as $name) {
 		$size = filesize("{$basedir}/static/js/min/{$name}.min.js");
-		$size_br = filesize("{$basedir}/static/js/min/{$name}.min.js.br");
-		$size_gz = filesize("{$basedir}/static/js/min/{$name}.min.js.gz");
-		$total[$name] = $size;
-		$total_br[$name] = $size_br;
-		$total_gz[$name] = $size_gz;
-		$readme = preg_replace(
-			"/(\\|{$name}\\.min\\.js\\s+\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+\\|/Ds",
-			'$1|'
-			. str_pad(number_format($size, 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	'
-			. '$2|'
-			. str_pad(number_format($size_gz, 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-			. '$3|'
-			. str_pad(number_format($size_br, 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-			. '|'
-			,
-			$readme
-		);
+		if (is_file("{$basedir}/static/js/min/{$name}.min.js.br")) {
+			$size_br = filesize("{$basedir}/static/js/min/{$name}.min.js.br");
+			$size_gz = filesize("{$basedir}/static/js/min/{$name}.min.js.gz");
+			$total[$name] = $size;
+			$total_br[$name] = $size_br;
+			$total_gz[$name] = $size_gz;
+			$readme = preg_replace(
+				"/(\\|{$name}\\.min\\.js\\s+{$tblrow}{$tblrow}){$tblrow}{$tblrow}{$tblrow}\\|$/Ds",
+				'$1|'
+				. str_pad(number_format($size, 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	|'
+				. str_pad(number_format($size_gz, 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
+				. str_pad(number_format($size_br, 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
+				,
+				$readme
+			);
+		} else {
+			$readme = preg_replace(
+				"/(\\|{$name}\\.min\\.js\\s+{$tblrow}{$tblrow}){$tblrow}/Ds",
+				'$1|'
+				. str_pad(number_format($size, 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	'
+				,
+				$readme
+			);
+		}
 	}
 	$readme = preg_replace(
-		"/(TOTAL user\+sieve\\s+\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+\\|/Ds",
+		"/(TOTAL user\+sieve\\s+{$tblrow}{$tblrow}){$tblrow}{$tblrow}{$tblrow}\\|/Ds",
 		'$1|'
-		. str_pad(number_format(array_sum($total) - $total['admin'], 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	'
-		. '$2|'
-		. str_pad(number_format(array_sum($total_gz) - $total_gz['admin'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-		. '$3|'
-		. str_pad(number_format(array_sum($total_br) - $total_br['admin'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-		. '|'
+		. str_pad(number_format(array_sum($total) - $total['admin'], 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	|'
+		. str_pad(number_format(array_sum($total_gz) - $total_gz['admin'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
+		. str_pad(number_format(array_sum($total_br) - $total_br['admin'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
 		,
 		$readme
 	);
@@ -163,54 +169,49 @@ if (isset($options['readme'])) {
 	unset($total_br['sieve']);
 	unset($total_gz['sieve']);
 	$readme = preg_replace(
-		"/(TOTAL user\\s+\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+\\|/Ds",
+		"/(TOTAL user\\s+{$tblrow}{$tblrow}){$tblrow}{$tblrow}{$tblrow}\\|/Ds",
 		'$1|'
-		. str_pad(number_format(array_sum($total) - $total['admin'], 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	'
-		. '$2|'
-		. str_pad(number_format(array_sum($total_gz) - $total_gz['admin'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-		. '$3|'
-		. str_pad(number_format(array_sum($total_br) - $total_br['admin'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-		. '|'
+		. str_pad(number_format(array_sum($total) - $total['admin'], 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	|'
+		. str_pad(number_format(array_sum($total_gz) - $total_gz['admin'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
+		. str_pad(number_format(array_sum($total_br) - $total_br['admin'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
 		,
 		$readme
 	);
 	$readme = preg_replace(
-		"/(TOTAL admin\\s+\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+\\|/Ds",
+		"/(TOTAL admin\\s+{$tblrow}{$tblrow}){$tblrow}{$tblrow}{$tblrow}\\|/Ds",
 		'$1|'
-		. str_pad(number_format(array_sum($total) - $total['app'], 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	'
-		. '$2|'
-		. str_pad(number_format(array_sum($total_gz) - $total_gz['app'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-		. '$3|'
-		. str_pad(number_format(array_sum($total_br) - $total_br['app'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-		. '|'
+		. str_pad(number_format(array_sum($total) - $total['app'], 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	|'
+		. str_pad(number_format(array_sum($total_gz) - $total_gz['app'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
+		. str_pad(number_format(array_sum($total_br) - $total_br['app'], 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
 		,
 		$readme
 	);
 
-	foreach (['admin','app'] as $name) {
+	foreach (['admin','app','admin.min','app.min'] as $name) {
 		$readme = preg_replace(
-			"/(\\|{$name}\\.css\\s+\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+\\|[\\s0-9.]+\\|/Ds",
+			"/(\\|{$name}\\.css\\s+{$tblrow}){$tblrow}{$tblrow}{$tblrow}\\|/Ds",
 			'$1|'
-			. str_pad(number_format(filesize("{$basedir}/static/css/{$name}.css"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-			. '$2|'
+			. str_pad(number_format(filesize("{$basedir}/static/css/{$name}.css"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
 			. str_pad(number_format(filesize("{$basedir}/static/css/{$name}.css.gz"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
-			. str_pad(number_format(filesize("{$basedir}/static/css/{$name}.css.br"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-			. '|'
-			,
-			$readme
-		);
-		$readme = preg_replace(
-			"/(\\|{$name}\\.min\\.css\\s+\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+\\|[\\s0-9.]+\\|/Ds",
-			'$1|'
-			. str_pad(number_format(filesize("{$basedir}/static/css/{$name}.min.css"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-			. '$2|'
-			. str_pad(number_format(filesize("{$basedir}/static/css/{$name}.min.css.gz"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
-			. str_pad(number_format(filesize("{$basedir}/static/css/{$name}.min.css.br"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	'
-			. '|'
+			. str_pad(number_format(filesize("{$basedir}/static/css/{$name}.css.br"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
 			,
 			$readme
 		);
 	}
+	$readme = preg_replace(
+		"/(\\|boot\\.css\\s+{$tblrow}){$tblrow}\\|/Ds",
+		'$1|'
+		. str_pad(number_format(filesize("{$basedir}/static/css/boot.css"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
+		,
+		$readme
+	);
+	$readme = preg_replace(
+		"/(\\|boot\\.min\\.css\\s+{$tblrow}){$tblrow}\\|/Ds",
+		'$1|'
+		. str_pad(number_format(filesize("{$basedir}/static/css/boot.min.css"), 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
+		,
+		$readme
+	);
 
 
 	$sizes = [
@@ -220,7 +221,7 @@ if (isset($options['readme'])) {
 	];
 	//|openpgp.min.js 	|  330.742	|  540.542	|102.388	| 167.397	| 84.241  	| 137.502	|
 	$readme = preg_replace(
-		"/(openpgp\.min\.js\\s+\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+(\\|[\\s0-9.]+)\\|[\\s0-9.]+\\|/Ds",
+		"/(openpgp\.min\.js\\s+{$tblrow}){$tblrow}({$tblrow}){$tblrow}({$tblrow}){$tblrow}\\|/Ds",
 		'$1|'
 		. str_pad(number_format($sizes[0], 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	'
 		. '$2| '
