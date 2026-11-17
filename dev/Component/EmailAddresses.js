@@ -305,7 +305,7 @@ export class EmailAddressesComponent {
 				el.append(v.obj.toLine(true));
 				li.append(el);
 
-				el = createElement('a',{href:'#', class:'ficon'});
+				el = createElement('a',{class:'fontastic'});
 				el.append('✖');
 				addEventsListeners(el, {
 					click: e => self._removeTag(e, li),
