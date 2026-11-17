@@ -72,7 +72,7 @@
 .icon-file-certificate::before {
   content: "\e038"; /* 🔏 🔐 */
 }
-.icon-attachment::before {
+.icon-paperclip::before {
   content: "📎";
 }
 .icon-file-spreadsheet::before {

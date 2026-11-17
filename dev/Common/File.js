@@ -267,7 +267,7 @@ export const FileInfo = {
 
 			return (1 === icons?.length && 'icon-file' !== icons[0])
 				 ? icons[0]
-				 : 'icon-attachment';
+				 : 'icon-paperclip';
 		}
 
 		return '';
