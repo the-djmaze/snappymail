@@ -65,7 +65,12 @@ export class VCardProperty {
 		this.field = jCardProp[0].toLowerCase();
 		this.params = jCardProp[1];
 		this.type = jCardProp[2];
-		this.value = jCardProp[3];
+		// RFC 7095: a property with several values carries them as separate
+		// elements, ["categories",{},"text","a","b","c"]. Reading only [3] kept
+		// the first and dropped the rest, so a contact in three groups showed one
+		// and saving the contact destroyed the other two. A structured value such
+		// as n or org is a single nested array at [3] and is unaffected.
+		this.value = 4 < jCardProp.length ? jCardProp.slice(3) : jCardProp[3];
 	}
 
 	addParam(key, value)
