@@ -847,9 +847,15 @@ export const
 			.replace(/&/g, '&amp;')
 			.replace(/>/g, '&gt;')
 			.replace(/</g, '&lt;')
-			.replace(urlRegExp, (...m) => {
-				m[0] = stripTracking(m[0]);
-				return `<a href="${m[0]}" target="_blank">${m[0]}</a>`;
+			.replace(urlRegExp, url => {
+				// Strip trailing unmatched closing brackets (e.g. URL wrapped in parentheses)
+				for (const [open, close] of [['(', ')'], ['[', ']'], ['<', '>']]) {
+					while (url.endsWith(close) && (url.split(open).length - 1) < (url.split(close).length - 1)) {
+						url = url.slice(0, -1);
+					}
+				}
+				url = stripTracking(url);
+				return `<a href="${url}" target="_blank">${url}</a>`;
 			})
 			.replace(email, '$1<a href="mailto:$2">$2</a>')
 			.replace(tel, '<a href="$1">$1</a>')
