@@ -184,6 +184,12 @@ export class EmailAddressesComponent {
 						.map(item => (item.toLine ? [item.toLine(), item] : [item, null]));
 
 			if (values.length) {
+				// _renderTags rebuilds every chip from scratch, so calling it per
+				// address made inserting n of them cost n(n+1)/2 chip builds. At
+				// 1000 recipients that is half a million, which is why opening a
+				// large draft appeared to hang. Render once, at the end.
+				let added = false;
+
 				values.forEach(a => {
 					var v = a[0].trim(),
 						exists = false,
@@ -215,14 +221,16 @@ export class EmailAddressesComponent {
 						}
 
 						self._lastEdit = '';
-						self._renderTags();
+						added = true;
 					}
 				});
 
 				if (1 === values.length && '' === values[0] && '' !== self._lastEdit) {
 					self._lastEdit = '';
-					self._renderTags();
+					added = true;
 				}
+
+				added && self._renderTags();
 
 				self._setValue(self._buildValue());
 
