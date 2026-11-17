@@ -86,6 +86,9 @@ export class ContactModel extends AbstractModel {
 			focused: false,
 			selected: false,
 			checked: false,
+			// One address per contact. This is never persisted, so it resets on
+			// every load, and defaulting it to true meant composing to anyone
+			// with several addresses silently added all of them.
 			sendToAll: true,
 
 			deleted: false,
@@ -301,7 +304,7 @@ export class ContactModel extends AbstractModel {
 	}
 
 	sendToAllDisplayStatus() {
-		return this.email.length > 1
+		return 1 < this.email().length
 	}
 
 }

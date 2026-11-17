@@ -29,6 +29,12 @@ export class AccountModel extends AbstractModel {
 	}
 
 	label() {
+		// Whatever the account is called, or its address. The main account used
+		// to read its name from IdentityUserStore here, which holds the
+		// identities of the account you are currently in rather than the main
+		// one, so the label changed depending on where you were standing. The
+		// server resolves the fallback once now and sends it as
+		// mainIdentityName, which the main account is built with.
 		return this.name || IDN.toUnicode(this.email);
 	}
 
