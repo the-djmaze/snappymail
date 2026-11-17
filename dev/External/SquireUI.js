@@ -649,7 +649,12 @@ class SquireUI
 //		this.plain.value = html;
 		const squire = this.squire;
 		squire.setHTML(trimLines(html));
-		const node = squire.getRoot(),
+		// Inside the first block, not at the root itself. Firefox leaves text
+		// typed at the root unwrapped, and Squire cannot split a line that is
+		// not in a block, so the first Enter of a reply was lost.
+		// https://github.com/kimusan/Tachyon/issues/165
+		const squireRoot = squire.getRoot(),
+			node = squireRoot.firstElementChild || squireRoot,
 			range = squire.getSelection();
 		range.setStart(node, 0);
 		range.setEnd(node, 0);
