@@ -69,13 +69,16 @@ export class Selector {
 		});
 
 		let selectedItemUseCallback = true;
-
+		let prevSelected;
 		koSelectedItem.subscribe(item => {
-			if (item) {
-//				koList.forEach(subItem => subItem.checked(false));
-				selectedItemUseCallback && itemSelectedThrottle(item);
-			} else {
-				selectedItemUseCallback && itemSelected();
+			if (prevSelected != item) {
+				if (item) {
+//					koList.forEach(subItem => subItem.checked(false));
+					selectedItemUseCallback && itemSelectedThrottle(item);
+				} else {
+					selectedItemUseCallback && itemSelected();
+				}
+				prevSelected = item;
 			}
 		});
 
