@@ -3,34 +3,35 @@ import { doc, SettingsGet, fireEvent, addEventsListener } from 'Common/Globals';
 import { addObservablesTo } from 'External/ko';
 
 let notificator = null,
-	player = null,
-	canPlay = type => !!player?.canPlayType(type).replace('no', ''),
 
 	audioCtx = window.AudioContext || window.webkitAudioContext,
+
+	createNewObject = () => {
+		const player = new Audio;
+		if (player.canPlayType && player.pause && player.play) {
+			player.preload = 'none';
+			player.loop = false;
+			player.autoplay = false;
+			player.muted = false;
+			return player;
+		}
+		return null;
+	},
+
+	player = createNewObject(),
+
+	canPlay = type => !!player?.canPlayType(type).replace('no', ''),
 
 	play = (url, name) => {
 		if (player) {
 			player.src = url;
-			player.play();
-			name = name.trim();
-			fireEvent('audio.start', name.replace(/\.([a-z0-9]{3})$/, '') || 'audio');
+			player.play()
+			.then(() => {
+				fireEvent('audio.start', (name || '').trim().replace(/\.([a-z0-9]{3})$/, '') || 'audio');
+			}).catch(e => {
+				console.error(e);
+			});
 		}
-	},
-
-	createNewObject = () => {
-		try {
-			const player = new Audio;
-			if (player.canPlayType && player.pause && player.play) {
-				player.preload = 'none';
-				player.loop = false;
-				player.autoplay = false;
-				player.muted = false;
-				return player;
-			}
-		} catch (e) {
-			console.error(e);
-		}
-		return null;
 	},
 
 	// The AudioContext is not allowed to start.
@@ -46,19 +47,22 @@ let notificator = null,
 		'keydown','keyup'
 	],
 	unlock = () => {
-		unlockEvents.forEach(type => doc.removeEventListener(type, unlock, true));
-		if (audioCtx) {
-			console.log('AudioContext ' + audioCtx.state);
+		console.log('AudioContext ' + audioCtx.state);
+		if ('running' !== audioCtx.state) {
 			audioCtx.resume();
+			unlockEvents.forEach(type => doc.removeEventListener(type, unlock, true));
 		}
-//		setTimeout(()=>SMAudio.playNotification(0,1),1);
 	};
 
 if (audioCtx) {
-	audioCtx = audioCtx ? new audioCtx : null;
+	audioCtx = new audioCtx;
+	// 'running' === audioCtx.state
 	audioCtx.onstatechange = unlock;
+	// 'suspended' === audioCtx.state
+	unlockEvents.forEach(type => doc.addEventListener(type, unlock, true));
+} else {
+	console.warn('AudioContext unsupported');
 }
-unlockEvents.forEach(type => doc.addEventListener(type, unlock, true));
 
 /**
  * Browsers can't play without user interaction
@@ -66,8 +70,6 @@ unlockEvents.forEach(type => doc.addEventListener(type, unlock, true));
 
 export const SMAudio = new class {
 	constructor() {
-		player || (player = createNewObject());
-
 		this.supported = !!player;
 		this.supportedMp3 = canPlay('audio/mpeg;');
 		this.supportedWav = canPlay('audio/wav; codecs="1"');
@@ -111,18 +113,25 @@ export const SMAudio = new class {
 	/**
 	 * Used with SoundNotification setting
 	 */
-	playNotification(force, silent) {
+	playNotification(force) {
 		if (force || this.notifications()) {
 			if ('running' == audioCtx.state && (this.supportedMp3 || this.supportedOgg)) {
-				notificator = notificator || createNewObject();
 				if (notificator) {
-//					SettingsGet('NotificationSound').startsWith('custom@')
-					notificator.src = Links.staticLink('sounds/'
-						+ SettingsGet('NotificationSound')
-						+ (this.supportedMp3 ? '.mp3' : '.ogg'));
-					notificator.volume = silent ? 0.01 : 1;
-					notificator.play();
+					notificator.stop();
 				}
+//				SettingsGet('NotificationSound').startsWith('custom@')
+				let url = Links.staticLink('sounds/'
+					+ SettingsGet('NotificationSound')
+					+ (this.supportedOgg ? '.mp3' : '.ogg'));
+				fetch(url)
+				.then(response => response.arrayBuffer())
+				.then(array => audioCtx.decodeAudioData(array))
+				.then(buffer => {
+					notificator = audioCtx.createBufferSource();
+					notificator.buffer = buffer;
+					notificator.connect(audioCtx.destination);
+					notificator.start();
+				});
 			} else {
 				console.log('No audio: ' + audioCtx.state);
 			}
