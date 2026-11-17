@@ -117,7 +117,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			'tempName' => ''
 		];
 		$sFile = $this->jsonParam('file', '');
-		$oFiles = \OCP\Files::getStorage('files');
+		$oFiles = static::userFiles();
 		if ($oFiles && $oFiles->is_file($sFile) && $fp = $oFiles->fopen($sFile, 'rb')) {
 			$oActions = \RainLoop\Api::Actions();
 			$oAccount = $oActions->getAccountFromToken();
@@ -154,7 +154,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			}
 
 			$sSaveFolder = $sSaveFolder ?: 'Emails';
-			$oFiles = \OCP\Files::getStorage('files');
+			$oFiles = static::userFiles();
 			if ($oFiles) {
 				$oFiles->is_dir($sSaveFolder) || $oFiles->mkdir($sSaveFolder);
 			}
@@ -182,7 +182,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 	public function DoAttachmentsActions(\SnappyMail\AttachmentsAction $data)
 	{
 		if (static::isLoggedIn() && 'nextcloud' === $data->action) {
-			$oFiles = \OCP\Files::getStorage('files');
+			$oFiles = static::userFiles();
 			if ($oFiles && \method_exists($oFiles, 'file_put_contents')) {
 				$sSaveFolder = \ltrim($this->jsonParam('NcFolder', ''), '/');
 				$sSaveFolder = $sSaveFolder ?: 'Attachments';
@@ -385,6 +385,69 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 				->SetDefaultValue(false)
 		);
+	}
+
+	/**
+	 * The user's Nextcloud files, with the old storage methods this plugin uses.
+	 * \OCP\Files::getStorage() was removed from Nextcloud (34 only has rmdirr()), which broke
+	 * "Attach from Nextcloud", "Save .eml to Nextcloud" and "Save attachments to Nextcloud".
+	 * Newer Nextcloud: the same calls on the user folder (IRootFolder::getUserFolder()).
+	 */
+	private static function userFiles() : ?object
+	{
+		if (\method_exists(\OCP\Files::class, 'getStorage')) {
+			return \OCP\Files::getStorage('files');
+		}
+		$sUID = SnappyMailHelper::getUID();
+		if (!$sUID) {
+			return null;
+		}
+		$oFolder = \OCP\Server::get(\OCP\Files\IRootFolder::class)->getUserFolder($sUID);
+		return new class($oFolder) {
+			public function __construct(private \OCP\Files\Folder $folder) {}
+			private function node(string $path) : ?\OCP\Files\Node
+			{
+				$path = \ltrim($path, '/');
+				return $this->folder->nodeExists($path) ? $this->folder->get($path) : null;
+			}
+			public function file_exists(string $path) : bool
+			{
+				return null !== $this->node($path);
+			}
+			public function is_file(string $path) : bool
+			{
+				return $this->node($path) instanceof \OCP\Files\File;
+			}
+			public function is_dir(string $path) : bool
+			{
+				return $this->node($path) instanceof \OCP\Files\Folder;
+			}
+			public function mkdir(string $path) : bool
+			{
+				$this->folder->newFolder(\ltrim($path, '/'));
+				return true;
+			}
+			/** @return resource|false */
+			public function fopen(string $path, string $mode)
+			{
+				$node = $this->node($path);
+				return $node instanceof \OCP\Files\File ? $node->fopen($mode) : false;
+			}
+			/** @param string|resource $data */
+			public function file_put_contents(string $path, $data) : bool
+			{
+				try {
+					$node = $this->node($path);
+					$node instanceof \OCP\Files\File
+						? $node->putContent($data)
+						: $this->folder->newFile(\ltrim($path, '/'), $data);
+					return true;
+				} catch (\Throwable $e) {
+					\SnappyMail\Log::warning('Nextcloud', $e->getMessage());
+					return false;
+				}
+			}
+		};
 	}
 
 	private static function SmartFileExists(string $sFilePath, $oFiles) : string
