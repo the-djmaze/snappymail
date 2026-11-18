@@ -71,7 +71,7 @@ class HeaderCollection extends \MailSo\Base\Collection
 		return $this;
 	}
 
-	public function GetAsEmailCollection(string $sHeaderName): ?EmailCollection
+	public function GetAsEmailCollection(string $sHeaderName): EmailCollection
 	{
 		if ($oHeader = $this->GetByName($sHeaderName)) {
 			return new EmailCollection($oHeader->EncodedValue());
