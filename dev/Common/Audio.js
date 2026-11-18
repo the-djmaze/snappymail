@@ -48,9 +48,10 @@ let notificator = null,
 	],
 	unlock = () => {
 		console.log('AudioContext ' + audioCtx.state);
-		if ('running' !== audioCtx.state) {
-			audioCtx.resume();
+		if ('running' === audioCtx.state) {
 			unlockEvents.forEach(type => doc.removeEventListener(type, unlock, true));
+		} else {
+			audioCtx.resume();
 		}
 	};
 
