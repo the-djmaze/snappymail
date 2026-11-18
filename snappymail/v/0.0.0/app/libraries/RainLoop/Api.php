@@ -20,6 +20,7 @@ abstract class Api
 		static $oConfig = null;
 		if (!$oConfig) {
 			$oConfig = new Config\Application();
+			$oConfig->Load();
 //			\ini_set('display_errors', '0');
 			if ($oConfig->Get('debug', 'enable', false)) {
 				\error_reporting(E_ALL);

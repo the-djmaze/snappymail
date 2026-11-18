@@ -33,8 +33,6 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 
 		$this->bUseApcCache = \defined('APP_USE_APCU_CACHE') && APP_USE_APCU_CACHE &&
 			\MailSo\Base\Utils::FunctionsCallable(array('apcu_fetch', 'apcu_store'));
-
-		$this->bReadFailed = !$this->Load();
 	}
 
 	public function offsetExists(mixed $offset): bool
@@ -183,7 +181,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		return false;
 	}
 
-	private function Load(): bool
+	public function Load(): bool
 	{
 		$sFile = $this->sFile;
 		if (!\file_exists($sFile) && \str_ends_with($sFile, '.json')) {
@@ -194,7 +192,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 				return true;
 			}
 
-			$aData = $this->readFile($sFile);
+			$aData = $this->loadFile($sFile);
 			if (null !== $aData) {
 				foreach ($aData as $sSectionKey => $aSectionValue) {
 					if (\is_array($aSectionValue)) {
@@ -236,7 +234,8 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		// the non-default settings were lost.
 		// Hard to detect this race condition
 		if (\file_exists($sFile)) {
-			\SnappyMail\Log::Warn('Config', "Failed loading {$this->sFile}");
+			$this->bReadFailed = true;
+			\error_log("SnappyMail Config failed loading {$this->sFile}");
 			return false;
 		}
 
@@ -247,7 +246,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 	 * Empty or unparsable can be a write in progress elsewhere: on a file mounted
 	 * on its own the save is not atomic. So, attempt to read again a few times.
 	 */
-	private function readFile(string $sFile): ?array
+	private function loadFile(string $sFile): ?array
 	{
 		$bJson = \str_ends_with($sFile, '.json');
 		for ($i = 0; $i < 5; ++$i) {
@@ -268,8 +267,6 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		if ($this->bReadFailed || (\file_exists($this->sFile) && !\is_writable($this->sFile))) {
 			return false;
 		}
-
-		\clearstatcache(true, $this->sFile);
 
 		\SnappyMail\Log::info('Config', "Save {$this->sFile}");
 

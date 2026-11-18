@@ -18,6 +18,10 @@ class Application extends \RainLoop\Config\AbstractConfig
 	{
 		$bResult = parent::Load();
 
+		if (!$bResult) {
+			return $bResult;
+		}
+
 		$max = \floatval($this->Get('security', 'max_sys_getloadavg', 0));
 		if ($max && \is_callable('sys_getloadavg')) {
 			$load = \sys_getloadavg();
