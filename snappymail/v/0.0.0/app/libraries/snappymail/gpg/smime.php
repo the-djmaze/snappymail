@@ -83,7 +83,7 @@ class SMIME extends Base
 
 		$fclose = $this->setOutput($output);
 
-		$this->setPinentries());
+		$this->setPinentries();
 
 		$result = $this->exec(['--decrypt','--skip-verify']);
 
