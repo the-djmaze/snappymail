@@ -55,6 +55,7 @@ class MailClient
 //			MimeHeader::MIME_VERSION,
 			MimeHeader::MESSAGE_ID,
 			MimeHeader::CONTENT_TYPE,
+//			MimeHeader::AUTHOR,
 			MimeHeader::FROM_,
 			MimeHeader::TO_,
 			MimeHeader::CC,

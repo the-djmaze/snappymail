@@ -73,13 +73,16 @@ class Message implements \JsonSerializable
 	private ?array $smimeEncrypted = null;
 
 	private ?\MailSo\Mime\EmailCollection
+//		$oAuthor = null,
 		$oFrom = null,
 		$oSender = null,
 		$oReplyTo = null,
-		$oDeliveredTo = null,
 		$oTo = null,
 		$oCc = null,
 		$oBcc = null;
+
+	private ?\MailSo\Mime\Email
+		$oDeliveredTo = null;
 
 	private ?AttachmentCollection
 		$Attachments = null;
@@ -194,7 +197,15 @@ class Message implements \JsonSerializable
 
 			$oMessage->oSender = $oHeaders->GetAsEmailCollection(MimeHeader::SENDER);
 			$oMessage->oReplyTo = $oHeaders->GetAsEmailCollection(MimeHeader::REPLY_TO);
-			$oMessage->oDeliveredTo = $oHeaders->GetAsEmailCollection(MimeHeader::DELIVERED_TO);
+
+//			$oMessage->oAuthor = \array_first($oHeaders->GetAsEmailCollection(MimeHeader::AUTHOR));
+
+			$oMessage->oDeliveredTo = \array_first($oHeaders->GetAsEmailCollection(MimeHeader::DELIVERED_TO));
+/*
+			if ($oHeader = $this->GetByName($sHeaderName)) {
+				$oMessage->oDeliveredTo = Email::Parse($oHeader->EncodedValue())
+			}
+*/
 
 			$oMessage->InReplyTo = $oHeaders->ValueByName(MimeHeader::IN_REPLY_TO);
 			$oMessage->References = Utils::StripSpaces(
@@ -513,12 +524,14 @@ class Message implements \JsonSerializable
 			'dateTimestampSource' => $this->iHeaderTimeStampInUTC ? 'header' : 'internal',
 
 			// \MailSo\Mime\EmailCollection
+//			'author' => $this->oAuthor,
 			'from' => $this->oFrom,
 			'replyTo' => $this->oReplyTo,
 			'to' => $this->oTo,
 			'cc' => $this->oCc,
 			'bcc' => $this->oBcc,
 			'sender' => $this->oSender,
+
 			'deliveredTo' => $this->oDeliveredTo,
 
 			'readReceipt' => $this->ReadReceipt,
