@@ -15,7 +15,7 @@
   [#2120](https://github.com/the-djmaze/snappymail/issues/2120)
 - Store GPG keyring in data directory - by @m4rcu5
   [2110](https://github.com/the-djmaze/snappymail/pull/2110)
-- SMTP EhloHelper() calls idn_to_ascii() with an empty hostname #2114
+- SMTP EhloHelper() calls idn_to_ascii() with an empty hostname
   [#2114](https://github.com/the-djmaze/snappymail/issues/2114)
 - Selecting messages quickly enters fullscreen with no message open - by @jfsalzmann
   [#2124](https://github.com/the-djmaze/snappymail/issues/2124)
