@@ -821,7 +821,7 @@ trait Messages
 
 				if ($this->Config()->Get('labs', 'mail_func_clear_headers', true)) {
 					$sMailHeaders = \MailSo\Base\Utils::RemoveHeaderFromHeaders($sMailHeaders, array(
-						MimeEnumHeader::TO_,
+						MimeEnumHeader::TO,
 						MimeEnumHeader::SUBJECT
 					));
 				}

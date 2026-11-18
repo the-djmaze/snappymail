@@ -181,11 +181,13 @@ class Header implements \JsonSerializable
 	private function IsEmail(): bool
 	{
 		return \in_array(\strtolower($this->sName), array(
-			\strtolower(Enumerations\Header::FROM_),
-			\strtolower(Enumerations\Header::TO_),
+//			\strtolower(Enumerations\Header::AUTHOR),
+			\strtolower(Enumerations\Header::FROM),
+			\strtolower(Enumerations\Header::TO),
 			\strtolower(Enumerations\Header::CC),
 			\strtolower(Enumerations\Header::BCC),
 			\strtolower(Enumerations\Header::REPLY_TO),
+			\strtolower(Enumerations\Header::DELIVERED_TO),
 //			\strtolower(Enumerations\Header::RETURN_PATH),
 			\strtolower(Enumerations\Header::SENDER)
 		));

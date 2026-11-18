@@ -23,7 +23,7 @@ class Message extends Part
 		Enumerations\Header::CC => '',
 		Enumerations\Header::DATE => '',
 		Enumerations\Header::DISPOSITION_NOTIFICATION_TO => '',
-		Enumerations\Header::FROM_ => '',
+		Enumerations\Header::FROM => '',
 		Enumerations\Header::IN_REPLY_TO => '',
 		Enumerations\Header::MESSAGE_ID => '',
 		Enumerations\Header::MIME_VERSION => '',
@@ -31,7 +31,7 @@ class Message extends Part
 		Enumerations\Header::REPLY_TO => '',
 		Enumerations\Header::SENDER => '',
 		Enumerations\Header::SUBJECT => '',
-		Enumerations\Header::TO_ => '',
+		Enumerations\Header::TO => '',
 		Enumerations\Header::X_CONFIRM_READING_TO => '',
 		Enumerations\Header::X_DRAFT_INFO => '',
 		Enumerations\Header::X_MAILER => '',
@@ -90,13 +90,13 @@ class Message extends Part
 
 	public function GetFrom(): ?Email
 	{
-		$value = $this->getHeaderValue(Enumerations\Header::FROM_);
+		$value = $this->getHeaderValue(Enumerations\Header::FROM);
 		return ($value instanceof Email) ? $value : null;
 	}
 
 	public function GetTo(): ?EmailCollection
 	{
-		$value = $this->getHeaderValue(Enumerations\Header::TO_);
+		$value = $this->getHeaderValue(Enumerations\Header::TO);
 		return ($value instanceof EmailCollection) ? $value->Unique() : null;
 	}
 
@@ -116,7 +116,7 @@ class Message extends Part
 	{
 		$oResult = new EmailCollection;
 
-		$headers = array(Enumerations\Header::TO_, Enumerations\Header::CC, Enumerations\Header::BCC);
+		$headers = array(Enumerations\Header::TO, Enumerations\Header::CC, Enumerations\Header::BCC);
 		foreach ($headers as $header) {
 			$value = $this->getHeaderValue($header);
 			if ($value instanceof EmailCollection) {
@@ -128,7 +128,7 @@ class Message extends Part
 
 /*
 		$aReturn = array();
-		$headers = array(Enumerations\Header::TO_, Enumerations\Header::CC, Enumerations\Header::BCC);
+		$headers = array(Enumerations\Header::TO, Enumerations\Header::CC, Enumerations\Header::BCC);
 		foreach ($headers as $header) {
 			$value = $this->getHeaderValue($header);
 			if ($value instanceof EmailCollection) {
@@ -211,7 +211,7 @@ class Message extends Part
 
 	public function SetFrom(Email $oEmail): self
 	{
-		$this->aHeadersValue[Enumerations\Header::FROM_] = $oEmail;
+		$this->aHeadersValue[Enumerations\Header::FROM] = $oEmail;
 
 		return $this;
 	}
@@ -219,7 +219,7 @@ class Message extends Part
 	public function SetTo(EmailCollection $oEmails): self
 	{
 		if ($oEmails->count()) {
-			$this->aHeadersValue[Enumerations\Header::TO_] = $oEmails;
+			$this->aHeadersValue[Enumerations\Header::TO] = $oEmails;
 		}
 		return $this;
 	}

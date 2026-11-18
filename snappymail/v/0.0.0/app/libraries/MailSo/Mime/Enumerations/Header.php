@@ -24,8 +24,12 @@ abstract class Header
 
 		SUBJECT = 'Subject',
 
-		TO_ = 'To',
+		// @depracated
 		FROM_ = 'From',
+		TO_ = 'To',
+
+		TO = 'To',
+		FROM = 'From',
 		CC = 'Cc',
 		BCC = 'Bcc',
 		REPLY_TO = 'Reply-To',

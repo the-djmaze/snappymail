@@ -190,8 +190,8 @@ class Message implements \JsonSerializable
 			$oMessage->sMessageId = $oHeaders->ValueByName(MimeHeader::MESSAGE_ID);
 			$oMessage->sContentType = $oHeaders->ValueByName(MimeHeader::CONTENT_TYPE);
 
-			$oMessage->oFrom = $oHeaders->GetAsEmailCollection(MimeHeader::FROM_);
-			$oMessage->oTo = $oHeaders->GetAsEmailCollection(MimeHeader::TO_);
+			$oMessage->oFrom = $oHeaders->GetAsEmailCollection(MimeHeader::FROM);
+			$oMessage->oTo = $oHeaders->GetAsEmailCollection(MimeHeader::TO);
 			$oMessage->oCc = $oHeaders->GetAsEmailCollection(MimeHeader::CC);
 			$oMessage->oBcc = $oHeaders->GetAsEmailCollection(MimeHeader::BCC);
 

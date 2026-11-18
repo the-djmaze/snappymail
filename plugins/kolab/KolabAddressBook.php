@@ -347,7 +347,7 @@ class KolabAddressBook implements \RainLoop\Providers\AddressBook\AddressBookInt
 		$aResult = [];
 		foreach ($this->ImapClient()->Fetch(['BODY.PEEK[HEADER.FIELDS (FROM)]'], \implode(',', $aUids), true) as $oFetchResponse) {
 			$oHeaders = new \MailSo\Mime\HeaderCollection($oFetchResponse->GetHeaderFieldsValue());
-			$oFrom = $oHeaders->GetAsEmailCollection(\MailSo\Mime\Enumerations\Header::FROM_, true);
+			$oFrom = $oHeaders->GetAsEmailCollection(\MailSo\Mime\Enumerations\Header::FROM, true);
 			foreach ($oFrom as $oMail) {
 				$aResult[] = [$oMail->GetEmail(), $oMail->GetDisplayName()];
 			}

@@ -56,8 +56,8 @@ class MailClient
 			MimeHeader::MESSAGE_ID,
 			MimeHeader::CONTENT_TYPE,
 //			MimeHeader::AUTHOR,
-			MimeHeader::FROM_,
-			MimeHeader::TO_,
+			MimeHeader::FROM,
+			MimeHeader::TO,
 			MimeHeader::CC,
 			MimeHeader::BCC,
 			MimeHeader::SENDER,
@@ -310,7 +310,7 @@ class MailClient
 				FetchType::UID,
 				FetchType::FLAGS,
 				FetchType::BuildBodyCustomHeaderRequest(array(
-					MimeHeader::FROM_,
+					MimeHeader::FROM,
 					MimeHeader::SUBJECT,
 					MimeHeader::CONTENT_TYPE
 				))
@@ -334,7 +334,7 @@ class MailClient
 						'folder' => $sFolderName,
 						'uid' => $iUid,
 						'subject' => $oHeaders->ValueByName(MimeHeader::SUBJECT, !$sContentTypeCharset),
-						'from' => $oHeaders->GetAsEmailCollection(MimeHeader::FROM_)
+						'from' => $oHeaders->GetAsEmailCollection(MimeHeader::FROM)
 					);
 				}
 			}
