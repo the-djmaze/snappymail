@@ -1,3 +1,50 @@
+## 3.1.0 – 2026-11-18
+
+### Added
+- RFC 9057 and 9228 in JavaScript
+- Hash route can handle messages properly (including page, search and thread)
+- Login screen show/mask passphrase
+- CSS light-dark() in themes with light/system/dark options in menu
+- CSS more variables to simplify light-dark
+
+### Fixed
+- Audio notifications failed in Firefox
+- Prevent file save/read race conditions
+- Extension install failed with GnuPG error: no writable keyring found
+- contacts_sync does not contain passwords
+  [#2120](https://github.com/the-djmaze/snappymail/issues/2120)
+- Store GPG keyring in data directory - by @m4rcu5
+  [2110](https://github.com/the-djmaze/snappymail/pull/2110)
+- SMTP EhloHelper() calls idn_to_ascii() with an empty hostname #2114
+  [#2114](https://github.com/the-djmaze/snappymail/issues/2114)
+- Selecting messages quickly enters fullscreen with no message open - by @jfsalzmann
+  [#2124](https://github.com/the-djmaze/snappymail/issues/2124)
+- VCardProperty multi-value handling - by @kimusan from Tachyon
+- Opening a Draft crashed - by @kimusan
+  [Tachyon #1](https://github.com/kimusan/Tachyon/issues/1)
+- Valid HTML got removed from unknown HTML elements
+  [Tachyon #191](https://github.com/kimusan/Tachyon/issues/191)
+
+### Changed
+- Drop sender 🚫 to prevent confusion
+  [#2113](https://github.com/the-djmaze/snappymail/issues/2113)
+- JavaScript code from CommonJS to ESM
+- PluginPropertyType to enum
+- Removed deprecated IncLogin, IncPassword, OutLogin, SetPassword
+- Removed unused MailSo\Log\Enumerations\Type
+- Rename icon-attachment to icon-paperclip
+- Ignore smime.p7m as attachment
+- Improved https?:// handling in plainToHtml()
+- SensitiveString now uses SensitiveParameterValue and __toString() is deprecated
+- Moved the global trusted authserv_ids setting to a per IMAP config setting
+- Improved auto-fill `from` email address
+  [#1805](https://github.com/the-djmaze/snappymail/issues/1805)
+- Update Czech by @rmondek-a11y
+
+### Docker
+- Workaround tar: corrupted octal value in tar header
+
+
 ## 3.0.1 – 2026-11-10
 
 ### Added

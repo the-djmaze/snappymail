@@ -20,7 +20,7 @@ return "SnappyMail Webmail is a browser-based multilingual IMAP client with an a
 # script_snappymail_versions()
 sub script_snappymail_versions
 {
-return ( "3.0.1" );
+return ( "3.1.0" );
 }
 
 sub script_snappymail_version_desc

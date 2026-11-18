@@ -128,7 +128,7 @@ if (isset($options['readme'])) {
 			$total_br[$name] = $size_br;
 			$total_gz[$name] = $size_gz;
 			$readme = preg_replace(
-				"/(\\|{$name}\\.min\\.js\\s+{$tblrow}{$tblrow}){$tblrow}{$tblrow}{$tblrow}\\|$/Ds",
+				"/(\\|{$name}\\.min\\.js\\s+{$tblrow}{$tblrow}){$tblrow}{$tblrow}{$tblrow}\\|/Ds",
 				'$1|'
 				. str_pad(number_format($size, 0, '', '.'), 9, ' ', STR_PAD_LEFT) . '	|'
 				. str_pad(number_format($size_gz, 0, '', '.'), 7, ' ', STR_PAD_LEFT) . '	|'
