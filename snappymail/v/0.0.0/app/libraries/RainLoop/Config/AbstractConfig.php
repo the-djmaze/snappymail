@@ -14,7 +14,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 
 	private string $sFileHeader;
 
-	private bool $bReadFailed;
+	private bool $bReadFailed = false;
 
 	public function __construct(string $sFileName, string $sFileHeader = '', string $sAdditionalFileName = '')
 	{
