@@ -1,5 +1,7 @@
 import { AbstractCollectionModel } from 'Model/AbstractCollection';
 import { MimeHeaderModel } from 'Model/MimeHeader';
+import { EmailModel } from 'Model/Email';
+import { addressparser } from 'Mime/Address';
 
 'use strict';
 
@@ -78,5 +80,18 @@ export class MimeHeaderCollectionModel extends AbstractCollectionModel
 		}
 		return /\swith\s+ESMTP(?:SA|A)?\s/i.test(aReceived[1])
 		    || /^by\s+([^\s]+)\s+\(Postfix?/i.test(aReceived[1]);
+	}
+
+	getReceivedFor()
+	{
+		const aFor = [], re = /for\s+(<[^\s>]+>)/;
+		this.valuesByName('Received').forEach(header => {
+			if (header = header.match(re)) {
+				addressparser(header[1]).forEach(item =>
+					aFor.push(new EmailModel(item.email, item.name))
+				);
+			}
+		});
+		return aFor;
 	}
 }

@@ -4,6 +4,19 @@
 	Array.prototype.validUnique = function(fn) {
 		return this.filter((v, i, a) => (fn ? fn(v) : v) && a.indexOf(v) === i);
 	};
+	// 2020: Chrome 97+, Safari 15.4+, Firefox 104+
+	if (!Array.prototype.findLast) {
+		Array.prototype.findLast = function(fn) {
+//			return this.toReversed().find(fn);
+			var i = this.length;
+			while (i--) {
+				if (fn(this[i], i, this)) {
+					return this[i];
+				}
+			}
+//			return undefined;
+		};
+	}
 
 	// full = Monday, December 12, 2022 at 12:16:21 PM Central European Standard Time
 	// long = December 12, 2022 at 12:16:21 PM GMT+1

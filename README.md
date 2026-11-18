@@ -93,8 +93,8 @@ This fork of RainLoop has the following changes:
 This fork uses downsized/simplified versions of scripts and has no support for Internet Explorer nor Edge Legacy.
 Supported are:
 
-* Chrome 80+
-* Edge 80+
+* Chrome 85+
+* Edge 85+
 * Firefox 78+
 * Opera 67+
 * Safari 13.1+

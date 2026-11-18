@@ -175,7 +175,7 @@ function _handleAddress(tokens) {
 
 		address = {
 			// Join values with spaces
-			email: decodeEncodedWords(data.email.join(' ').trim()),
+			email: decodeEncodedWords(data.email.join(' ').trim()).toLowerCase(),
 			name: decodeEncodedWords(data.text.join(' ').trim())
 //			,comment: data.comment.join(' ').trim()
 		};
