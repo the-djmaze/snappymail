@@ -162,7 +162,7 @@ class Utils
 		if (false === \file_put_contents($filename, $data)) {
 			throw new \RuntimeException('Failed to save file "'.$filename.'"');
 		}
-		\clearstatcache(true, $this->sFile);
+		\clearstatcache(true, $filename);
 		\chmod($filename, 0600);
 /*
 		try {
