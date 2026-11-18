@@ -200,7 +200,7 @@ class Message implements \JsonSerializable
 
 //			$oMessage->oAuthor = $oHeaders->GetAsEmailCollection(MimeHeader::AUTHOR);
 
-			$oMessage->oDeliveredTo = \array_first($oHeaders->GetAsEmailCollection(MimeHeader::DELIVERED_TO)->getArrayCopy());
+			$oMessage->oDeliveredTo = ($oHeaders->GetAsEmailCollection(MimeHeader::DELIVERED_TO)->getArrayCopy())[0] ?? null;
 /*
 			if ($oHeader = $this->GetByName($sHeaderName)) {
 				$oMessage->oDeliveredTo = Email::Parse($oHeader->EncodedValue())
