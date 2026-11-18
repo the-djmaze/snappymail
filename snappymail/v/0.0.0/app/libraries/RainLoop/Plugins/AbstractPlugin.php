@@ -150,9 +150,7 @@ abstract class AbstractPlugin
 	final public function SetPluginConfig(\RainLoop\Config\Plugin $oPluginConfig): self
 	{
 		$this->oPluginConfig = $oPluginConfig;
-		if ($oPluginConfig->IsInited() && !$oPluginConfig->Load()) {
-			$oPluginConfig->Save();
-		}
+
 		return $this;
 	}
 

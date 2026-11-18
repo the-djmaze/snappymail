@@ -36,13 +36,19 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		$mValue = false;
 		$sFileName = $this->generateFileName($mAccount, $iStorageType, $sKey);
 		if ($sFileName && \file_exists($sFileName)) {
-			$mValue = \file_get_contents($sFileName);
-			// Update mtime to prevent garbage collection
-			if (StorageType::SESSION === $iStorageType) {
-				\touch($sFileName);
+			for ($i = 0; $i < 5; ++$i) {
+				$i && \usleep(20000);
+				$mValue = \file_get_contents($sFileName);
+				if (false !== $mValue && \strlen($mValue) && \json_validate($mValue)) {
+					// Update mtime to prevent garbage collection
+					if (StorageType::SESSION === $iStorageType) {
+						\touch($sFileName);
+					}
+					return $mValue;
+				}
 			}
 		}
-		return false === $mValue ? $mDefault : $mValue;
+		return $mDefault;
 	}
 
 	public function Clear(Account|string|null $mAccount, int $iStorageType, string $sKey): bool

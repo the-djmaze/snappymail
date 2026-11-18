@@ -14,6 +14,8 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 
 	private string $sFileHeader;
 
+	private bool $bReadFailed;
+
 	public function __construct(string $sFileName, string $sFileHeader = '', string $sAdditionalFileName = '')
 	{
 		$this->sFile = \APP_PRIVATE_DATA.'configs/'.\trim($sFileName);
@@ -31,6 +33,8 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 
 		$this->bUseApcCache = \defined('APP_USE_APCU_CACHE') && APP_USE_APCU_CACHE &&
 			\MailSo\Base\Utils::FunctionsCallable(array('apcu_fetch', 'apcu_store'));
+
+		$this->bReadFailed = !$this->Load();
 	}
 
 	public function offsetExists(mixed $offset): bool
@@ -54,11 +58,6 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 	}
 
 	protected abstract function defaultValues(): array;
-
-	public function IsInited(): bool
-	{
-		return \is_array($this->aData) && \count($this->aData);
-	}
 
 //	public function jsonSerialize(): array
 	public function jsonSerialize(): mixed
@@ -184,7 +183,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		return false;
 	}
 
-	public function Load(): bool
+	private function Load(): bool
 	{
 		$sFile = $this->sFile;
 		if (!\file_exists($sFile) && \str_ends_with($sFile, '.json')) {
@@ -195,12 +194,8 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 				return true;
 			}
 
-			if (\str_ends_with($sFile, '.json')) {
-				$aData = \json_decode(\file_get_contents($sFile), true);
-			} else {
-				$aData = \parse_ini_file($sFile, true);
-			}
-			if ($aData && \count($aData)) {
+			$aData = $this->readFile($sFile);
+			if (null !== $aData) {
 				foreach ($aData as $sSectionKey => $aSectionValue) {
 					if (\is_array($aSectionValue)) {
 						foreach ($aSectionValue as $sParamKey => $mParamValue) {
@@ -236,14 +231,47 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 			}
 		}
 
+		// An unreadable file used to fall through to Save() below, which wrote the
+		// defaults over it. Another request saving at that moment was enough, and
+		// the non-default settings were lost.
+		// Hard to detect this race condition
+		if (\file_exists($sFile)) {
+			\SnappyMail\Log::Warn('Config', "Failed loading {$this->sFile}");
+			return false;
+		}
+
 		return $this->Save();
+	}
+
+	/**
+	 * Empty or unparsable can be a write in progress elsewhere: on a file mounted
+	 * on its own the save is not atomic. So, attempt to read again a few times.
+	 */
+	private function readFile(string $sFile): ?array
+	{
+		$bJson = \str_ends_with($sFile, '.json');
+		for ($i = 0; $i < 5; ++$i) {
+			$i && \usleep(20000);
+			$sData = @\file_get_contents($sFile);
+			if (false !== $sData && \strlen($sData)) {
+				$aData = $bJson ? \json_decode($sData, true) : @\parse_ini_string($sData, true);
+				if (\is_array($aData)) {
+					return $aData;
+				}
+			}
+		}
+		return null;
 	}
 
 	public function Save(): bool
 	{
-		if (\file_exists($this->sFile) && !\is_writable($this->sFile)) {
+		if ($this->bReadFailed || (\file_exists($this->sFile) && !\is_writable($this->sFile))) {
 			return false;
 		}
+
+		\clearstatcache(true, $this->sFile);
+
+		\SnappyMail\Log::info('Config', "Save {$this->sFile}");
 
 		if (\str_ends_with($this->sFile, '.json')) {
 			$this->clearCache();
