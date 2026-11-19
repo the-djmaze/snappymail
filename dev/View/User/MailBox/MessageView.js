@@ -383,6 +383,15 @@ export class MailMessageView extends AbstractViewRight {
 	onBuild(dom) {
 		const eqs = (ev, s) => ev.target.closestWithin(s, dom);
 		dom.addEventListener('click', event => {
+			// A click in the reading pane gives it the keyboard, so arrow keys, PageUp/Down
+			// and Space scroll the message instead of moving the message list selection.
+			// (MessageList does the reverse when its own pane is clicked.)
+			if (currentMessage() && SettingsUserStore.usePreviewPane()
+			 && ScopeMessageView !== AppUserStore.focusedState()
+			 && eqs(event, '.messageView')) {
+				AppUserStore.focusedState(ScopeMessageView);
+			}
+
 			let el = eqs(event, 'a');
 			if (el && 0 === event.button && mailToHelper(el.href)) {
 				stopEvent(event);
