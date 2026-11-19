@@ -138,19 +138,24 @@ export class MailBoxUserScreen extends AbstractScreen {
 			folder = (request, vals) => request ? pString(vals[0]) : getFolderInboxName(),
 			fNormS = (request, vals) => [folder(request, vals), request ? pInt(vals[1]) : 1, decodeURI(pString(vals[2]))];
 
+		// {folder} is a fullNameHash: only # ~ / are encoded in it (FolderCollection.js), and hasher
+		// decodes the hash before routing, so it can hold spaces, accents, & ( ) ' etc. Anything
+		// but "/" is accepted, as in the Folder route, or such folders had no message/page/search link.
 		return [
 			// Folder: INBOX | INBOX.sub | Sent | fullNameHash
 			[/^([^/]*)$/, { normalize_: fNormS }],
 			// Search: {folder}/{string}
-			[/^([a-zA-Z0-9.~_-]+)\/(.+)\/?$/, { normalize_: (request, vals) =>
+			[/^([^/]+)\/(.+)\/?$/, { normalize_: (request, vals) =>
 				[folder(request, vals), 1, decodeURI(pString(vals[1]))]
 			}],
 			// Message: {folder}/m{uid}(/p{int})?(/{search})?
-			[/^([a-zA-Z0-9.~_-]+)\/m([1-9][0-9]*)(?:\/(.+))?$/, { normalize_: (request, vals) =>
-				[folder(request, vals), pInt(vals[2]), pString(vals[3]), pInt(vals[1])]
+			// (page and search are separate groups: a message opened from a search result or a later
+			// page must keep them, or onRoute() reloads page 1 without the search)
+			[/^([^/]+)\/m([1-9][0-9]*)(?:\/p([1-9][0-9]*))?(?:\/(.+))?$/, { normalize_: (request, vals) =>
+				[folder(request, vals), pInt(vals[2], 1), decodeURI(pString(vals[3])), pInt(vals[1])]
 			}],
 			// Page: {folder}/p{int}(/{search})?
-			[/^([a-zA-Z0-9.~_-]+)\/p([1-9][0-9]*)(?:\/(.+))?$/, { normalize_: fNormS }]
+			[/^([^/]+)\/p([1-9][0-9]*)(?:\/(.+))?$/, { normalize_: fNormS }]
 		];
 	}
 }

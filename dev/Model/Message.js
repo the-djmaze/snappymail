@@ -581,15 +581,17 @@ export class MessageModel extends AbstractModel {
 				src, useProxy = !!SettingsGet('proxyExternalImages');
 			body.querySelectorAll('img[' + attr + ']').forEach(node => {
 				src = node.getAttribute(attr);
-				if (isValid(src)) {
+				// cid: is kept in data-x-src for Compose, it is not an external image
+				if (!src.startsWith('cid:') && isValid(src)) {
 					node.src = useProxy ? proxy(src) : src;
 				}
 			});
 
 			body.querySelectorAll('[data-x-style-url]').forEach(node => {
 				JSON.parse(node.dataset.xStyleUrl).forEach(data => {
-					// cid: is kept in data-x-src for Compose, it is not an external image
-					if (!src.startsWith('cid:') && isValid(src)) {
+					// cid: is an inline attachment, not an external image
+					// (check this url, not the leftover src of the img loop above, which may be undefined)
+					if (!data[1].startsWith('cid:') && isValid(data[1])) {
 						node.style[data[0]] = "url('" + (useProxy ? proxy(data[1]) : data[1]) + "')"
 					}
 				});

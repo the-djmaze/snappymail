@@ -8,10 +8,10 @@
 			</p>
 			<p>
 				<input type="text" id="snappymail-email" name="snappymail-email"
-					value="<?php echo $_['snappymail-email']; ?>" placeholder="<?php echo($l->t('Email')); ?>" />
+					value="<?php echo \htmlspecialchars($_['snappymail-email']); ?>" placeholder="<?php echo($l->t('Email')); ?>" />
 
 				<input type="password" id="snappymail-password" name="snappymail-password"
-					value="<?php echo $_['snappymail-password']; ?>" placeholder="<?php echo($l->t('Password')); ?>" />
+					value="<?php echo \htmlspecialchars($_['snappymail-password']); ?>" placeholder="<?php echo($l->t('Password')); ?>" />
 
 				<button id="snappymail-save-button" name="snappymail-save-button"><?php echo($l->t('Save')); ?></button>
 				&nbsp;&nbsp;<span class="snappymail-result-desc"></span>
