@@ -74,7 +74,7 @@ class NextcloudContactsSuggestions implements \RainLoop\Providers\Suggestions\IS
 				return \array_slice(\array_values($aResult), 0, $iInputLimit);
 			}
 		}
-		catch (\Exception $oException)
+		catch (\Throwable $oException)
 		{
 			$this->logException($oException);
 		}
