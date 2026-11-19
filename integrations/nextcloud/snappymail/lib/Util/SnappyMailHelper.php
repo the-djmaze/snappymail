@@ -269,7 +269,7 @@ class SnappyMailHelper
 	{
 		if (static::getAppConfigValue('snappymail-autologin-oidc', false)) {
 			// Check if the OIDC Login app is enabled
-			if (\OC::$server->getAppManager()->isEnabledForUser('oidc_login')) {
+			if (\OC::$server->get(\OCP\App\IAppManager::class)->isEnabledForUser('oidc_login')) {
 				// Check if session is an OIDC Login
 				$ocSession = static::getSession();
 				if ($ocSession->get('is_oidc')) {
