@@ -146,8 +146,10 @@ export class MailBoxUserScreen extends AbstractScreen {
 				[folder(request, vals), 1, decodeURI(pString(vals[1]))]
 			}],
 			// Message: {folder}/m{uid}(/p{int})?(/{search})?
-			[/^([a-zA-Z0-9.~_-]+)\/m([1-9][0-9]*)(?:\/(.+))?$/, { normalize_: (request, vals) =>
-				[folder(request, vals), pInt(vals[2]), pString(vals[3]), pInt(vals[1])]
+			// (page and search are separate groups: a message opened from a search result or a later
+			// page must keep them, or onRoute() reloads page 1 without the search)
+			[/^([a-zA-Z0-9.~_-]+)\/m([1-9][0-9]*)(?:\/p([1-9][0-9]*))?(?:\/(.+))?$/, { normalize_: (request, vals) =>
+				[folder(request, vals), pInt(vals[2], 1), decodeURI(pString(vals[3])), pInt(vals[1])]
 			}],
 			// Page: {folder}/p{int}(/{search})?
 			[/^([a-zA-Z0-9.~_-]+)\/p([1-9][0-9]*)(?:\/(.+))?$/, { normalize_: fNormS }]
