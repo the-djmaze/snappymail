@@ -523,7 +523,7 @@ MessagelistUserStore.moveMessages = (
 				let next = MessagelistUserStore.indexOf(currentMessage) + 1;
 				if (0 < next && (next = MessagelistUserStore()[next])) {
 					currentMessage = null;
-					hasher.setHash(next.urlHash());
+					hasher.setHash(next.urlHash);
 				}
 			}
 
