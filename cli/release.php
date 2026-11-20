@@ -293,4 +293,7 @@ if (isset($options['sign'])) {
 			. escapeshellarg(ROOT_DIR . "/build/dist/releases/webmail/{$package->version}/Release.gpg") . ' '
 			. escapeshellarg(ROOT_DIR . "/build/dist/releases/webmail/{$package->version}/Release"), $return_var);
 	}
+
+// 	passthru("git tag v{$package->version}");
+//	passthru('git push origin --tags');
 }

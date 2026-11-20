@@ -3,10 +3,18 @@ if (defined('APP_VERSION_ROOT_PATH')) {
 	return;
 }
 
-// PHP 8.4
 /*
+// PHP 8.3
+if (PHP_VERSION_ID < 80300) {
+	require __DIR__ . '/app/libraries/polyfill/php83.php';
+}
+// PHP 8.4
 if (PHP_VERSION_ID < 80400) {
 	require __DIR__ . '/app/libraries/polyfill/php84.php';
+}
+// PHP 8.5
+if (PHP_VERSION_ID < 80500) {
+	require __DIR__ . '/app/libraries/polyfill/php85.php';
 }
 */
 
