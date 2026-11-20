@@ -822,7 +822,7 @@ class MailClient
 			}
 		}
 
-		if ($message_list_limit && !$aUids) {
+		if ($message_list_limit && !$aUids && !$oParams->iThreadUid) {
 //		if ($message_list_limit || (!$this->oImapClient->hasCapability('SORT') && !$this->oImapClient->CapabilityValue('THREAD'))) {
 			// Don't use THREAD for speed
 			$oMessageCollection->Limited = true;
