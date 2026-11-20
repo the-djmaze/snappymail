@@ -1,3 +1,31 @@
+## 3.1.4 – 2026-11-20
+
+### Fixed
+- Call to undefined function json_validate()
+  [#2129](https://github.com/the-djmaze/snappymail/issues/2129)
+- Delete message fails: next.urlHash is not a function
+  [#2136](https://github.com/the-djmaze/snappymail/issues/2136)
+- Cannot open a message in any folder whose name contains a space or a bracket
+  [#2138](https://github.com/the-djmaze/snappymail/issues/2138)
+
+## 3.1.3 – 2026-11-18
+
+### Fixed
+- Using $this when not in object context RainLoop/Utils
+- parse error in app/libraries/snappymail/gpg/smime.php
+  [#2127](https://github.com/the-djmaze/snappymail/issues/2127)
+
+## 3.1.2 – 2026-11-18
+
+### Fixed
+- Call to undefined function array_first PHP < 8.5
+  [#2126](https://github.com/the-djmaze/snappymail/issues/2126)
+
+## 3.1.1 – 2026-11-18
+
+### Fixed
+- Revert changed Config->Load(). It created infinite loop in Config\Application
+
 ## 3.1.0 – 2026-11-18
 
 ### Added

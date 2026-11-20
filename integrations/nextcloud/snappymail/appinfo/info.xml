@@ -3,7 +3,7 @@
 	<id>snappymail</id>
 	<name>SnappyMail</name>
 	<summary>SnappyMail Webmail</summary>
-	<version>3.1.3</version>
+	<version>3.1.4</version>
 	<licence>agpl</licence>
 	<author>SnappyMail, RainLoop Team, Nextgen-Networks, Tab Fitts, Nathan Kinkade, Pierre-Alain Bandinelli</author>
 	<description><![CDATA[**Lightweight & fast email client.**
