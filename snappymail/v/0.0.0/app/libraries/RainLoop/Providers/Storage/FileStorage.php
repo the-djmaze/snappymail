@@ -39,7 +39,7 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 			for ($i = 0; $i < 5; ++$i) {
 				$i && \usleep(20000);
 				$mValue = \file_get_contents($sFileName);
-				if (false !== $mValue && \strlen($mValue) && \json_validate($mValue)) {
+				if (false !== $mValue) {
 					// Update mtime to prevent garbage collection
 					if (StorageType::SESSION === $iStorageType) {
 						\touch($sFileName);
