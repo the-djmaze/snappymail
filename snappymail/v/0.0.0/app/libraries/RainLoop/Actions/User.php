@@ -6,6 +6,7 @@ use RainLoop\Enumerations\Capa;
 use RainLoop\Exceptions\ClientException;
 use RainLoop\Notifications;
 use RainLoop\Providers\Suggestions;
+use RainLoop\Providers\Storage\Enumerations\StorageType;
 use RainLoop\Utils;
 
 trait User
@@ -83,7 +84,7 @@ trait User
 		$iOneDay2 = 3600 * 25;
 
 		$sTimers = $this->StorageProvider()->Get(null,
-			\RainLoop\Providers\Storage\Enumerations\StorageType::NOBODY, 'Cache/Timers', '');
+			StorageType::NOBODY, 'Cache/Timers', '');
 
 		$aTimers = \explode(',', $sTimers);
 
@@ -102,7 +103,7 @@ trait User
 
 		if ($bMainCache || $bFilesCache) {
 			if (!$this->StorageProvider()->Put(null,
-				\RainLoop\Providers\Storage\Enumerations\StorageType::NOBODY, 'Cache/Timers',
+				StorageType::NOBODY, 'Cache/Timers',
 				\implode(',', array($iMainCacheTime, $iFilesCacheTime))))
 			{
 				$bMainCache = $bFilesCache = false;
@@ -259,7 +260,7 @@ trait User
 		$oSettings = $this->SettingsProvider()->Load($oAccount);
 		if ($oAccount && $oSettings) {
 			$this->StorageProvider()->Clear($oAccount,
-				\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+				StorageType::CONFIG,
 				'background'
 			);
 

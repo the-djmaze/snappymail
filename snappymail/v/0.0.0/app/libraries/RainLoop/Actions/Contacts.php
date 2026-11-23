@@ -4,6 +4,7 @@ namespace RainLoop\Actions;
 
 use RainLoop\Enumerations\Capa;
 use RainLoop\Exceptions\ClientException;
+use RainLoop\Providers\Storage\Enumerations\StorageType;
 
 trait Contacts
 {
@@ -265,7 +266,7 @@ trait Contacts
 		$aData['PasswordHMAC'] = $aData['Password'] ? \hash_hmac('sha1', $aData['Password'], $oMainAccount->CryptKey()) : null;
 		return $this->StorageProvider()->Put(
 			$oAccount,
-			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+			StorageType::CONFIG,
 			'contacts_sync',
 			\json_encode($aData)
 		);
@@ -275,7 +276,7 @@ trait Contacts
 	{
 //		$oAccount = $this->getAccountFromToken();
 		$sData = $this->StorageProvider()->Get($oAccount,
-			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+			StorageType::CONFIG,
 			'contacts_sync'
 		);
 		if (!empty($sData)) {

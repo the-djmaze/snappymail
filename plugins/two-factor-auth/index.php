@@ -1,14 +1,15 @@
 <?php
 
-use \RainLoop\Exceptions\ClientException;
-use \RainLoop\Model\Account;
-use \RainLoop\Model\MainAccount;
+use RainLoop\Exceptions\ClientException;
+use RainLoop\Model\Account;
+use RainLoop\Model\MainAccount;
+use RainLoop\Providers\Storage\Enumerations\StorageType;
 
 class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME     = 'Two Factor Authentication',
-		VERSION  = '2.19.0',
+		VERSION  = '2.20.0',
 		RELEASE  = '2024-03-29',
 		REQUIRED = '2.36.0',
 		CATEGORY = 'Login',
@@ -146,7 +147,7 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$aCodes = \array_map(fn() => \random_int(100000000, 899999999), \array_fill(0, 8, null));
 
 		$this->StorageProvider()->Put($oAccount,
-			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+			StorageType::CONFIG,
 			'two_factor',
 			\json_encode(array(
 				'User' => $sEmail,
@@ -214,7 +215,7 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$mData = $this->getTwoFactorInfo($oAccount);
 		if (isset($mData['Secret'], $mData['BackupCodes'])) {
 			$bResult = $this->StorageProvider()->Put($oAccount,
-				\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+				StorageType::CONFIG,
 				'two_factor',
 				\json_encode(array(
 					'User' => $sEmail,
@@ -256,7 +257,7 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$this->requireCurrentCode($oAccount);
 
 		$this->StorageProvider()->Clear($oAccount,
-			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+			StorageType::CONFIG,
 			'two_factor'
 		);
 
@@ -305,7 +306,7 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 			$aResult['User'] = $sEmail;
 
 			$sData = $this->StorageProvider()->Get($oAccount,
-				\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+				StorageType::CONFIG,
 				'two_factor'
 			);
 
@@ -345,7 +346,7 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 		}
 
 		$sData = $this->StorageProvider()->Get($oAccount,
-			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+			StorageType::CONFIG,
 			'two_factor'
 		);
 
@@ -359,7 +360,7 @@ class TwoFactorAuthPlugin extends \RainLoop\Plugins\AbstractPlugin
 				$mData['BackupCodes'] = \trim(\preg_replace('/[^\d]+/', ' ', $sBackupCodes));
 
 				return $this->StorageProvider()->Put($oAccount,
-					\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+					StorageType::CONFIG,
 					'two_factor',
 					\json_encode($mData)
 				);

@@ -5,18 +5,12 @@ namespace RainLoop\Providers\Identities;
 use RainLoop\Model\Account;
 use RainLoop\Model\Identity;
 use RainLoop\Providers\Storage;
+use RainLoop\Providers\Storage\Enumerations\StorageType;
 
 class FileIdentities implements IIdentities
 {
-	/**
-	 * @var Storage
-	 */
-	private $localStorageProvider;
+	private Storage $localStorageProvider;
 
-	/**
-	 * FileIdentities constructor.
-	 * @param Storage $localStorageProvider
-	 */
 	public function __construct(Storage $localStorageProvider)
 	{
 		$this->localStorageProvider = $localStorageProvider;
@@ -27,7 +21,7 @@ class FileIdentities implements IIdentities
 	 */
 	public function GetIdentities(Account $account): array
 	{
-		$data = $this->localStorageProvider->Get($account, Storage\Enumerations\StorageType::CONFIG, 'identities');
+		$data = $this->localStorageProvider->Get($account, StorageType::CONFIG, 'identities');
 		$subIdentities = \json_decode($data, true) ?? [];
 		$result = [];
 
@@ -55,12 +49,9 @@ class FileIdentities implements IIdentities
 		$jsons = \array_map(function ($identity) {
 			return $identity->ToSimpleJSON();
 		}, $identities);
-		$this->localStorageProvider->Put($account, Storage\Enumerations\StorageType::CONFIG, 'identities', \json_encode($jsons));
+		$this->localStorageProvider->Put($account, StorageType::CONFIG, 'identities', \json_encode($jsons));
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	public function SupportsStore(): bool
 	{
 		return true;

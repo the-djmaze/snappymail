@@ -113,7 +113,7 @@ abstract class Upgrade
 	public static function ConvertInsecureContactsSync(\RainLoop\Actions $oActions, \RainLoop\Model\Account $oAccount) : ?array
 	{
 		$sData = $oActions->StorageProvider()->Get($oAccount,
-			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
+			StorageType::CONFIG,
 			'contacts_sync'
 		);
 

@@ -7,6 +7,8 @@
 
 namespace SnappyMail\PGP;
 
+use RainLoop\Providers\Storage\Enumerations\StorageType;
+
 class Backup
 {
 	public static function PGPKey(string $key, string $keyId = '', $doDelete = false) : bool
@@ -17,7 +19,7 @@ class Backup
 			$keyId = $keyId ? "0x{$keyId}" : \sha1($key);
 			$dir = $oActions->StorageProvider()->GenerateFilePath(
 				$oAccount,
-				\RainLoop\Providers\Storage\Enumerations\StorageType::PGP,
+				StorageType::PGP,
 				true
 			);
 			if (\str_contains($key, 'PGP PRIVATE KEY')) {
@@ -54,7 +56,7 @@ class Backup
 		if ($oAccount) {
 			$dir = $oActions->StorageProvider()->GenerateFilePath(
 				$oAccount,
-				\RainLoop\Providers\Storage\Enumerations\StorageType::PGP,
+				StorageType::PGP,
 				true
 			);
 			foreach (\glob("{$dir}*") as $file) {
