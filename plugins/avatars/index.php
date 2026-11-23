@@ -122,13 +122,14 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$aBimi = \explode('-', $sBimi, 2);
 		$sBimiSelector = isset($aBimi[1]) ? $aBimi[1] : 'default';
 //		$sEmail && \MailSo\Base\Http::setETag("{$sBimiSelector}-{$sEncodedEmail}");
+		\header("Cache-Control: max-age={$maxAge}, private");
 		if ($sEmail && ($aResult = $this->getAvatar($sEmail, !empty($aBimi[0]), $sBimiSelector))) {
-			\header("Cache-Control: max-age={$maxAge}, private");
 			\header('Expires: '.\gmdate('D, j M Y H:i:s', $maxAge + \time()).' UTC');
 			\header('Content-Type: '.$aResult[0]);
 			echo $aResult[1];
 		} else {
-			\MailSo\Base\Http::StatusHeader(404);
+//			\MailSo\Base\Http::StatusHeader(404);
+			\MailSo\Base\Http::StatusHeader(418);
 		}
 		exit;
 	}
@@ -427,10 +428,13 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 	private static function getFavicon(string $sDomain) : ?array
 	{
+		$domain = static::serviceDomain($sDomain);
 		$aResult = static::getUrl('https://' . $sDomain . '/favicon.ico')
-			?: static::getUrl('https://' . static::serviceDomain($sDomain) . '/favicon.ico')
-			?: static::getUrl('https://www.' . static::serviceDomain($sDomain) . '/favicon.ico')
-			?: static::getUrl("https://www.google.com/s2/favicons?sz=48&domain_url={$sDomain}")
+			?: static::getUrl("https://{$domain}/favicon.ico")
+			?: static::getUrl("https://www.{$domain}/favicon.ico")
+//			?: static::getUrl("https://www.google.com/s2/favicons?sz=48&domain_url={$sDomain}")
+//			?: static::getUrl("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=48&url=http://{$sDomain}")
+			?: static::getUrl("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=48&url=http://{$domain}")
 			?: static::getUrl("https://api.faviconkit.com/{$sDomain}/48")
 //			?: static::getUrl("https://api.statvoo.com/favicon/{$sDomain}")
 		;
@@ -476,13 +480,19 @@ class AvatarsPlugin extends \RainLoop\Plugins\AbstractPlugin
 		try {
 			$oResponse = $oHTTP->doRequest('GET', $sUrl);
 			if ($oResponse) {
-				if (200 === $oResponse->status && \str_starts_with($oResponse->getHeader('content-type'), 'image/')) {
+				if (200 !== $oResponse->status) {
+					\SnappyMail\Log::notice('Avatar', "error {$oResponse->status} for {$sUrl}");
+				} else if (!\str_starts_with($oResponse->getHeader('content-type'), 'image/')) {
+					\SnappyMail\Log::notice('Avatar', "error not an image at {$sUrl}");
+				} else if (100 > \strlen($oResponse->body)) {
+					\SnappyMail\Log::notice('Avatar', "error not enough bytes {$sUrl}");
+				} else {
+					// Probably ok
 					return [
 						$oResponse->getHeader('content-type'),
 						$oResponse->body
 					];
 				}
-				\SnappyMail\Log::notice('Avatar', "error {$oResponse->status} for {$sUrl}");
 			} else {
 				\SnappyMail\Log::warning('Avatar', "failed for {$sUrl}");
 			}
