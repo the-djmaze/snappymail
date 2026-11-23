@@ -4,6 +4,7 @@ namespace RainLoop\Providers;
 
 use RainLoop\Model\Account;
 use RainLoop\Providers\Storage\IStorage;
+use RainLoop\Providers\Storage\Enumerations\StorageType;
 
 class Storage extends \RainLoop\Providers\AbstractProvider
 {
@@ -14,31 +15,31 @@ class Storage extends \RainLoop\Providers\AbstractProvider
 		$this->oDriver = $oDriver;
 	}
 
-	private function verifyAccount(Account|string|null $mAccount, int $iStorageType): bool
+	private function verifyAccount(Account|string|null $mAccount, StorageType $eStorageType): bool
 	{
-		return \RainLoop\Providers\Storage\Enumerations\StorageType::NOBODY === $iStorageType
+		return StorageType::NOBODY === $eStorageType
 			|| $mAccount instanceof Account
 			|| \is_string($mAccount);
 	}
 
-	public function Put(Account|string|null $mAccount, int $iStorageType, string $sKey, string $sValue): bool
+	public function Put(Account|string|null $mAccount, StorageType $eStorageType, string $sKey, string $sValue): bool
 	{
-		return $this->verifyAccount($mAccount, $iStorageType)
-			? $this->oDriver->Put($mAccount, $iStorageType, $sKey, $sValue)
+		return $this->verifyAccount($mAccount, $eStorageType)
+			? $this->oDriver->Put($mAccount, $eStorageType, $sKey, $sValue)
 			: false;
 	}
 
-	public function Get(Account|string|null $mAccount, int $iStorageType, string $sKey, mixed $mDefault = false): mixed
+	public function Get(Account|string|null $mAccount, StorageType $eStorageType, string $sKey, mixed $mDefault = false): mixed
 	{
-		return $this->verifyAccount($mAccount, $iStorageType)
-			? $this->oDriver->Get($mAccount, $iStorageType, $sKey, $mDefault)
+		return $this->verifyAccount($mAccount, $eStorageType)
+			? $this->oDriver->Get($mAccount, $eStorageType, $sKey, $mDefault)
 			: $mDefault;
 	}
 
-	public function Clear(Account|string|null $mAccount, int $iStorageType, string $sKey): bool
+	public function Clear(Account|string|null $mAccount, StorageType $eStorageType, string $sKey): bool
 	{
-		return $this->verifyAccount($mAccount, $iStorageType)
-			? $this->oDriver->Clear($mAccount, $iStorageType, $sKey)
+		return $this->verifyAccount($mAccount, $eStorageType)
+			? $this->oDriver->Clear($mAccount, $eStorageType, $sKey)
 			: false;
 	}
 
@@ -47,9 +48,9 @@ class Storage extends \RainLoop\Providers\AbstractProvider
 		return $this->oDriver->DeleteStorage($mAccount);
 	}
 
-	public function GenerateFilePath(Account|string|null $mAccount, int $iStorageType, bool $bMkDir = false): string
+	public function GenerateFilePath(Account|string|null $mAccount, StorageType $eStorageType, bool $bMkDir = false): string
 	{
-		return $this->oDriver->GenerateFilePath($mAccount, $iStorageType, $bMkDir);
+		return $this->oDriver->GenerateFilePath($mAccount, $eStorageType, $bMkDir);
 	}
 
 	public function IsActive(): bool

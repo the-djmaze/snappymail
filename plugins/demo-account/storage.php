@@ -1,15 +1,13 @@
 <?php
 
+use RainLoop\Model\Account;
 use RainLoop\Providers\Storage\Enumerations\StorageType;
 
 class DemoStorage extends \RainLoop\Providers\Storage\FileStorage
 {
 	private static $gc_done;
 
-	/**
-	 * @param \RainLoop\Model\Account|string|null $mAccount
-	 */
-	public function GenerateFilePath($mAccount, int $iStorageType, bool $bMkDir = false) : string
+	public function GenerateFilePath(Account|string|null $mAccount, StorageType|int $eStorageType, bool $bMkDir = false) : string
 	{
 		$sEmail = '';
 		if ($mAccount instanceof \RainLoop\Model\MainAccount) {
@@ -18,7 +16,7 @@ class DemoStorage extends \RainLoop\Providers\Storage\FileStorage
 			$sEmail = $mAccount;
 		}
 		if ($sEmail != $this->sDemoEmail) {
-			return parent::GenerateFilePath($mAccount, $iStorageType, $bMkDir);
+			return parent::GenerateFilePath($mAccount, $eStorageType, $bMkDir);
 		}
 
 		$sDataPath = "{$this->sDataPath}/demo";
@@ -53,11 +51,11 @@ class DemoStorage extends \RainLoop\Providers\Storage\FileStorage
 			}
 		}
 
-		if (StorageType::SIGN_ME === $iStorageType) {
+		if (StorageType::SIGN_ME === $eStorageType) {
 			$sDataPath .= '/.sign_me';
-		} else if (StorageType::SESSION === $iStorageType) {
+		} else if (StorageType::SESSION === $eStorageType) {
 			$sDataPath .= '/.sessions';
-		} else if (StorageType::PGP === $iStorageType) {
+		} else if (StorageType::PGP === $eStorageType) {
 			$sDataPath .= '/.pgp';
 			$sDataPath = "{$this->sDataPath}/demo.pgp/.pgp";
 			$bMkDir = true;

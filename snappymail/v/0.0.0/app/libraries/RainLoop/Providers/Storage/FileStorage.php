@@ -2,8 +2,8 @@
 
 namespace RainLoop\Providers\Storage;
 
-use RainLoop\Providers\Storage\Enumerations\StorageType;
 use RainLoop\Model\Account;
+use RainLoop\Providers\Storage\Enumerations\StorageType;
 
 class FileStorage implements \RainLoop\Providers\Storage\IStorage
 {
@@ -19,9 +19,9 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		$this->bLocal = $bLocal;
 	}
 
-	public function Put(Account|string|null $mAccount, int $iStorageType, string $sKey, string $sValue): bool
+	public function Put(Account|string|null $mAccount, StorageType $eStorageType, string $sKey, string $sValue): bool
 	{
-		$sFileName = $this->generateFileName($mAccount, $iStorageType, $sKey, true);
+		$sFileName = $this->generateFileName($mAccount, $eStorageType, $sKey, true);
 		try {
 			$sFileName && \RainLoop\Utils::saveFile($sFileName, $sValue);
 			return true;
@@ -31,17 +31,17 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return false;
 	}
 
-	public function Get(Account|string|null $mAccount, int $iStorageType, string $sKey, mixed $mDefault = false): mixed
+	public function Get(Account|string|null $mAccount, StorageType $eStorageType, string $sKey, mixed $mDefault = false): mixed
 	{
 		$mValue = false;
-		$sFileName = $this->generateFileName($mAccount, $iStorageType, $sKey);
+		$sFileName = $this->generateFileName($mAccount, $eStorageType, $sKey);
 		if ($sFileName && \file_exists($sFileName)) {
 			for ($i = 0; $i < 5; ++$i) {
 				$i && \usleep(20000);
 				$mValue = \file_get_contents($sFileName);
 				if (false !== $mValue) {
 					// Update mtime to prevent garbage collection
-					if (StorageType::SESSION === $iStorageType) {
+					if (StorageType::SESSION === $eStorageType) {
 						\touch($sFileName);
 					}
 					return $mValue;
@@ -51,9 +51,9 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return $mDefault;
 	}
 
-	public function Clear(Account|string|null $mAccount, int $iStorageType, string $sKey): bool
+	public function Clear(Account|string|null $mAccount, StorageType $eStorageType, string $sKey): bool
 	{
-		$sFileName = $this->generateFileName($mAccount, $iStorageType, $sKey);
+		$sFileName = $this->generateFileName($mAccount, $eStorageType, $sKey);
 		return $sFileName && \file_exists($sFileName) && \unlink($sFileName);
 	}
 
@@ -71,10 +71,10 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return $this->bLocal;
 	}
 
-	public function GenerateFilePath(Account|string|null $mAccount, int $iStorageType, bool $bMkDir = false): string
+	public function GenerateFilePath(Account|string|null $mAccount, StorageType $eStorageType, bool $bMkDir = false): string
 	{
 		$sEmail = $sSubFolder = $sFilePath = '';
-		if (null === $mAccount || StorageType::NOBODY === $iStorageType) {
+		if (null === $mAccount || StorageType::NOBODY === $eStorageType) {
 			$sFilePath = $this->sDataPath.'/__nobody__/';
 		} else {
 			if ($mAccount instanceof \RainLoop\Model\MainAccount) {
@@ -90,18 +90,18 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 
 			if ($sEmail) {
 				// these are never local
-				if (StorageType::SIGN_ME === $iStorageType) {
+				if (StorageType::SIGN_ME === $eStorageType) {
 					$sSubFolder = '.sign_me';
-				} else if (StorageType::SESSION === $iStorageType) {
+				} else if (StorageType::SESSION === $eStorageType) {
 					$sSubFolder = '.sessions';
-				} else if (StorageType::PGP === $iStorageType) {
+				} else if (StorageType::PGP === $eStorageType) {
 					$sSubFolder = '.pgp';
-				} else if (StorageType::ROOT === $iStorageType) {
+				} else if (StorageType::ROOT === $eStorageType) {
 					$sSubFolder = '';
 				}
 			}
 
-			switch ($iStorageType)
+			switch ($eStorageType)
 			{
 				case StorageType::CONFIG:
 				case StorageType::SIGN_ME:
@@ -122,7 +122,7 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 						.'/'.($sSubFolder ? \MailSo\Base\Utils::SecureFileName($sSubFolder).'/' : '');
 					break;
 				default:
-					throw new \Exception("Invalid storage type {$iStorageType}");
+					throw new \Exception('Invalid storage type');
 			}
 		}
 
@@ -131,11 +131,11 @@ class FileStorage implements \RainLoop\Providers\Storage\IStorage
 		return $sFilePath;
 	}
 
-	protected function generateFileName(Account|string|null $mAccount, int $iStorageType, string $sKey, bool $bMkDir = false): string
+	protected function generateFileName(Account|string|null $mAccount, StorageType $eStorageType, string $sKey, bool $bMkDir = false): string
 	{
-		$sFilePath = $this->GenerateFilePath($mAccount, $iStorageType, $bMkDir);
+		$sFilePath = $this->GenerateFilePath($mAccount, $eStorageType, $bMkDir);
 		if ($sFilePath) {
-			if (StorageType::NOBODY === $iStorageType) {
+			if (StorageType::NOBODY === $eStorageType) {
 				$sFilePath .= \sha1($sKey ?: \time());
 			} else {
 				$sFilePath .= ($sKey ? \MailSo\Base\Utils::SecureFileName($sKey) : '');

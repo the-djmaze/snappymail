@@ -1,16 +1,14 @@
 <?php
 
+use RainLoop\Model\Account;
 use RainLoop\Providers\Storage\Enumerations\StorageType;
 
 class NextcloudStorage extends \RainLoop\Providers\Storage\FileStorage
 {
-	/**
-	 * @param \RainLoop\Model\Account|string|null $mAccount
-	 */
-	public function GenerateFilePath($mAccount, int $iStorageType, bool $bMkDir = false) : string
+	public function GenerateFilePath(Account|string|null $mAccount, StorageType|int $eStorageType, bool $bMkDir = false) : string
 	{
-		$sDataPath = parent::GenerateFilePath($mAccount, $iStorageType, $bMkDir);
-		if (StorageType::CONFIG === $iStorageType) {
+		$sDataPath = parent::GenerateFilePath($mAccount, $eStorageType, $bMkDir);
+		if (StorageType::CONFIG === $eStorageType) {
 			$sUID = \OCA\SnappyMail\Util\SnappyMailHelper::getUID();
 			$sDataPath .= ".config/{$sUID}/";
 			if ($bMkDir && !\is_dir($sDataPath) && !\mkdir($sDataPath, 0700, true)) {
