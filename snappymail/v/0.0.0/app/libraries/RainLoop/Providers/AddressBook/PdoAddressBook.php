@@ -100,23 +100,21 @@ class PdoAddressBook
 		);
 
 		if ($oStmt) {
-			$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-			if (\is_array($aFetch) && \count($aFetch)) {
-				foreach ($aFetch as $aItem) {
-					if ($aItem && isset($aItem['id_contact'], $aItem['id_contact_str'], $aItem['changed'], $aItem['deleted'], $aItem['etag']) &&
-						!empty($aItem['id_contact_str'])) {
-						$sKeyID = $aItem['id_contact_str'];
+			while ($aItem = $oStmt->fetch(\PDO::FETCH_ASSOC)) {
+				if ($aItem && isset($aItem['id_contact'], $aItem['id_contact_str'], $aItem['changed'], $aItem['deleted'], $aItem['etag']) &&
+					!empty($aItem['id_contact_str'])) {
+					$sKeyID = $aItem['id_contact_str'];
 
-						$aResult[$sKeyID] = array(
-							'deleted' => !empty($aItem['deleted']),
-							'id_contact' => $aItem['id_contact'],
-							'uid' => $sKeyID,
-							'etag' => $aItem['etag'],
-							'changed' => (int) $aItem['changed']
-						);
-					}
+					$aResult[$sKeyID] = array(
+						'deleted' => !empty($aItem['deleted']),
+						'id_contact' => $aItem['id_contact'],
+						'uid' => $sKeyID,
+						'etag' => $aItem['etag'],
+						'changed' => (int) $aItem['changed']
+					);
 				}
 			}
+			$oStmt->closeCursor();
 		}
 
 		return $aResult;
@@ -251,7 +249,8 @@ class PdoAddressBook
 							if (!empty($sEtag)) {
 								$iChanged = empty($sDate) ? \time() : \MailSo\Base\DateTimeHelper::ParseRFC2822DateString($sDate);
 								$this->prepareAndExecute('UPDATE rainloop_ab_contacts SET changed = :changed, etag = :etag '.
-									'WHERE id_user = :id_user AND id_contact = :id_contact', array(
+									'WHERE id_user = :id_user AND id_contact = :id_contact',
+									array(
 										':id_user' => array($this->iUserID, \PDO::PARAM_INT),
 										':id_contact' => array($mID, \PDO::PARAM_INT),
 										':changed' => array($iChanged, \PDO::PARAM_INT),
@@ -508,144 +507,41 @@ class PdoAddressBook
 
 	protected function getContactsFromPDO(?\PDOStatement $oStmt): array
 	{
+		$aContacts = array();
 		if ($oStmt) {
-			$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-
-			$aContacts = array();
 			$aIdContacts = array();
-			if (\is_array($aFetch) && \count($aFetch)) {
-				foreach ($aFetch as $aItem) {
-					$iIdContact = $aItem && isset($aItem['id_contact']) ? (int) $aItem['id_contact'] : 0;
-					if (0 < $iIdContact) {
-						$oContact = new Contact();
-						$oContact->id = (string) $iIdContact;
-						$oContact->IdContactStr = (string) $aItem['id_contact_str'];
-//						$oContact->Display = (string) $aItem['display'];
-						$oContact->Changed = (int) $aItem['changed'];
-						$oContact->Etag = (int) $aItem['etag'];
-						if (!empty($aItem['jcard'])) {
-							$oContact->setVCard(
-								\Sabre\VObject\Reader::readJson($aItem['jcard'])
-							);
-//							$oContact->vCard->FN = (string) $aItem['display'];
-//							$oContact->vCard->REV = \gmdate('Ymd\\THis\\Z', $oContact->Changed);
-						} else {
-							$aIdContacts[] = $iIdContact;
-						}
-						$aContacts[$iIdContact] = $oContact;
+			while ($aItem = $oStmt->fetch(\PDO::FETCH_ASSOC)) {
+				$iIdContact = $aItem && isset($aItem['id_contact']) ? (int) $aItem['id_contact'] : 0;
+				if (0 < $iIdContact) {
+					$oContact = new Contact();
+					$oContact->id = (string) $iIdContact;
+					$oContact->IdContactStr = (string) $aItem['id_contact_str'];
+//					$oContact->Display = (string) $aItem['display'];
+					$oContact->Changed = (int) $aItem['changed'];
+					$oContact->Etag = (int) $aItem['etag'];
+					if (!empty($aItem['jcard'])) {
+						$oContact->setVCard(
+							\Sabre\VObject\Reader::readJson($aItem['jcard'])
+						);
+//						$oContact->vCard->FN = (string) $aItem['display'];
+//						$oContact->vCard->REV = \gmdate('Ymd\\THis\\Z', $oContact->Changed);
+					} else {
+						$aIdContacts[] = $iIdContact;
 					}
+					$aContacts[$iIdContact] = $oContact;
 				}
 			}
-
-			unset($aFetch);
+			$oStmt->closeCursor();
 
 			// Build vCards using old RainLoop data (missing jCard)
 			if (\count($aIdContacts)) {
-				$oStmt->closeCursor();
-
 				$oStmt = $this->prepareAndExecute('SELECT * FROM rainloop_ab_properties
 				WHERE id_contact IN ('.\implode(',', $aIdContacts).')
 				ORDER BY id_contact ASC');
-				if ($oStmt) {
-					$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-					if (\is_array($aFetch) && \count($aFetch)) {
-						$aVCards = array();
-						$sUid = $sFirstName = $sLastName = $sMiddleName = $sSuffix = $sPrefix = '';
-						$iPrevId = 0;
-						foreach ($aFetch as $aItem) {
-							if ($aItem && isset($aItem['id_prop'], $aItem['id_contact'], $aItem['prop_type'], $aItem['prop_value'])) {
-								$iId = (int) $aItem['id_contact'];
-								if (0 < $iId) {
-									if ($iPrevId != $iId) {
-										if ($iPrevId) {
-											$aVCards[$iPrevId]->UID = $sUid ?: \SnappyMail\UUID::generate();
-											$aVCards[$iPrevId]->N = array($sLastName, $sFirstName, $sMiddleName, $sPrefix, $sSuffix);
-										}
-										$sUid = $sFirstName = $sLastName = $sMiddleName = $sSuffix = $sPrefix = '';
-										$iPrevId = $iId;
-									}
-									if (isset($aVCards[$iId])) {
-										$oVCard = $aVCards[$iId];
-									} else {
-										$oVCard = new VCard;
-//										$oVCard = $oVCard->convert(VCard::VCARD40);
-										$oVCard->VERSION = '4.0';
-										$oVCard->PRODID = 'SnappyMail-'.APP_VERSION;
-										$aVCards[$iId] = $oVCard;
-									}
-									$oVCard = $aVCards[$iId];
-									$sPropValue = (string) $aItem['prop_value'];
-									$aTypes = array();
-									if (!empty($aItem['prop_type_str'])) {
-										$aTypes = \explode(',', \preg_replace('/[\s]+/', '', $aItem['prop_type_str']));
-									}
-									switch ((int) $aItem['prop_type'])
-									{
-										case PropertyType::JCARD:
-											break;
-
-										case PropertyType::FULLNAME:
-											$oVCard->FN = $sPropValue;
-											break;
-										case PropertyType::NICK_NAME:
-											$oVCard->NICKNAME = $sPropValue;
-											break;
-										case PropertyType::NOTE:
-											$oVCard->NOTE = $sPropValue;
-											break;
-										case PropertyType::UID:
-											$sUid = $sPropValue;
-											break;
-										case PropertyType::FIRST_NAME:
-											$sFirstName = $sPropValue;
-											break;
-										case PropertyType::LAST_NAME:
-											$sLastName = $sPropValue;
-											break;
-										case PropertyType::MIDDLE_NAME:
-											$sMiddleName = $sPropValue;
-											break;
-										case PropertyType::NAME_SUFFIX:
-											$sSuffix = $sPropValue;
-											break;
-										case PropertyType::NAME_PREFIX:
-											$sPrefix = $sPropValue;
-											break;
-
-										case PropertyType::EMAIl:
-											$oVCard->add('EMAIL', $sPropValue, \is_array($aTypes) && \count($aTypes) ? array('TYPE' => $aTypes) : null);
-											break;
-
-										case PropertyType::WEB_PAGE:
-											$oVCard->add('URL', $sPropValue, \is_array($aTypes) && \count($aTypes) ? array('TYPE' => $aTypes) : null);
-											break;
-
-										case PropertyType::PHONE:
-											$oVCard->add('TEL', $sPropValue, \is_array($aTypes) && \count($aTypes) ? array('TYPE' => $aTypes) : null);
-											break;
-									}
-								}
-							}
-						}
-						if ($iPrevId) {
-							$aVCards[$iPrevId]->UID = $sUid ?: \SnappyMail\UUID::generate();
-							$aVCards[$iPrevId]->N = array($sLastName, $sFirstName, $sMiddleName, $sPrefix, $sSuffix);
-						}
-
-						foreach ($aVCards as $iId => $oVCard) {
-							$oVCard->REV = \gmdate('Ymd\\THis\\Z', $aContacts[$iId]->Changed);
-							$aContacts[$iId]->setVCard($oVCard);
-						}
-					}
-
-					unset($aFetch);
-				}
+				$oStmt && Legacy::PropertiesToVCard($aContacts, $oStmt);
 			}
-
-			return \array_values($aContacts);
 		}
-
-		return [];
+		return \array_values($aContacts);
 	}
 
 	public function GetContacts(int $iOffset = 0, int $iLimit = 20, string $sSearch = '', int &$iResultCount = 0): array
@@ -684,6 +580,7 @@ class PdoAddressBook
 						$aSearchIds[] = (int) $aItem[0];
 					}
 				}
+				$oStmt->closeCursor();
 				$iResultCount = \count($aSearchIds);
 			}
 		} else {
@@ -735,13 +632,15 @@ class PdoAddressBook
 			DISTINCT id_contact
 		FROM rainloop_ab_properties
 		WHERE id_user = :id_user
-		 AND prop_type = '.PropertyType::JCARD.'
+		 AND prop_type = :prop_type
 		 AND ('.
 			'prop_value LIKE :search ESCAPE \'=\''
 				. (\strlen($sLowerSearch) ? ' OR (prop_value_lower <> \'\' AND prop_value_lower LIKE :search_lower ESCAPE \'=\')' : '').
-			')';
+			')
+		LIMIT 1';
 		$aParams = array(
 			':id_user' => array($this->iUserID, \PDO::PARAM_INT),
+			':prop_type' => array(PropertyType::JCARD, \PDO::PARAM_INT),
 			':search' => array($this->specialConvertSearchValue($sEmail, '='), \PDO::PARAM_STR)
 		);
 		if (\strlen($sLowerSearch)) {
@@ -755,9 +654,9 @@ class PdoAddressBook
 		// returns carries a real etag and changed value rather than 0.
 		$oStmt = $this->prepareAndExecute($sSql, $aParams);
 		if ($oStmt) {
-			$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-			if (\is_array($aFetch) && \count($aFetch) && !empty($aFetch[0]['id_contact'])) {
-				return $this->GetContactByID((int) $aFetch[0]['id_contact']);
+			$aItem = $oStmt->fetch(\PDO::FETCH_ASSOC);
+			if (!empty($aItem['id_contact'])) {
+				return $this->GetContactByID((int) $aItem['id_contact']);
 			}
 		}
 
@@ -826,21 +725,18 @@ class PdoAddressBook
 			'WHERE (id_user = :id_user) AND prop_type IN ('.$sTypes.') AND ('.
 			'prop_value LIKE :search ESCAPE \'=\''.
 (\strlen($sLowerSearch) ? ' OR (prop_value_lower <> \'\' AND prop_value_lower LIKE :search_lower ESCAPE \'=\')' : '').
-			')'
-		;
+			')
+			ORDER BY prop_frec DESC
+			LIMIT :limit';
 
 		$aParams = array(
 			':id_user' => array($this->iUserID, \PDO::PARAM_INT),
 			':limit' => array($iLimit, \PDO::PARAM_INT),
 			':search' => array($this->specialConvertSearchValue($sSearch, '='), \PDO::PARAM_STR)
 		);
-
 		if (\strlen($sLowerSearch)) {
 			$aParams[':search_lower'] = array($sLowerSearch, \PDO::PARAM_STR);
 		}
-
-		$sSql .= ' ORDER BY prop_frec DESC';
-		$sSql .= ' LIMIT :limit';
 
 		$aResult = array();
 
@@ -850,34 +746,28 @@ class PdoAddressBook
 			$aIdProps = array();
 			$aContactAllAccess = array();
 
-			$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-			if (\is_array($aFetch) && \count($aFetch)) {
-				foreach ($aFetch as $aItem) {
-					$iIdContact = $aItem && isset($aItem['id_contact']) ? (int) $aItem['id_contact'] : 0;
-					$iIdProp = $aItem && isset($aItem['id_prop']) ? (int) $aItem['id_prop'] : 0;
-					$iType = $aItem && isset($aItem['prop_type']) ? (int) $aItem['prop_type'] : 0;
+			while ($aItem = $oStmt->fetch(\PDO::FETCH_ASSOC)) {
+				$iIdContact = $aItem && isset($aItem['id_contact']) ? (int) $aItem['id_contact'] : 0;
+				$iIdProp = $aItem && isset($aItem['id_prop']) ? (int) $aItem['id_prop'] : 0;
+				$iType = $aItem && isset($aItem['prop_type']) ? (int) $aItem['prop_type'] : 0;
 
-					if (0 < $iIdContact && 0 < $iIdProp) {
-						$aIdContacts[$iIdContact] = $iIdContact;
-						$aIdProps[$iIdProp] = $iIdProp;
+				if (0 < $iIdContact && 0 < $iIdProp) {
+					$aIdContacts[$iIdContact] = $iIdContact;
+					$aIdProps[$iIdProp] = $iIdProp;
 
-						if (\in_array($iType, array(PropertyType::LAST_NAME, PropertyType::FIRST_NAME, PropertyType::NICK_NAME))) {
-							if (!isset($aContactAllAccess[$iIdContact])) {
-								$aContactAllAccess[$iIdContact] = array();
-							}
-
-							$aContactAllAccess[$iIdContact][] = $iType;
+					if (\in_array($iType, array(PropertyType::LAST_NAME, PropertyType::FIRST_NAME, PropertyType::NICK_NAME))) {
+						if (!isset($aContactAllAccess[$iIdContact])) {
+							$aContactAllAccess[$iIdContact] = array();
 						}
+
+						$aContactAllAccess[$iIdContact][] = $iType;
 					}
 				}
 			}
-
-			unset($aFetch);
+			$oStmt->closeCursor();
 
 			$aIdContacts = \array_values($aIdContacts);
 			if (\count($aIdContacts)) {
-				$oStmt->closeCursor();
-
 				$sTypes = \implode(',', static::$aSearchInFields);
 
 				$sSql = 'SELECT id_prop, id_contact, prop_type, prop_value FROM rainloop_ab_properties '.
@@ -885,88 +775,82 @@ class PdoAddressBook
 
 				$oStmt = $this->prepareAndExecute($sSql);
 				if ($oStmt) {
-					$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-					if (\is_array($aFetch) && \count($aFetch)) {
-						$aNames = array();
-						$aEmails = array();
+					$aNames = array();
+					$aEmails = array();
 
-						foreach ($aFetch as $aItem) {
-							if ($aItem && isset($aItem['id_prop'], $aItem['id_contact'], $aItem['prop_type'], $aItem['prop_value'])) {
-								$iIdContact = (int) $aItem['id_contact'];
-								$iIdProp = (int) $aItem['id_prop'];
-								$iType = (int) $aItem['prop_type'];
+					while ($aItem = $oStmt->fetch(\PDO::FETCH_ASSOC)) {
+						if ($aItem && isset($aItem['id_prop'], $aItem['id_contact'], $aItem['prop_type'], $aItem['prop_value'])) {
+							$iIdContact = (int) $aItem['id_contact'];
+							$iIdProp = (int) $aItem['id_prop'];
+							$iType = (int) $aItem['prop_type'];
 
-								if (PropertyType::NICK_NAME === $iType) {
-									$aNicks[$iIdContact] = $aItem['prop_value'];
-								}
-								else if (\in_array($iType, array(PropertyType::LAST_NAME, PropertyType::FIRST_NAME))) {
-									if (!isset($aNames[$iIdContact])) {
-										$aNames[$iIdContact] = array('', '');
-									}
-
-									$aNames[$iIdContact][PropertyType::FIRST_NAME === $iType ? 0 : 1] = $aItem['prop_value'];
-								}
-								else if ((isset($aIdProps[$iIdProp]) || isset($aContactAllAccess[$iIdContact])) &&
-									PropertyType::EMAIl === $iType) {
-									if (!isset($aEmails[$iIdContact])) {
-										$aEmails[$iIdContact] = array();
-									}
-
-									$aEmails[$iIdContact][] = $aItem['prop_value'];
-								}
+							if (PropertyType::NICK_NAME === $iType) {
+								$aNicks[$iIdContact] = $aItem['prop_value'];
 							}
-						}
-
-						foreach ($aEmails as $iId => $aItems) {
-							if (isset($aContactAllAccess[$iId])) {
-								$bName = \in_array(PropertyType::FIRST_NAME, $aContactAllAccess[$iId]) || \in_array(PropertyType::LAST_NAME, $aContactAllAccess[$iId]);
-								$bNick = \in_array(PropertyType::NICK_NAME, $aContactAllAccess[$iId]);
-
-								$aNameItem = isset($aNames[$iId]) && \is_array($aNames[$iId]) ? $aNames[$iId] : array('', '');
-								$sNameItem = \trim($aNameItem[0].' '.$aNameItem[1]);
-
-								$sNickItem = isset($aNicks[$iId]) ? $aNicks[$iId] : '';
-
-								foreach ($aItems as $sEmail) {
-									if ($sEmail) {
-										if ($bName) {
-											$aResult[] = array($sEmail, $sNameItem);
-										}
-										else if ($bNick) {
-											$aResult[] = array($sEmail, $sNickItem);
-										}
-										else {
-											$aResult[] = array($sEmail, '');
-										}
-									}
+							else if (\in_array($iType, array(PropertyType::LAST_NAME, PropertyType::FIRST_NAME))) {
+								if (!isset($aNames[$iIdContact])) {
+									$aNames[$iIdContact] = array('', '');
 								}
+
+								$aNames[$iIdContact][PropertyType::FIRST_NAME === $iType ? 0 : 1] = $aItem['prop_value'];
 							}
-							else {
-								$aNameItem = isset($aNames[$iId]) && \is_array($aNames[$iId]) ? $aNames[$iId] : array('', '');
-								$sNameItem = \trim($aNameItem[0].' '.$aNameItem[1]);
-								if (0 === \strlen($sNameItem)) {
-									$sNameItem = isset($aNicks[$iId]) ? $aNicks[$iId] : '';
+							else if ((isset($aIdProps[$iIdProp]) || isset($aContactAllAccess[$iIdContact])) &&
+								PropertyType::EMAIl === $iType) {
+								if (!isset($aEmails[$iIdContact])) {
+									$aEmails[$iIdContact] = array();
 								}
 
-								foreach ($aItems as $sEmail) {
-									$aResult[] = array($sEmail, $sNameItem);
-								}
+								$aEmails[$iIdContact][] = $aItem['prop_value'];
 							}
 						}
 					}
+					$oStmt->closeCursor();
 
-					unset($aFetch);
+					foreach ($aEmails as $iId => $aItems) {
+						if (isset($aContactAllAccess[$iId])) {
+							$bName = \in_array(PropertyType::FIRST_NAME, $aContactAllAccess[$iId]) || \in_array(PropertyType::LAST_NAME, $aContactAllAccess[$iId]);
+							$bNick = \in_array(PropertyType::NICK_NAME, $aContactAllAccess[$iId]);
+
+							$aNameItem = isset($aNames[$iId]) && \is_array($aNames[$iId]) ? $aNames[$iId] : array('', '');
+							$sNameItem = \trim($aNameItem[0].' '.$aNameItem[1]);
+
+							$sNickItem = isset($aNicks[$iId]) ? $aNicks[$iId] : '';
+
+							foreach ($aItems as $sEmail) {
+								if ($sEmail) {
+									if ($bName) {
+										$aResult[] = array($sEmail, $sNameItem);
+									}
+									else if ($bNick) {
+										$aResult[] = array($sEmail, $sNickItem);
+									}
+									else {
+										$aResult[] = array($sEmail, '');
+									}
+								}
+							}
+						}
+						else {
+							$aNameItem = isset($aNames[$iId]) && \is_array($aNames[$iId]) ? $aNames[$iId] : array('', '');
+							$sNameItem = \trim($aNameItem[0].' '.$aNameItem[1]);
+							if (0 === \strlen($sNameItem)) {
+								$sNameItem = isset($aNicks[$iId]) ? $aNicks[$iId] : '';
+							}
+
+							foreach ($aItems as $sEmail) {
+								$aResult[] = array($sEmail, $sNameItem);
+							}
+						}
+					}
 
 					if ($iLimit < \count($aResult)) {
 						$aResult = \array_slice($aResult, 0, $iLimit);
 					}
-
-					return $aResult;
 				}
 			}
 		}
 
-		return array();
+		return $aResult;
 	}
 
 	/**
@@ -1010,14 +894,12 @@ class PdoAddressBook
 			));
 
 			if ($oStmt) {
-				$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-				if (\is_array($aFetch) && \count($aFetch)) {
-					foreach ($aFetch as $aItem) {
-						if ($aItem && !empty($aItem['prop_value'])) {
-							$aExists[] = \mb_strtolower(\trim($aItem['prop_value']));
-						}
+				while ($aItem = $oStmt->fetch(\PDO::FETCH_ASSOC)) {
+					if ($aItem && !empty($aItem['prop_value'])) {
+						$aExists[] = \mb_strtolower(\trim($aItem['prop_value']));
 					}
 				}
+				$oStmt->closeCursor();
 			}
 
 			$aEmailsToCreate = \array_filter($aEmailsObjects, function ($oItem) use ($aExists, &$aEmailsToUpdate) {
@@ -1150,14 +1032,12 @@ class PdoAddressBook
 
 		$oStmt = $this->prepareAndExecute($sSql, $aParams);
 		if ($oStmt) {
-			$aFetch = $oStmt->fetchAll(\PDO::FETCH_ASSOC);
-			if (\is_array($aFetch)) {
-				foreach ($aFetch as $aItem) {
-					if ($aItem && !empty($aItem['prop_value']) && !empty($aItem['prop_frec'])) {
-						$aResult[$aItem['prop_value']] = (int) $aItem['prop_frec'];
-					}
+			while ($aItem = $oStmt->fetch(\PDO::FETCH_ASSOC)) {
+				if ($aItem && !empty($aItem['prop_value']) && !empty($aItem['prop_frec'])) {
+					$aResult[$aItem['prop_value']] = (int) $aItem['prop_frec'];
 				}
 			}
+			$oStmt->closeCursor();
 		}
 
 		return $aResult;
@@ -1205,13 +1085,14 @@ class PdoAddressBook
 
 		$this->SyncDatabase();
 
-		$oStmt = $this->prepareAndExecute('SELECT id_user FROM rainloop_users WHERE rl_email = :rl_email',
+		$oStmt = $this->prepareAndExecute('SELECT id_user FROM rainloop_users WHERE rl_email = :rl_email LIMIT 1',
 			array(
 				':rl_email' => array($sEmail, \PDO::PARAM_STR)
 			)
 		);
 
 		$mRow = $oStmt->fetch(\PDO::FETCH_ASSOC);
+		$oStmt->closeCursor();
 		if ($mRow && isset($mRow['id_user']) && \is_numeric($mRow['id_user'])) {
 			$iResult = (int) $mRow['id_user'];
 			if (0 >= $iResult) {
@@ -1224,7 +1105,6 @@ class PdoAddressBook
 		}
 
 		if (!$bSkipInsert) {
-			$oStmt->closeCursor();
 			$oStmt = $this->prepareAndExecute('INSERT INTO rainloop_users (rl_email) VALUES (:rl_email)',
 				array(':rl_email' => array($sEmail, \PDO::PARAM_STR))
 			);

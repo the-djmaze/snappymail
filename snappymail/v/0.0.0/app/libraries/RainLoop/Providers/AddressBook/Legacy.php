@@ -100,4 +100,99 @@ class Legacy
 			yield from static::yieldPropertyHelper($oVCard->TEL, PropertyType::PHONE);
 		}
 	}
+
+	public static function PropertiesToVCard(array &$aContacts, \PDOStatement $oStmt)
+	{
+		$aVCards = array();
+		$sUid = $sFirstName = $sLastName = $sMiddleName = $sSuffix = $sPrefix = '';
+		$iPrevId = 0;
+
+		while ($aItem = $oStmt->fetch(\PDO::FETCH_ASSOC)) {
+			if ($aItem && isset($aItem['id_prop'], $aItem['id_contact'], $aItem['prop_type'], $aItem['prop_value'])) {
+				$iId = (int) $aItem['id_contact'];
+				if (0 < $iId) {
+					if ($iPrevId != $iId) {
+						if ($iPrevId) {
+							$aVCards[$iPrevId]->UID = $sUid ?: \SnappyMail\UUID::generate();
+							$aVCards[$iPrevId]->N = array($sLastName, $sFirstName, $sMiddleName, $sPrefix, $sSuffix);
+						}
+						$sUid = $sFirstName = $sLastName = $sMiddleName = $sSuffix = $sPrefix = '';
+						$iPrevId = $iId;
+					}
+					if (isset($aVCards[$iId])) {
+						$oVCard = $aVCards[$iId];
+					} else {
+						$oVCard = new VCard;
+//						$oVCard = $oVCard->convert(VCard::VCARD40);
+						$oVCard->VERSION = '4.0';
+						$oVCard->PRODID = 'SnappyMail-'.APP_VERSION;
+						$aVCards[$iId] = $oVCard;
+					}
+					$oVCard = $aVCards[$iId];
+					$sPropValue = (string) $aItem['prop_value'];
+					$aTypes = array();
+					if (!empty($aItem['prop_type_str'])) {
+						$aTypes = \explode(',', \preg_replace('/[\s]+/', '', $aItem['prop_type_str']));
+					}
+					switch ((int) $aItem['prop_type'])
+					{
+						case PropertyType::JCARD:
+							break;
+
+						case PropertyType::FULLNAME:
+							$oVCard->FN = $sPropValue;
+							break;
+						case PropertyType::NICK_NAME:
+							$oVCard->NICKNAME = $sPropValue;
+							break;
+						case PropertyType::NOTE:
+							$oVCard->NOTE = $sPropValue;
+							break;
+						case PropertyType::UID:
+							$sUid = $sPropValue;
+							break;
+						case PropertyType::FIRST_NAME:
+							$sFirstName = $sPropValue;
+							break;
+						case PropertyType::LAST_NAME:
+							$sLastName = $sPropValue;
+							break;
+						case PropertyType::MIDDLE_NAME:
+							$sMiddleName = $sPropValue;
+							break;
+						case PropertyType::NAME_SUFFIX:
+							$sSuffix = $sPropValue;
+							break;
+						case PropertyType::NAME_PREFIX:
+							$sPrefix = $sPropValue;
+							break;
+
+						case PropertyType::EMAIl:
+							$oVCard->add('EMAIL', $sPropValue, \is_array($aTypes) && \count($aTypes) ? array('TYPE' => $aTypes) : null);
+							break;
+
+						case PropertyType::WEB_PAGE:
+							$oVCard->add('URL', $sPropValue, \is_array($aTypes) && \count($aTypes) ? array('TYPE' => $aTypes) : null);
+							break;
+
+						case PropertyType::PHONE:
+							$oVCard->add('TEL', $sPropValue, \is_array($aTypes) && \count($aTypes) ? array('TYPE' => $aTypes) : null);
+							break;
+					}
+				}
+			}
+		}
+		$oStmt->closeCursor();
+
+		if ($iPrevId) {
+			$aVCards[$iPrevId]->UID = $sUid ?: \SnappyMail\UUID::generate();
+			$aVCards[$iPrevId]->N = array($sLastName, $sFirstName, $sMiddleName, $sPrefix, $sSuffix);
+		}
+
+		foreach ($aVCards as $iId => $oVCard) {
+			$oVCard->REV = \gmdate('Ymd\\THis\\Z', $aContacts[$iId]->Changed);
+			$aContacts[$iId]->setVCard($oVCard);
+		}
+	}
+
 }
