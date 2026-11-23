@@ -6,8 +6,8 @@ class ProxyMappingPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Proxy mapping',
-		VERSION = '1.0',
-		RELEASE  = '2026-11-03',
+		VERSION = '1.1',
+		RELEASE  = '2026-11-24',
 		DESCRIPTION = 'Sets some $_SERVER values from HTTP_* headers',
 		REQUIRED = '2.24.3';
 
@@ -30,25 +30,40 @@ class ProxyMappingPlugin extends \RainLoop\Plugins\AbstractPlugin
 
 	protected function configMapping(): array
 	{
+		$options = [
+			0 => ['id' => '', 'name' => '(no mapping)'],
+			// a de facto standard
+			'HTTP_X_FORWARDED_PROTO' => [],
+			// Non-standard
+			'HTTP_X_FORWARDED_SSL' => [],
+			'HTTP_X_FORWARDED_PROTOCOL' => [],
+			'HTTP_X_URL_SCHEME' => [],
+			// Non-standard used by Microsoft applications and load-balancers:
+			'HTTP_FRONT_END_HTTPS' => [],
+		];
+		foreach ($options as $key => $option) {
+			if ($key) {
+				$options[$key] = ['id' => $key, 'name' => '$_SERVER['.$key.']' . (isset($_SERVER[$key])?' (detected)':'')];
+			}
+		}
+
 		return array(
 			\RainLoop\Plugins\Property::NewInstance('remote_addr')
 				->SetLabel('REMOTE_ADDR')
 				->SetType(PluginPropertyType::SELECT)
 				->SetOptions([
 					['id' => '', 'name' => '(no mapping)'],
-					['id' => 'HTTP_CLIENT_IP', 'name' => '$_SERVER[HTTP_CLIENT_IP]'],
-					['id' => 'HTTP_X_FORWARDED_FOR', 'name' => '$_SERVER[HTTP_X_FORWARDED_FOR]']
+					['id' => 'HTTP_CLIENT_IP',
+					 'name' => '$_SERVER[HTTP_CLIENT_IP]' . (isset($_SERVER['HTTP_CLIENT_IP'])?' (detected)':'')],
+					['id' => 'HTTP_X_FORWARDED_FOR',
+					 'name' => '$_SERVER[HTTP_X_FORWARDED_FOR]' . (isset($_SERVER['HTTP_X_FORWARDED_FOR'])?' (detected)':'')]
 				])
 				->SetDefaultValue('')
 				->SetDescription("Set \$_SERVER[REMOTE_ADDR], only when the selected option is found and matches"),
 			\RainLoop\Plugins\Property::NewInstance('https')
 				->SetLabel('HTTPS')
 				->SetType(PluginPropertyType::SELECT)
-				->SetOptions([
-					['id' => '', 'name' => '(no mapping)'],
-					['id' => 'HTTP_X_FORWARDED_PROTO', 'name' => '$_SERVER[HTTP_X_FORWARDED_PROTO]'],
-					['id' => 'HTTP_X_FORWARDED_SSL', 'name' => '$_SERVER[HTTP_X_FORWARDED_SSL]']
-				])
+				->SetOptions(\array_values($options))
 				->SetDefaultValue('')
 				->SetDescription("Set \$_SERVER[HTTPS] = 'on', only when the selected option is found and matches")
 		);
