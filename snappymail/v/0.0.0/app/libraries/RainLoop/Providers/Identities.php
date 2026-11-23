@@ -9,10 +9,10 @@ use RainLoop\Providers\Identities\IIdentities;
 class Identities extends AbstractProvider
 {
 	/** @var IIdentities[] */
-	private $drivers;
+	private array $drivers;
 
 	/** @var Identity[][][] */
-	private $identitiesPerDriverPerAccount;
+	private array $identitiesPerDriverPerAccount = [];
 
 	/**
 	 * Identities constructor.
@@ -20,11 +20,7 @@ class Identities extends AbstractProvider
 	 */
 	public function __construct(?array $drivers = null)
 	{
-		if ($drivers === null) $drivers = [];
-
-		$this->drivers = \array_filter($drivers, function ($driver) {
-			return $driver instanceof IIdentities;
-		});
+		$this->drivers = \array_filter($drivers ?: [], fn($driver) => $driver instanceof IIdentities);
 	}
 
 	public function IsActive() : bool
@@ -43,9 +39,7 @@ class Identities extends AbstractProvider
 		$identities = $this->MergeIdentitiesPerDriver($this->GetIdentiesPerDriver($account));
 
 		// Find the primary identity
-		$primaryIdentity = \current(\array_filter($identities, function ($identity) {
-			return $identity->IsAccountIdentities();
-		}));
+		$primaryIdentity = \array_find($identities, fn($identity) => $identity->IsAccountIdentities());
 
 		// If no primary identity is found, generate default one from account info
 		if (!$primaryIdentity) {
@@ -53,6 +47,7 @@ class Identities extends AbstractProvider
 			$primaryIdentity->exists = !\RainLoop\Api::Config()->Get('webmail', 'popup_identity', true);
 			$identities[] = $primaryIdentity;
 		}
+
 		// An additional account added with a name sends as that name until its identity gets one of its own
 		if ('' === $primaryIdentity->Name() && '' !== $account->Name()) {
 			$primaryIdentity->SetName($account->Name());
@@ -85,9 +80,7 @@ class Identities extends AbstractProvider
 		// If it is a new identity we add it to any storage driver
 		if ($isNew) {
 			// Pick any storage driver to store the result, typically only file storage
-			$storageDriver = \current(\array_filter($this->drivers, function ($driver) {
-				return $driver->SupportsStore();
-			}));
+			$storageDriver = \array_find($this->drivers, fn($driver) => $driver->SupportsStore());
 
 			$identities[$storageDriver->Name()][$identity->Id(true)] = $identity;
 			$storageDriver->SetIdentities($account, $identities[$storageDriver->Name()]);
