@@ -148,7 +148,7 @@ export class MailBoxUserScreen extends AbstractScreen {
 				[folder(request, vals), 1, decodeURI(pString(vals[1]))]
 			}],
 			// Message: {folder}/m{uid}(/p{int})?(/{search})?
-			[/^([^/]+)\/m([1-9][0-9]*)(?:\/(.+))?$/, { normalize_: (request, vals) =>
+			[/^([^/]+)\/m([1-9][0-9]*)(?:\/p([1-9][0-9]*))?(?:\/(.+))?$/, { normalize_: (request, vals) =>
 				[folder(request, vals), pInt(vals[2]), pString(vals[3]), pInt(vals[1])]
 			}],
 			// Page: {folder}/p{int}(/{search})?
