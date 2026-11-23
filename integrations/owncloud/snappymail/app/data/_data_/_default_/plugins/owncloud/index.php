@@ -53,7 +53,7 @@ class OwnCloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 	{
 		if ('owncloud' === $data->action) {
 			if (static::IsOwnCloudLoggedIn() && \class_exists('OCP\Files')) {
-				$oFiles = \OCP\Files::getStorage('files');
+				$oFiles = \OC_App::getStorage('files');
 				if ($oFiles && $data->filesProvider->IsActive() && \method_exists($oFiles, 'file_put_contents')) {
 					$sSaveFolder = $this->Config()->Get('plugin', 'save_folder', '') ?: 'Attachments';
 					$oFiles->is_dir($sSaveFolder) || $oFiles->mkdir($sSaveFolder);

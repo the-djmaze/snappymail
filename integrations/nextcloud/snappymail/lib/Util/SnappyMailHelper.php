@@ -54,11 +54,18 @@ class SnappyMailHelper
 
 	public static function getAppConfigValue(string $key, mixed $default = null): mixed
 	{
-		return (\method_exists(\OC::$server, 'getConfig')
+		return \method_exists(\OC::$server, 'getConfig')
 			? \OC::$server->getConfig()->getAppValue('snappymail', $key, $default)
 			// Nextcloud 34+
-			: \OCP\Server::get(\OCP\IAppConfig::class)->getValue('snappymail', $key, $default)
-		);
+			: \OCP\Server::get(\OCP\IAppConfig::class)->getValue('snappymail', $key, $default);
+	}
+
+	public static function getAppManager(): mixed
+	{
+		return \method_exists(\OC::$server, 'getAppManager')
+			? \OC::$server->getAppManager()
+			// Nextcloud 34+
+			: \OCP\Server::get(\OCP\App\IAppManager::class);
 	}
 
 	public static function getContactsManager(): object
@@ -97,20 +104,18 @@ class SnappyMailHelper
 
 	public static function getUserSession(): object
 	{
-		return (\method_exists(\OC::$server, 'getUserSession')
+		return \method_exists(\OC::$server, 'getUserSession')
 			? \OC::$server->getUserSession()
 			// Nextcloud 34+
-			: \OCP\Server::get(\OCP\IUserSession::class)
-		);
+			: \OCP\Server::get(\OCP\IUserSession::class);
 	}
 
 	public static function getSession(): object
 	{
-		return (\method_exists(\OC::$server, 'getSession')
+		return \method_exists(\OC::$server, 'getSession')
 			? \OC::$server->getSession()
 			// Nextcloud 34+
-			: \OCP\Server::get(\OCP\ISession::class)
-		);
+			: \OCP\Server::get(\OCP\ISession::class);
 	}
 
 	public static function getSessionValue(string $key): mixed
@@ -269,7 +274,7 @@ class SnappyMailHelper
 	{
 		if (static::getAppConfigValue('snappymail-autologin-oidc', false)) {
 			// Check if the OIDC Login app is enabled
-			if (\OC::$server->getAppManager()->isEnabledForUser('oidc_login')) {
+			if (static::getAppManager()->isEnabledForUser('oidc_login')) {
 				// Check if session is an OIDC Login
 				$ocSession = static::getSession();
 				if ($ocSession->get('is_oidc')) {

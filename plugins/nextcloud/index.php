@@ -6,8 +6,8 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME = 'Nextcloud',
-		VERSION = '3.0.1',
-		RELEASE  = '2026-11-06',
+		VERSION = '3.0.2',
+		RELEASE  = '2026-11-23',
 		CATEGORY = 'Integrations',
 		DESCRIPTION = 'Integrate with Nextcloud v25+',
 		REQUIRED = '3.0.0';
@@ -117,7 +117,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			'tempName' => ''
 		];
 		$sFile = $this->jsonParam('file', '');
-		$oFiles = \OCP\Files::getStorage('files');
+		$oFiles = static::FilesStorage();
 		if ($oFiles && $oFiles->is_file($sFile) && $fp = $oFiles->fopen($sFile, 'rb')) {
 			$oActions = \RainLoop\Api::Actions();
 			$oAccount = $oActions->getAccountFromToken();
@@ -154,7 +154,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 			}
 
 			$sSaveFolder = $sSaveFolder ?: 'Emails';
-			$oFiles = \OCP\Files::getStorage('files');
+			$oFiles = static::FilesStorage();
 			if ($oFiles) {
 				$oFiles->is_dir($sSaveFolder) || $oFiles->mkdir($sSaveFolder);
 			}
@@ -182,7 +182,7 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 	public function DoAttachmentsActions(\SnappyMail\AttachmentsAction $data)
 	{
 		if (static::isLoggedIn() && 'nextcloud' === $data->action) {
-			$oFiles = \OCP\Files::getStorage('files');
+			$oFiles = static::FilesStorage();
 			if ($oFiles && \method_exists($oFiles, 'file_put_contents')) {
 				$sSaveFolder = \ltrim($this->jsonParam('NcFolder', ''), '/');
 				$sSaveFolder = $sSaveFolder ?: 'Attachments';
@@ -385,6 +385,35 @@ class NextcloudPlugin extends \RainLoop\Plugins\AbstractPlugin
 				->SetType(\RainLoop\Enumerations\PluginPropertyType::BOOL)
 				->SetDefaultValue(false)
 		);
+	}
+
+	private static function FilesStorage(): mixed/*\OC\Files\View | false*/
+	{
+		// \OC\Files\View::(is_file|fopen|is_dir|mkdir|file_put_contents|file_exists)(...)
+		$appId = 'files';
+		if (\method_exists('OC_App', 'getStorage')) {
+			return \OC_App::getStorage($appId);
+		}
+		// Nextcloud 35.0.3
+		if (\OCP\Server::get(\OCP\App\IAppManager::class)->isEnabledForUser($appId)) {
+			if (SnappyMailHelper::getUserSession()->isLoggedIn()) {
+				$view = new \OC\Files\View('/' . \OC_User::getUser());
+				if (!$view->file_exists($appId)) {
+					$view->mkdir($appId);
+				}
+				return new \OC\Files\View('/' . \OC_User::getUser() . '/' . $appId);
+			} else {
+				\OCP\Util::writeLog('core', 'Can\'t get app storage, app ' . $appId . ', user not logged in', \OCP\ILogger::ERROR);
+				return false;
+			}
+		} else {
+			\OCP\Util::writeLog('core', 'Can\'t get app storage, app ' . $appId . ' not enabled', \OCP\ILogger::ERROR);
+			return false;
+		}
+
+		// Nextcloud 32+ \OCP\Files\Folder
+		// nodeExists
+		// \OCP\Server::get(\OCP\Files\IRootFolder::class)->getUserFolder(SnappyMailHelper::getUID());
 	}
 
 	private static function SmartFileExists(string $sFilePath, $oFiles) : string
