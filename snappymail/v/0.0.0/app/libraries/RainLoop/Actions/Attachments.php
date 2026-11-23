@@ -68,7 +68,7 @@ trait Attachments
 					if (\class_exists('ZipArchive')) {
 						$oZip = new \ZipArchive();
 						$oZip->open($sZipFileName, \ZIPARCHIVE::CREATE | \ZIPARCHIVE::OVERWRITE);
-						$oZip->setArchiveComment('SnappyMail/'.APP_VERSION);
+						$oZip->setArchiveComment('SnappyMail');
 						foreach ($aData as $aItem) {
 							$sFileName = ($mUIDs ? "{$aItem['uid']}/" : ($sFolder ? "{$aItem['uid']}-" : '')) . $aItem['fileName'];
 							if (isset($aItem['data'])) {
@@ -88,22 +88,7 @@ trait Attachments
 						} else {
 							$bError = !$oZip->close();
 						}
-/*
-					} else {
-						@\unlink($sZipFileName);
-						$oZip = new \SnappyMail\Stream\ZIP($sZipFileName);
-//						$oZip->setArchiveComment('SnappyMail/'.APP_VERSION);
-						foreach ($aData as $aItem) {
-							if ($aItem['fileHash']) {
-								$sFullFileNameHash = $oFilesProvider->GetFileName($oAccount, $aItem['fileHash']);
-								if (!$oZip->addFile($sFullFileNameHash, $aItem['fileName'])) {
-									$bError = true;
-								}
-							}
-						}
-						$oZip->close();
-*/
-					} else {
+					} else if (\class_exists('PharData')) {
 						@\unlink($sZipFileName);
 						$oZip = new \PharData($sZipFileName . '.zip', 0, null, \Phar::ZIP);
 						$oZip->compressFiles(\Phar::GZ);
@@ -122,6 +107,22 @@ trait Attachments
 						$oZip->compressFiles(\Phar::GZ);
 						unset($oZip);
 						\rename($sZipFileName . '.zip', $sZipFileName);
+					} else {
+						$bError = true;
+/*
+						@\unlink($sZipFileName);
+						$oZip = new \SnappyMail\Stream\ZIP($sZipFileName);
+//						$oZip->setArchiveComment('SnappyMail');
+						foreach ($aData as $aItem) {
+							if ($aItem['fileHash']) {
+								$sFullFileNameHash = $oFilesProvider->GetFileName($oAccount, $aItem['fileHash']);
+								if (!$oZip->addFile($sFullFileNameHash, $aItem['fileName'])) {
+									$bError = true;
+								}
+							}
+						}
+						$oZip->close();
+*/
 					}
 
 					if (!$bError) {
