@@ -14,7 +14,7 @@ abstract class DNS
 	 * $selector = 'default'
 	 * Then a TXT lookup is done on 'default._bimi.bimigroup.org'
 	 */
-	public static function BIMI(string $domain, string $selector = 'default') : string
+	public static function BIMI(string $domain, string $selector = 'default'): string
 	{
 		$selector = \trim($selector) ?: 'default';
 		$oCache = \RainLoop\Api::Actions()->Cacher();
@@ -34,7 +34,7 @@ abstract class DNS
 			if ($values) {
 				foreach ($values as $value) {
 					if (\str_starts_with($value['txt'], 'v=BIMI1')) {
-						$BIMI = \preg_replace('/^.+l=([^;]+)(;.*)?$/D', '$1', $value['txt']);
+						$BIMI = \preg_replace('/^.+;\s*l=([^;]*)(;.*)?$/D', '$1', $value['txt']);
 						$oCache->Set($sCacheKey, \json_encode([
 							$BIMI,
 							\time() + $value['ttl']
@@ -54,7 +54,7 @@ abstract class DNS
 		return $BIMI;
 	}
 
-	public static function MX(string $domain) : array
+	public static function MX(string $domain): array
 	{
 		$mxhosts = array();
 		foreach (\dns_get_record($host, \DNS_MX) ?: array() as $record) {
@@ -67,7 +67,7 @@ abstract class DNS
 		return \array_values($mxhosts);
 	}
 
-	public static function SRV(string $domain) : array
+	public static function SRV(string $domain): array
 	{
 		$result = array();
 		foreach (\dns_get_record($domain, \DNS_SRV) ?: array() as $record) {
