@@ -429,6 +429,11 @@ trait UserAuth
 			catch (\Throwable $oException)
 			{
 				\SnappyMail\Log::warning(self::AUTH_SIGN_ME_TOKEN_KEY, $oException->getMessage());
+				if ($oException instanceof ClientException
+				 && \in_array($oException->getCode(), [Notifications::ConnectionError, Notifications::MailServerError], true)
+				) {
+					throw $oException;
+				}
 				$this->ClearSignMeData();
 			}
 		}
@@ -468,7 +473,11 @@ trait UserAuth
 			$oAccount->ImapConnectAndLogin($this->Plugins(), $oImapClient, $this->Config());
 		} catch (ClientException $oException) {
 			throw $oException;
-		} catch (\MailSo\Net\Exceptions\ConnectionException $oException) {
+		} catch (\MailSo\Net\Exceptions\ConnectionException
+			| \MailSo\Net\Exceptions\SocketReadException
+			| \MailSo\Net\Exceptions\SocketReadTimeoutException
+			| \MailSo\Net\Exceptions\SocketWriteException $oException
+		) {
 			throw new ClientException(Notifications::ConnectionError, $oException);
 		} catch (\MailSo\Imap\Exceptions\LoginBadCredentialsException $oException) {
 			if ($bAuthLog) {
