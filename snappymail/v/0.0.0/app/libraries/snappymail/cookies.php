@@ -34,7 +34,8 @@ class Cookies
 					$aParts[$sCookieName] = $_COOKIE[$sCookieName];
 				}
 			}
-			\ksort($aParts);
+			// Else "{$sName}~10" comes before "{$sName}~2"
+			\ksort($aParts, \SORT_NATURAL);
 			return \implode('', $aParts);
 		}
 		return null;
@@ -120,7 +121,8 @@ class Cookies
 		$sPath = $sPath && \strlen($sPath) ? $sPath : '/';
 		// https://github.com/the-djmaze/snappymail/issues/451
 		// The 4K browser limit is for the entire cookie, including name, value, expiry date etc.
-		$iMaxSize = 4000 - \strlen($sPath . $sName);
+		// Like: {$sName}={$sValue}; expires=Wed, 23 Dec 2026 00:00:00 GMT; Max-Age=2592000; path=/; secure; HttpOnly; SameSite=Strict
+		$iMaxSize = 4000 - \strlen($sPath . $sName) - 128;
 /*
 		if ($iMaxSize < \strlen($sValue)) {
 			throw new \Exception("Cookie '{$sName}' value too long");
