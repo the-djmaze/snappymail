@@ -81,6 +81,8 @@ export class MailBoxUserScreen extends AbstractScreen {
 				|| MessagelistUserStore.page() !== page
 				|| MessagelistUserStore.listSearch() !== search
 				|| MessagelistUserStore.threadUid() !== mailRoute.threadUid()
+				// Settings → General empties the list when threads are turned on/off: load it again
+				|| (!MessagelistUserStore().length && !MessagelistUserStore.isLoading())
 			) {
 				// A mailbox is selected, load everything
 				FolderUserStore.currentFolder(folder);
