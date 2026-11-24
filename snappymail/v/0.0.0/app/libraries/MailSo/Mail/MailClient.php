@@ -1052,9 +1052,4 @@ class MailClient
 		$this->oLogger = $oLogger;
 		$this->oImapClient->SetLogger($oLogger);
 	}
-
-	public function __call(string $name, array $arguments) /*: mixed*/
-	{
-		return $this->oImapClient->{$name}(...$arguments);
-	}
 }
