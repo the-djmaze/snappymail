@@ -48,6 +48,6 @@
 }
 
 .thm-message-list-top-toolbar, .thm-message-list-bottom-toolbar {
-    background-image: linear-gradient(to bottom, #f4f4f4, #dfdfdf) !important;
-    background-repeat: repeat-x !important;
+	background-image: linear-gradient(to bottom, #f4f4f4, #dfdfdf) !important;
+	background-repeat: repeat-x !important;
 }

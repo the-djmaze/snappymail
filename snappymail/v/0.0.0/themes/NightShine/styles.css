@@ -69,6 +69,93 @@
 	--input-border-clr: #aaa;
 }
 
+:root {
+	color-scheme: light dark;
+
+	/* MAIN */
+	--main-color: light-dark(#333,  #fff);
+	--main-bg-color: light-dark(#e3e3e3,  #48525C);
+	--main-bg-image: light-dark(none,  url("images/background.jpg"));
+	--main-bg-size: light-dark(auto,  cover);
+	--link-color: light-dark(#369,  #6AE);
+	--border-color: light-dark(#ddd,  #555);
+	--hr-color: light-dark(#eee,  #666);
+
+	--panel-bg-clr: light-dark(#fff,  #333);
+
+	/* LOADING */
+	--loading-color: light-dark(#000,  #ddd);
+	--loading-text-shadow: light-dark(none,  0px 1px 0px rgba(0, 0, 0, 0.5));
+
+	/* LOGIN */
+	--login-color: light-dark(#555,  #eee);
+	--login-bg-color: light-dark(#eee,  rgba(0,0,0,0.5));
+	--login-box-shadow: light-dark(none,  0px 2px 10px rgba(0,0,0,0.5));
+	--login-border: light-dark(1px solid #ccc,  none);
+	--login-border-radius: light-dark(7px,  7px);
+
+	/* MENU */
+	--dropdown-menu-color: light-dark(#333,  #999);
+	--dropdown-menu-bg-color: light-dark(#fff,  #333);
+	--dropdown-menu-hover-bg-color: light-dark(#444,  #48525C);
+	--dropdown-menu-hover-color: light-dark(#eee,  #eee);
+	--dropdown-menu-disable-color: light-dark(,  #999);
+
+	/* FOLDERS */
+	--folders-color: light-dark(#333,  #fff);
+	--folders-disabled-color: light-dark(#666,  #aaa);
+	--folders-selected-color: light-dark(#eee,  #fff);
+	--folders-selected-bg-color: light-dark(#333,  #444);
+	--folders-focused-color: light-dark(#eee,  #fff);
+	--folders-focused-bg-color: light-dark(#333,  rgba(0,0,0,0.7));
+	--folders-hover-color: light-dark(#eee,  #fff);
+	--folders-hover-bg-color: light-dark(#333,  rgba(0,0,0,0.5));
+	--folders-drop-color: light-dark(#eee,  #fff);
+	--folders-drop-bg-color: light-dark(#333,  rgba(0,0,0,0.5));
+
+	/* SETTINGS */
+	--settings-menu-color: light-dark(#333,  #fff);
+	--settings-menu-selected-color: light-dark(#eee,  #fff);
+	--settings-menu-selected-bg-color: light-dark(#333,  #444);
+	--settings-menu-hover-color: light-dark(#eee,  #fff);
+	--settings-menu-hover-bg-color: light-dark(#333,  rgba(0,0,0,0.5));
+
+	/* MESSAGES */
+	--message-list-toolbar-bg-color: light-dark(#eee,  #111);
+	--message-header-bg-clr: light-dark(#f8f8f8,  #222);
+
+	/* DIALOGS */
+	--dialog-clr: light-dark(#333,  #fff);
+	--dialog-bg-clr: light-dark(#fff,  #333);
+	--dialog-border-clr: light-dark(rgba(0,0,0,.3),  #555);
+
+
+	/* FORMS */
+	--btn-clr: light-dark(#333,  #fff);
+	--btn-bg-clr: light-dark(#fff,  #222);
+	--btn-border-clr: light-dark(#fff,  rgba(255,255,255,.20));
+
+	--input-clr: light-dark(#555,  #fff);
+	--input-bg-clr: light-dark(#fff,  #222);
+	--input-border-clr: light-dark(#ccc,  #aaa);
+}
+
+#rl-app[data-color-scheme="light"] {
+	color-scheme: light;
+}
+#rl-app[data-color-scheme="dark"] {
+	color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+	#rl-app:not([data-color-scheme="light"]) #V-Settings-About .rl-logo {
+		filter: invert(1);
+	}
+}
+#rl-app[data-color-scheme="dark"] #V-Settings-About .rl-logo {
+	filter: invert(1);
+}
+
 ::-webkit-scrollbar {
 	width: 0.8em;
 }
@@ -103,8 +190,8 @@
 	box-shadow: inset 0 2px 4px rgba(255,255,255,.5), 0 1px 2px rgba(255,255,255,.25);
 }
 .btn .icon-spinner {
-    border-color: #333;
-    border-top-color: #ccc;
+	border-color: #333;
+	border-top-color: #ccc;
 }
 
 .messageListItem {
@@ -121,19 +208,15 @@
 	background-color: #111;
 }
 
-#V-Settings-About .rl-logo {
-	filter: invert(1);
-}
-
 .tabs [id^="tab"]:checked + label {
 	background: linear-gradient(#555 0%, #000 100%);
 }
 
 .select, select {
-    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIGhlaWdodD0nMTBweCcgd2lkdGg9JzE1cHgnPjx0ZXh0IHg9JzAnIHk9JzEwJyBmaWxsPSdyZ2IoMjU1LDI1NSwyNTUpJz7ilr48L3RleHQ+PC9zdmc+);
+	background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIGhlaWdodD0nMTBweCcgd2lkdGg9JzE1cHgnPjx0ZXh0IHg9JzAnIHk9JzEwJyBmaWxsPSdyZ2IoMjU1LDI1NSwyNTUpJz7ilr48L3RleHQ+PC9zdmc+);
 }
 
 #messageItem .b-text-part blockquote,
 .b-settings-general .editMainIdentity {
-    border-color: #999;
+	border-color: #999;
 }

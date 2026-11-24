@@ -159,8 +159,8 @@
 }
 
 .thm-message-list-top-toolbar, .thm-message-list-bottom-toolbar {
-    background-image: var(--thm-toolbar-bg-image) !important;
-    background-repeat: repeat-x !important;
+	background-image: var(--thm-toolbar-bg-image) !important;
+	background-repeat: repeat-x !important;
 }
 
 @media (prefers-color-scheme: dark) {

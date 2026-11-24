@@ -120,11 +120,6 @@
 	color-scheme: dark;
 }
 
-.thm-message-list-top-toolbar, .thm-message-list-bottom-toolbar {
-	background-image: var(--thm-toolbar-bg-image) !important;
-	background-repeat: repeat-x !important;
-}
-
 @media (prefers-color-scheme: dark) {
 	#rl-app:not([data-color-scheme="light"]) #V-Settings-About .rl-logo {
 		filter: invert(1);
@@ -132,4 +127,9 @@
 }
 #rl-app[data-color-scheme="dark"] #V-Settings-About .rl-logo {
 	filter: invert(1);
+}
+
+.thm-message-list-top-toolbar, .thm-message-list-bottom-toolbar {
+	background-image: var(--thm-toolbar-bg-image) !important;
+	background-repeat: repeat-x !important;
 }
