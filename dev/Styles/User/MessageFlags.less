@@ -1,12 +1,12 @@
 /* RFC8457 */
 .msgflag-\$important .checkboxMessage { background-color: var(--msgflag-important-bgcolor); color: var(--main-color, #333); }
 .messageAssignedTags .msgflag-\$important { background-color: var(--msgflag-important-bgcolor); }
-menu .msgflag-\$important { color: var(--msgflag-important-color); }
+menu .msgflag-\$important, .messageListPlace .msgflag-\$important { color: var(--msgflag-important-color); }
 
 /* KMail tags */
 .msgflag-\$todo .checkboxMessage { background-color: var(--msgflag-todo-bgcolor); color: var(--main-color, #333); }
 .messageAssignedTags .msgflag-\$todo { background-color: var(--msgflag-todo-bgcolor); }
-menu .msgflag-\$todo { color: var(--msgflag-todo-color); }
+menu .msgflag-\$todo, .messageListPlace .msgflag-\$todo { color: var(--msgflag-todo-color); }
 
 /* Thunderbird labels */
 .msgflag-\$label5 .checkboxMessage { background-color: var(--msgflag-later-bgcolor); color: var(--main-color, #333); }
@@ -21,7 +21,7 @@ menu .msgflag-\$todo { color: var(--msgflag-todo-color); }
 	.msgflag-\$label2 { background-color: var(--msgflag-work-bgcolor); border-color: var(--msgflag-work-border-color) !important; }
 	.msgflag-\$label1 { background-color: var(--msgflag-important-bgcolor); border-color: var(--msgflag-important-border-color) !important; }
 }
-menu {
+menu, .messageListPlace {
 	.msgflag-\$label5 { color: var(--msgflag-later-color); }
 	.msgflag-\$label4 { color: var(--msgflag-todo-color); }
 	.msgflag-\$label3 { color: var(--msgflag-personal-color); }
