@@ -1,12 +1,12 @@
 /* RFC8457 */
 .msgflag-\$important .checkboxMessage { background-color: var(--msgflag-important-bgcolor); color: var(--main-color, #333); }
-.msgflag-\$important.focused { background-color: var(--msgflag-important-bgcolor); }
-.msgflag-\$important:not(.focused) { color: var(--msgflag-important-color); }
+.messageAssignedTags .msgflag-\$important { background-color: var(--msgflag-important-bgcolor); }
+menu .msgflag-\$important { color: var(--msgflag-important-color); }
 
 /* KMail tags */
 .msgflag-\$todo .checkboxMessage { background-color: var(--msgflag-todo-bgcolor); color: var(--main-color, #333); }
-.msgflag-\$todo.focused { background-color: var(--msgflag-todo-bgcolor); }
-.msgflag-\$todo:not(.focused) { color: var(--msgflag-todo-color); }
+.messageAssignedTags .msgflag-\$todo { background-color: var(--msgflag-todo-bgcolor); }
+menu .msgflag-\$todo { color: var(--msgflag-todo-color); }
 
 /* Thunderbird labels */
 .msgflag-\$label5 .checkboxMessage { background-color: var(--msgflag-later-bgcolor); color: var(--main-color, #333); }
@@ -14,13 +14,17 @@
 .msgflag-\$label3 .checkboxMessage { background-color: var(--msgflag-personal-bgcolor); color: var(--main-color, #333); }
 .msgflag-\$label2 .checkboxMessage { background-color: var(--msgflag-work-bgcolor); color: var(--main-color, #333); }
 .msgflag-\$label1 .checkboxMessage { background-color: var(--msgflag-important-bgcolor); color: var(--main-color, #333); }
-.msgflag-\$label5.focused { background-color: var(--msgflag-later-bgcolor); }
-.msgflag-\$label4.focused { background-color: var(--msgflag-todo-bgcolor); }
-.msgflag-\$label3.focused { background-color: var(--msgflag-personal-bgcolor); }
-.msgflag-\$label2.focused { background-color: var(--msgflag-work-bgcolor); }
-.msgflag-\$label1.focused { background-color: var(--msgflag-important-bgcolor); }
-.msgflag-\$label5:not(.focused) { color: var(--msgflag-later-color); }
-.msgflag-\$label4:not(.focused) { color: var(--msgflag-todo-color); }
-.msgflag-\$label3:not(.focused) { color: var(--msgflag-personal-color); }
-.msgflag-\$label2:not(.focused) { color: var(--msgflag-work-color); }
-.msgflag-\$label1:not(.focused) { color: var(--msgflag-important-color); }
+.messageAssignedTags {
+	.msgflag-\$label5 { background-color: var(--msgflag-later-bgcolor); border-color: var(--msgflag-later-border-color) !important; }
+	.msgflag-\$label4 { background-color: var(--msgflag-todo-bgcolor); border-color: var(--msgflag-todo-border-color) !important; }
+	.msgflag-\$label3 { background-color: var(--msgflag-personal-bgcolor); border-color: var(--msgflag-personal-border-color) !important; }
+	.msgflag-\$label2 { background-color: var(--msgflag-work-bgcolor); border-color: var(--msgflag-work-border-color) !important; }
+	.msgflag-\$label1 { background-color: var(--msgflag-important-bgcolor); border-color: var(--msgflag-important-border-color) !important; }
+}
+menu {
+	.msgflag-\$label5 { color: var(--msgflag-later-color); }
+	.msgflag-\$label4 { color: var(--msgflag-todo-color); }
+	.msgflag-\$label3 { color: var(--msgflag-personal-color); }
+	.msgflag-\$label2 { color: var(--msgflag-work-color); }
+	.msgflag-\$label1 { color: var(--msgflag-important-color); }
+}
