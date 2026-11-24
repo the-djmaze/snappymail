@@ -55,9 +55,9 @@ import { FolderSystemPopupView } from 'View/Popup/FolderSystem';
 import { AskPopupView } from 'View/Popup/Ask';
 import { ContactsPopupView } from 'View/Popup/Contacts';
 
-/*
 import { ThemeStore } from 'Stores/Theme';
 
+/*
 let alreadyFullscreen;
 */
 let oLastMessage;
@@ -229,6 +229,11 @@ export class ComposePopupView extends AbstractViewPopup {
 
 			subject: '',
 
+			// Small non-modal window at the bottom right
+			floating: false,
+			// Floating window reduced to its title bar
+			collapsed: false,
+
 			isHtml: false,
 
 			requestDsn: false,
@@ -304,6 +309,10 @@ export class ComposePopupView extends AbstractViewPopup {
 		this.iTimer = 0;
 
 		addComputablesTo(this, {
+			// Small screens and browsers without <dialog> keep the modal window
+			canFloat: () => SettingsUserStore.composeFloating() && !ThemeStore.isMobile()
+				&& !!window.HTMLDialogElement?.prototype.show,
+
 			sendButtonSuccess: () => !this.sendError() && !this.sendSuccessButSaveError(),
 
 			savedTimeText: () =>
@@ -722,6 +731,32 @@ export class ComposePopupView extends AbstractViewPopup {
 		}
 	}
 
+	beforeShow() {
+		// With the floating composer the mailbox stays usable, so a new
+		// message, reply or forward can be requested while it is open.
+		this.wasVisible = this.modalVisible();
+		if (!this.wasVisible) {
+			this.collapsed(false);
+			this.floating(this.canFloat());
+		}
+	}
+
+	/**
+	 * Switch between the floating and the modal window
+	 */
+	toggleFloating() {
+		const dom = this.viewModelDom,
+			floating = !this.floating();
+		dom.close();
+		this.collapsed(false);
+		this.floating(floating);
+		floating ? dom.show() : dom.showModal();
+	}
+
+	toggleCollapsed() {
+		this.floating() && this.collapsed(!this.collapsed());
+	}
+
 	onHide() {
 		// Stop autosave
 		clearTimeout(this.iTimer);
@@ -791,6 +826,13 @@ export class ComposePopupView extends AbstractViewPopup {
 	 * @param {string=} sCustomPlainText = null
 	 */
 	onShow(type, oMessageOrArray, aToEmails, aCcEmails, aBccEmails, sCustomSubject, sCustomPlainText) {
+		if (this.wasVisible) {
+			// Requested while the floating composer is open: keep what is being
+			// written, the code below then adds the recipients or asks to discard.
+			this.collapsed(false);
+			this.isEmptyForm() || ComposePopupView.inEdit(true);
+		}
+
 		this.autosaveStart();
 
 		this.viewModelDom.dataset.wysiwyg = SettingsUserStore.editorDefaultType();
@@ -1104,6 +1146,9 @@ export class ComposePopupView extends AbstractViewPopup {
 	}
 
 	onBuild(dom) {
+		this.floating.subscribe(value => dom.classList.toggle('floating', value));
+		this.collapsed.subscribe(value => dom.classList.toggle('collapsed', value));
+
 		// initUploader
 		const oJua = new Jua({
 				action: serverRequest('Upload'),

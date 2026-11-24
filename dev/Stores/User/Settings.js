@@ -49,6 +49,7 @@ export const SettingsUserStore = new class {
 			pgpSign: 0,
 			pgpEncrypt: 0,
 			allowSpellcheck: 0,
+			composeFloating: 0,
 
 			layout: 1,
 			editorDefaultType: 'Html',
@@ -120,6 +121,7 @@ export const SettingsUserStore = new class {
 			'pgpSign',
 			'pgpEncrypt',
 			'allowSpellcheck',
+			'composeFloating',
 			'markdown'
 /*
 			'MessagesPerPage',

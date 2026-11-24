@@ -105,7 +105,7 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 		 'requestReadReceipt', 'requestDsn', 'requireTLS', 'pgpSign', 'pgpEncrypt',
 		 'viewHTML', 'viewImages', 'viewImagesWhitelist', 'removeColors', 'allowStyles', 'allowDraftAutosave',
 		 'hideDeleted', 'listInlineAttachments', 'simpleAttachmentsList', 'collapseBlockquotes',
-		 'useCheckboxesInList', 'listGrouped', 'replySameFolder', 'allowSpellcheck',
+		 'useCheckboxesInList', 'listGrouped', 'replySameFolder', 'allowSpellcheck', 'composeFloating',
 		 'messageReadAuto', 'showNextMessage', 'messageNewWindow', 'markdown'
 		].forEach(name => this[name] = SettingsUserStore[name]);
 
@@ -168,7 +168,7 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 			'requestReadReceipt', 'requestDsn', 'requireTLS', 'pgpSign', 'pgpEncrypt',
 			'ViewHTML', 'ViewImages', 'ViewImagesWhitelist', 'RemoveColors', 'AllowStyles', 'AllowDraftAutosave',
 			'HideDeleted', 'ListInlineAttachments', 'simpleAttachmentsList', 'CollapseBlockquotes',
-			'UseCheckboxesInList', 'listGrouped', 'ReplySameFolder', 'allowSpellcheck',
+			'UseCheckboxesInList', 'listGrouped', 'ReplySameFolder', 'allowSpellcheck', 'composeFloating',
 			'messageReadAuto', 'showNextMessage', 'messageNewWindow', 'markdown',
 			'DesktopNotifications', 'SoundNotification']);
 
