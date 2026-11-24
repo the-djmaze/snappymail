@@ -24,7 +24,7 @@ enum ConnectionSecurityType: int
 	case STARTTLS = 2;
 	case AUTO_DETECT = 9;
 
-	public static function getFrom(ConnectionSecurityType|string|int $mType): ?ConnectionSecurityType
+	public static function getFrom(ConnectionSecurityType|string|int $mType): ConnectionSecurityType
 	{
 		if (\is_int($mType)) {
 			return static::tryFrom($mType) ?: static::AUTO_DETECT;
