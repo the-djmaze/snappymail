@@ -2,18 +2,17 @@
 
 namespace RainLoop\Enumerations;
 
-//enum Capa: string
-abstract class Capa
+enum Capa: string
 {
-	const ADDITIONAL_ACCOUNTS = 'AdditionalAccounts';
-	const ATTACHMENTS_ACTIONS = 'AttachmentsActions';
-	const ATTACHMENT_THUMBNAILS = 'AttachmentThumbnails';
-	const CONTACTS = 'Contacts';
-	const DANGEROUS_ACTIONS = 'DangerousActions';
-	const GNUPG = 'GnuPG';
-	const IDENTITIES = 'Identities';
-	const OPENPGP = 'OpenPGP';
-	const SIEVE = 'Sieve';
-	const THEMES = 'Themes';
-	const USER_BACKGROUND = 'UserBackground';
+	case ADDITIONAL_ACCOUNTS = 'AdditionalAccounts';
+	case ATTACHMENTS_ACTIONS = 'AttachmentsActions';
+	case ATTACHMENT_THUMBNAILS = 'AttachmentThumbnails';
+	case CONTACTS = 'Contacts';
+	case DANGEROUS_ACTIONS = 'DangerousActions';
+	case GNUPG = 'GnuPG';
+	case IDENTITIES = 'Identities';
+	case OPENPGP = 'OpenPGP';
+	case SIEVE = 'Sieve';
+	case THEMES = 'Themes';
+	case USER_BACKGROUND = 'UserBackground';
 }

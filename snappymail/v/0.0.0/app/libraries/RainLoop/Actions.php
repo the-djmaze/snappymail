@@ -855,32 +855,32 @@ class Actions
 		if (!$aResult) {
 			$oConfig = $this->oConfig;
 			$aResult = array(
-				Capa::ADDITIONAL_ACCOUNTS   => (bool) $oConfig->Get('webmail', 'allow_additional_accounts', false),
-				Capa::ATTACHMENT_THUMBNAILS => (bool) $oConfig->Get('interface', 'show_attachment_thumbnail', true)
+				Capa::ADDITIONAL_ACCOUNTS->value   => (bool) $oConfig->Get('webmail', 'allow_additional_accounts', false),
+				Capa::ATTACHMENT_THUMBNAILS->value => (bool) $oConfig->Get('interface', 'show_attachment_thumbnail', true)
 					&& ($bAdmin
 						|| \extension_loaded('gd')
 						|| \extension_loaded('gmagick')
 						|| \extension_loaded('imagick')
 					),
-				Capa::ATTACHMENTS_ACTIONS => (bool) $oConfig->Get('capa', 'attachments_actions', false),
-				Capa::CONTACTS            => (bool) $oConfig->Get('contacts', 'enable', false),
-				Capa::DANGEROUS_ACTIONS   => (bool) $oConfig->Get('capa', 'dangerous_actions', true),
-				Capa::GNUPG               => (bool) $oConfig->Get('security', 'gnupg', true) && \SnappyMail\PGP\GnuPG::isSupported(),
-				Capa::IDENTITIES          => (bool) $oConfig->Get('webmail', 'allow_additional_identities', false),
-				Capa::OPENPGP             => (bool) $oConfig->Get('security', 'openpgp', true),
-				Capa::SIEVE               => false,
-				Capa::THEMES              => (bool) $oConfig->Get('webmail', 'allow_themes', false),
-				Capa::USER_BACKGROUND     => (bool) $oConfig->Get('webmail', 'allow_user_background', false),
-				'Kolab'                   => false, // See Kolab plugin
+				Capa::ATTACHMENTS_ACTIONS->value => (bool) $oConfig->Get('capa', 'attachments_actions', false),
+				Capa::CONTACTS->value            => (bool) $oConfig->Get('contacts', 'enable', false),
+				Capa::DANGEROUS_ACTIONS->value   => (bool) $oConfig->Get('capa', 'dangerous_actions', true),
+				Capa::GNUPG->value               => (bool) $oConfig->Get('security', 'gnupg', true) && \SnappyMail\PGP\GnuPG::isSupported(),
+				Capa::IDENTITIES->value          => (bool) $oConfig->Get('webmail', 'allow_additional_identities', false),
+				Capa::OPENPGP->value             => (bool) $oConfig->Get('security', 'openpgp', true),
+				Capa::SIEVE->value               => false,
+				Capa::THEMES->value              => (bool) $oConfig->Get('webmail', 'allow_themes', false),
+				Capa::USER_BACKGROUND->value     => (bool) $oConfig->Get('webmail', 'allow_user_background', false),
+				'Kolab'                          => false, // See Kolab plugin
 			);
 		}
-		$aResult[Capa::SIEVE] = $bAdmin || ($oAccount && $oAccount->Domain()->SieveSettings()->enabled);
+		$aResult[Capa::SIEVE->value] = $bAdmin || ($oAccount && $oAccount->Domain()->SieveSettings()->enabled);
 		return $aResult;
 	}
 
-	public function GetCapa(string $sName, ?Model\Account $oAccount = null): bool
+	public function GetCapa(Capa $eName, ?Model\Account $oAccount = null): bool
 	{
-		return !empty($this->Capa(false, $oAccount)[$sName]);
+		return !empty($this->Capa(false, $oAccount)[$eName->value]);
 	}
 
 	public function etag(string $sKey): string
