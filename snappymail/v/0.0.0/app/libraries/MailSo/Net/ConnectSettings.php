@@ -110,8 +110,7 @@ class ConnectSettings implements \JsonSerializable
 		$object = new static;
 		$object->host = $aSettings['host'];
 		$object->port = $aSettings['port'];
-		$object->type = ConnectionSecurityType::tryFrom(isset($aSettings['type']) ? $aSettings['type'] : $aSettings['secure'])
-			?: ConnectionSecurityType::AUTO_DETECT;
+		$object->type = ConnectionSecurityType::getFrom(isset($aSettings['type']) ? $aSettings['type'] : $aSettings['secure']);
 		if (isset($aSettings['timeout'])) {
 			$object->timeout = $aSettings['timeout'];
 		}

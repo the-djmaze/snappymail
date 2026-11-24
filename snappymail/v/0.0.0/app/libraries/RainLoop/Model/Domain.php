@@ -140,17 +140,17 @@ class Domain implements \JsonSerializable
 		if (!\strlen($sName) || empty($aDomain['imap_host'])) {
 			return null;
 		}
-		return static::fromArray([
+		return static::fromArray($sName, [
 			'IMAP' => [
 				'host' => $aDomain['imap_host'],
 				'port' => (int) $aDomain['imap_port'],
-				'type' => self::StrToConnectionSecurityType($aDomain['imap_secure'] ?? ''),
+				'type' => $aDomain['imap_secure'] ?? '',
 				'shortLogin' => !empty($aDomain['imap_short_login'])
 			],
 			'SMTP' => [
 				'host' => $aDomain['smtp_host'],
 				'port' => (int) ($aDomain['smtp_port'] ?? 25),
-				'type' => self::StrToConnectionSecurityType($aDomain['smtp_secure'] ?? ''),
+				'type' => $aDomain['smtp_secure'] ?? '',
 				'shortLogin' => !empty($aDomain['smtp_short_login']),
 				'useAuth' => !empty($aDomain['smtp_auth']),
 				'setSender' => !empty($aDomain['smtp_set_sender']),
@@ -160,25 +160,10 @@ class Domain implements \JsonSerializable
 				'enabled' => !empty($aDomain['sieve_use']),
 				'host' => $aDomain['sieve_host'] ?: '',
 				'port' => (int) ($aDomain['sieve_port'] ?? 4190),
-				'type' => self::StrToConnectionSecurityType($aDomain['sieve_secure'] ?? '')
+				'type' => $aDomain['sieve_secure'] ?? ''
 			],
 			'whiteList' => $aDomain['white_list'] ?? '',
 		]);
-	}
-
-	/**
-	 * Use by old RainLoop fromIniArray()
-	 */
-	private static function StrToConnectionSecurityType(string $sType): ConnectionSecurityType
-	{
-		switch (\strtoupper($sType))
-		{
-			case 'SSL':
-				return ConnectionSecurityType::SSL;
-			case 'TLS':
-				return ConnectionSecurityType::STARTTLS;
-		}
-		return ConnectionSecurityType::NONE;
 	}
 
 //	public function jsonSerialize(): array
