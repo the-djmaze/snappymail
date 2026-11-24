@@ -16,6 +16,7 @@ namespace MailSo\Imap\Enumerations;
  * @package Imap
  * @subpackage Enumerations
  */
+//enum MetadataKeys: string
 abstract class MetadataKeys
 {
 	const

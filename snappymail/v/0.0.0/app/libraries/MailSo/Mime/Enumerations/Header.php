@@ -16,6 +16,7 @@ namespace MailSo\Mime\Enumerations;
  * @package Mime
  * @subpackage Enumerations
  */
+//enum Header: string
 abstract class Header
 {
 	const

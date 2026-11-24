@@ -2,6 +2,7 @@
 
 namespace RainLoop\Enumerations;
 
+//enum Capa: string
 abstract class Capa
 {
 	const ADDITIONAL_ACCOUNTS = 'AdditionalAccounts';

@@ -16,6 +16,7 @@ namespace MailSo\Imap\Enumerations;
  * @package Imap
  * @subpackage Enumerations
  */
+//enum FolderStatus: string
 abstract class FolderStatus
 {
 	// RFC 3501

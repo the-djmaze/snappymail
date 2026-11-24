@@ -16,6 +16,7 @@ namespace MailSo\Net\Enumerations;
  * @package Net
  * @subpackage Enumerations
  */
+//enum ConnectionSecurityType: int
 abstract class ConnectionSecurityType
 {
 	const NONE = 0;

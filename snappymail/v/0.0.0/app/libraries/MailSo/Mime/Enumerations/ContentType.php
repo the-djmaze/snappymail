@@ -16,6 +16,7 @@ namespace MailSo\Mime\Enumerations;
  * @package Mime
  * @subpackage Enumerations
  */
+//enum ContentType: string
 abstract class ContentType
 {
 	const SIGNED = 'multipart/signed';

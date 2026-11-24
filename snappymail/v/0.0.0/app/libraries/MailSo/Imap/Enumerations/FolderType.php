@@ -16,6 +16,7 @@ namespace MailSo\Imap\Enumerations;
  * @package Imap
  * @subpackage Enumerations
  */
+//enum FolderType: int
 abstract class FolderType
 {
 	const USER = 0;

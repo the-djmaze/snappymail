@@ -18,6 +18,7 @@ namespace MailSo\Imap\Enumerations;
  * @package Imap
  * @subpackage Enumerations
  */
+//enum MessageFlag: string
 abstract class MessageFlag
 {
 	const

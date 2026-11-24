@@ -18,6 +18,7 @@ namespace MailSo\Imap\Enumerations;
  *
  * https://datatracker.ietf.org/doc/html/rfc3501#section-6.4.5
  */
+//enum FetchType: string
 abstract class FetchType
 {
 	// Macro equivalent to: (FLAGS INTERNALDATE RFC822.SIZE)

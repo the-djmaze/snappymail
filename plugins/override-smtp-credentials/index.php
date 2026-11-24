@@ -1,5 +1,7 @@
 <?php
 
+use MailSo\Net\Enumerations\ConnectionSecurityType;
+
 class OverrideSmtpCredentialsPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
@@ -37,17 +39,17 @@ class OverrideSmtpCredentialsPlugin extends \RainLoop\Plugins\AbstractPlugin
 				switch ($sSecure)
 				{
 					case 'SSL':
-						$oSettings->type = MailSo\Net\Enumerations\ConnectionSecurityType::SSL;
+						$oSettings->type = ConnectionSecurityType::SSL;
 						break;
 					case 'TLS':
 					case 'STARTTLS':
-						$oSettings->type = MailSo\Net\Enumerations\ConnectionSecurityType::STARTTLS;
+						$oSettings->type = ConnectionSecurityType::STARTTLS;
 						break;
 					case 'Detect':
-						$oSettings->type = MailSo\Net\Enumerations\ConnectionSecurityType::AUTO_DETECT;
+						$oSettings->type = ConnectionSecurityType::AUTO_DETECT;
 						break;
 					default:
-						$oSettings->type = MailSo\Net\Enumerations\ConnectionSecurityType::NONE;
+						$oSettings->type = ConnectionSecurityType::NONE;
 						break;
 				}
 			}

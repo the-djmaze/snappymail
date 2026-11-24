@@ -2,6 +2,7 @@
 
 namespace RainLoop\Enumerations;
 
+//enum UploadError: int
 abstract class UploadError
 {
 	const FILE_TYPE = 98;

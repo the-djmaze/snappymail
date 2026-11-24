@@ -16,6 +16,7 @@ namespace MailSo\Mime\Enumerations;
  * @package Mime
  * @subpackage Enumerations
  */
+//enum Parameter: string
 abstract class Parameter
 {
 	const CHARSET = 'charset';
