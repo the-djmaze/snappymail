@@ -172,7 +172,7 @@ class BodyStructure implements \JsonSerializable
 		);
 	}
 
-	protected function IsAttachment(/*BodyStructure*/ $oParent): bool
+	protected function IsAttachment(?BodyStructure $oParent): bool
 	{
 //		return 'application/pgp-encrypted' !== $this->sContentType
 		return (!$oParent || !$oParent->isPgpEncrypted())
@@ -246,7 +246,7 @@ class BodyStructure implements \JsonSerializable
 		return $gParts->valid() ? $gParts->current()->Charset() : '';
 	}
 
-	public function SearchByCallback(callable $fCallback, /*?BodyStructure*/ $parent = null): iterable
+	public function SearchByCallback(callable $fCallback, ?BodyStructure $parent = null): iterable
 	{
 		if ($fCallback($this, $parent)) {
 			yield $this;
