@@ -1,26 +1,26 @@
 /* RFC8457 */
-.msgflag-\$important .checkboxMessage { background-color: #F00; color: #fff; }
-.msgflag-\$important.focused { background-color: rgba(255,   0,   0, 0.30); }
-.msgflag-\$important:not(.focused) { color: #F00; }
+.msgflag-\$important .checkboxMessage { background-color: var(--msgflag-important-bgcolor); color: var(--main-color, #333); }
+.msgflag-\$important.focused { background-color: var(--msgflag-important-bgcolor); }
+.msgflag-\$important:not(.focused) { color: var(--msgflag-important-color); }
 
 /* KMail tags */
-.msgflag-\$todo .checkboxMessage { background-color: #00F; color: #fff; }
-.msgflag-\$todo.focused { background-color: rgba( 64,  64, 255, 0.30); }
-.msgflag-\$todo:not(.focused) { color: #33F; }
+.msgflag-\$todo .checkboxMessage { background-color: var(--msgflag-todo-bgcolor); color: var(--main-color, #333); }
+.msgflag-\$todo.focused { background-color: var(--msgflag-todo-bgcolor); }
+.msgflag-\$todo:not(.focused) { color: var(--msgflag-todo-color); }
 
 /* Thunderbird labels */
-.msgflag-\$label5 .checkboxMessage { background-color: #808; color: #fff; }
-.msgflag-\$label4 .checkboxMessage { background-color: #00F; color: #fff; }
-.msgflag-\$label3 .checkboxMessage { background-color: #080; color: #fff; }
-.msgflag-\$label2 .checkboxMessage { background-color: #FA0; color: #fff; }
-.msgflag-\$label1 .checkboxMessage { background-color: #F00; color: #fff; }
-.msgflag-\$label5.focused { background-color: rgba(255,   0, 255, 0.30); }
-.msgflag-\$label4.focused { background-color: rgba( 64,  64, 255, 0.30); }
-.msgflag-\$label3.focused { background-color: rgba(  0, 255,   0, 0.30); }
-.msgflag-\$label2.focused { background-color: rgba(255, 170,   0, 0.30); }
-.msgflag-\$label1.focused { background-color: rgba(255,   0,   0, 0.30); }
-.msgflag-\$label5:not(.focused) { color: #939; }
-.msgflag-\$label4:not(.focused) { color: #33F; }
-.msgflag-\$label3:not(.focused) { color: #090; }
-.msgflag-\$label2:not(.focused) { color: #F90; }
-.msgflag-\$label1:not(.focused) { color: #F00; }
+.msgflag-\$label5 .checkboxMessage { background-color: var(--msgflag-later-bgcolor); color: var(--main-color, #333); }
+.msgflag-\$label4 .checkboxMessage { background-color: var(--msgflag-todo-bgcolor); color: var(--main-color, #333); }
+.msgflag-\$label3 .checkboxMessage { background-color: var(--msgflag-personal-bgcolor); color: var(--main-color, #333); }
+.msgflag-\$label2 .checkboxMessage { background-color: var(--msgflag-work-bgcolor); color: var(--main-color, #333); }
+.msgflag-\$label1 .checkboxMessage { background-color: var(--msgflag-important-bgcolor); color: var(--main-color, #333); }
+.msgflag-\$label5.focused { background-color: var(--msgflag-later-bgcolor); }
+.msgflag-\$label4.focused { background-color: var(--msgflag-todo-bgcolor); }
+.msgflag-\$label3.focused { background-color: var(--msgflag-personal-bgcolor); }
+.msgflag-\$label2.focused { background-color: var(--msgflag-work-bgcolor); }
+.msgflag-\$label1.focused { background-color: var(--msgflag-important-bgcolor); }
+.msgflag-\$label5:not(.focused) { color: var(--msgflag-later-color); }
+.msgflag-\$label4:not(.focused) { color: var(--msgflag-todo-color); }
+.msgflag-\$label3:not(.focused) { color: var(--msgflag-personal-color); }
+.msgflag-\$label2:not(.focused) { color: var(--msgflag-work-color); }
+.msgflag-\$label1:not(.focused) { color: var(--msgflag-important-color); }
