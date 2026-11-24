@@ -75,7 +75,6 @@ class SnappyMailHelper
 			$oProvider = \RainLoop\Api::Actions()->DomainProvider();
 			$oDomain = $oProvider->Load('owncloud');
 			if (!$oDomain) {
-//				$oDomain = \RainLoop\Model\Domain::fromIniArray('owncloud', []);
 				$oDomain = new \RainLoop\Model\Domain('owncloud');
 				$iSecurityType = \MailSo\Net\Enumerations\ConnectionSecurityType::NONE;
 				$oDomain->ImapSettings()->host = 'localhost';

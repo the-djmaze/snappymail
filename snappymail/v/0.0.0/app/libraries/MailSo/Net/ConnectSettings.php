@@ -12,6 +12,7 @@
 namespace MailSo\Net;
 
 use SnappyMail\SensitiveString;
+use MailSo\Net\Enumerations\ConnectionSecurityType;
 
 /**
  * @category MailSo
@@ -29,8 +30,8 @@ class ConnectSettings implements \JsonSerializable
 	public int $timeout = 10;
 
 	// none, TLS, STARTTLS
-	public int $type = Enumerations\ConnectionSecurityType::AUTO_DETECT;
-//	public int $type = Enumerations\ConnectionSecurityType::NONE;
+	public ConnectionSecurityType $type = ConnectionSecurityType::AUTO_DETECT;
+//	public ConnectionSecurityType $type = ConnectionSecurityType::NONE;
 
 	public SSLContext $ssl;
 //	public bool $tls_weak = false;
@@ -109,7 +110,8 @@ class ConnectSettings implements \JsonSerializable
 		$object = new static;
 		$object->host = $aSettings['host'];
 		$object->port = $aSettings['port'];
-		$object->type = isset($aSettings['type']) ? $aSettings['type'] : $aSettings['secure'];
+		$object->type = ConnectionSecurityType::tryFrom(isset($aSettings['type']) ? $aSettings['type'] : $aSettings['secure'])
+			?: ConnectionSecurityType::AUTO_DETECT;
 		if (isset($aSettings['timeout'])) {
 			$object->timeout = $aSettings['timeout'];
 		}
@@ -135,7 +137,7 @@ class ConnectSettings implements \JsonSerializable
 //			'@Object' => 'Object/ConnectSettings',
 			'host' => $this->host,
 			'port' => $this->port,
-			'type' => $this->type,
+			'type' => $this->type->value,
 			'timeout' => $this->timeout,
 			'shortLogin' => $this->shortLogin,
 			'lowerLogin' => $this->lowerLogin,

@@ -7,6 +7,7 @@
 namespace RainLoop\Providers\Domain;
 
 use MailSo\Cache\CacheClient;
+use RainLoop\Model\Domain;
 
 class DefaultDomain implements DomainInterface
 {
@@ -22,18 +23,18 @@ class DefaultDomain implements DomainInterface
 		$this->oCacher = $oCacher;
 	}
 
-	private static function decodeFileName(string $sName) : string
+	private static function decodeFileName(string $sName): string
 	{
 		return ('default' === $sName) ? '*' : \str_replace('_wildcard_', '*', $sName);
 	}
 
-	private static function encodeFileName(string $sName) : string
+	private static function encodeFileName(string $sName): string
 	{
 //		return ('*' === $sName) ? 'default' : \str_replace('*', '_wildcard_', \SnappyMail\IDN::toAscii($sName));
 		return ('*' === $sName) ? 'default' : \str_replace('*', '_wildcard_', \strtolower(\idn_to_ascii($sName)));
 	}
 
-	private function getWildcardDomainsLine() : string
+	private function getWildcardDomainsLine(): string
 	{
 		if ($this->oCacher) {
 			$sResult = $this->oCacher->Get(static::CACHE_KEY);
@@ -78,24 +79,26 @@ class DefaultDomain implements DomainInterface
 		return $sResult;
 	}
 
-	public function Load(string $sName, bool $bFindWithWildCard = false, bool $bCheckDisabled = true, bool $bCheckAliases = true) : ?\RainLoop\Model\Domain
+	public function Load(string $sName, bool $bFindWithWildCard = false, bool $bDenyDisabled = true, bool $bCheckAliases = true): ?Domain
 	{
 //		$sName = \SnappyMail\IDN::toAscii($sName);
 		$sName = \strtolower(\idn_to_ascii($sName));
-		if ($bCheckDisabled && \in_array($sName, $this->getDisabled())) {
+		if ($bDenyDisabled && \in_array($sName, $this->getDisabled())) {
 			return null;
 		}
 
 		$sRealFileBase = $this->sDomainPath . '/' . static::encodeFileName($sName);
 
 		if (\file_exists($sRealFileBase.'.json')) {
-			$aDomain = \json_decode(\file_get_contents($sRealFileBase.'.json'), true) ?: array();
-			return \RainLoop\Model\Domain::fromArray($sName, $aDomain);
+			return Domain::fromArray($sName, \json_decode(\file_get_contents($sRealFileBase.'.json'), true) ?: []);
 		}
 
 		if (\file_exists($sRealFileBase.'.ini')) {
-			$aDomain = \parse_ini_file($sRealFileBase.'.ini') ?: array();
-			return \RainLoop\Model\Domain::fromIniArray($sName, $aDomain);
+			$oDomain = Domain::fromIniArray($sName, \parse_ini_file($sRealFileBase.'.ini') ?: []);
+			if ($oDomain) {
+				$this->Save($oDomain);
+			}
+			return $oDomain;
 		}
 
 		if ($bCheckAliases && \file_exists($sRealFileBase.'.alias')) {
@@ -121,7 +124,7 @@ class DefaultDomain implements DomainInterface
 		return null;
 	}
 
-	public function Save(\RainLoop\Model\Domain $oDomain) : bool
+	public function Save(Domain $oDomain): bool
 	{
 		$sRealFileName = static::encodeFileName($oDomain->Name());
 		if (!$sRealFileName) {
@@ -133,7 +136,7 @@ class DefaultDomain implements DomainInterface
 		return true;
 	}
 
-	public function SaveAlias(string $sName, string $sTarget) : bool
+	public function SaveAlias(string $sName, string $sTarget): bool
 	{
 //		$sTarget = \SnappyMail\IDN::toAscii($sTarget);
 //		$sTarget = static::encodeFileName($sTarget);
@@ -148,7 +151,7 @@ class DefaultDomain implements DomainInterface
 		return true;
 	}
 
-	protected function getDisabled() : array
+	protected function getDisabled(): array
 	{
 		$sFile = '';
 		if (\file_exists($this->sDomainPath.'/disabled')) {
@@ -166,7 +169,7 @@ class DefaultDomain implements DomainInterface
 //		return \array_unique($aDisabled);
 	}
 
-	public function Disable(string $sName, bool $bDisable) : bool
+	public function Disable(string $sName, bool $bDisable): bool
 	{
 //		$sName = \SnappyMail\IDN::toAscii($sName);
 		$sName = \strtolower(\idn_to_ascii($sName));
@@ -184,7 +187,7 @@ class DefaultDomain implements DomainInterface
 		return false;
 	}
 
-	public function Delete(string $sName) : bool
+	public function Delete(string $sName): bool
 	{
 		$bResult = true;
 		if (\strlen($sName)) {
@@ -193,7 +196,7 @@ class DefaultDomain implements DomainInterface
 				(!\file_exists($sRealFileName.'.json') || \unlink($sRealFileName.'.json'))
 				&& (!\file_exists($sRealFileName.'.ini') || \unlink($sRealFileName.'.ini'))
 				&& (!\file_exists($sRealFileName.'.alias') || \unlink($sRealFileName.'.alias'));
-			$this->Disable($sName, !$bResult);
+//			$this->Disable($sName, !$bResult);
 			if ($this->oCacher) {
 				$this->oCacher->Delete(static::CACHE_KEY);
 			}
@@ -201,7 +204,7 @@ class DefaultDomain implements DomainInterface
 		return $bResult;
 	}
 
-	public function GetList(bool $bIncludeAliases = true) : array
+	public function GetList(bool $bIncludeAliases = true): array
 	{
 		$aDisabledNames = $this->getDisabled();
 		$aResult = array();

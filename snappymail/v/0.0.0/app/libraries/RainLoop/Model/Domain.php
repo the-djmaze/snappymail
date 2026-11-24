@@ -102,25 +102,28 @@ class Domain implements \JsonSerializable
 			$oDomain->whiteList = (string) $aDomain['whiteList'];
 		} else if (\strlen($aDomain['imapHost'])) {
 			// Old way
-			$oDomain->IMAP->host = $aDomain['imapHost'];
-			$oDomain->IMAP->port = (int) $aDomain['imapPort'];
-			$oDomain->IMAP->type = (int) $aDomain['imapSecure'];
-			$oDomain->IMAP->shortLogin = !empty($aDomain['imapShortLogin']);
-
-			$oDomain->Sieve->enabled = !empty($aDomain['useSieve']);
-			$oDomain->Sieve->host = $aDomain['sieveHost'];
-			$oDomain->Sieve->port = (int) $aDomain['sievePort'];
-			$oDomain->Sieve->type = (int) $aDomain['sieveSecure'];
-
-			$oDomain->SMTP->host = $aDomain['smtpHost'];
-			$oDomain->SMTP->port = (int) $aDomain['smtpPort'];
-			$oDomain->SMTP->type = (int) $aDomain['smtpSecure'];
-			$oDomain->SMTP->shortLogin = !empty($aDomain['smtpShortLogin']);
-			$oDomain->SMTP->useAuth = !empty($aDomain['smtpAuth']);
-			$oDomain->SMTP->setSender = !empty($aDomain['smtpSetSender']);
-			$oDomain->SMTP->authPlainLine = !empty($aDomain['smtpAuthPlainLine']);
-			$oDomain->SMTP->usePhpMail = !empty($aDomain['smtpPhpMail']);
-
+			$oDomain->IMAP = \MailSo\Imap\Settings::fromArray([
+				'host' => $aDomain['imapHost'],
+				'port' => (int) $aDomain['imapPort'],
+				'type' => (int) $aDomain['imapSecure'],
+				'shortLogin' => !empty($aDomain['imapShortLogin'])
+			]);
+			$oDomain->SMTP = \MailSo\SMTP\Settings::fromArray([
+				'host' => $aDomain['smtpHost'],
+				'port' => (int) $aDomain['smtpPort'],
+				'type' => (int) $aDomain['smtpSecure'],
+				'shortLogin' => !empty($aDomain['smtpShortLogin']),
+				'useAuth' => !empty($aDomain['smtpAuth']),
+				'setSender' => !empty($aDomain['smtpSetSender']),
+				'authPlainLine' => !empty($aDomain['smtpAuthPlainLine']),
+				'usePhpMail' => !empty($aDomain['smtpPhpMail'])
+			]);
+			$oDomain->Sieve = \MailSo\Sieve\Settings::fromArray([
+				'enabled' => $aDomain['useSieve'],
+				'host' => $aDomain['sieveHost'],
+				'port' => (int) $aDomain['sievePort'],
+				'type' => (int) $aDomain['sieveSecure']
+			]);
 			$oDomain->whiteList = (string) $aDomain['whiteList'];
 		} else {
 			return null;
@@ -134,39 +137,39 @@ class Domain implements \JsonSerializable
 	 */
 	public static function fromIniArray(string $sName, array $aDomain): ?self
 	{
-		$oDomain = null;
-		if (\strlen($sName) && \strlen($aDomain['imap_host'])) {
-			$oDomain = new self($sName);
-
-			$oDomain->IMAP->host = $aDomain['imap_host'];
-			$oDomain->IMAP->port = (int) $aDomain['imap_port'];
-			$oDomain->IMAP->type = self::StrConnectionSecurityTypeToCons($aDomain['imap_secure'] ?? '');
-			$oDomain->IMAP->shortLogin = !empty($aDomain['imap_short_login']);
-
-			$oDomain->Sieve->enabled = !empty($aDomain['sieve_use']);
-			$oDomain->Sieve->host = $aDomain['sieve_host'] ?: '';
-			$oDomain->Sieve->port = (int) ($aDomain['sieve_port'] ?? 4190);
-			$oDomain->Sieve->type = self::StrConnectionSecurityTypeToCons($aDomain['sieve_secure'] ?? '');
-
-			$oDomain->SMTP->host = $aDomain['smtp_host'];
-			$oDomain->SMTP->port = (int) ($aDomain['smtp_port'] ?? 25);
-			$oDomain->SMTP->type = self::StrConnectionSecurityTypeToCons($aDomain['smtp_secure'] ?? '');
-			$oDomain->SMTP->shortLogin = !empty($aDomain['smtp_short_login']);
-			$oDomain->SMTP->useAuth = !empty($aDomain['smtp_auth']);
-			$oDomain->SMTP->setSender = !empty($aDomain['smtp_set_sender']);
-			$oDomain->SMTP->usePhpMail = !empty($aDomain['smtp_php_mail']);
-
-			$oDomain->whiteList = $aDomain['white_list'] ?? '';
-
-			$oDomain->Normalize();
+		if (!\strlen($sName) || empty($aDomain['imap_host'])) {
+			return null;
 		}
-		return $oDomain;
+		return static::fromArray([
+			'IMAP' => [
+				'host' => $aDomain['imap_host'],
+				'port' => (int) $aDomain['imap_port'],
+				'type' => self::StrToConnectionSecurityType($aDomain['imap_secure'] ?? ''),
+				'shortLogin' => !empty($aDomain['imap_short_login'])
+			],
+			'SMTP' => [
+				'host' => $aDomain['smtp_host'],
+				'port' => (int) ($aDomain['smtp_port'] ?? 25),
+				'type' => self::StrToConnectionSecurityType($aDomain['smtp_secure'] ?? ''),
+				'shortLogin' => !empty($aDomain['smtp_short_login']),
+				'useAuth' => !empty($aDomain['smtp_auth']),
+				'setSender' => !empty($aDomain['smtp_set_sender']),
+				'usePhpMail' => !empty($aDomain['smtp_php_mail'])
+			],
+			'Sieve' => [
+				'enabled' => !empty($aDomain['sieve_use']),
+				'host' => $aDomain['sieve_host'] ?: '',
+				'port' => (int) ($aDomain['sieve_port'] ?? 4190),
+				'type' => self::StrToConnectionSecurityType($aDomain['sieve_secure'] ?? '')
+			],
+			'whiteList' => $aDomain['white_list'] ?? '',
+		]);
 	}
 
 	/**
 	 * Use by old RainLoop fromIniArray()
 	 */
-	public static function StrConnectionSecurityTypeToCons(string $sType): int
+	private static function StrToConnectionSecurityType(string $sType): ConnectionSecurityType
 	{
 		switch (\strtoupper($sType))
 		{

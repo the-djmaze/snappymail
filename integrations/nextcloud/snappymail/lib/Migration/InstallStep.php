@@ -100,7 +100,6 @@ class InstallStep implements IRepairStep
 		$oDomain = $oProvider->Load('nextcloud');
 		if (!$oDomain) {
 			$output->info('Add nextcloud as domain');
-//			$oDomain = \RainLoop\Model\Domain::fromIniArray('nextcloud', []);
 			$oDomain = new \RainLoop\Model\Domain('nextcloud');
 			$iSecurityType = \MailSo\Net\Enumerations\ConnectionSecurityType::NONE;
 			$oDomain->ImapSettings()->host = 'localhost';
