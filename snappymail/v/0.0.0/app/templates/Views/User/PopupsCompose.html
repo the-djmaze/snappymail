@@ -1,3 +1,11 @@
+<div class="floating-bar g-ui-user-select-none">
+	<span class="floating-title" data-bind="click: toggleCollapsed">
+		<span data-bind="text: subject, visible: subject"></span>
+		<span data-i18n="FOLDER_LIST/BUTTON_NEW_MESSAGE" data-bind="visible: !subject()"></span>
+	</span>
+	<a data-bind="click: toggleCollapsed, text: collapsed() ? '▔' : '▁'" data-i18n="[title]COMPOSE/BUTTON_MINIMIZE"></a>
+	<a data-bind="click: toggleFloating" data-i18n="[title]COMPOSE/BUTTON_FULL_SIZE">⤢</a>
+</div>
 <header class="g-ui-user-select-none" data-bind="css: {loading: saving() || sending()}">
 	<a class="btn" data-bind="command: sendCommand, tooltipErrorTip: sendErrorDesc, css: {'btn-success': sendButtonSuccess, 'btn-danger': sendError, 'btn-warning': sendSuccessButSaveError }">
 		<i data-bind="css: {'icon-paper-plane': !sending(), 'icon-spinner': sending()}"></i>
@@ -74,6 +82,7 @@
 				</li>
 			</menu>
 		</div>
+		<a class="btn button-floating" data-bind="visible: canFloat, click: toggleFloating" data-i18n="[title]COMPOSE/BUTTON_FLOATING">⤡</a>
 		<a class="minimize-custom" data-bind="click: skipCommand" data-i18n="[title]COMPOSE/BUTTON_MINIMIZE"></a>
 		<a class="close" data-bind="click: doClose" data-i18n="[title]GLOBAL/CANCEL">×</a>
 	</div>

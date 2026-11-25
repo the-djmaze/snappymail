@@ -175,6 +175,7 @@ trait User
 		$this->setSettingsFromParams($oSettings, 'pgpSign', 'bool');
 		$this->setSettingsFromParams($oSettings, 'pgpEncrypt', 'bool');
 		$this->setSettingsFromParams($oSettings, 'allowSpellcheck', 'bool');
+		$this->setSettingsFromParams($oSettings, 'composeFloating', 'bool');
 
 		$this->setSettingsFromParams($oSettings, 'ViewHTML', 'bool');
 		$this->setSettingsFromParams($oSettings, 'ViewImages', 'string');

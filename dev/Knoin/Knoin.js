@@ -100,7 +100,9 @@ const
 							// and out of modalVisible(true), so showScreenPopup never
 							// reached vm.onShow and the popup kept the previous item's
 							// values until it was closed and opened again.
-							vmDom.open || vmDom.showModal();
+							// A floating popup (the composer) is not modal: no backdrop
+							// and the screen behind it stays usable
+							vmDom.open || (vm.floating?.() ? vmDom.show() : vmDom.showModal());
 							if (vmDom.backdrop) {
 								vmDom.backdrop.style.zIndex = 3000 + (visiblePopups.size * 2);
 							}
@@ -173,7 +175,8 @@ const
 		if (screenName && fireEvent('sm-show-screen', screenName + (subPart ?  '/' + subPart : ''), 1)) {
 			// Close all popups
 			for (let vm of visiblePopups) {
-				vm.tryToClose();
+				// A floating popup stays open while browsing the screen behind it
+				vm.floating?.() || vm.tryToClose();
 			}
 
 			let vmScreen = screen(screenName);

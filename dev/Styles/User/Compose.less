@@ -172,3 +172,88 @@
 	width: 16px;
 	cursor: pointer;
 }
+
+/**
+ * Floating composer: a small non-modal window at the bottom right
+ */
+#V-PopupsCompose .floating-bar {
+	display: none;
+}
+
+#V-PopupsCompose.floating {
+	border-bottom: 0;
+	border-radius: 8px 8px 0 0;
+	bottom: 0;
+	box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+	height: min(640px, calc(100vh - 60px));
+	height: min(640px, calc(100dvh - 60px));
+	inset-inline: auto 24px;
+	margin: 0;
+	max-height: none;
+	max-width: calc(100vw - 48px);
+	resize: none;
+	top: auto;
+	width: 600px;
+
+	// Dialogs slide in from the top, this one slides up
+	&:not(.animate) {
+		transform: translateY(40px);
+	}
+
+	.floating-bar {
+		align-items: center;
+		background-color: #222;
+		color: #fff;
+		display: flex;
+		flex: 0 0 auto;
+		gap: 4px;
+		padding: 4px 6px 4px 12px;
+
+		.floating-title {
+			cursor: pointer;
+			flex: 1 1 auto;
+			font-weight: bold;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		a {
+			border-radius: 4px;
+			color: inherit;
+			cursor: pointer;
+			flex: 0 0 auto;
+			font-size: 16px;
+			line-height: 24px;
+			text-align: center;
+			text-decoration: none;
+			width: 28px;
+
+			&:hover {
+				background-color: rgba(255,255,255,0.2);
+			}
+		}
+	}
+
+	// The toolbar has to fit the smaller width
+	> header {
+		padding: 6px 8px;
+
+		.saved-text, .button-save span, .button-floating, .minimize-custom {
+			display: none;
+		}
+	}
+
+	.textAreaParent, .attachmentAreaParent {
+		min-height: 120px;
+	}
+
+	&.collapsed {
+		height: auto;
+		width: 300px;
+
+		> :not(.floating-bar) {
+			display: none;
+		}
+	}
+}
