@@ -29,7 +29,7 @@ class Flag extends Atom
 	 */
 	public static function validate(string $value): bool
 	{
-		return \MailSo\Mime\Atom::validate('\\' === $value[0] ? \substr($value, 1) : $value);
+		return parent::validate('\\' === $value[0] ? \substr($value, 1) : $value);
 	}
 
 	/**
