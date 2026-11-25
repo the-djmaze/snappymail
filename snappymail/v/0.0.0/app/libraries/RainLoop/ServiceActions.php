@@ -616,6 +616,10 @@ class ServiceActions
 							\trim($aData['Email']),
 							new \SnappyMail\SensitiveString($aData['Password'])
 						);
+						// CreateUserSsoHash(…, ['signMe' => true]): remembered like "Remember me" on the login form
+						if (!empty($aAdditionalOptions['signMe'])) {
+							$this->oActions->SetSignMeToken($oAccount);
+						}
 						if ($aAdditionalOptions) {
 							$bSaveSettings = false;
 
