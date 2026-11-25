@@ -71,12 +71,13 @@ class MessageListParams
 		]));
 	}
 
-/*
 	public function sortValid($oImapClient) : bool
 	{
 		if (!$this->sSort) {
 			return true;
 		}
+		return false !== \preg_match('/^(REVERSE\s+)?(ARRIVAL|CC|DATE|FROM|SIZE|SUBJECT|TO|DISPLAYFROM|DISPLAYTO)$/D', $this->sSort);
+/*
 		/(REVERSE\s+)?(ARRIVAL|CC|DATE|FROM|SIZE|SUBJECT|TO|DISPLAYFROM|DISPLAYTO)/
 			ARRIVAL
 				Internal date and time of the message.  This differs from the
@@ -116,7 +117,7 @@ class MessageListParams
 			RFC 5957:
 				$oImapClient->hasCapability('SORT=DISPLAY')
 				DISPLAYFROM, DISPLAYTO
-	}
 */
+	}
 
 }

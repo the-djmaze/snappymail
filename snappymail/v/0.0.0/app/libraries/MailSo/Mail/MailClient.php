@@ -641,7 +641,9 @@ class MailClient
 		$aSortTypes = [];
 		if ($bUseSort) {
 			if ($oParams->sSort) {
-				// TODO: $oParams->sortValid($this->oImapClient);
+				if (!$oParams->sortValid($this->oImapClient)) {
+					throw new \InvalidArgumentException('Unknown sort key');
+				}
 				$aSortTypes[] = $oParams->sSort;
 			}
 			if (!\str_contains($oParams->sSort, 'DATE')) {
