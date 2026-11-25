@@ -73,15 +73,6 @@ trait Contacts
 			$mData = $this->getContactsSyncData($oAccount);
 			$sPassword = isset($mData['Password']) ? $mData['Password'] : '';
 		}
-		$sPasswordHMAC = null;
-		if ($sPassword) {
-			$oMainAccount = $this->getMainAccountFromToken();
-			$sPassword = \SnappyMail\Crypt::EncryptToJSON($sPassword, $oMainAccount->CryptKey());
-			if ($sPassword) {
-				$sPasswordHMAC = \hash_hmac('sha1', $sPassword, $oMainAccount->CryptKey());
-			}
-		}
-
 		$oDriver = $this->fabrica('address-book', $oAccount);
 		if (!$oDriver) {
 			throw new ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'No driver');
@@ -91,8 +82,7 @@ trait Contacts
 			'Mode' => 2, // readonly
 			'User' => $this->GetActionParam('User', ''),
 			'Password' => $sPassword,
-			'Url' => $this->GetActionParam('Url', ''),
-			'PasswordHMAC' => $sPasswordHMAC
+			'Url' => $this->GetActionParam('Url', '')
 		]);
 
 		$oClient = $oDriver->getDavClient();
