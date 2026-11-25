@@ -612,6 +612,9 @@ class ImapClient extends \MailSo\Net\NetClient
 		if (null === $sStringForEscape) {
 			return 'NIL';
 		}
+		if (\preg_match('/[\r\n\x00]/', $sStringForEscape)) {
+			throw new \ValueError('Disallowed CR, LF or NUL in a string');
+		}
 /*
 		// literal-string
 		$this->hasCapability('LITERAL+')
