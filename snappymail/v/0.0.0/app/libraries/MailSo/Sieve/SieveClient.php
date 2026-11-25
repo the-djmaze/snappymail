@@ -248,8 +248,7 @@ class SieveClient extends \MailSo\Net\NetClient
 	 */
 	public function GetScript(string $sScriptName) : string
 	{
-		$sScriptName = \addcslashes($sScriptName, '"\\');
-		$this->sendRequest('GETSCRIPT "'.$sScriptName.'"');
+		$this->sendRequest('GETSCRIPT '.self::quoteName($sScriptName));
 		$aResponse = $this->parseResponse();
 
 		$sScript = '';
@@ -275,9 +274,8 @@ class SieveClient extends \MailSo\Net\NetClient
 	 */
 	public function PutScript(string $sScriptName, string $sScriptSource) : self
 	{
-		$sScriptName = \addcslashes($sScriptName, '"\\');
 		$sScriptSource = \preg_replace('/\r?\n/', "\r\n", $sScriptSource);
-		$this->sendRequest('PUTSCRIPT "'.$sScriptName.'" {'.\strlen($sScriptSource).'+}');
+		$this->sendRequest('PUTSCRIPT '.self::quoteName($sScriptName).' {'.\strlen($sScriptSource).'+}');
 		$this->sendRequestWithCheck($sScriptSource);
 
 		return $this;
@@ -304,8 +302,7 @@ class SieveClient extends \MailSo\Net\NetClient
 	 */
 	public function SetActiveScript(string $sScriptName) : self
 	{
-		$sScriptName = \addcslashes($sScriptName, '"\\');
-		$this->sendRequestWithCheck('SETACTIVE "'.$sScriptName.'"');
+		$this->sendRequestWithCheck('SETACTIVE '.self::quoteName($sScriptName));
 
 		return $this;
 	}
@@ -317,8 +314,7 @@ class SieveClient extends \MailSo\Net\NetClient
 	 */
 	public function DeleteScript(string $sScriptName) : self
 	{
-		$sScriptName = \addcslashes($sScriptName, '"\\');
-		$this->sendRequestWithCheck('DELETESCRIPT "'.$sScriptName.'"');
+		$this->sendRequestWithCheck('DELETESCRIPT '.self::quoteName($sScriptName));
 
 		return $this;
 	}
@@ -330,11 +326,33 @@ class SieveClient extends \MailSo\Net\NetClient
 	 */
 	public function RenameScript(string $sOldName, string $sNewName) : self
 	{
-		$sOldName = \addcslashes($sOldName, '"\\');
-		$sNewName = \addcslashes($sNewName, '"\\');
-		$this->sendRequestWithCheck('RENAMESCRIPT "'.$sOldName.'" "'.$sNewName.'"');
+		$this->sendRequestWithCheck('RENAMESCRIPT '.self::quoteName($sOldName).' '.self::quoteName($sNewName));
 
 		return $this;
+	}
+
+	/**
+	 * https://www.rfc-editor.org/info/rfc5804/#section-1.6
+	 * sieve-name            = string
+	 * string                = quoted / literal-c2s / literal-s2c
+	 * quoted                = DQUOTE *1024QUOTED-CHAR DQUOTE
+	 * literal-c2s           = "{" number "+}" CRLF *OCTET
+	 * literal-s2c           = "{" number "}" CRLF *OCTET
+	 * QUOTED-CHAR           = SAFE-UTF8-CHAR / "\" QUOTED-SPECIALS
+	 * SAFE-UTF8-CHAR        = SAFE-CHAR / UTF8-2 / UTF8-3 / UTF8-4
+	 * SAFE-CHAR             = %x01-09 / %x0B-0C / %x0E-21 / %x23-5B / %x5D-7F
+	 *
+	 * @throws \ValueError
+	 */
+	private static function quoteName(string $sScriptName) : string
+	{
+		if (1024 < \strlen($sScriptName)
+		 || !\MailSo\Base\Utils::IsUtf8($sScriptName)
+		 || \preg_match('/[\r\n\x00]/u', $sScriptName)
+		) {
+			throw new \ValueError('Invalid sieve script name');
+		}
+		return '"' . \addcslashes($sScriptName, '"\\') . '"';
 	}
 
 	private function parseLine(string $sLine) : ?array
