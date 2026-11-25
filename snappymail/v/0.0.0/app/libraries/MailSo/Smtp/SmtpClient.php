@@ -10,6 +10,7 @@
  *
  * https://datatracker.ietf.org/doc/html/rfc2034
  * https://datatracker.ietf.org/doc/html/rfc2821
+ * https://datatracker.ietf.org/doc/html/rfc5321
  */
 
 namespace MailSo\Smtp;
@@ -264,12 +265,46 @@ class SmtpClient extends \MailSo\Net\NetClient
 	}
 
 	/**
+	 * https://www.rfc-editor.org/info/rfc5321/#section-4.1.2
+	 */
+	private static function validPath(string $sValue): string
+	{
+		$Atom = '[0-9a-zA-Z!#$%&\'*+-\\/=?^_`{|}~]+';
+		$Quoted_string = '"(?:[\x20\x21\x23-\x5B\x5D-\x7E]|\\\\[\x20-\x7E])+"';
+		$subdomain = '[0-9a-zA-Z][-0-9a-zA-Z]*';
+		$Domain = "{$subdomain}(?:\\.{$subdomain})*";
+		$At_domain = "@{$Domain}";
+		$A_d_l = "{$At_domain}(?:,{$At_domain})*";
+		$Dot_string = "{$Atom}(?:\\.{$Atom})*";
+		$Local_part = "(?:{$Dot_string}|{$Quoted_string})";
+		$Snum = '(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])';
+		$IPv4_address_literal = "(?:{$Snum}(?:.{$Snum}){3})";
+		$IPv6_hex = '[0-9A-F]{1,4}';
+		$IPv6_full = "{$IPv6_hex}(?::{$IPv6_hex}){7}";
+		$IPv6_comp = "{$IPv6_hex}(?::{$IPv6_hex}){0,5}::{$IPv6_hex}(?::{$IPv6_hex}){0,5}";
+		$IPv6v4_full = "{$IPv6_hex}(?::{$IPv6_hex}){5}:{$IPv4_address_literal}";
+		$IPv6v4_comp = "{$IPv6_hex}(?::{$IPv6_hex}){0,3}::{$IPv6_hex}(?::{$IPv6_hex}){0,3}:{$IPv4_address_literal}";
+		$IPv6_addr = "(?:{$IPv6_full}|{$IPv6_comp}|{$IPv6v4_full}|{$IPv6v4_comp})";
+		$IPv6_address_literal = "IPv6:{$IPv6_addr}";
+		$address_literal = "\\[(?:{$IPv4_address_literal}|{$IPv6_address_literal})\\]";
+		$Mailbox = "(?:{$Local_part}@{$Domain}|{$address_literal})";
+		return 1 === \preg_match("/^({$A_d_l}:)?{$Mailbox}$/D", $sValue);
+//		return 1 === \preg_match("/^<({$A_d_l}:)?{$Mailbox}>$/D", $sValue);
+	}
+
+	/**
 	 * @throws \MailSo\RuntimeException
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Smtp\Exceptions\*
 	 */
 	public function MailFrom(string $sFrom, int $iSizeIfSupported = 0, bool $bDsn = false, bool $bRequireTLS = false, string $sEnvId = ''): self
 	{
+		/**
+		 * mail = "MAIL FROM:" Reverse-path [SP Mail-parameters] CRLF
+		 */
+		if (\strlen($sFrom) && !static::validPath($sFrom)) {
+			throw new \ValueError('Invalid mail from path');
+		}
 //		$sFrom = IDN::emailToAscii($sFrom);
 		$sCmd = "FROM:<{$sFrom}>";
 		// RFC 6531
@@ -328,6 +363,12 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 */
 	public function Rcpt(string $sTo, bool $bDsn = false): self
 	{
+		/**
+		 * rcpt = "RCPT TO:" ( "<Postmaster@" Domain ">" / "<Postmaster>" / Forward-path ) [SP Rcpt-parameters] CRLF
+		 */
+		if ('Postmaster' !== $sTo && !static::validPath($sTo)) {
+			throw new \ValueError('Invalid RCPT path');
+		}
 		if (!$this->bMail) {
 			$this->writeLogException(new \MailSo\RuntimeException('No sender reverse path has been supplied'), \LOG_ERR);
 		}
@@ -464,6 +505,16 @@ class SmtpClient extends \MailSo\Net\NetClient
 	 */
 	public function Vrfy(string $sUser): self
 	{
+		/**
+		 * vrfy = "VRFY" SP String CRLF
+		 * String         = Atom / Quoted-string
+		 * Atom           = 1*atext
+		 * atext          = 0-9a-zA-Z!#$%&'*+-/=?^_`{|}~
+		 * Quoted-string  = DQUOTE *QcontentSMTP DQUOTE
+		 */
+		if (!strlen($sFrom) || !preg_match('/^([0-9a-zA-Z!#$%&\'*+-/=?^_`{|}~]+|"([\x20\x21\x23-\x5B\x5D-\x7E]|\\\\[\x20-\x7E])+")$/D', $sUser)) {
+			throw new \ValueError('Invalid VRFY $sUser');
+		}
 		$sUser = \MailSo\Base\Utils::Trim($sUser);
 /*
 		// RFC 6531
