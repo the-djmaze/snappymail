@@ -223,6 +223,7 @@ trait SMime
 	private function smimePartIdParam(string $sKey): string
 	{
 		$sPartId = \trim((string) $this->GetActionParam($sKey, ''));
+//		if (\strlen($sPartId) && !\MailSo\Mime\Section::validate($sPartId)) {
 		if ('' !== $sPartId && !\preg_match('/^(TEXT|[1-9][0-9]*(\.[1-9][0-9]*)*)$/D', $sPartId)) {
 			throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::InvalidInputArgument);
 		}

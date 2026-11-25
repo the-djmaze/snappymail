@@ -141,6 +141,9 @@ trait Messages
 			], $iUid, true)[0];
 			$sHeader = $oFetchResponse->GetFetchValue(FetchType::BODY_HEADER);
 		} else {
+			if (!\MailSo\Mime\Section::validate($sPartId)) {
+				throw new \ValueError('Invalid MIME part');
+			}
 			$oFetchResponse = $this->Fetch([
 				FetchType::BODY_PEEK.'['.$sPartId.']',
 				// An empty section specification refers to the entire message, including the header.

@@ -321,9 +321,16 @@ trait Pgp
 		} else {
 			$sFolderName = $this->GetActionParam('folder', '');
 			$iUid = (int) $this->GetActionParam('uid', 0);
-			$sPartId = $this->GetActionParam('partId', '');
-			$sSigPartId = $this->GetActionParam('sigPartId', '');
+			$sPartId = (string) $this->GetActionParam('partId', '');
+			$sSigPartId = (string) $this->GetActionParam('sigPartId', '');
 //			$sMicAlg = $this->GetActionParam('micAlg', '');
+
+			if (\strlen($sPartId) && !\MailSo\Mime\Section::validate($sPartId)) {
+				throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::InvalidInputArgument);
+			}
+			if (\strlen($sSigPartId) && !\MailSo\Mime\Section::validatePart($sSigPartId)) {
+				throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::InvalidInputArgument);
+			}
 
 			$this->initMailClientConnection();
 			$oImapClient = $this->ImapClient();
