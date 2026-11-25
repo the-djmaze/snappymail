@@ -72,7 +72,7 @@
 			} else {
 				this.reset(true);
 				rl.pluginRemoteRequest(
-					(iError, data) => {
+					iError => {
 						this.reset(false);
 						if (iError) {
 							this.passwordUpdateError(true);
@@ -80,8 +80,17 @@
 								// Notification.CurrentPasswordIncorrect
 								this.currentPasswordError(true);
 							}
-							this.errorDescription((data && rl.i18n(data.ErrorMessageAdditional))
-								|| rl.i18n('NOTIFICATIONS/COULD_NOT_SAVE_NEW_PASSWORD'));
+							const errors = {
+								131: 'CURRENT_PASSWORD_INCORRECT',
+								132: 'NEW_PASSWORD_SHORT',
+								133: 'NEW_PASSWORD_WEAK',
+								134: 'NEW_PASSWORD_HIBP'
+							};
+
+							this.errorDescription(rl.i18n(
+								'NOTIFICATIONS/' +
+								(errors[iError] || 'COULD_NOT_SAVE_NEW_PASSWORD')
+							));
 						} else {
 							this.currentPassword('');
 							this.newPassword('');
