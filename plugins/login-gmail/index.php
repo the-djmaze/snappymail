@@ -39,13 +39,18 @@ class LoginGMailPlugin extends \RainLoop\Plugins\AbstractPlugin
 		$this->addHook('filter.http-paths', 'httpPaths');
 	}
 
-	public function httpPaths(array $aPaths) : void
+	public function httpPaths(array &$aPaths) : void
 	{
-		if (!empty($aPaths[0]) && 'LoginGMail' === $aPaths[0]) {
-			$oConfig = \RainLoop\Api::Config();
-			$oConfig->Set('security', 'secfetch_allow',
-				\trim($oConfig->Get('security', 'secfetch_allow', '') . ';site=cross-site', ';')
-			);
+		if (!empty($aPaths[0])) {
+			if ('LoginGMail=' === $aPaths[0]) {
+				$aPaths[0] = 'LoginGMail';
+			}
+			if ('LoginGMail' === $aPaths[0]) {
+				$oConfig = \RainLoop\Api::Config();
+				$oConfig->Set('security', 'secfetch_allow',
+					\trim($oConfig->Get('security', 'secfetch_allow', '') . ';site=cross-site', ';')
+				);
+			}
 		}
 	}
 

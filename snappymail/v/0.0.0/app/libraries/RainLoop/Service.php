@@ -83,9 +83,6 @@ abstract class Service
 		}
 
 		$aPaths = \explode('/', $sQuery);
-		// "?Action=&code=…" is "?Action&code=…": some OpenID Connect providers rebuild a redirect URI
-		// that way, and the plugin's part hook was not found
-		$aPaths[0] = \rtrim($aPaths[0], '=');
 
 		$sAdminPanelHost = \trim($oConfig->Get('admin_panel', 'host', ''));
 		if (empty($sAdminPanelHost)) {

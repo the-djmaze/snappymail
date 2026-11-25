@@ -32,6 +32,7 @@ class LoginOAuth2Plugin extends \RainLoop\Plugins\AbstractPlugin
 		$this->addHook('sieve.before-login', 'clientLogin');
 //		$this->addHook('sieve.after-login', array($this, $oSieveClient, $oSettings));
 		$this->addHook('filter.account', 'filterAccount');
+		$this->addHook('filter.http-paths', 'httpPaths');
 
 //		set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
 		spl_autoload_register(function($classname){
@@ -65,6 +66,15 @@ class LoginOAuth2Plugin extends \RainLoop\Plugins\AbstractPlugin
 		if ($sAccessToken && $sRefreshToken) {
 			$oSettings->passphrase = $this->gmailRefreshToken($sAccessToken, $sRefreshToken);
 			\array_unshift($oSettings->SASLMechanisms, 'OAUTHBEARER', 'XOAUTH2');
+		}
+	}
+
+	public function httpPaths(array &$aPaths) : void
+	{
+		// "?Action=&code=…" is "?Action&code=…": some OpenID Connect providers rebuild a redirect URI
+		// that way, and the plugin's part hook was not found
+		if (!empty($aPaths[0]) && 'LoginOAuth2=' === $aPaths[0]) {
+			$aPaths[0] = \rtrim($aPaths[0], '=');
 		}
 	}
 
