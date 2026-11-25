@@ -154,7 +154,7 @@ class Message implements \JsonSerializable
 		$oMessage->Uid = (int) $oFetchResponse->GetFetchValue(FetchType::UID);
 		$oMessage->iSize = (int) $oFetchResponse->GetFetchValue(FetchType::RFC822_SIZE);
 //		$oMessage->aFlags = $aFlags;
-		$oMessage->aFlagsLowerCase = \array_map('mb_strtolower', \array_map('\\MailSo\\Base\\Utils::Utf7ModifiedToUtf8', $aFlags));
+		$oMessage->aFlagsLowerCase = \array_map('mb_strtolower', \array_map('\\MailSo\\Imap\\Flag::decode', $aFlags));
 		$oMessage->iInternalTimeStampInUTC = \MailSo\Base\DateTimeHelper::ParseInternalDateString(
 			$oFetchResponse->GetFetchValue(FetchType::INTERNALDATE)
 		);

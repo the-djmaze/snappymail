@@ -362,10 +362,9 @@ class MailClient
 				), (string) $oRange, $oRange->UID);
 				foreach ($aFetchResponse as $oFetchResponse) {
 					$iUid = (int) $oFetchResponse->GetFetchValue(FetchType::UID);
-					$aLowerFlags = \array_map('mb_strtolower', \array_map('\\MailSo\\Base\\Utils::Utf7ModifiedToUtf8', $oFetchResponse->GetFetchValue(FetchType::FLAGS)));
 					$aInfo['messagesFlags'][] = array(
 						'uid' => $iUid,
-						'flags' => $aLowerFlags
+						'flags' => \array_map('mb_strtolower', \array_map('\\MailSo\\Imap\\Flag::decode', $oFetchResponse->GetFetchValue(FetchType::FLAGS)))
 					);
 				}
 			}

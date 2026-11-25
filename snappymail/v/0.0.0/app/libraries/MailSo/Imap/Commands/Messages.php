@@ -175,6 +175,12 @@ trait Messages
 			throw new \ValueError('$iStreamSize must be higher then 0');
 		}
 
+		if ($aFlagsList) {
+			foreach ($aFlagsList as $i => $sItem) {
+				$aFlagsList[$i] = \MailSo\Imap\Flag::fromUTF8($sItem);
+			}
+		}
+
 		$aParams = array(
 			$this->EscapeFolderName($sFolderName),
 			$aFlagsList
@@ -327,6 +333,12 @@ trait Messages
 			return $iNewUid;
 		}
 
+		if ($aFlagsList) {
+			foreach ($aFlagsList as $i => $sItem) {
+				$aFlagsList[$i] = \MailSo\Imap\Flag::fromUTF8($sItem);
+			}
+		}
+
 		$aParams = array(
 			$iUid,
 			$this->EscapeFolderName($sFolderName),
@@ -355,9 +367,9 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\*
 	 * @throws \MailSo\Imap\Exceptions\*
 	 */
-	public function MessageStoreFlag(SequenceSet $oRange, array $aInputStoreItems, StoreAction $eStoreAction): ?ResponseCollection
+	public function MessageStoreFlag(SequenceSet $oRange, array $aFlagsList, StoreAction $eStoreAction): ?ResponseCollection
 	{
-		if (!\count($oRange) || !\count($aInputStoreItems)) {
+		if (!\count($oRange) || !\count($aFlagsList)) {
 			return null;
 		}
 
@@ -367,11 +379,14 @@ trait Messages
 		 *     $sStoreAction[] = (UNCHANGEDSINCE $modsequence)
 		 */
 
-		$aInputStoreItems = \array_map('\\MailSo\\Base\\Utils::Utf8ToUtf7Modified', $aInputStoreItems);
+		// flag-list contains flag, flag-keyword or flag-extension
+		foreach ($aFlagsList as $i => $sItem) {
+			$aFlagsList[$i] = \MailSo\Imap\Flag::fromUTF8($sItem);
+		}
 
 		return $this->SendRequestGetResponse(
 			$oRange->UID ? 'UID STORE' : 'STORE',
-			array((string) $oRange, $eStoreAction->value, $aInputStoreItems)
+			array((string) $oRange, $eStoreAction->value, $aFlagsList)
 		);
 	}
 
