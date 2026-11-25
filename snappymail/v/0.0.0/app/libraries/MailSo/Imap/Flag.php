@@ -32,6 +32,12 @@ class Flag extends Atom
 		return parent::validate('\\' === $value[0] ? \substr($value, 1) : $value);
 	}
 
+//	public function jsonSerialize(): string
+	public function jsonSerialize(): mixed
+	{
+		return $this->toUTF8();
+	}
+
 	/**
 	 * NOTE: RFC 3501 and 9051 do not define unicode for flags
 	 * So these will not work in all mail applications

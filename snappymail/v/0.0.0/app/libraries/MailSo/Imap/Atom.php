@@ -20,7 +20,7 @@ namespace MailSo\Imap;
  *
  * Also see https://www.rfc-editor.org/info/rfc5234/#appendix-B.1
  */
-class Atom
+class Atom implements \JsonSerializable
 {
 	protected string $value;
 
@@ -39,6 +39,12 @@ class Atom
 	}
 
 	function __toString(): string
+	{
+		return $this->value;
+	}
+
+//	public function jsonSerialize(): string
+	public function jsonSerialize(): mixed
 	{
 		return $this->value;
 	}
