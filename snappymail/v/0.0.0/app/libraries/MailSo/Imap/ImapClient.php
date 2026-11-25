@@ -589,7 +589,7 @@ class ImapClient extends \MailSo\Net\NetClient
 		foreach ($aParams as $mParamItem) {
 			if (\is_array($mParamItem) && \count($mParamItem)) {
 				$sReturn .= ' ('.\trim($this->prepareParamLine($mParamItem)).')';
-			} else if (\is_string($mParamItem)) {
+			} else if (\is_string($mParamItem) || $mParamItem instanceof Atom) {
 				$sReturn .= ' '.$mParamItem;
 			}
 		}
