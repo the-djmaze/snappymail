@@ -16,7 +16,7 @@ function execCmd($cmd)
 
 if (isset($options['knockout'])) {
 	chdir(ROOT_DIR . '/vendors/knockout');
-	if ($grunt = trim(`which grunt`)) {
+	if ($grunt = trim(shell_exec('which grunt'))) {
 		execCmd($grunt, $return_var);
 	} else {
 		exit('grunt not installed');
@@ -63,7 +63,7 @@ if (isset($options['source'])) {
 	#rollup -c
 	#npm cache clean --force
 
-	if ($gulp = trim(`which gulp`)) {
+	if ($gulp = trim(shell_exec('which gulp'))) {
 		execCmd($gulp, $return_var);
 	} else {
 		exit('gulp not installed, run as root: npm install --global gulp-cli');
@@ -73,7 +73,7 @@ if (isset($options['source'])) {
 
 	$cmddir = ROOT_DIR . '/snappymail/v/0.0.0/static';
 
-	if ($gzip = trim(`which gzip`)) {
+	if ($gzip = trim(shell_exec('which gzip'))) {
 		echo "\x1b[33;1m === Gzip *.js and *.css === \x1b[0m\n";
 //		execCmd("{$gzip} -k --best {$cmddir}/js/*.js");
 		execCmd("{$gzip} -k --best {$cmddir}/js/min/*.js");
@@ -83,7 +83,7 @@ if (isset($options['source'])) {
 //		unlink($cmddir . '/js/min/boot.min.js.gz');
 	}
 
-	if ($brotli = trim(`which brotli`)) {
+	if ($brotli = trim(shell_exec('which brotli'))) {
 		echo "\x1b[33;1m === Brotli *.js and *.css === \x1b[0m\n";
 //		execCmd("{$brotli} -k --best {$cmddir}/js/*.js");
 		execCmd("{$brotli} -k --best {$cmddir}/js/min/*.js");
