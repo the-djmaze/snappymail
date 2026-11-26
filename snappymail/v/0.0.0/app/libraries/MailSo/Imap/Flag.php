@@ -68,7 +68,7 @@ class Flag extends Atom
 		if (\mb_strlen($value) !== \strlen($value) && !\preg_match('/\\pC/u', $value)) {
 			// Thunderbird now uses "hex" like "=f0"
 			$value = \preg_replace_callback(
-				'/[\x80-\xbf]/',
+				'/[\x80-\xff]/',
 				fn($m) => '=' . \bin2hex($m[0]),
 				$value
 			);
