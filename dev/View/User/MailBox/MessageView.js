@@ -355,9 +355,13 @@ export class MailMessageView extends AbstractViewRight {
 		this.moveOrCopy(vm, event, 2);
 	}
 
+	setSeen() {
+		setAction(MessageSetAction.SetSeen);
+	}
+
 	setUnseen() {
 		setAction(MessageSetAction.UnsetSeen);
-		currentMessage(null);
+//		this.closeMessage();
 	}
 
 	goUpCommand() {
