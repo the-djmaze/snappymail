@@ -68,6 +68,7 @@ $released = [
 	'change-password-mailcow',
 	'change-password-poppassd',
 	'compact-composer',
+	'conversation',
 	'custom-login-mapping',
 	'haveibeenpwned',
 	'ics-viewer',
