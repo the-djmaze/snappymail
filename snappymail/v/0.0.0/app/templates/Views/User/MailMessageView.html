@@ -62,9 +62,13 @@
 							</li>
 						</div>
 						<div class="dividerbar">
-							<li role="presentation">
-								<a href="#" tabindex="-1" data-bind="click: setUnseen" data-icon=" " data-i18n="MESSAGE_LIST/MENU_UNSET_SEEN"></a>
+							<li role="presentation" data-bind="visible: !message()?.isUnseen()">
+								<a href="#" tabindex="-1" data-bind="click: setUnseen" data-icon="🕶" data-i18n="MESSAGE_LIST/MENU_UNSET_SEEN"></a>
 							</li>
+							<li role="presentation" data-bind="visible: message()?.isUnseen()">
+								<a href="#" tabindex="-1" data-bind="click: setSeen" data-icon="👁" data-i18n="MESSAGE_LIST/MENU_SET_SEEN"></a>
+							</li>
+
 							<li role="presentation" data-bind="visible: archiveAllowed">
 								<a href="#" tabindex="-1" data-bind="command: archiveCommand" data-icon="🗄" data-i18n="GLOBAL/TO_ARCHIVE"></a>
 							</li>
