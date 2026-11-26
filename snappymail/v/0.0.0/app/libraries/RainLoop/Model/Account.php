@@ -199,6 +199,9 @@ abstract class Account implements \JsonSerializable
 			if ($bThrowExceptionOnFalse) {
 				throw $e;
 			}
+			// The account may already exist when e.g. a filter.account hook
+			// refused it: that refusal must not be lost by returning it anyway.
+			$oAccount = null;
 		}
 		return $oAccount;
 	}
