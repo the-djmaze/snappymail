@@ -167,8 +167,7 @@ abstract class Utils
 
 	public static function StripSpaces(string $sValue) : string
 	{
-		return static::Trim(
-			\preg_replace('/[\s]+/u', ' ', $sValue));
+		return static::Trim(\preg_replace('/\s+/u', ' ', $sValue));
 	}
 
 	public static function IsUtf8(string $sValue) : bool
