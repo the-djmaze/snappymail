@@ -115,6 +115,15 @@ if (!defined('SNAPPYMAIL_LIBRARIES_PATH')) {
 			include_once $file;
 		}
 	});
+/*
+	spl_autoload_register(function($sClassName){
+		if (str_starts_with($sClassName, 'Tachyon\Util')) {
+			class_alias(str_replace('Tachyon\Util', 'SnappyMail', $sClassName), $sClassName);
+		} else if (str_starts_with($sClassName, 'Tachyon')) {
+			class_alias(str_replace('Tachyon', 'RainLoop', $sClassName), $sClassName);
+		}
+	});
+*/
 }
 
 // installation checking data folder
