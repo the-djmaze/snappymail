@@ -126,6 +126,6 @@ class ChangePasswordDriverLDAP
 
 	private function getSalt(int $iLength) : string
 	{
-		return \substr(\preg_replace('#+/=#', '', \base64_encode(\random_bytes($iLength))), 0, $iLength);
+		return \substr(\str_replace('+', '.', \base64_encode(\random_bytes($iLength))), 0, $iLength);
 	}
 }
