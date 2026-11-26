@@ -261,8 +261,8 @@ class Message implements \JsonSerializable
 					}
 				}
 				// https://github.com/the-djmaze/snappymail/issues/1228
-				else if (\preg_match('@([\\d\\.]+)/([\\d\\.]+)@', $spam, $value)
-				  || \preg_match('@([\\d\\.]+)/([\\d\\.]+)@', $oHeaders->ValueByName(MimeHeader::X_SPAM_INFO), $value)
+				else if (\preg_match('@(-?[\d\.]+)/([\d\.]+)@', $spam, $value)
+				  || \preg_match('@(-?[\d\.]+)/([\d\.]+)@', $oHeaders->ValueByName(MimeHeader::X_SPAM_INFO), $value)
 				) {
 					if ($threshold = \floatval($value[2])) {
 						$oMessage->setSpamScore(100 * \floatval($value[1]) / $threshold);
