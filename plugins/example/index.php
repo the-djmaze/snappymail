@@ -456,6 +456,6 @@ class ExamplePlugin extends \RainLoop\Plugins\AbstractPlugin
 	$this->Manager()->IsEnabled() : bool
 	$this->Manager()->Count() : int
 	$this->Manager()->WriteLog(string $sDesc, int $iType = \LOG_INFO) : void
-	$this->Manager()->WriteException(string $sDesc, int $iType = \LOG_INFO) : void
+	$this->Manager()->WriteException(\Throwable $oException, int $iType = \LOG_NOTICE) : void
 */
 }

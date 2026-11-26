@@ -493,8 +493,8 @@ class Manager
 		$this->logWrite($sDesc, $iType, 'PLUGIN');
 	}
 
-	public function WriteException(string $sDesc, int $iType = \LOG_INFO): void
+	public function WriteException(\Throwable $oException, int $iType = \LOG_NOTICE): void
 	{
-		$this->logException($sDesc, $iType, 'PLUGIN');
+		$this->logException($oException, $iType, 'PLUGIN');
 	}
 }
