@@ -29,7 +29,12 @@ class Atom implements \JsonSerializable
 		$this->set($value);
 	}
 
-	public function set(string $value): void
+	public function getValue(): string
+	{
+		return $this->value;
+	}
+
+	public function setValue(string $value): void
 	{
 		// We use static:: so that children can override
 		if (\strlen($value) && !static::validate($value)) {
