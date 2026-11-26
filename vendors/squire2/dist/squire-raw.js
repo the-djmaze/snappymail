@@ -489,7 +489,7 @@
   };
   var allowedBlock = /^(?:A(?:DDRESS|RTICLE|SIDE|UDIO)|BLOCKQUOTE|CAPTION|D(?:[DLT]|IV)|F(?:IGURE|IGCAPTION|OOTER)|H[1-6]|HEADER|L(?:ABEL|EGEND|I)|O(?:L|UTPUT)|P(?:RE)?|SECTION|T(?:ABLE|BODY|D|FOOT|H|HEAD|R)|COL(?:GROUP)?|UL)$/;
   var blacklist = /* @__PURE__ */ new Set(["HEAD", "META", "STYLE"]);
-  var cleanTree = (node, config, preserveWS) => {
+  var cleanTree = (node, config, preserveWS, wsCache = { before: /* @__PURE__ */ new WeakMap(), after: /* @__PURE__ */ new WeakMap() }) => {
     const children = node.childNodes;
     let nonInlineParent = node;
     while (isInline(nonInlineParent)) {
@@ -516,7 +516,12 @@
           continue;
         }
         if (childLength) {
-          cleanTree(child, config, preserveWS || nodeName === "PRE");
+          cleanTree(
+            child,
+            config,
+            preserveWS || nodeName === "PRE",
+            wsCache
+          );
         }
       }
     }
@@ -1913,13 +1918,15 @@
                   'www\\d{0,3}[.]' +
                   // or
                   '|' +
-                  // foo90.com/
-                  '[a-z0-9][a-z0-9.\\-]*[.][a-z]{2,}\\/' +
+                  // foo90.com/ (bounded by the 253-character limit on
+                  // domain names, so a long dotted run can't make every
+                  // boundary in it rescan the rest)
+                  '[a-z0-9][a-z0-9.\\-]{0,252}[.][a-z]{2,}\\/' +
               ')' +
               // Then we get one or more:
               '(?:' +
-                  // Run of non-spaces, non ()<>
-                  '[^\\s()<>]+' +
+                  // Non-space, non ()<>
+                  '[^\\s()<>]' +
                   // or
                   '|' +
                   // balanced parentheses (one level deep only)
@@ -1936,8 +1943,9 @@
               ')' +
           // Capture group 2: Emails
           ')|(' +
-              // Add links to emails
-              '[\\w\\-.%+]+@(?:[\\w\\-]+\\.)+[a-z]{2,}\\b' +
+              // Add links to emails (local part bounded by the 64-character
+              // limit, for the same reason as the domain above)
+              '[\\w\\-.%+]{1,64}@(?:[\\w\\-]+\\.)+[a-z]{2,}\\b' +
               // Allow query parameters in the mailto: style
               '(?:' +
                   '[?][^&?\\s]+=[^\\s?&`!()\\[\\]{};:\'".,<>«»“”‘’]+' +
@@ -1947,7 +1955,7 @@
           'i'
       );
       */
-      this.linkRegExp = /\b(?:((?:(?:ht|f)tps?:\/\/|www\d{0,3}[.]|[a-z0-9][a-z0-9.\-]*[.][a-z]{2,}\/)(?:[^\s()<>]+|\([^\s()<>]+\))+(?:[^\s?&`!()\[\]{};:'".,<>«»“”‘’]|\([^\s()<>]+\)))|([\w\-.%+]+@(?:[\w\-]+\.)+[a-z]{2,}\b(?:[?][^&?\s]+=[^\s?&`!()\[\]{};:'".,<>«»“”‘’]+(?:&[^&?\s]+=[^\s?&`!()\[\]{};:'".,<>«»“”‘’]+)*)?))/i;
+      this.linkRegExp = /\b(?:((?:(?:ht|f)tps?:\/\/|www\d{0,3}[.]|[a-z0-9][a-z0-9.\-]{0,252}[.][a-z]{2,}\/)(?:[^\s()<>]|\([^\s()<>]+\))+(?:[^\s?&`!()\[\]{};:'".,<>«»“”‘’]|\([^\s()<>]+\)))|([\w\-.%+]{1,64}@(?:[\w\-]+\.)+[a-z]{2,}\b(?:[?][^&?\s]+=[^\s?&`!()\[\]{};:'".,<>«»“”‘’]+(?:&[^&?\s]+=[^\s?&`!()\[\]{};:'".,<>«»“”‘’]+)*)?))/i;
       this.tagAfterSplit = {
         DT: "DD",
         DD: "DT",
