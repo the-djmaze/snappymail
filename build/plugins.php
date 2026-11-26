@@ -108,7 +108,11 @@ $released = [
 foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 	if (is_file("{$dir}/index.php") && !strpos($dir, '.bak')) {
 		$name = basename($dir);
-		if (!isset($options['plugins-all']) && !in_array($name, $released)) {
+		if (isset($options['plugin'])) {
+			if ($options['plugin'] != $name) {
+				continue;
+			}
+		} else if (!isset($options['plugins-all']) && !in_array($name, $released)) {
 			echo "s {$name}\n";
 			continue;
 		}
@@ -207,13 +211,19 @@ foreach (glob(ROOT_DIR . '/plugins/*', GLOB_NOSORT | GLOB_ONLYDIR) as $dir) {
 	}
 }
 
-ksort($manifest);
-$manifest = json_encode(array_values($manifest));
-$manifest = str_replace('{"', "\n\t{\n\t\t\"", $manifest);
-$manifest = str_replace('"}', "\"\n\t}", $manifest);
-$manifest = str_replace('}]', "}\n]", $manifest);
-$manifest = str_replace('","', "\",\n\t\t\"", $manifest);
-$manifest = str_replace('\/', '/', $manifest);
-file_put_contents(dirname(PLUGINS_DEST_DIR) . "/packages.json", $manifest);
+if (!isset($options['plugin'])) {
+	ksort($manifest);
+	$manifest = json_encode(array_values($manifest));
+	$manifest = str_replace('{"', "\n\t{\n\t\t\"", $manifest);
+	$manifest = str_replace('"}', "\"\n\t}", $manifest);
+	$manifest = str_replace('}]', "}\n]", $manifest);
+	$manifest = str_replace('","', "\",\n\t\t\"", $manifest);
+	$manifest = str_replace('\/', '/', $manifest);
+	if (isset($options['plugins-all'])) {
+		file_put_contents(dirname(PLUGINS_DEST_DIR) . "/packages-all.json", $manifest);
+	} else {
+		file_put_contents(dirname(PLUGINS_DEST_DIR) . "/packages.json", $manifest);
+	}
+}
 
 exit;

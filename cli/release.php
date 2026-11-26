@@ -4,17 +4,17 @@ define('ROOT_DIR', dirname(__DIR__));
 chdir(ROOT_DIR);
 require ROOT_DIR . '/snappymail/v/0.0.0/app/libraries/snappymail/tar.php';
 
-$options = getopt('', ['aur','docker','plugins','plugins-all','skip-gulp','debian','nextcloud','owncloud','cpanel','sign','phar']);
+$options = getopt('', ['aur','docker','plugin::','plugins','plugins-all','skip-gulp','debian','nextcloud','owncloud','cpanel','sign::','phar']);
 
 /**
  * Set the key which --sign signs with.
  * Set a value to use another key, without touching this file.
  * The value is used in `gpg --local-user ...`
- * Example: `release.php --sign 1016E47079145542F8BA133548208BA13290F3EB`
+ * Example: `release.php --sign=1016E47079145542F8BA133548208BA13290F3EB`
  */
 define('SIGNING_KEY', escapeshellarg(empty($options['sign']) ? '1016E47079145542F8BA133548208BA13290F3EB' : $options['sign']));
 
-if (isset($options['plugins']) || isset($options['plugins-all'])) {
+if (isset($options['plugin']) || isset($options['plugins']) || isset($options['plugins-all'])) {
 	require(ROOT_DIR . '/build/plugins.php');
 }
 
