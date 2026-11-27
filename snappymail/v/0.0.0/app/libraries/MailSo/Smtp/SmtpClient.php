@@ -287,7 +287,7 @@ class SmtpClient extends \MailSo\Net\NetClient
 		$IPv6_addr = "(?:{$IPv6_full}|{$IPv6_comp}|{$IPv6v4_full}|{$IPv6v4_comp})";
 		$IPv6_address_literal = "IPv6:{$IPv6_addr}";
 		$address_literal = "\\[(?:{$IPv4_address_literal}|{$IPv6_address_literal})\\]";
-		$Mailbox = "(?:{$Local_part}@{$Domain}|{$address_literal})";
+		$Mailbox = "{$Local_part}@(?:{$Domain}|{$address_literal})";
 		return 1 === \preg_match("/^({$A_d_l}:)?{$Mailbox}$/D", $sValue);
 //		return 1 === \preg_match("/^<({$A_d_l}:)?{$Mailbox}>$/D", $sValue);
 	}
