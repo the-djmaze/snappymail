@@ -44,7 +44,11 @@ class CURL extends \SnappyMail\HTTP\Request
 			\curl_setopt($c, CURLOPT_NOSIGNAL, true);
 		}
 		if ($this->ca_bundle) {
-			\curl_setopt($c, CURLOPT_CAINFO, $this->ca_bundle);
+			// Mirror the socket transport, which accepts either: CAINFO wants a
+			// file and silently fails on a directory, which is what capath is.
+			\curl_setopt($c,
+				\is_dir($this->ca_bundle) ? CURLOPT_CAPATH : CURLOPT_CAINFO,
+				$this->ca_bundle);
 		}
 		if ($extra_headers) {
 			\curl_setopt($c, CURLOPT_HTTPHEADER, $extra_headers);
