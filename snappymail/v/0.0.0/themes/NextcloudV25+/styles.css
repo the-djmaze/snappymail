@@ -104,23 +104,6 @@ body[data-themes^="dark"] #V-Settings-About .rl-logo {
 	color: var(--color-primary-element, #00639a);
 }
 
-::-webkit-scrollbar {
-	width: 12px;
-	height: 12px;
-}
-
-::-webkit-scrollbar-thumb {
-	background: var(--color-scrollbar, rgba(34, 34, 34, .15));
-	border-radius: var(--border-radius-large);
-	border: 2px solid transparent;
-	background-clip: content-box;
-}
-
-::-webkit-scrollbar-corner,
-::-webkit-scrollbar-track-piece {
-	background-color: transparent;
-}
-
 #rl-app .resizer {
 	opacity: 1;
 	background-color: unset;
@@ -576,9 +559,7 @@ input[type="checkbox"] {
 	transform: unset;
 }
 
-#rl-app select option,
-#rl-app select::-webkit-scrollbar-corner,
-#rl-app select::-webkit-scrollbar-track-piece {
+#rl-app select option {
 	background-color: var(--color-main-background);
 	color: var(--input-clr);
 }
@@ -730,12 +711,6 @@ input[type="checkbox"] {
 
 #rl-app .dropdown-menu *+.dividerbar {
 	border-color: var(--color-border, #ededed);
-}
-
-#rl-app .dropdown-menu::-webkit-scrollbar-track-piece {
-	background-color: inherit;
-	border-top-right-radius: inherit;
-	border-bottom-right-radius: inherit;
 }
 
 .rl-left-panel-disabled #rl-app .dropdown-menu:not(.right-edge) {
