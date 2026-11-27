@@ -34,7 +34,7 @@ class Section
 		return !\strlen($this->value) || '.' === \substr($this->value, -1);
 	}
 
-	public function set(string $value): void
+	public function setValue(string $value): void
 	{
 		if (\strlen($value) && !static::validate($value)) {
 			throw new \ValueError('Invalid MIME section value');
