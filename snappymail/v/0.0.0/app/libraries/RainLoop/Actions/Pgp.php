@@ -325,10 +325,10 @@ trait Pgp
 			$sSigPartId = (string) $this->GetActionParam('sigPartId', '');
 //			$sMicAlg = $this->GetActionParam('micAlg', '');
 
-			if (\strlen($sPartId) && !\MailSo\Mime\Section::validate($sPartId)) {
+			if (\strlen($sPartId) && !\MailSo\Imap\Section::validate($sPartId)) {
 				throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::InvalidInputArgument);
 			}
-			if (\strlen($sSigPartId) && !\MailSo\Mime\Section::validatePart($sSigPartId)) {
+			if (\strlen($sSigPartId) && !\MailSo\Imap\Section::validatePart($sSigPartId)) {
 				throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::InvalidInputArgument);
 			}
 

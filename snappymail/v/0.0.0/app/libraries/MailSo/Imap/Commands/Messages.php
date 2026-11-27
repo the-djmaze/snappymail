@@ -141,7 +141,7 @@ trait Messages
 			], $iUid, true)[0];
 			$sHeader = $oFetchResponse->GetFetchValue(FetchType::BODY_HEADER);
 		} else {
-			if (!\MailSo\Mime\Section::validate($sPartId)) {
+			if (!\MailSo\Imap\Section::validate($sPartId)) {
 				throw new \ValueError('Invalid MIME part');
 			}
 			$oFetchResponse = $this->Fetch([

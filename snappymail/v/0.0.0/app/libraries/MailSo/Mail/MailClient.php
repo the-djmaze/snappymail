@@ -202,7 +202,7 @@ class MailClient
 		$sPeek = FetchType::BODY_PEEK;
 
 		$sMimeIndex = \trim($sMimeIndex);
-		if (\strlen($sMimeIndex) && !\MailSo\Mime\Section::validatePart($sMimeIndex)) {
+		if (\strlen($sMimeIndex) && !\MailSo\Imap\Section::validatePart($sMimeIndex)) {
 			throw new \ValueError('Invalid MIME part number');
 		}
 		$aFetchResponse = $this->oImapClient->Fetch(array(
