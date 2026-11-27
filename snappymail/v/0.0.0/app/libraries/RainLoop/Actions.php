@@ -125,6 +125,8 @@ class Actions
 			} else if ('stderr' === $sLogFileName) {
 				$oDriver = new \MailSo\Log\Drivers\StderrStream();
 			} else {
+				// https://github.com/the-djmaze/snappymail/security/advisories/GHSA-9cmw-3ghj-9q55
+				$sLogFileName = \preg_replace('/\\.(php|pl|cgi|js|css|go|exe|dll|app|ipa|dmg)/', '.txt', $sLogFileName);
 				$sLogFileFullPath = \trim($this->oConfig->Get('logs', 'path', '')) ?: \APP_PRIVATE_DATA . 'logs';
 				\is_dir($sLogFileFullPath) || \mkdir($sLogFileFullPath, 0700, true);
 				$oDriver = new \MailSo\Log\Drivers\File($sLogFileFullPath . '/' . $this->compileLogFileName($sLogFileName));
