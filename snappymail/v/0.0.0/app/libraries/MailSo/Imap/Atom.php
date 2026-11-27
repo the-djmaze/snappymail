@@ -26,7 +26,7 @@ class Atom implements \JsonSerializable
 
 	function __construct(string $value = '')
 	{
-		$this->set($value);
+		$this->setValue($value);
 	}
 
 	public function getValue(): string
