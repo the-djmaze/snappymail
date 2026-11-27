@@ -48,6 +48,9 @@ const
 		sieveType: 0,
 		sieveTimeout: 10,
 		sieveAuthLiteral: true,
+		// SSL
+		sieveSslVerify_peer: false,
+		sieveSslAllow_self_signed: false,
 
 		smtpHost: '',
 		smtpPort: 25,
@@ -122,9 +125,9 @@ const
 			shortLogin: !!oDomain.imapShortLogin(),
 			lowerLogin: !!oDomain.imapLowerLogin(),
 			ssl: {
-				verify_peer: !!oDomain.imapSslVerify_peer(),
-				verify_peer_name: !!oDomain.imapSslVerify_peer(),
-				allow_self_signed: !!oDomain.imapSslAllow_self_signed()
+				verify_peer: !!oDomain.sieveSslVerify_peer(),
+				verify_peer_name: !!oDomain.sieveSslVerify_peer(),
+				allow_self_signed: !!oDomain.sieveSslAllow_self_signed()
 			}
 		},
 		whiteList: oDomain.whiteList

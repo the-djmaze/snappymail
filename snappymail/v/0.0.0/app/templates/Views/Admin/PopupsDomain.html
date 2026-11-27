@@ -298,6 +298,23 @@
 							label: 'Use LITERAL+'
 						}
 					}"></div>
+
+					<h4>SSL/TLS</h4>
+					<div data-bind="component: {
+						name: 'Checkbox',
+						params: {
+							value: sieveSslVerify_peer,
+							label: 'TAB_SECURITY/LABEL_REQUIRE_VERIFICATION'
+						}
+					}"></div>
+					<div data-bind="component: {
+						name: 'Checkbox',
+						params: {
+							enable: sieveSslVerify_peer,
+							value: sieveSslAllow_self_signed,
+							label: 'TAB_SECURITY/LABEL_ALLOW_SELF_SIGNED'
+						}
+					}"></div>
 				</div>
 			</div>
 
