@@ -322,7 +322,7 @@ trait CardDAV
 		}
 
 		$oClient = new DAVClient($aSettings);
-		$oClient->setVerifyPeer(false);
+		$oClient->applySslConfig();
 
 		$oClient->urlPath = $aUrl['path'];
 
