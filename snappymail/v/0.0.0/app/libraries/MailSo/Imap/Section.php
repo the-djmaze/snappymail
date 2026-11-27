@@ -49,7 +49,9 @@ class Section
 
 	public static function validate(string $value): bool
 	{
-		$section_msgtext = 'HEADER|HEADER\\.FIELDS(?:\\.NOT)? .+|TEXT';
+		$astring         = '[^(){\x00-\x20\x7f%*]+';
+		$header_list     = "\({$astring}(?:\s+{$astring}\)*\)";
+		$section_msgtext = "HEADER|HEADER\\.FIELDS(?:\\.NOT)?\s+{$header_list}|TEXT";
 		return 1 === \preg_match("/^(?:{$section_msgtext}|[1-9][0-9]*(?:\\.[1-9][0-9]*)*(?:\\.(?:{$section_msgtext}|MIME))?)$/D", $value);
 	}
 
