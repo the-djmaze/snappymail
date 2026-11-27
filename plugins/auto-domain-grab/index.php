@@ -3,7 +3,7 @@
 /**
  * This extension automatically detects the IMAP, SMTP, and Sieve settings by
  * extracting them from the email address itself. For example, if the user
- * attemps to login as 'info@example.com', then the IMAP, SMTP, and Sieve host 
+ * attemps to login as 'info@example.com', then the IMAP, SMTP, and Sieve host
  * would be set to to 'example.com'.
  *
  * Based on:
@@ -15,8 +15,8 @@ class AutoDomainGrabPlugin extends \RainLoop\Plugins\AbstractPlugin
 {
 	const
 		NAME     = 'Auto Domain Selection',
-		VERSION  = '2.9',
-		RELEASE = '2022-11-11',
+		VERSION  = '2.10',
+		RELEASE = '2026-11-27',
 		REQUIRED = '2.21.0',
 		CATEGORY = 'General',
 		DESCRIPTION = 'Sets the IMAP, SMTP, Sieve host based on the user\'s login';
@@ -24,7 +24,7 @@ class AutoDomainGrabPlugin extends \RainLoop\Plugins\AbstractPlugin
 	private $imap_prefix = 'mail.';
 	private $smtp_prefix = 'mail.';
 	private $sieve_prefix = 'mail.';
-	
+
 	public function Init() : void
 	{
 		$this->addHook('imap.before-connect', 'FilterImapCredentials');
