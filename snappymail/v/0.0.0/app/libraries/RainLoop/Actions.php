@@ -924,7 +924,11 @@ class Actions
 		if ($oAccount && !$this->ImapClient()->IsLoggined()) {
 			try {
 				$oAccount->ImapConnectAndLogin($this->oPlugins, $this->ImapClient(), $this->oConfig);
-			} catch (\MailSo\Net\Exceptions\ConnectionException $oException) {
+			} catch (\MailSo\Net\Exceptions\ConnectionException
+				| \MailSo\Net\Exceptions\SocketReadException
+				| \MailSo\Net\Exceptions\SocketReadTimeoutException
+				| \MailSo\Net\Exceptions\SocketWriteException $oException
+			) {
 				throw new Exceptions\ClientException(Notifications::ConnectionError, $oException);
 			} catch (\Throwable $oException) {
 				throw new Exceptions\ClientException(Notifications::AuthError, $oException);
