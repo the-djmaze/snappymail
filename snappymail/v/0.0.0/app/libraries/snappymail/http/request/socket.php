@@ -43,7 +43,7 @@ class Socket extends \SnappyMail\HTTP\Request
 			$extra_headers['Authorization'] = static::$Authorization[$host];
 		}
 		if ($extra_headers) {
-			$headers = \array_merge($headers, $extra_headers);
+			$headers = \array_merge($headers, static::headerLines($extra_headers));
 		}
 		$headers = \implode("\r\n", $headers);
 		if (!\is_null($body)) {
