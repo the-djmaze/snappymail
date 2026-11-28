@@ -137,7 +137,7 @@
 		const messageItemHeader = getEl(templateId).content.querySelector('.messageItemHeader');
 		if (messageItemHeader) {
 			messageItemHeader.prepend(Element.fromHTML(
-				`<img class="fromPic" data-bind="visible: viewUserPicVisible, attr: {'src': viewUserPic() }" loading="lazy">`
+				`<img class="fromPic" data-bind="visible: viewUserPicVisible, attr: {'src': viewUserPic() }, event: {error: viewUserPicError}" loading="lazy">`
 			));
 		}
 
@@ -228,6 +228,19 @@
 			let view = e.detail;
 			view.viewUserPic = ko.observable('');
 			view.viewUserPicVisible = ko.observable(false);
+
+			view.viewUserPicError = () => {
+				const msg = view.message();
+				const url = view.viewUserPic();
+
+				if (msg?.from?.[0] && url && !url.startsWith('data:')) {
+					setIdenticon(msg, uri => {
+						if (view.message() === msg) {
+							view.viewUserPic(uri);
+						}
+					});
+				}
+			};
 
 			view.message.subscribe(msg => {
 				view.viewUserPicVisible(false);
